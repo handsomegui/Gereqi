@@ -4,7 +4,7 @@
 Module implementing MainWindow.
 """
 
-from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem
+from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, QDesktopServices
 from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime
 from PyQt4.phonon import Phonon
 from settings import Dialog
@@ -77,16 +77,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Slot documentation goes here.
         """
         # TODO: not implemented yet
-        raise NotImplementedError
+        row = self.playlistTree.currentRow() - 1
+        if row > 0:
+            self.playlistTree.setCurrentCell(row, 1)
+            self.mediaObject.stop()
+            self.mediaObject.setCurrentSource(self.sources[row])
+            self.mediaObject.play()
     
     @pyqtSignature("bool")
     def on_playBttn_toggled(self, checked):
         """
         Slot documentation goes here.
         """
-        # TODO: not implemented yet
         if checked:
             self.mediaObject.play()
+            length = self.mediaObject.totalTime()
+            self.progSldr.setRange(0, length)
         else:
             self.mediaObject.pause()
         
@@ -97,30 +103,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         To stop current track.
         """
         self.mediaObject.stop()
-        self.play.Bttn.setChecked(False)
+        self.playBttn.setChecked(False)
+        self.progSldr.setValue(0)
     
     @pyqtSignature("")
     def on_nxtBttn_pressed(self):
         """
-        Slot documentation goes here.
+        Go to next item in playlist(down)
         """
         # TODO: not implemented yet
-        raise NotImplementedError
-    
+        row = self.playlistTree.currentRow() + 1
+        if row < len(self.sources):
+            self.playlistTree.setCurrentCell(row, 1)
+            self.mediaObject.stop()
+            self.mediaObject.setCurrentSource(self.sources[row])
+            self.mediaObject.play()
+        
     @pyqtSignature("int")
     def on_volSldr_valueChanged(self, value):
         """
         Slot documentation goes here.
         """
         # TODO: not implemented yet
-        raise NotImplementedError
-    
-    @pyqtSignature("int")
-    def on_progSldr_valueChanged(self, value):
-        """
-        To go back or forward in the current track.
-        """
-        # TODO: not implemented yet
+        self.volLbl.setText("%s" % value)
+        self.audioOutput.setVolume(value/100.0)
     
     @pyqtSignature("")
     def on_actionEdit_triggered(self):
@@ -150,22 +156,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Extract music files and shove into current playlist.
         """
-        dir = QFileDialog.getExistingDirectory(\
-            None,
-            QString(),
-            QDir.homePath(),
-            QFileDialog.Options(QFileDialog.Option(0)))
+        mfiles = QFileDialog.getOpenFileNames(self,
+                self.tr("Select Music Files"),
+                QDesktopServices.storageLocation(QDesktopServices.MusicLocation))
             
-        if dir:
-            self.playlistTree.clearContents()
-            for root, dirname, filename in os.walk(str(dir)):
-                for x in filename:
-                    fileNow = os.path.join(root, x)
-                    for type in self.formats:
-                        if fileNow.endswith(type):
-                                    index = len(self.sources)
-                                    self.sources.append(Phonon.MediaSource(fileNow))         
-                 
+        # TODO: Fix
+#        # Only seems to work with one track only
+#        if dir:
+#            self.playlistTree.clearContents()
+#            for root, dirname, filename in os.walk(str(dir)):
+#                for x in filename:
+#                    fileNow = os.path.join(root, x)
+#                    for type in self.formats:
+#                        if fileNow.endswith(type):
+#                                    index = len(self.sources)
+#                                    self.sources.append(Phonon.MediaSource(fileNow))      
+        if mfiles:
+            index = len(self.sources)
+            for item in mfiles:   
+               self.sources.append(Phonon.MediaSource(item))   
+    
             self.metaInformationResolver.setCurrentSource(self.sources[index])
 
     def metaStateChanged(self, newState, oldState):
@@ -194,7 +204,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if title.isEmpty():
                 title = self.metaInformationResolver.currentSource().fileName()
             
-            print title
             titleItem = QTableWidgetItem(title)
             titleItem.setFlags(titleItem.flags() ^ Qt.ItemIsEditable)
     
@@ -249,10 +258,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         displayTime = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
         self.progLbl.setText(displayTime.toString('mm:ss'))
+        self.progSldr.setValue(time)
     
     @pyqtSignature("int, int")
     def on_playlistTree_cellPressed(self, row, column):
         """
         Selects track
         """
-        self.mediaObject.setCurrentSource(self.sources[row])
+#        if Phonon.StoppedState:
+#            self.mediaObject.setCurrentSource(self.sources[row])
+#        else:
+#            print "playing"
+    
+    @pyqtSignature("int")
+    def on_progSldr_sliderMoved(self, position):
+        """
+        When the progress is moved by user input curent track seeks correspondingly
+        """
+        self.mediaObject.seek(position)
