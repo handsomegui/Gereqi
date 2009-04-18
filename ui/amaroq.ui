@@ -313,7 +313,7 @@
     </property>
     <addaction name="actionPlay_Media"/>
     <addaction name="separator"/>
-    <addaction name="actionExir"/>
+    <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuPlaylist">
     <property name="title">
@@ -354,7 +354,7 @@
     <string>Rescan Collection</string>
    </property>
   </action>
-  <action name="actionExir">
+  <action name="actionExit">
    <property name="text">
     <string>Exit</string>
    </property>

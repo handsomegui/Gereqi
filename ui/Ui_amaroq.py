@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/projects/amaroq/ui/amaroq.ui'
 #
-# Created: Sat Apr 18 21:00:42 2009
+# Created: Sat Apr 18 22:06:04 2009
 #      by: PyQt4 UI code generator 4.4.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -186,13 +186,13 @@ class Ui_MainWindow(object):
         self.actionEdit.setObjectName("actionEdit")
         self.actionRescan_Collection = QtGui.QAction(MainWindow)
         self.actionRescan_Collection.setObjectName("actionRescan_Collection")
-        self.actionExir = QtGui.QAction(MainWindow)
-        self.actionExir.setObjectName("actionExir")
+        self.actionExit = QtGui.QAction(MainWindow)
+        self.actionExit.setObjectName("actionExit")
         self.actionPlay_Media = QtGui.QAction(MainWindow)
         self.actionPlay_Media.setObjectName("actionPlay_Media")
         self.menuActions.addAction(self.actionPlay_Media)
         self.menuActions.addSeparator()
-        self.menuActions.addAction(self.actionExir)
+        self.menuActions.addAction(self.actionExit)
         self.menuTools.addAction(self.actionRescan_Collection)
         self.menuSettings.addAction(self.actionEdit)
         self.menuBar.addAction(self.menuActions.menuAction())
@@ -232,7 +232,7 @@ class Ui_MainWindow(object):
         self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
         self.actionEdit.setText(QtGui.QApplication.translate("MainWindow", "Edit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRescan_Collection.setText(QtGui.QApplication.translate("MainWindow", "Rescan Collection", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionExir.setText(QtGui.QApplication.translate("MainWindow", "Exit", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExit.setText(QtGui.QApplication.translate("MainWindow", "Exit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPlay_Media.setText(QtGui.QApplication.translate("MainWindow", "Play Media", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit

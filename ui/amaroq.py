@@ -48,6 +48,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.metaInformationResolver, SIGNAL('stateChanged(Phonon::State, Phonon::State)'),self.metaStateChanged)
         self.connect(self.mediaObject, SIGNAL('tick(qint64)'), self.tick)
         self.connect(self.mediaObject, SIGNAL('aboutToFinish()'),self.aboutToFinish)
+        self.connect(self.mediaObject, SIGNAL('finished()'),self.finished)
         self.connect(self.mediaObject, SIGNAL('stateChanged(Phonon::State, Phonon::State)'),self.stateChanged)
     
     @pyqtSignature("")
@@ -96,7 +97,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.mediaObject.pause()
         
-    
     @pyqtSignature("")
     def on_stopBttn_pressed(self):
         """
@@ -153,7 +153,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #                                    self.sources.append(Phonon.MediaSource(fileNow))   
     
     @pyqtSignature("")
-    def on_actionExir_triggered(self):
+    def on_actionExit_triggered(self):
         """
         Closing Down
         """
@@ -281,11 +281,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
     def setProgSldr(self):
         length = self.mediaObject.totalTime()
-        print length # why -1
         self.progSldr.setRange(0, length)
             
     def stateChanged(self):
         self.setProgSldr()
-            
-   
-
+        
+    def finished(self):
+        self.progSldr.setValue(0)
+        self.progLbl.setText("00:00")
