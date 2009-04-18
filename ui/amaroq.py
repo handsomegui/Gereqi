@@ -4,8 +4,8 @@
 Module implementing MainWindow.
 """
 
-from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, QDesktopServices
-from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime
+from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp
+from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT
 from PyQt4.phonon import Phonon
 from settings import Dialog
 from pysqlite2 import dbapi2 as sqlite
@@ -39,6 +39,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mediaObject.setTickInterval(1000)
         self.sources = []
         self.audioOutput.setVolume(1)
+        self.createActions()
+        self.createTrayIcon()
+        self.trayIcon.show()
+        self.viewable = True
         
         headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), self.tr("Album"), self.tr("Year")]
         for val in range(5):
@@ -65,7 +69,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Slot documentation goes here.
         """
         # TODO: not implemented yet
-        raise NotImplementedError
     
     @pyqtSignature("QTreeWidgetItem*, int")
     def on_collectTree_itemDoubleClicked(self, item, column):
@@ -289,3 +292,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def finished(self):
         self.progSldr.setValue(0)
         self.progLbl.setText("00:00")
+        
+    def createActions(self):
+        self.quitAction = QAction(self.tr("&Quit"), self)
+        self.playAction = QAction(self.tr("&Play"), self)
+        self.viewAction = QAction(self.tr("&Restore"), self)
+        self.connect(self.quitAction, SIGNAL("triggered()"), qApp, SLOT("quit()"))
+        self.connect(self.playAction, SIGNAL("triggered()"), self.mediaObject.play)
+        self.connect(self.viewAction, SIGNAL("triggered()"), self.minimiseTray)
+
+    def createTrayIcon(self):
+        self.trayIconMenu = QMenu(self)
+        self.trayIconMenu.addAction(self.playAction)
+        self.trayIconMenu.addAction(self.viewAction)
+        self.trayIconMenu.addAction(self.quitAction)
+        self.trayIcon = QSystemTrayIcon(self)
+        self.trayIcon.setContextMenu(self.trayIconMenu)
+        
+    def minimiseTray(self):
+        if self.viewable:
+            self.hide()
+            self.viewable = False
+        else:
+            self.show()
+            self.viewable = True
