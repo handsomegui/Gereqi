@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/projects/amaroq/ui/amaroq.ui'
 #
-# Created: Fri Apr 17 19:31:21 2009
+# Created: Sat Apr 18 21:00:42 2009
 #      by: PyQt4 UI code generator 4.4.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -16,12 +16,17 @@ class Ui_MainWindow(object):
         self.centralWidget = QtGui.QWidget(MainWindow)
         self.centralWidget.setObjectName("centralWidget")
         self.gridLayout = QtGui.QGridLayout(self.centralWidget)
-        self.gridLayout.setMargin(2)
         self.gridLayout.setObjectName("gridLayout")
         self.splitter = QtGui.QSplitter(self.centralWidget)
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.splitter.setObjectName("splitter")
         self.tabWidget = QtGui.QTabWidget(self.splitter)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
+        self.tabWidget.setSizePolicy(sizePolicy)
+        self.tabWidget.setMinimumSize(QtCore.QSize(250, 0))
         self.tabWidget.setMaximumSize(QtCore.QSize(400, 16777215))
         self.tabWidget.setTabPosition(QtGui.QTabWidget.West)
         self.tabWidget.setObjectName("tabWidget")
@@ -31,6 +36,11 @@ class Ui_MainWindow(object):
         self.gridLayout_2.setMargin(2)
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.tabWidget_2 = QtGui.QTabWidget(self.tab)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.tabWidget_2.sizePolicy().hasHeightForWidth())
+        self.tabWidget_2.setSizePolicy(sizePolicy)
         self.tabWidget_2.setObjectName("tabWidget_2")
         self.tab_6 = QtGui.QWidget()
         self.tab_6.setObjectName("tab_6")
@@ -40,9 +50,22 @@ class Ui_MainWindow(object):
         self.tabWidget_2.addTab(self.tab_7, "")
         self.tab_8 = QtGui.QWidget()
         self.tab_8.setObjectName("tab_8")
+        self.gridLayout_5 = QtGui.QGridLayout(self.tab_8)
+        self.gridLayout_5.setMargin(2)
+        self.gridLayout_5.setObjectName("gridLayout_5")
+        self.lyrcBrowser = QtGui.QTextBrowser(self.tab_8)
+        self.lyrcBrowser.setObjectName("lyrcBrowser")
+        self.gridLayout_5.addWidget(self.lyrcBrowser, 0, 0, 1, 1)
         self.tabWidget_2.addTab(self.tab_8, "")
         self.tab_9 = QtGui.QWidget()
         self.tab_9.setObjectName("tab_9")
+        self.gridLayout_4 = QtGui.QGridLayout(self.tab_9)
+        self.gridLayout_4.setMargin(2)
+        self.gridLayout_4.setObjectName("gridLayout_4")
+        self.wikiView = QtWebKit.QWebView(self.tab_9)
+        self.wikiView.setUrl(QtCore.QUrl("about:blank"))
+        self.wikiView.setObjectName("wikiView")
+        self.gridLayout_4.addWidget(self.wikiView, 0, 0, 1, 1)
         self.tabWidget_2.addTab(self.tab_9, "")
         self.gridLayout_2.addWidget(self.tabWidget_2, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab, "")
@@ -81,6 +104,11 @@ class Ui_MainWindow(object):
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.layoutWidget)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.playlistTree = QtGui.QTableWidget(self.layoutWidget)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.playlistTree.sizePolicy().hasHeightForWidth())
+        self.playlistTree.setSizePolicy(sizePolicy)
         self.playlistTree.setObjectName("playlistTree")
         self.playlistTree.setColumnCount(0)
         self.playlistTree.setRowCount(0)
@@ -138,7 +166,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 676, 24))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 676, 22))
         self.menuBar.setObjectName("menuBar")
         self.menuActions = QtGui.QMenu(self.menuBar)
         self.menuActions.setObjectName("menuActions")
@@ -207,6 +235,7 @@ class Ui_MainWindow(object):
         self.actionExir.setText(QtGui.QApplication.translate("MainWindow", "Exit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPlay_Media.setText(QtGui.QApplication.translate("MainWindow", "Play Media", None, QtGui.QApplication.UnicodeUTF8))
 
+from PyQt4 import QtWebKit
 
 if __name__ == "__main__":
     import sys

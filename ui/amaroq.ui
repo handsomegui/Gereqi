@@ -15,15 +15,24 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <property name="margin">
-     <number>2</number>
-    </property>
     <item row="0" column="0">
      <widget class="QSplitter" name="splitter">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
       <widget class="QTabWidget" name="tabWidget">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>250</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="maximumSize">
         <size>
          <width>400</width>
@@ -46,6 +55,12 @@
          </property>
          <item row="0" column="0">
           <widget class="QTabWidget" name="tabWidget_2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="currentIndex">
             <number>0</number>
            </property>
@@ -63,11 +78,33 @@
             <attribute name="title">
              <string>Lyrics</string>
             </attribute>
+            <layout class="QGridLayout" name="gridLayout_5">
+             <property name="margin">
+              <number>2</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QTextBrowser" name="lyrcBrowser"/>
+             </item>
+            </layout>
            </widget>
            <widget class="QWidget" name="tab_9">
             <attribute name="title">
              <string>Wikipedia</string>
             </attribute>
+            <layout class="QGridLayout" name="gridLayout_4">
+             <property name="margin">
+              <number>2</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QWebView" name="wikiView">
+               <property name="url">
+                <url>
+                 <string>about:blank</string>
+                </url>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </widget>
          </item>
@@ -129,7 +166,14 @@
       <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QTableWidget" name="playlistTree"/>
+         <widget class="QTableWidget" name="playlistTree">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
         <item>
          <layout class="QVBoxLayout" name="verticalLayout">
@@ -260,7 +304,7 @@
      <x>0</x>
      <y>0</y>
      <width>676</width>
-     <height>24</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuActions">
@@ -321,6 +365,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebView</class>
+   <extends>QWidget</extends>
+   <header>QtWebKit/QWebView</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

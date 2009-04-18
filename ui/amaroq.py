@@ -38,6 +38,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Phonon.createPath(self.mediaObject, self.audioOutput)
         self.mediaObject.setTickInterval(1000)
         self.sources = []
+        self.audioOutput.setVolume(1)
         
         headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), self.tr("Album"), self.tr("Year")]
         for val in range(5):
@@ -46,6 +47,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.connect(self.metaInformationResolver, SIGNAL('stateChanged(Phonon::State, Phonon::State)'),self.metaStateChanged)
         self.connect(self.mediaObject, SIGNAL('tick(qint64)'), self.tick)
+        self.connect(self.mediaObject, SIGNAL('aboutToFinish()'),self.aboutToFinish)
+        self.connect(self.mediaObject, SIGNAL('stateChanged(Phonon::State, Phonon::State)'),self.stateChanged)
     
     @pyqtSignature("")
     def on_clrBttn_pressed(self):
@@ -76,7 +79,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
-        # TODO: not implemented yet
         row = self.playlistTree.currentRow() - 1
         if row > 0:
             self.playlistTree.setCurrentCell(row, 1)
@@ -91,8 +93,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         if checked:
             self.mediaObject.play()
-            length = self.mediaObject.totalTime()
-            self.progSldr.setRange(0, length)
         else:
             self.mediaObject.pause()
         
@@ -111,7 +111,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Go to next item in playlist(down)
         """
-        # TODO: not implemented yet
         row = self.playlistTree.currentRow() + 1
         if row < len(self.sources):
             self.playlistTree.setCurrentCell(row, 1)
@@ -124,7 +123,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
-        # TODO: not implemented yet
         self.volLbl.setText("%s" % value)
         self.audioOutput.setVolume(value/100.0)
     
@@ -143,6 +141,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         # TODO: not implemented yet
         raise NotImplementedError
+#        dir = directory set in settings
+#        if dir:
+#            self.playlistTree.clearContents()
+#            for root, dirname, filename in os.walk(str(dir)):
+#                for x in filename:
+#                    fileNow = os.path.join(root, x)
+#                    for type in self.formats:
+#                        if fileNow.endswith(type):
+#                                    index = len(self.sources)
+#                                    self.sources.append(Phonon.MediaSource(fileNow))   
     
     @pyqtSignature("")
     def on_actionExir_triggered(self):
@@ -158,19 +166,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         mfiles = QFileDialog.getOpenFileNames(self,
                 self.tr("Select Music Files"),
-                QDesktopServices.storageLocation(QDesktopServices.MusicLocation))
-            
-        # TODO: Fix
-#        # Only seems to work with one track only
-#        if dir:
-#            self.playlistTree.clearContents()
-#            for root, dirname, filename in os.walk(str(dir)):
-#                for x in filename:
-#                    fileNow = os.path.join(root, x)
-#                    for type in self.formats:
-#                        if fileNow.endswith(type):
-#                                    index = len(self.sources)
-#                                    self.sources.append(Phonon.MediaSource(fileNow))      
+                QDesktopServices.storageLocation(QDesktopServices.MusicLocation))            
+
         if mfiles:
             index = len(self.sources)
             for item in mfiles:   
@@ -178,6 +175,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
             self.metaInformationResolver.setCurrentSource(self.sources[index])
 
+# Pretty much a copy and paste of Trolltech's example
     def metaStateChanged(self, newState, oldState):
             if newState == Phonon.ErrorState:
                 QMessageBox.warning(self, self.tr("Error opening files"),
@@ -247,10 +245,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         When item doubleclicked. Play it.
         """
         self.mediaObject.stop()
-
         self.mediaObject.setCurrentSource(self.sources[row])
         self.mediaObject.play()
-        self.playBttn.setChecked(True) # Untested
+        self.playBttn.setChecked(True) 
         
     def tick(self, time):
         """
@@ -276,3 +273,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         When the progress is moved by user input curent track seeks correspondingly
         """
         self.mediaObject.seek(position)
+        
+    def aboutToFinish(self):
+        index = self.sources.index(self.mediaObject.currentSource()) + 1
+        if len(self.sources) > index:
+            self.mediaObject.enqueue(self.sources[index])
+            
+    def setProgSldr(self):
+        length = self.mediaObject.totalTime()
+        print length # why -1
+        self.progSldr.setRange(0, length)
+            
+    def stateChanged(self):
+        self.setProgSldr()
+            
+   
+
