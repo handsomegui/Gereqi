@@ -319,12 +319,22 @@
     </property>
     <addaction name="actionPlay_Media"/>
     <addaction name="separator"/>
+    <addaction name="actionMinimise_to_Tray"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuPlaylist">
     <property name="title">
      <string>Playlist</string>
     </property>
+    <widget class="QMenu" name="menuCurrent">
+     <property name="title">
+      <string>Current</string>
+     </property>
+     <addaction name="actionClear"/>
+     <addaction name="actionSave_2"/>
+     <addaction name="actionLoad"/>
+    </widget>
+    <addaction name="menuCurrent"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -368,6 +378,39 @@
   <action name="actionPlay_Media">
    <property name="text">
     <string>Play Media</string>
+   </property>
+  </action>
+  <action name="actionMinimise_to_Tray">
+   <property name="text">
+    <string>Minimise to Tray</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="actionClear_Current">
+   <property name="text">
+    <string>Clear Current</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="text">
+    <string>Clear</string>
+   </property>
+  </action>
+  <action name="actionSave_2">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionLoad">
+   <property name="text">
+    <string>Load</string>
    </property>
   </action>
  </widget>

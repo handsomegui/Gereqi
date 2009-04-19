@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/projects/amaroq/ui/amaroq.ui'
 #
-# Created: Sat Apr 18 22:06:04 2009
+# Created: Sun Apr 19 21:34:41 2009
 #      by: PyQt4 UI code generator 4.4.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,12 +12,17 @@ from PyQt4 import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(676, 460)
+        MainWindow.resize(487, 426)
         self.centralWidget = QtGui.QWidget(MainWindow)
         self.centralWidget.setObjectName("centralWidget")
         self.gridLayout = QtGui.QGridLayout(self.centralWidget)
         self.gridLayout.setObjectName("gridLayout")
         self.splitter = QtGui.QSplitter(self.centralWidget)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.splitter.sizePolicy().hasHeightForWidth())
+        self.splitter.setSizePolicy(sizePolicy)
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.splitter.setObjectName("splitter")
         self.tabWidget = QtGui.QTabWidget(self.splitter)
@@ -166,12 +171,14 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 676, 22))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 487, 22))
         self.menuBar.setObjectName("menuBar")
         self.menuActions = QtGui.QMenu(self.menuBar)
         self.menuActions.setObjectName("menuActions")
         self.menuPlaylist = QtGui.QMenu(self.menuBar)
         self.menuPlaylist.setObjectName("menuPlaylist")
+        self.menuCurrent = QtGui.QMenu(self.menuPlaylist)
+        self.menuCurrent.setObjectName("menuCurrent")
         self.menuTools = QtGui.QMenu(self.menuBar)
         self.menuTools.setObjectName("menuTools")
         self.menuSettings = QtGui.QMenu(self.menuBar)
@@ -190,9 +197,26 @@ class Ui_MainWindow(object):
         self.actionExit.setObjectName("actionExit")
         self.actionPlay_Media = QtGui.QAction(MainWindow)
         self.actionPlay_Media.setObjectName("actionPlay_Media")
+        self.actionMinimise_to_Tray = QtGui.QAction(MainWindow)
+        self.actionMinimise_to_Tray.setObjectName("actionMinimise_to_Tray")
+        self.actionClear_Current = QtGui.QAction(MainWindow)
+        self.actionClear_Current.setObjectName("actionClear_Current")
+        self.actionSave = QtGui.QAction(MainWindow)
+        self.actionSave.setObjectName("actionSave")
+        self.actionClear = QtGui.QAction(MainWindow)
+        self.actionClear.setObjectName("actionClear")
+        self.actionSave_2 = QtGui.QAction(MainWindow)
+        self.actionSave_2.setObjectName("actionSave_2")
+        self.actionLoad = QtGui.QAction(MainWindow)
+        self.actionLoad.setObjectName("actionLoad")
         self.menuActions.addAction(self.actionPlay_Media)
         self.menuActions.addSeparator()
+        self.menuActions.addAction(self.actionMinimise_to_Tray)
         self.menuActions.addAction(self.actionExit)
+        self.menuCurrent.addAction(self.actionClear)
+        self.menuCurrent.addAction(self.actionSave_2)
+        self.menuCurrent.addAction(self.actionLoad)
+        self.menuPlaylist.addAction(self.menuCurrent.menuAction())
         self.menuTools.addAction(self.actionRescan_Collection)
         self.menuSettings.addAction(self.actionEdit)
         self.menuBar.addAction(self.menuActions.menuAction())
@@ -227,6 +251,7 @@ class Ui_MainWindow(object):
         self.progLbl.setText(QtGui.QApplication.translate("MainWindow", "00:00", None, QtGui.QApplication.UnicodeUTF8))
         self.menuActions.setTitle(QtGui.QApplication.translate("MainWindow", "Actions", None, QtGui.QApplication.UnicodeUTF8))
         self.menuPlaylist.setTitle(QtGui.QApplication.translate("MainWindow", "Playlist", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuCurrent.setTitle(QtGui.QApplication.translate("MainWindow", "Current", None, QtGui.QApplication.UnicodeUTF8))
         self.menuTools.setTitle(QtGui.QApplication.translate("MainWindow", "Tools", None, QtGui.QApplication.UnicodeUTF8))
         self.menuSettings.setTitle(QtGui.QApplication.translate("MainWindow", "Settings", None, QtGui.QApplication.UnicodeUTF8))
         self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
@@ -234,6 +259,13 @@ class Ui_MainWindow(object):
         self.actionRescan_Collection.setText(QtGui.QApplication.translate("MainWindow", "Rescan Collection", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExit.setText(QtGui.QApplication.translate("MainWindow", "Exit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPlay_Media.setText(QtGui.QApplication.translate("MainWindow", "Play Media", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMinimise_to_Tray.setText(QtGui.QApplication.translate("MainWindow", "Minimise to Tray", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMinimise_to_Tray.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+D", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionClear_Current.setText(QtGui.QApplication.translate("MainWindow", "Clear Current", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSave.setText(QtGui.QApplication.translate("MainWindow", "Save", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionClear.setText(QtGui.QApplication.translate("MainWindow", "Clear", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSave_2.setText(QtGui.QApplication.translate("MainWindow", "Save", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionLoad.setText(QtGui.QApplication.translate("MainWindow", "Load", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 

@@ -4,14 +4,15 @@
 Module implementing MainWindow.
 """
 
-from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp
-from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT
+from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap
+from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, QUrl
 from PyQt4.phonon import Phonon
 from settings import Dialog
 from pysqlite2 import dbapi2 as sqlite
 import os
 
 from Ui_amaroq import Ui_MainWindow
+import resource_rc
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     """
@@ -43,6 +44,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.createTrayIcon()
         self.trayIcon.show()
         self.viewable = True
+        self.url = "about:blank"
+        self.old_url = self.url
         
         headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), self.tr("Album"), self.tr("Year")]
         for val in range(5):
@@ -278,6 +281,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mediaObject.seek(position)
         
     def aboutToFinish(self):
+        # Needs to select next track in playlist
         index = self.sources.index(self.mediaObject.currentSource()) + 1
         if len(self.sources) > index:
             self.mediaObject.enqueue(self.sources[index])
@@ -288,6 +292,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
     def stateChanged(self):
         self.setProgSldr()
+        row = self.playlistTree.currentRow()
+        artist = self.playlistTree.item(row, 2).text()
+        self.url = QUrl("http://www.wikipedia.com/wiki/%s" % artist)
+        if self.url != self.old_url:
+            self.wikiView.setUrl(self.url)
+            self.old_url = self.url
+        else:
+            print "Same url"
         
     def finished(self):
         self.progSldr.setValue(0)
@@ -308,6 +320,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.trayIconMenu.addAction(self.quitAction)
         self.trayIcon = QSystemTrayIcon(self)
         self.trayIcon.setContextMenu(self.trayIconMenu)
+        # Hmm
+        icon = QIcon(QPixmap(":/drawing.png"))
+        self.trayIcon.setIcon(icon)
         
     def minimiseTray(self):
         if self.viewable:
@@ -316,3 +331,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.show()
             self.viewable = True
+    
+    @pyqtSignature("")
+    def on_actionMinimise_to_Tray_triggered(self):
+        """
+        Slot documentation goes here.
+        """
+        # TODO: not implemented yet
+        self.minimiseTray()
+    
+    @pyqtSignature("")
+    def on_actionClear_triggered(self):
+        """
+        Clear current playlist and if no music playing
+        clear self.mediaObject
+        """
+        self.sources = []
+        self.playlistTree.clearContents()
+        rows = self.playlistTree.rowCount()
+        
+        # For some reason can only remove from bot to top
+        for x in range(rows, -1, -1):
+            self.playlistTree.removeRow(x)
+        
+        if self.mediaObject.state() == 0:
+            self.mediaObject.clearQueue()
