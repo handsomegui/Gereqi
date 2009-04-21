@@ -63,15 +63,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
-        # TODO: not implemented yet
-        raise NotImplementedError
+        # TODO: not finished
+        self.srchEdt.clear()
     
     @pyqtSignature("")
     def on_srchEdt_editingFinished(self):
         """
         Slot documentation goes here.
         """
-        # TODO: not implemented yet
+        # TODO: not ifinished
+        print self.srchEdt.text()
     
     @pyqtSignature("QTreeWidgetItem*, int")
     def on_collectTree_itemDoubleClicked(self, item, column):
@@ -200,6 +201,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
             metaData = self.metaInformationResolver.metaData()
             
+            # No worky
             track = metaData.get(QString('TRACKNUMBER'), [QString()])[0]
             trackItem = QTableWidgetItem(track)
             trackItem.setFlags(trackItem.flags() ^ Qt.ItemIsEditable)
@@ -218,7 +220,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             album = metaData.get(QString('ALBUM'), [QString()])[0]
             albumItem = QTableWidgetItem(album)
             albumItem.setFlags(albumItem.flags() ^ Qt.ItemIsEditable)
-    
+            
+            # No worky
             year = metaData.get(QString('DATE'), [QString()])[0]
             yearItem = QTableWidgetItem(year)
             yearItem.setFlags(yearItem.flags() ^ Qt.ItemIsEditable)
@@ -293,13 +296,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def stateChanged(self):
         self.setProgSldr()
         row = self.playlistTree.currentRow()
-        artist = self.playlistTree.item(row, 2).text()
-        self.url = QUrl("http://www.wikipedia.com/wiki/%s" % artist)
-        if self.url != self.old_url:
-            self.wikiView.setUrl(self.url)
-            self.old_url = self.url
-        else:
-            print "Same url"
+        
+        # May want to only do this if self.wikiView is visible
+        if row:
+            artist = self.playlistTree.item(row, 2).text()
+            self.url = QUrl("http://www.wikipedia.com/wiki/%s" % artist)
+            if self.url != self.old_url:
+                self.wikiView.setUrl(self.url)
+                self.old_url = self.url
         
     def finished(self):
         self.progSldr.setValue(0)
@@ -312,16 +316,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.quitAction, SIGNAL("triggered()"), qApp, SLOT("quit()"))
         self.connect(self.playAction, SIGNAL("triggered()"), self.mediaObject.play)
         self.connect(self.viewAction, SIGNAL("triggered()"), self.minimiseTray)
+        
 
     def createTrayIcon(self):
         self.trayIconMenu = QMenu(self)
         self.trayIconMenu.addAction(self.playAction)
         self.trayIconMenu.addAction(self.viewAction)
         self.trayIconMenu.addAction(self.quitAction)
+        
+        # No. This icon isn't final. Just filler.
+        icon = QIcon()
+        icon.addPixmap(QPixmap(":/Icons/drawing.png"), QIcon.Normal, QIcon.Off)
         self.trayIcon = QSystemTrayIcon(self)
-        self.trayIcon.setContextMenu(self.trayIconMenu)
-        # Hmm
-        icon = QIcon(QPixmap(":/drawing.png"))
         self.trayIcon.setIcon(icon)
         
     def minimiseTray(self):
