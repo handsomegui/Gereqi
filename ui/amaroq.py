@@ -4,8 +4,9 @@
 Module implementing MainWindow.
 """
 
-from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap
-from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, QUrl
+#from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel, QProgressBar, QToolButton, QSpacerItem, QSizePolicy
+from PyQt4.QtGui import *
+from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, QUrl, QSize
 from PyQt4.phonon import Phonon
 from settings import Dialog
 from pysqlite2 import dbapi2 as sqlite
@@ -40,19 +41,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mediaObject.setTickInterval(1000)
         self.sources = []
         self.audioOutput.setVolume(1)
-        self.createActions()
-        self.createTrayIcon()
-        self.trayIcon.show()
         self.viewable = True
         self.url = "about:blank"
         self.old_url = self.url
         self.playing = False # Had to as using mediaObject.state is fucking shit and useless
         self.track_changing = False
         
-        headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), self.tr("Album"), self.tr("Year")]
-        for val in range(5):
+        self.statLbl = QLabel("Finished")
+        self.statProg = QProgressBar()
+        self.statBttn = QToolButton()
+        self.statPlyTypBttn = QToolButton()
+        icon = QIcon(QPixmap(":/Icons/application-exit.png"))
+        
+        self.statProg.setRange(0, 100)
+        self.statProg.setValue(100)
+        self.statProg.setMaximumSize(QSize(100, 32))
+        self.statBttn.setIcon(icon)
+        self.statBttn.setAutoRaise(True)
+        self.statPlyTypBttn.setText("N")
+        self.statPlyTypBttn.setCheckable(True)
+        self.statPlyTypBttn.setAutoRaise(True)
+
+        self.statusBar.addPermanentWidget(self.statLbl)
+        self.statusBar.addPermanentWidget(self.statProg)
+        self.statusBar.addPermanentWidget(self.statBttn)
+        self.statusBar.addPermanentWidget(self.statPlyTypBttn)
+
+        headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), self.tr("Album"), self.tr("Year"), self.tr("Genre")]
+        for val in range(len(headers)):
             self.playlistTree.insertColumn(val)
-        self.playlistTree.setHorizontalHeaderLabels(headers)      
+        self.playlistTree.setHorizontalHeaderLabels(headers)
+        self.createActions()
+        self.createTrayIcon()
+        self.trayIcon.show()      
     
     def createActions(self):
         self.quitAction = QAction(self.tr("&Quit"), self)
@@ -70,6 +91,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.mediaObject, SIGNAL('aboutToFinish()'),self.aboutToFinish)
         self.connect(self.mediaObject, SIGNAL('finished()'),self.finished)
         self.connect(self.mediaObject, SIGNAL('stateChanged(Phonon::State, Phonon::State)'),self.stateChanged)
+        self.connect(self.statPlyTypBttn, SIGNAL('toggled(bool)'), self.play_type)
 
     def createTrayIcon(self):
         self.trayIconMenu = QMenu(self)
@@ -78,8 +100,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.trayIconMenu.addAction(self.quitAction)
         
         # No. This icon isn't final. Just filler.
-        icon = QIcon()
-        icon.addPixmap(QPixmap(":/Icons/drawing.png"), QIcon.Normal, QIcon.Off)
+        icon = QIcon(QPixmap(":/Icons/drawing.png"))
         self.trayIcon = QSystemTrayIcon(self)
         self.trayIcon.setIcon(icon)
         self.trayIcon.setContextMenu(self.trayIconMenu)
@@ -217,7 +238,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                self.sources.append(Phonon.MediaSource(item))   
     
             self.metaInformationResolver.setCurrentSource(self.sources[index])
-#            self.calc_playlist()
 
 # Pretty much a copy and paste of Trolltech's example
 # Numbers each new row. Don't want that.
@@ -240,7 +260,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         metaData = self.metaInformationResolver.metaData()
         
         # No worky
-        track = metaData.get(QString('TRACKNUMBER'), [QString()])[0]
+        track = metaData.get(QString('TRACK'), [QString()])[0]
+        # Desperate
+        if not track:
+            print "No track"
+            track = metaData.get(QString('TRACKNUMBER'), [QString()])[0]
+            
         trackItem = QTableWidgetItem(track)
         trackItem.setFlags(trackItem.flags() ^ Qt.ItemIsEditable)
 
@@ -264,6 +289,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         yearItem = QTableWidgetItem(year)
         yearItem.setFlags(yearItem.flags() ^ Qt.ItemIsEditable)
 
+        genre = metaData.get(QString('GENRE'), [QString()])[0]
+        genreItem = QTableWidgetItem(genre)
+        genreItem.setFlags(genreItem.flags() ^ Qt.ItemIsEditable)
+        
         currentRow = self.playlistTree.rowCount()
         self.playlistTree.insertRow(currentRow)
         self.playlistTree.setItem(currentRow, 0, trackItem)
@@ -271,6 +300,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playlistTree.setItem(currentRow, 2, artistItem)
         self.playlistTree.setItem(currentRow, 3, albumItem)
         self.playlistTree.setItem(currentRow, 4, yearItem)
+        self.playlistTree.setItem(currentRow, 5, genreItem)
 
         if not self.playlistTree.selectedItems():
             self.playlistTree.selectRow(0)
@@ -305,16 +335,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)        
         self.progLbl.setText("%s | %s" % (t_now.toString('mm:ss'), self.t_length.toString('mm:ss')))
         self.progSldr.setValue(time)
-    
-    @pyqtSignature("int, int")
-    def on_playlistTree_cellPressed(self, row, column):
-        """
-        Selects track
-        """
-#        if Phonon.StoppedState:
-#            self.mediaObject.setCurrentSource(self.sources[row])
-#        else:
-#            print "playing"
     
     @pyqtSignature("int")
     def on_progSldr_sliderMoved(self, position):
@@ -354,15 +374,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             album = self.playlistTree.item(row, 3).text()
             time =  self.t_length.toString('mm:ss')
             message = "Playing: %s by %s on %s (%s)" % (title, artist, album, time)
-            self.statusBar.showMessage(QString(message), 0)
+            self.statLbl.setText(message)
+#            self.statusBar.showMessage(QString(message), 0) # Turns out it's not permanent
 
         self.playlistTree.selectRow(row)
-        # Although prevents loading if invisible it remains so
-        # until a new track is selected even if it becomes visible 
-        # during playback. If that makes any sense.
+
         self.url = QUrl("http://www.wikipedia.com/wiki/%s" % artist)
         if row and self.wikiView.isVisible():
-
             if self.url != self.old_url:
                 self.wikiView.setUrl(self.url)
                 self.old_url = self.url
@@ -390,7 +408,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         # TODO: not implemented yet
         self.minimiseTray(checked)
-
     
     @pyqtSignature("")
     def on_actionClear_triggered(self):
@@ -421,19 +438,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Filters current playlist based on input
         """
-        # TODO: not implemented yet
+        # Case sensitive
         srch_txt = self.srchplyEdit.text()
-        for x in self.playlistTree.rowCount():
-            for y in self.playlistTree.columnCount():
+        for x in range(self.playlistTree.rowCount()):
+            for y in range(self.playlistTree.columnCount()):
                 if srch_txt in self.playlistTree.item(x, y).text():
-                    print spam, self.playlistTree.item(x, y).text()
+                    print "spam!: ", self.playlistTree.item(x, y).text()
     
     @pyqtSignature("bool")
     def on_muteBttn_toggled(self, checked):
         """
-        Slot documentation goes here.
+        Mutes audio output and changes button icon accordingly
         """
         self.audioOutput.setMuted(checked)
+        if checked:
+            self.muteBttn.setIcon(QIcon(QPixmap(":/Icons/audio-volume-muted.png")))
+        else:
+            self.muteBttn.setIcon(QIcon(QPixmap(":/Icons/audio-volume-high.png")))
     
     @pyqtSignature("int")
     def on_tabWidget_2_currentChanged(self, index):
@@ -446,8 +467,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #            if self.url != self.old_url:
             self.wikiView.setUrl(self.url)
 
-    # Bunch of arse
     def calc_playlist(self):
+        """
+        Bunch of arse.
+        """
         time = 0
         media_obj = Phonon.MediaObject()
         for n in range(len(self.sources)):
@@ -459,3 +482,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         total_time = QTime(0, (time / 60000) % 60, (ltime / 1000) % 60)
         total_time = total_time.toString('mm:ss')
         print total_time
+        
+    def play_type(self, checked):
+        if checked:
+            self.statPlyTypBttn.setText("R")
+            self.play_norm = False
+        else:
+            self.statPlyTypBttn.setText("N")
+            self.play_norm = True
+        

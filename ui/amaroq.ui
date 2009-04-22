@@ -13,8 +13,15 @@
   <property name="windowTitle">
    <string>amaroQ</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resource.qrc">
+    <normaloff>:/Icons/drawing.png</normaloff>:/Icons/drawing.png</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
+    <property name="margin">
+     <number>2</number>
+    </property>
     <item row="0" column="0">
      <widget class="QSplitter" name="splitter">
       <property name="orientation">
@@ -61,8 +68,23 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="tabShape">
+            <enum>QTabWidget::Rounded</enum>
+           </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>2</number>
+           </property>
+           <property name="usesScrollButtons">
+            <bool>true</bool>
+           </property>
+           <property name="documentMode">
+            <bool>false</bool>
+           </property>
+           <property name="tabsClosable">
+            <bool>false</bool>
+           </property>
+           <property name="movable">
+            <bool>false</bool>
            </property>
            <widget class="QWidget" name="tab_6">
             <attribute name="title">
@@ -161,7 +183,7 @@ p, li { white-space: pre-wrap; }
         </attribute>
         <layout class="QGridLayout" name="gridLayout_3">
          <property name="margin">
-          <number>4</number>
+          <number>2</number>
          </property>
          <item row="0" column="0">
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -171,6 +193,13 @@ p, li { white-space: pre-wrap; }
               <widget class="QToolButton" name="clrBttn">
                <property name="text">
                 <string>X</string>
+               </property>
+               <property name="icon">
+                <iconset resource="resource.qrc">
+                 <normaloff>:/Icons/edit-clear-locationbar-ltr.png</normaloff>:/Icons/edit-clear-locationbar-ltr.png</iconset>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -217,12 +246,26 @@ p, li { white-space: pre-wrap; }
             <property name="text">
              <string>C</string>
             </property>
+            <property name="icon">
+             <iconset resource="resource.qrc">
+              <normaloff>:/Icons/edit-clear-list.png</normaloff>:/Icons/edit-clear-list.png</iconset>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item>
            <widget class="QToolButton" name="svplyBttn">
             <property name="text">
              <string>S</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resource.qrc">
+              <normaloff>:/Icons/document-save.png</normaloff>:/Icons/document-save.png</iconset>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -231,12 +274,26 @@ p, li { white-space: pre-wrap; }
             <property name="text">
              <string>P</string>
             </property>
+            <property name="icon">
+             <iconset resource="resource.qrc">
+              <normaloff>:/Icons/edit-undo.png</normaloff>:/Icons/edit-undo.png</iconset>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item>
            <widget class="QToolButton" name="nxtplyBttn">
             <property name="text">
              <string>N</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resource.qrc">
+              <normaloff>:/Icons/edit-redo.png</normaloff>:/Icons/edit-redo.png</iconset>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -251,6 +308,13 @@ p, li { white-space: pre-wrap; }
            <widget class="QToolButton" name="clrsrchBttn">
             <property name="text">
              <string>X</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resource.qrc">
+              <normaloff>:/Icons/edit-clear-locationbar-ltr.png</normaloff>:/Icons/edit-clear-locationbar-ltr.png</iconset>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -298,6 +362,13 @@ p, li { white-space: pre-wrap; }
               <property name="text">
                <string>&lt;&lt;</string>
               </property>
+              <property name="icon">
+               <iconset resource="resource.qrc">
+                <normaloff>:/Icons/media-skip-backward.png</normaloff>:/Icons/media-skip-backward.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
             <item>
@@ -305,7 +376,14 @@ p, li { white-space: pre-wrap; }
               <property name="text">
                <string>&gt;</string>
               </property>
+              <property name="icon">
+               <iconset resource="resource.qrc">
+                <normaloff>:/Icons/media-playback-start.png</normaloff>:/Icons/media-playback-start.png</iconset>
+              </property>
               <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <property name="autoRaise">
                <bool>true</bool>
               </property>
              </widget>
@@ -315,12 +393,26 @@ p, li { white-space: pre-wrap; }
               <property name="text">
                <string>O</string>
               </property>
+              <property name="icon">
+               <iconset resource="resource.qrc">
+                <normaloff>:/Icons/media-playback-stop.png</normaloff>:/Icons/media-playback-stop.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
             <item>
              <widget class="QToolButton" name="nxtBttn">
               <property name="text">
                <string>&gt;&gt;</string>
+              </property>
+              <property name="icon">
+               <iconset resource="resource.qrc">
+                <normaloff>:/Icons/media-skip-forward.png</normaloff>:/Icons/media-skip-forward.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -342,7 +434,14 @@ p, li { white-space: pre-wrap; }
               <property name="text">
                <string>M</string>
               </property>
+              <property name="icon">
+               <iconset resource="resource.qrc">
+                <normaloff>:/Icons/audio-volume-high.png</normaloff>:/Icons/audio-volume-high.png</iconset>
+              </property>
               <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <property name="autoRaise">
                <bool>true</bool>
               </property>
              </widget>

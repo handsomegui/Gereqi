@@ -1,5 +1,21 @@
 <RCC>
   <qresource prefix="Icons" >
+    <file>audio-volume-muted.png</file>
+    <file>audio-volume-high.png</file>
+    <file>arrow-left-double.png</file>
+    <file>arrow-right-double.png</file>
+    <file>arrow-right.png</file>
+    <file>document-save.png</file>
+    <file>edit-clear-list.png</file>
+    <file>edit-clear-locationbar-ltr.png</file>
+    <file>edit-redo.png</file>
+    <file>edit-undo.png</file>
+    <file>media-playback-start.png</file>
+    <file>media-playback-pause.png</file>
+    <file>media-playback-stop.png</file>
+    <file>media-skip-backward.png</file>
+    <file>media-skip-forward.png</file>
+    <file>application-exit.png</file>
     <file>music.png</file>
     <file>drawing.png</file>
   </qresource>
