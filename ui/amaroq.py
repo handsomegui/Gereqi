@@ -47,17 +47,42 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.url = "about:blank"
         self.old_url = self.url
         self.playing = False # Had to as using mediaObject.state is fucking shit and useless
+        self.track_changing = False
         
         headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), self.tr("Album"), self.tr("Year")]
         for val in range(5):
             self.playlistTree.insertColumn(val)
-        self.playlistTree.setHorizontalHeaderLabels(headers)        
-
+        self.playlistTree.setHorizontalHeaderLabels(headers)      
+    
+    def createActions(self):
+        self.quitAction = QAction(self.tr("&Quit"), self)
+        self.playAction = QAction(self.tr("&Play"), self)
+        self.playAction.setCheckable(True)
+        self.viewAction = QAction(self.tr("&Visible"), self)
+        self.viewAction.setCheckable(True)
+        self.viewAction.setChecked(True)
+        
+        self.connect(self.quitAction, SIGNAL("triggered()"), qApp, SLOT("quit()"))
+        self.connect(self.playAction, SIGNAL("toggled(bool)"), self.on_playBttn_toggled)
+        self.connect(self.viewAction, SIGNAL("toggled(bool)"), self.minimiseTray)
         self.connect(self.metaInformationResolver, SIGNAL('stateChanged(Phonon::State, Phonon::State)'),self.metaStateChanged)
         self.connect(self.mediaObject, SIGNAL('tick(qint64)'), self.tick)
         self.connect(self.mediaObject, SIGNAL('aboutToFinish()'),self.aboutToFinish)
         self.connect(self.mediaObject, SIGNAL('finished()'),self.finished)
         self.connect(self.mediaObject, SIGNAL('stateChanged(Phonon::State, Phonon::State)'),self.stateChanged)
+
+    def createTrayIcon(self):
+        self.trayIconMenu = QMenu(self)
+        self.trayIconMenu.addAction(self.playAction)
+        self.trayIconMenu.addAction(self.viewAction)
+        self.trayIconMenu.addAction(self.quitAction)
+        
+        # No. This icon isn't final. Just filler.
+        icon = QIcon()
+        icon.addPixmap(QPixmap(":/Icons/drawing.png"), QIcon.Normal, QIcon.Off)
+        self.trayIcon = QSystemTrayIcon(self)
+        self.trayIcon.setIcon(icon)
+        self.trayIcon.setContextMenu(self.trayIconMenu)
     
     @pyqtSignature("")
     def on_clrBttn_pressed(self):
@@ -95,7 +120,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.mediaObject.setCurrentSource(self.sources[row])
             if self.playing:
                 self.mediaObject.play()
-    
+
+    # Because of the 2 signals that can trigger this, it's possible
+    # this method is called twice when one or the other is called.
     @pyqtSignature("bool")
     def on_playBttn_toggled(self, checked):
         """
@@ -103,10 +130,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         if checked:
             self.mediaObject.play()
-            self.playing = True
         else:
             self.mediaObject.pause()
-            self.playing = False
+            
+        self.playing = checked    
+        self.playAction.setChecked(checked)
+        self.playBttn.setChecked(checked)
+
         
     @pyqtSignature("")
     def on_stopBttn_pressed(self):
@@ -187,6 +217,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                self.sources.append(Phonon.MediaSource(item))   
     
             self.metaInformationResolver.setCurrentSource(self.sources[index])
+#            self.calc_playlist()
 
 # Pretty much a copy and paste of Trolltech's example
 # Numbers each new row. Don't want that.
@@ -258,21 +289,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSignature("int, int")
     def on_playlistTree_cellDoubleClicked(self, row, column):
         """
-        When item doubleclicked. Play it.
+        When item is doubleclicked. Play its row.
         """
         self.mediaObject.stop()
         self.mediaObject.setCurrentSource(self.sources[row])
         self.mediaObject.play()
         self.playBttn.setChecked(True) 
-        self.playlistTree.selectRow(row)
+        self.playAction.setChecked(True)
         self.playing = True
         
     def tick(self, time):
         """
         Every second update time labels and progres slider
         """
-        displayTime = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
-        self.progLbl.setText(displayTime.toString('mm:ss'))
+        t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)        
+        self.progLbl.setText("%s | %s" % (t_now.toString('mm:ss'), self.t_length.toString('mm:ss')))
         self.progSldr.setValue(time)
     
     @pyqtSignature("int, int")
@@ -297,19 +328,41 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         index = self.sources.index(self.mediaObject.currentSource()) + 1
         if len(self.sources) > index:
             self.mediaObject.enqueue(self.sources[index])
+            self.track_changing = True
             
     def setProgSldr(self):
         length = self.mediaObject.totalTime()
         self.progSldr.setRange(0, length)
+        self.t_length = QTime(0, (length / 60000) % 60, (length / 1000) % 60)
             
     def stateChanged(self):
         self.setProgSldr()
         row = self.playlistTree.currentRow()
         
-        # May want to only do this if self.wikiView is visible
-        if row:
+        if self.track_changing:
+            row += 1
+            self.track_changing = False
+            
+        title = self.playlistTree.item(row, 1).text()
+        artist = self.playlistTree.item(row, 2).text()
+        
+        if self.playing:
+            message = "%s by %s" % (title, artist)
+            self.trayIcon.showMessage(QString("Now Playing"), QString(message), QSystemTrayIcon.NoIcon, 3000)
+            title = self.playlistTree.item(row, 1).text()
             artist = self.playlistTree.item(row, 2).text()
-            self.url = QUrl("http://www.wikipedia.com/wiki/%s" % artist)
+            album = self.playlistTree.item(row, 3).text()
+            time =  self.t_length.toString('mm:ss')
+            message = "Playing: %s by %s on %s (%s)" % (title, artist, album, time)
+            self.statusBar.showMessage(QString(message), 0)
+
+        self.playlistTree.selectRow(row)
+        # Although prevents loading if invisible it remains so
+        # until a new track is selected even if it becomes visible 
+        # during playback. If that makes any sense.
+        self.url = QUrl("http://www.wikipedia.com/wiki/%s" % artist)
+        if row and self.wikiView.isVisible():
+
             if self.url != self.old_url:
                 self.wikiView.setUrl(self.url)
                 self.old_url = self.url
@@ -319,43 +372,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.progLbl.setText("00:00")
         self.playing = False
         
-    def createActions(self):
-        self.quitAction = QAction(self.tr("&Quit"), self)
-        self.playAction = QAction(self.tr("&Play"), self)
-        self.viewAction = QAction(self.tr("&Restore"), self)
-        self.connect(self.quitAction, SIGNAL("triggered()"), qApp, SLOT("quit()"))
-        self.connect(self.playAction, SIGNAL("triggered()"), self.mediaObject.play)
-        self.connect(self.viewAction, SIGNAL("triggered()"), self.minimiseTray)
-        
 
-    def createTrayIcon(self):
-        self.trayIconMenu = QMenu(self)
-        self.trayIconMenu.addAction(self.playAction)
-        self.trayIconMenu.addAction(self.viewAction)
-        self.trayIconMenu.addAction(self.quitAction)
         
-        # No. This icon isn't final. Just filler.
-        icon = QIcon()
-        icon.addPixmap(QPixmap(":/Icons/drawing.png"), QIcon.Normal, QIcon.Off)
-        self.trayIcon = QSystemTrayIcon(self)
-        self.trayIcon.setIcon(icon)
-        self.trayIcon.setContextMenu(self.trayIconMenu)
-        
-    def minimiseTray(self):
-        if self.viewable:
-            self.hide()
-            self.viewable = False
-        else:
+    def minimiseTray(self, state):
+        if state:
             self.show()
-            self.viewable = True
-    
-    @pyqtSignature("")
-    def on_actionMinimise_to_Tray_triggered(self):
+        else:
+            self.hide()
+            
+        self.viewAction.setChecked(state)
+        self.actionMinimise_to_Tray.setChecked(state)
+        
+    @pyqtSignature("bool")
+    def on_actionMinimise_to_Tray_triggered(self, checked):
         """
         Slot documentation goes here.
         """
         # TODO: not implemented yet
-        self.minimiseTray()
+        self.minimiseTray(checked)
+
     
     @pyqtSignature("")
     def on_actionClear_triggered(self):
@@ -387,7 +422,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Filters current playlist based on input
         """
         # TODO: not implemented yet
-        raise NotImplementedError
+        srch_txt = self.srchplyEdit.text()
+        for x in self.playlistTree.rowCount():
+            for y in self.playlistTree.columnCount():
+                if srch_txt in self.playlistTree.item(x, y).text():
+                    print spam, self.playlistTree.item(x, y).text()
     
     @pyqtSignature("bool")
     def on_muteBttn_toggled(self, checked):
@@ -395,3 +434,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Slot documentation goes here.
         """
         self.audioOutput.setMuted(checked)
+    
+    @pyqtSignature("int")
+    def on_tabWidget_2_currentChanged(self, index):
+        """
+        When the wikiview becomes visible chances are
+        it hasn't been viewed yet and needs to load
+        """
+        # TODO: not implemented yet
+        if index == 3:
+#            if self.url != self.old_url:
+            self.wikiView.setUrl(self.url)
+
+    # Bunch of arse
+    def calc_playlist(self):
+        time = 0
+        media_obj = Phonon.MediaObject()
+        for n in range(len(self.sources)):
+            obj = media_obj.setCurrentSource(self.sources[n])
+            t1 = obj.totalTime()
+            print t1
+            time += t1
+            
+        total_time = QTime(0, (time / 60000) % 60, (ltime / 1000) % 60)
+        total_time = total_time.toString('mm:ss')
+        print total_time
