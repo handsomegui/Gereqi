@@ -46,6 +46,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.viewable = True
         self.url = "about:blank"
         self.old_url = self.url
+        self.playing = False # Had to as using mediaObject.state is fucking shit and useless
         
         headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), self.tr("Album"), self.tr("Year")]
         for val in range(5):
@@ -88,11 +89,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Slot documentation goes here.
         """
         row = self.playlistTree.currentRow() - 1
-        if row > 0:
-            self.playlistTree.setCurrentCell(row, 1)
+        if row >= 0:
+            self.playlistTree.selectRow(row)
             self.mediaObject.stop()
             self.mediaObject.setCurrentSource(self.sources[row])
-            self.mediaObject.play()
+            if self.playing:
+                self.mediaObject.play()
     
     @pyqtSignature("bool")
     def on_playBttn_toggled(self, checked):
@@ -101,8 +103,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         if checked:
             self.mediaObject.play()
+            self.playing = True
         else:
             self.mediaObject.pause()
+            self.playing = False
         
     @pyqtSignature("")
     def on_stopBttn_pressed(self):
@@ -112,6 +116,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mediaObject.stop()
         self.playBttn.setChecked(False)
         self.progSldr.setValue(0)
+        self.playing = False
     
     @pyqtSignature("")
     def on_nxtBttn_pressed(self):
@@ -120,10 +125,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         row = self.playlistTree.currentRow() + 1
         if row < len(self.sources):
-            self.playlistTree.setCurrentCell(row, 1)
+            self.playlistTree.selectRow(row)
             self.mediaObject.stop()
             self.mediaObject.setCurrentSource(self.sources[row])
-            self.mediaObject.play()
+            if self.playing:
+                self.mediaObject.play()
         
     @pyqtSignature("int")
     def on_volSldr_valueChanged(self, value):
@@ -183,70 +189,71 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.metaInformationResolver.setCurrentSource(self.sources[index])
 
 # Pretty much a copy and paste of Trolltech's example
+# Numbers each new row. Don't want that.
     def metaStateChanged(self, newState, oldState):
-            if newState == Phonon.ErrorState:
-                QMessageBox.warning(self, self.tr("Error opening files"),
-                        self.metaInformationResolver.errorString())
-    
-                while self.sources and self.sources.pop() != self.metaInformationResolver.currentSource():
-                    pass
-    
-                return
-    
-            if newState != Phonon.StoppedState and newState != Phonon.PausedState:
-                return
-    
-            if self.metaInformationResolver.currentSource().type() == Phonon.MediaSource.Invalid:
-                return
-    
-            metaData = self.metaInformationResolver.metaData()
-            
-            # No worky
-            track = metaData.get(QString('TRACKNUMBER'), [QString()])[0]
-            trackItem = QTableWidgetItem(track)
-            trackItem.setFlags(trackItem.flags() ^ Qt.ItemIsEditable)
-    
-            title = metaData.get(QString('TITLE'), [QString()])[0]
-            if title.isEmpty():
-                title = self.metaInformationResolver.currentSource().fileName()
-            
-            titleItem = QTableWidgetItem(title)
-            titleItem.setFlags(titleItem.flags() ^ Qt.ItemIsEditable)
-    
-            artist = metaData.get(QString('ARTIST'), [QString()])[0]
-            artistItem = QTableWidgetItem(artist)
-            artistItem.setFlags(artistItem.flags() ^ Qt.ItemIsEditable)
-    
-            album = metaData.get(QString('ALBUM'), [QString()])[0]
-            albumItem = QTableWidgetItem(album)
-            albumItem.setFlags(albumItem.flags() ^ Qt.ItemIsEditable)
-            
-            # No worky
-            year = metaData.get(QString('DATE'), [QString()])[0]
-            yearItem = QTableWidgetItem(year)
-            yearItem.setFlags(yearItem.flags() ^ Qt.ItemIsEditable)
-    
-            currentRow = self.playlistTree.rowCount()
-            self.playlistTree.insertRow(currentRow)
-            self.playlistTree.setItem(currentRow, 0, trackItem)
-            self.playlistTree.setItem(currentRow, 1, titleItem)
-            self.playlistTree.setItem(currentRow, 2, artistItem)
-            self.playlistTree.setItem(currentRow, 3, albumItem)
-            self.playlistTree.setItem(currentRow, 4, yearItem)
-    
-            if not self.playlistTree.selectedItems():
-                self.playlistTree.selectRow(0)
-                self.mediaObject.setCurrentSource(self.metaInformationResolver.currentSource())
-    
-            source = self.metaInformationResolver.currentSource()
-            index = self.sources.index(self.metaInformationResolver.currentSource()) + 1
-    
-            if len(self.sources) > index:
-                self.metaInformationResolver.setCurrentSource(self.sources[index])
-            else:
-                self.playlistTree.resizeColumnsToContents()
-                if self.playlistTree.columnWidth(0) > 300:
-                    self.playlistTree.setColumnWidth(0, 300)
+        if newState == Phonon.ErrorState:
+            QMessageBox.warning(self, self.tr("Error opening files"),
+                    self.metaInformationResolver.errorString())
+
+            while self.sources and self.sources.pop() != self.metaInformationResolver.currentSource():
+                pass
+
+            return
+
+        if newState != Phonon.StoppedState and newState != Phonon.PausedState:
+            return
+
+        if self.metaInformationResolver.currentSource().type() == Phonon.MediaSource.Invalid:
+            return
+
+        metaData = self.metaInformationResolver.metaData()
+        
+        # No worky
+        track = metaData.get(QString('TRACKNUMBER'), [QString()])[0]
+        trackItem = QTableWidgetItem(track)
+        trackItem.setFlags(trackItem.flags() ^ Qt.ItemIsEditable)
+
+        title = metaData.get(QString('TITLE'), [QString()])[0]
+        if title.isEmpty():
+            title = self.metaInformationResolver.currentSource().fileName()
+        
+        titleItem = QTableWidgetItem(title)
+        titleItem.setFlags(titleItem.flags() ^ Qt.ItemIsEditable)
+
+        artist = metaData.get(QString('ARTIST'), [QString()])[0]
+        artistItem = QTableWidgetItem(artist)
+        artistItem.setFlags(artistItem.flags() ^ Qt.ItemIsEditable)
+
+        album = metaData.get(QString('ALBUM'), [QString()])[0]
+        albumItem = QTableWidgetItem(album)
+        albumItem.setFlags(albumItem.flags() ^ Qt.ItemIsEditable)
+        
+        # No worky
+        year = metaData.get(QString('DATE'), [QString()])[0]
+        yearItem = QTableWidgetItem(year)
+        yearItem.setFlags(yearItem.flags() ^ Qt.ItemIsEditable)
+
+        currentRow = self.playlistTree.rowCount()
+        self.playlistTree.insertRow(currentRow)
+        self.playlistTree.setItem(currentRow, 0, trackItem)
+        self.playlistTree.setItem(currentRow, 1, titleItem)
+        self.playlistTree.setItem(currentRow, 2, artistItem)
+        self.playlistTree.setItem(currentRow, 3, albumItem)
+        self.playlistTree.setItem(currentRow, 4, yearItem)
+
+        if not self.playlistTree.selectedItems():
+            self.playlistTree.selectRow(0)
+            self.mediaObject.setCurrentSource(self.metaInformationResolver.currentSource())
+
+        source = self.metaInformationResolver.currentSource()
+        index = self.sources.index(self.metaInformationResolver.currentSource()) + 1
+
+        if len(self.sources) > index:
+            self.metaInformationResolver.setCurrentSource(self.sources[index])
+        else:
+            self.playlistTree.resizeColumnsToContents()
+            if self.playlistTree.columnWidth(0) > 300:
+                self.playlistTree.setColumnWidth(0, 300)
     
     @pyqtSignature("int, int")
     def on_playlistTree_cellDoubleClicked(self, row, column):
@@ -257,6 +264,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mediaObject.setCurrentSource(self.sources[row])
         self.mediaObject.play()
         self.playBttn.setChecked(True) 
+        self.playlistTree.selectRow(row)
+        self.playing = True
         
     def tick(self, time):
         """
@@ -308,6 +317,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def finished(self):
         self.progSldr.setValue(0)
         self.progLbl.setText("00:00")
+        self.playing = False
         
     def createActions(self):
         self.quitAction = QAction(self.tr("&Quit"), self)
@@ -329,6 +339,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         icon.addPixmap(QPixmap(":/Icons/drawing.png"), QIcon.Normal, QIcon.Off)
         self.trayIcon = QSystemTrayIcon(self)
         self.trayIcon.setIcon(icon)
+        self.trayIcon.setContextMenu(self.trayIconMenu)
         
     def minimiseTray(self):
         if self.viewable:
@@ -362,3 +373,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         if self.mediaObject.state() == 0:
             self.mediaObject.clearQueue()
+    
+    @pyqtSignature("")
+    def on_clrplyBttn_clicked(self):
+        """
+        Clears current playlist
+        """
+        self.on_actionClear_triggered()
+    
+    @pyqtSignature("")
+    def on_srchplyEdit_returnPressed(self):
+        """
+        Filters current playlist based on input
+        """
+        # TODO: not implemented yet
+        raise NotImplementedError
+    
+    @pyqtSignature("bool")
+    def on_muteBttn_toggled(self, checked):
+        """
+        Slot documentation goes here.
+        """
+        self.audioOutput.setMuted(checked)
