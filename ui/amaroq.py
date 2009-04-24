@@ -4,8 +4,8 @@
 Module implementing MainWindow.
 """
 
-#from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel, QProgressBar, QToolButton, QSpacerItem, QSizePolicy
-from PyQt4.QtGui import *
+from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel, QProgressBar, QToolButton, QSpacerItem, QSizePolicy
+#from PyQt4.QtGui import *
 from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, QUrl, QSize
 from PyQt4.phonon import Phonon
 from settings import Dialog
@@ -151,8 +151,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         if checked:
             self.mediaObject.play()
+            self.playBttn.setIcon(QIcon(QPixmap(":/Icons/media-playback-pause.png")))
         else:
             self.mediaObject.pause()
+            self.playBttn.setIcon(QIcon(QPixmap(":/Icons/media-playback-start.png")))
             
         self.playing = checked    
         self.playAction.setChecked(checked)
@@ -259,12 +261,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         metaData = self.metaInformationResolver.metaData()
         
-        # No worky
-        track = metaData.get(QString('TRACK'), [QString()])[0]
+        # Very Unreliable. The use of tagpy module may be a better idea.
+        # Seems to work a whole let better than this pile of shit.
+        track = metaData.get(QString('TRACKNUMBER'), [QString()])[0]
         # Desperate
-        if not track:
-            print "No track"
-            track = metaData.get(QString('TRACKNUMBER'), [QString()])[0]
+#        if not track:
+#            print "No track"
+#            track = metaData.get(QString('TRACK), [QString()])[0]
             
         trackItem = QTableWidgetItem(track)
         trackItem.setFlags(trackItem.flags() ^ Qt.ItemIsEditable)
@@ -463,7 +466,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         it hasn't been viewed yet and needs to load
         """
         # TODO: not implemented yet
-        if index == 3:
+        if index == 2:
 #            if self.url != self.old_url:
             self.wikiView.setUrl(self.url)
 
