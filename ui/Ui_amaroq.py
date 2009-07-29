@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/jon/Documents/projects/amaroq/ui/amaroq.ui'
+# Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
 #
-# Created: Fri Apr 24 19:25:32 2009
-#      by: PyQt4 UI code generator 4.4.4
+# Created: Tue Jul 28 23:16:32 2009
+#      by: PyQt4 UI code generator 4.5.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -47,6 +47,9 @@ class Ui_MainWindow(object):
         self.tabWidget_2.setSizePolicy(sizePolicy)
         self.tabWidget_2.setTabShape(QtGui.QTabWidget.Rounded)
         self.tabWidget_2.setUsesScrollButtons(True)
+        self.tabWidget_2.setDocumentMode(False)
+        self.tabWidget_2.setTabsClosable(False)
+        self.tabWidget_2.setMovable(False)
         self.tabWidget_2.setObjectName("tabWidget_2")
         self.tab_6 = QtGui.QWidget()
         self.tab_6.setObjectName("tab_6")
@@ -328,9 +331,13 @@ font: 75 10pt \"DejaVu Sans\";
         sizePolicy.setHeightForWidth(self.playlistTree.sizePolicy().hasHeightForWidth())
         self.playlistTree.setSizePolicy(sizePolicy)
         self.playlistTree.setMinimumSize(QtCore.QSize(400, 0))
+        self.playlistTree.setShowGrid(False)
+        self.playlistTree.setGridStyle(QtCore.Qt.DotLine)
         self.playlistTree.setObjectName("playlistTree")
         self.playlistTree.setColumnCount(0)
         self.playlistTree.setRowCount(0)
+        self.playlistTree.horizontalHeader().setVisible(True)
+        self.playlistTree.verticalHeader().setVisible(False)
         self.verticalLayout_3.addWidget(self.playlistTree)
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
@@ -414,7 +421,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 730, 24))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 730, 23))
         self.menuBar.setObjectName("menuBar")
         self.menuActions = QtGui.QMenu(self.menuBar)
         self.menuActions.setObjectName("menuActions")
@@ -516,6 +523,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.clrsrchBttn.setText(QtGui.QApplication.translate("MainWindow", "X", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MainWindow", "Search", None, QtGui.QApplication.UnicodeUTF8))
         self.toolButton_3.setText(QtGui.QApplication.translate("MainWindow", "...", None, QtGui.QApplication.UnicodeUTF8))
+        self.playlistTree.setSortingEnabled(False)
         self.prevBttn.setText(QtGui.QApplication.translate("MainWindow", "<<", None, QtGui.QApplication.UnicodeUTF8))
         self.playBttn.setText(QtGui.QApplication.translate("MainWindow", ">", None, QtGui.QApplication.UnicodeUTF8))
         self.stopBttn.setText(QtGui.QApplication.translate("MainWindow", "O", None, QtGui.QApplication.UnicodeUTF8))

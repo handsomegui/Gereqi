@@ -684,6 +684,27 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
             <height>0</height>
            </size>
           </property>
+          <property name="showGrid">
+           <bool>false</bool>
+          </property>
+          <property name="gridStyle">
+           <enum>Qt::DotLine</enum>
+          </property>
+          <property name="sortingEnabled">
+           <bool>false</bool>
+          </property>
+          <attribute name="horizontalHeaderVisible">
+           <bool>true</bool>
+          </attribute>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="horizontalHeaderVisible">
+           <bool>true</bool>
+          </attribute>
          </widget>
         </item>
         <item>
@@ -890,7 +911,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
      <x>0</x>
      <y>0</y>
      <width>730</width>
-     <height>24</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuActions">
