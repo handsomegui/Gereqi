@@ -9,14 +9,13 @@ QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel,
 QProgressBar, QToolButton, QSpacerItem, QSizePolicy
 from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, QUrl, QSize
 from PyQt4.phonon import Phonon
-#from settings import Dialog
-#from pysqlite2 import dbapi2 as sqlite
 import os
-from settings import settingDlg
 
+from settings import settingDlg
 from Ui_amaroq import Ui_MainWindow
 import resource_rc
 from database import media
+from metadata import metaData
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     """
@@ -40,6 +39,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.mediaDB = media()
         self.mediaDir = None
+        self.meta = metaData()
         
         self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
         self.mediaObject = Phonon.MediaObject(self)
@@ -258,7 +258,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.metaInformationResolver.setCurrentSource(self.sources[index])
 
 # Pretty much a copy and paste of Trolltech's example
-# Numbers each new row. Don't want that.
+# Possibly put this in it's own class and return() the data so
+# it can be used for more than the playlist
     def metaStateChanged(self, newState, oldState):
         if newState == Phonon.ErrorState:
             QMessageBox.warning(self, self.tr("Error opening files"),

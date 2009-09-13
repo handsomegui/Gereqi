@@ -29,7 +29,7 @@
       </property>
       <widget class="QTabWidget" name="tabWidget">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -42,7 +42,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>400</width>
+         <width>300</width>
          <height>16777215</height>
         </size>
        </property>
@@ -699,12 +699,6 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
           <attribute name="verticalHeaderVisible">
            <bool>false</bool>
           </attribute>
-          <attribute name="verticalHeaderVisible">
-           <bool>false</bool>
-          </attribute>
-          <attribute name="horizontalHeaderVisible">
-           <bool>true</bool>
-          </attribute>
          </widget>
         </item>
         <item>
@@ -911,7 +905,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
      <x>0</x>
      <y>0</y>
      <width>730</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuActions">

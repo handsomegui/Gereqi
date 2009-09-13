@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
+# Form implementation generated from reading ui file '/media/CF512/amaroq/ui/amaroq.ui'
 #
-# Created: Tue Jul 28 23:16:32 2009
-#      by: PyQt4 UI code generator 4.5.2
+# Created: Sun Sep 13 21:21:25 2009
+#      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -25,13 +25,13 @@ class Ui_MainWindow(object):
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.splitter.setObjectName("splitter")
         self.tabWidget = QtGui.QTabWidget(self.splitter)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
         self.tabWidget.setSizePolicy(sizePolicy)
         self.tabWidget.setMinimumSize(QtCore.QSize(250, 0))
-        self.tabWidget.setMaximumSize(QtCore.QSize(400, 16777215))
+        self.tabWidget.setMaximumSize(QtCore.QSize(300, 16777215))
         self.tabWidget.setTabPosition(QtGui.QTabWidget.West)
         self.tabWidget.setObjectName("tabWidget")
         self.tab = QtGui.QWidget()
@@ -421,7 +421,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 730, 23))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 730, 21))
         self.menuBar.setObjectName("menuBar")
         self.menuActions = QtGui.QMenu(self.menuBar)
         self.menuActions.setObjectName("menuActions")
