@@ -4,12 +4,15 @@
 Module implementing MainWindow.
 """
 
-from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel, QProgressBar, QToolButton, QSpacerItem, QSizePolicy
+from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, \
+QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel, \
+QProgressBar, QToolButton, QSpacerItem, QSizePolicy
 from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, QUrl, QSize
 from PyQt4.phonon import Phonon
 #from settings import Dialog
 #from pysqlite2 import dbapi2 as sqlite
-#import os
+import os
+from settings import settingDlg
 
 from Ui_amaroq import Ui_MainWindow
 import resource_rc
@@ -35,7 +38,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         QMainWindow.__init__(self, parent)
         self.setupUi(self)
-        self.medaDB = media()
+        self.mediaDB = media()
+        self.mediaDir = None
         
         self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
         self.mediaObject = Phonon.MediaObject(self)
@@ -201,21 +205,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Slot documentation goes here.
         """
         # TODO: not implemented yet
-        raise NotImplementedError
-    
+#        raise NotImplementedError
+        dialog = settingDlg(self)
+        
+        if dialog.exec_():
+            self.mediaDir = dialog.dirVal()
+            print self.mediaDir
+            
     @pyqtSignature("")
     def on_actionRescan_Collection_triggered(self):
         """
         Slot documentation goes here.
         """
         # TODO: not implemented yet
-        raise NotImplementedError
+#        raise NotImplementedError
 #        dir = directory set in settings
+        if not self.mediaDir:
+            self.on_actionEdit_triggered()
+            
 #        if dir:
 #            self.playlistTree.clearContents()
-#            for root, dirname, filename in os.walk(str(dir)):
-#                for x in filename:
-#                    fileNow = os.path.join(root, x)
+        for root, dirname, filename in os.walk(str(self.mediaDir)):
+            for x in filename:
+                fileNow = os.path.join(root, x)
+                print fileNow
 #                    for type in self.formats:
 #                        if fileNow.endswith(type):
 #                                    index = len(self.sources)
@@ -497,4 +510,5 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.statPlyTypBttn.setText("N")
             self.play_norm = True
+        
         

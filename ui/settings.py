@@ -1,21 +1,26 @@
-# -*- coding: utf-8 -*-
+from PyQt4.QtGui import QDialog, QLineEdit, QDialogButtonBox, QGridLayout
+from PyQt4.QtCore import SIGNAL, SLOT
 
-"""
-Module implementing Dialog.
-"""
-
-from PyQt4.QtGui import QDialog
-from PyQt4.QtCore import pyqtSignature
-
-from Ui_settings import Ui_Dialog
-
-class Dialog(QDialog, Ui_Dialog):
-    """
-    Class documentation goes here.
-    """
-    def __init__(self, parent = None):
-        """
-        Constructor
-        """
-        QDialog.__init__(self, parent)
-        self.setupUi(self)
+# Finally got round to figuring out how to do modal dialogs.
+class settingDlg(QDialog):
+    def __init__(self, parent=None):
+        super(settingDlg, self).__init__(parent)
+        print "init"
+        self.directory = QLineEdit()
+        bttnBox = QDialogButtonBox(QDialogButtonBox.Ok|
+                                   QDialogButtonBox.Cancel)
+        grid = QGridLayout()
+        grid.addWidget(self.directory, 0, 0)
+        grid.addWidget(bttnBox, 1, 0)
+        self.setLayout(grid)
+        
+        self.connect(bttnBox, SIGNAL("accepted()"), self, SLOT("accept()"))
+        self.connect(bttnBox, SIGNAL("rejected()"), self, SLOT("reject()"))
+        self.setWindowTitle("self.directory")
+        
+    def accept(self):
+        if self.directory:
+            QDialog.accept(self)
+            
+    def dirVal(self):
+        return self.directory.text()
