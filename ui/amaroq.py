@@ -5,20 +5,22 @@ Module implementing MainWindow.
 """
 
 from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel, QProgressBar, QToolButton, QSpacerItem, QSizePolicy
-#from PyQt4.QtGui import *
 from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, QUrl, QSize
 from PyQt4.phonon import Phonon
-from settings import Dialog
-from pysqlite2 import dbapi2 as sqlite
-import os
+#from settings import Dialog
+#from pysqlite2 import dbapi2 as sqlite
+#import os
 
 from Ui_amaroq import Ui_MainWindow
 import resource_rc
+from database import media
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     """
     Class documentation goes here.
     """
+    
+    #TODO: This is a mess. Fix
     def __init__(self, parent = None):
         """
         Initialistion of key items
@@ -33,6 +35,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         QMainWindow.__init__(self, parent)
         self.setupUi(self)
+        self.medaDB = media()
         
         self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
         self.mediaObject = Phonon.MediaObject(self)
@@ -466,6 +469,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         it hasn't been viewed yet and needs to load
         """
         # TODO: not implemented yet
+        #<div id="bodyContent">
         if index == 2:
 #            if self.url != self.old_url:
             self.wikiView.setUrl(self.url)
