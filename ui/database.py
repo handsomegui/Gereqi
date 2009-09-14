@@ -59,7 +59,7 @@ class media:
         Maybe a testing thing
         """
         self.mediaCurs.execute("SELECT * FROM history")
-#        print self.mediaCurs.fetchall()
+        print self.mediaCurs.fetchall()
     
     def closeDBs(self):
         #TODO: not implemented yet

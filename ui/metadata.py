@@ -44,10 +44,10 @@ class metaData:
         try: year = tags.tag().year
         except: print "no year"
         
-        print track, title, artist, album, year, genre
         return track, title, artist, album, year, genre
         
-            
+        
+# If I can get it to work then i'll use it to reduce dependencies
 #    def extract(self, fileName):
 #        print fileName
 #        item = Phonon.MediaSource(fileName)    

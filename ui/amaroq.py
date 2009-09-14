@@ -93,7 +93,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.quitAction, SIGNAL("triggered()"), qApp, SLOT("quit()"))
         self.connect(self.playAction, SIGNAL("toggled(bool)"), self.on_playBttn_toggled)
         self.connect(self.viewAction, SIGNAL("toggled(bool)"), self.minimiseTray)
-        self.connect(self.metaInformationResolver, SIGNAL('stateChanged(Phonon::State, Phonon::State)'),self.metaStateChanged)
+#        self.connect(self.metaInformationResolver, SIGNAL('stateChanged(Phonon::State, Phonon::State)'),self.metaStateChanged)
         self.connect(self.mediaObject, SIGNAL('tick(qint64)'), self.tick)
         self.connect(self.mediaObject, SIGNAL('aboutToFinish()'),self.aboutToFinish)
         self.connect(self.mediaObject, SIGNAL('finished()'),self.finished)
@@ -246,97 +246,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Extract music files and shove into current playlist.
         """
-        mfiles = QFileDialog.getOpenFileNames(self,
-                self.tr("Select Music Files"),
-                QDesktopServices.storageLocation(QDesktopServices.MusicLocation))            
-
+        
+        # As the kde4 dialogs are being used (somehow) I can't see if the filters work
+        mfiles = QFileDialog.getOpenFileNames(\
+                        None, 
+                        self.tr("Select Music Files"),
+                        QDesktopServices.storageLocation(QDesktopServices.MusicLocation), 
+                        self.trUtf8("*.flac;;*.mp3;;*.ogg"))       
+           
         if mfiles:
             index = len(self.sources)
-            for item in mfiles:   
+#            self.metaInformationResolver.setCurrentSource(self.sources[index])
+            for item in mfiles:                   
+                self.sources.append(Phonon.MediaSource(item))
                 self.add2playlist(item)
-#               self.sources.append(Phonon.MediaSource(item))   
-    
+#                self.metaInformationResolver.setCurrentSource(self.sources[index])
+                
 #            self.metaInformationResolver.setCurrentSource(self.sources[index])
 
-# Pretty much a copy and paste of Trolltech's example
-# Possibly put this in it's own class and return() the data so
-# it can be used for more than the playlist
-    def metaStateChanged(self, newState, oldState):
-        if newState == Phonon.ErrorState:
-            QMessageBox.warning(self, self.tr("Error opening files"),
-                    self.metaInformationResolver.errorString())
-
-            while self.sources and self.sources.pop() != self.metaInformationResolver.currentSource():
-                pass
-
-            return
-
-        if newState != Phonon.StoppedState and newState != Phonon.PausedState:
-            return
-
-        if self.metaInformationResolver.currentSource().type() == Phonon.MediaSource.Invalid:
-            return
-
-        metaData = self.metaInformationResolver.metaData()
-        
-        # Very Unreliable. The use of tagpy module may be a better idea.
-        # Seems to work a whole let better than this pile of shit.
-        track = metaData.get(QString('TRACKNUMBER'), [QString()])[0]
-        # Desperate
-#        if not track:
-#            print "No track"
-#            track = metaData.get(QString('TRACK), [QString()])[0]
-            
-        trackItem = QTableWidgetItem(track)
-        trackItem.setFlags(trackItem.flags() ^ Qt.ItemIsEditable)
-
-        title = metaData.get(QString('TITLE'), [QString()])[0]
-        if title.isEmpty():
-            title = self.metaInformationResolver.currentSource().fileName()
-        
-        titleItem = QTableWidgetItem(title)
-        titleItem.setFlags(titleItem.flags() ^ Qt.ItemIsEditable)
-
-        artist = metaData.get(QString('ARTIST'), [QString()])[0]
-        artistItem = QTableWidgetItem(artist)
-        artistItem.setFlags(artistItem.flags() ^ Qt.ItemIsEditable)
-
-        album = metaData.get(QString('ALBUM'), [QString()])[0]
-        albumItem = QTableWidgetItem(album)
-        albumItem.setFlags(albumItem.flags() ^ Qt.ItemIsEditable)
-        
-        # No worky
-        year = metaData.get(QString('DATE'), [QString()])[0]
-        yearItem = QTableWidgetItem(year)
-        yearItem.setFlags(yearItem.flags() ^ Qt.ItemIsEditable)
-
-        genre = metaData.get(QString('GENRE'), [QString()])[0]
-        genreItem = QTableWidgetItem(genre)
-        genreItem.setFlags(genreItem.flags() ^ Qt.ItemIsEditable)
-        
-        currentRow = self.playlistTree.rowCount()
-        self.playlistTree.insertRow(currentRow)
-        self.playlistTree.setItem(currentRow, 0, trackItem)
-        self.playlistTree.setItem(currentRow, 1, titleItem)
-        self.playlistTree.setItem(currentRow, 2, artistItem)
-        self.playlistTree.setItem(currentRow, 3, albumItem)
-        self.playlistTree.setItem(currentRow, 4, yearItem)
-        self.playlistTree.setItem(currentRow, 5, genreItem)
-
-        if not self.playlistTree.selectedItems():
-            self.playlistTree.selectRow(0)
-            self.mediaObject.setCurrentSource(self.metaInformationResolver.currentSource())
-
-        source = self.metaInformationResolver.currentSource()
-        index = self.sources.index(self.metaInformationResolver.currentSource()) + 1
-
-        if len(self.sources) > index:
-            self.metaInformationResolver.setCurrentSource(self.sources[index])
-        else:
-            self.playlistTree.resizeColumnsToContents()
-            if self.playlistTree.columnWidth(0) > 300:
-                self.playlistTree.setColumnWidth(0, 300)
-    
     @pyqtSignature("int, int")
     def on_playlistTree_cellDoubleClicked(self, row, column):
         """
@@ -515,23 +442,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     def add2playlist(self, fileName):
         info = self.meta.extract(fileName)
-#        print info
-        trackItem = QTableWidgetItem(info[0])
+        
+        trackItem = QTableWidgetItem(str(info[0]))
         trackItem.setFlags(trackItem.flags() ^ Qt.ItemIsEditable)
         
-        titleItem = QTableWidgetItem(info[1])
+        titleItem = QTableWidgetItem(QString(info[1]))
         titleItem.setFlags(titleItem.flags() ^ Qt.ItemIsEditable)
 
-        artistItem = QTableWidgetItem(info[2])
+        artistItem = QTableWidgetItem(QString(info[2]))
         artistItem.setFlags(artistItem.flags() ^ Qt.ItemIsEditable)
 
-        albumItem = QTableWidgetItem(info[3])
+        albumItem = QTableWidgetItem(QString(info[3]))
         albumItem.setFlags(albumItem.flags() ^ Qt.ItemIsEditable)
         
-        yearItem = QTableWidgetItem(info[4])
+        yearItem = QTableWidgetItem(str(info[4]))
         yearItem.setFlags(yearItem.flags() ^ Qt.ItemIsEditable)
 
-        genreItem = QTableWidgetItem(info[5])
+        genreItem = QTableWidgetItem(QString(info[5]))
         genreItem.setFlags(genreItem.flags() ^ Qt.ItemIsEditable)
         
         currentRow = self.playlistTree.rowCount()
@@ -543,16 +470,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playlistTree.setItem(currentRow, 4, yearItem)
         self.playlistTree.setItem(currentRow, 5, genreItem)
 
-#        if not self.playlistTree.selectedItems():
-#            self.playlistTree.selectRow(0)
-#            self.mediaObject.setCurrentSource(self.metaInformationResolver.currentSource())
-#
-#        source = self.metaInformationResolver.currentSource()
-#        index = self.sources.index(self.metaInformationResolver.currentSource()) + 1
-#
-#        if len(self.sources) > index:
-#            self.metaInformationResolver.setCurrentSource(self.sources[index])
-#        else:
-#            self.playlistTree.resizeColumnsToContents()
-#            if self.playlistTree.columnWidth(0) > 300:
-#                self.playlistTree.setColumnWidth(0, 300)
+        if not self.playlistTree.selectedItems():
+            self.playlistTree.selectRow(0)
+            self.mediaObject.setCurrentSource(self.metaInformationResolver.currentSource())
+
+        source = self.metaInformationResolver.currentSource()
+        print source
+        val = self.sources.index(source)+ 1
+
+        if len(self.sources) > val:
+            self.metaInformationResolver.setCurrentSource(self.sources[val])
+        else:
+            self.playlistTree.resizeColumnsToContents()
+            if self.playlistTree.columnWidth(0) > 300:
+                    self.playlistTree.setColumnWidth(0, 300)
