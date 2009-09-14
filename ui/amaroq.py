@@ -253,9 +253,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if mfiles:
             index = len(self.sources)
             for item in mfiles:   
-               self.sources.append(Phonon.MediaSource(item))   
+                self.add2playlist(item)
+#               self.sources.append(Phonon.MediaSource(item))   
     
-            self.metaInformationResolver.setCurrentSource(self.sources[index])
+#            self.metaInformationResolver.setCurrentSource(self.sources[index])
 
 # Pretty much a copy and paste of Trolltech's example
 # Possibly put this in it's own class and return() the data so
@@ -512,4 +513,46 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.statPlyTypBttn.setText("N")
             self.play_norm = True
         
+    def add2playlist(self, fileName):
+        info = self.meta.extract(fileName)
+#        print info
+        trackItem = QTableWidgetItem(info[0])
+        trackItem.setFlags(trackItem.flags() ^ Qt.ItemIsEditable)
         
+        titleItem = QTableWidgetItem(info[1])
+        titleItem.setFlags(titleItem.flags() ^ Qt.ItemIsEditable)
+
+        artistItem = QTableWidgetItem(info[2])
+        artistItem.setFlags(artistItem.flags() ^ Qt.ItemIsEditable)
+
+        albumItem = QTableWidgetItem(info[3])
+        albumItem.setFlags(albumItem.flags() ^ Qt.ItemIsEditable)
+        
+        yearItem = QTableWidgetItem(info[4])
+        yearItem.setFlags(yearItem.flags() ^ Qt.ItemIsEditable)
+
+        genreItem = QTableWidgetItem(info[5])
+        genreItem.setFlags(genreItem.flags() ^ Qt.ItemIsEditable)
+        
+        currentRow = self.playlistTree.rowCount()
+        self.playlistTree.insertRow(currentRow)
+        self.playlistTree.setItem(currentRow, 0, trackItem)
+        self.playlistTree.setItem(currentRow, 1, titleItem)
+        self.playlistTree.setItem(currentRow, 2, artistItem)
+        self.playlistTree.setItem(currentRow, 3, albumItem)
+        self.playlistTree.setItem(currentRow, 4, yearItem)
+        self.playlistTree.setItem(currentRow, 5, genreItem)
+
+#        if not self.playlistTree.selectedItems():
+#            self.playlistTree.selectRow(0)
+#            self.mediaObject.setCurrentSource(self.metaInformationResolver.currentSource())
+#
+#        source = self.metaInformationResolver.currentSource()
+#        index = self.sources.index(self.metaInformationResolver.currentSource()) + 1
+#
+#        if len(self.sources) > index:
+#            self.metaInformationResolver.setCurrentSource(self.sources[index])
+#        else:
+#            self.playlistTree.resizeColumnsToContents()
+#            if self.playlistTree.columnWidth(0) > 300:
+#                self.playlistTree.setColumnWidth(0, 300)
