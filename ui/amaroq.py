@@ -299,7 +299,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Every second update time labels and progres slider
         """
-        t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)        
+        t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
+#        print t_now
+        if t_now == QTime(0, 0, 0):
+            self.track_changing = True
+            self.stateChanged()
         self.progLbl.setText("%s | %s" % (t_now.toString('mm:ss'), self.t_length.toString('mm:ss')))
         self.progSldr.setValue(time)
     
@@ -323,6 +327,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.t_length = QTime(0, (length / 60000) % 60, (length / 1000) % 60)
             
     def stateChanged(self):
+        print "State Changed"
         self.setProgSldr()
         row = self.playlistTree.currentRow()
         
