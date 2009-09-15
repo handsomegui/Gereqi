@@ -329,10 +329,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.playlistTree.selectRow(row)
 
-        self.url = QUrl("http://www.wikipedia.com/wiki/%s" % artist)
+        self.url = "http://www.wikipedia.com/wiki/%s" % artist
         if row and self.wikiView.isVisible():
             if self.url != self.old_url:
-                self.wikiView.setUrl(self.url)
+                self.wikiView.setUrl(QUrl(self.url))
                 self.old_url = self.url
         
     def finished(self):
@@ -416,7 +416,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #<div id="bodyContent">
         if index == 2:
 #            if self.url != self.old_url:
-            self.wikiView.setUrl(self.url)
+            self.wikiView.setUrl(QUrl(self.url))
 
     def calc_playlist(self):
         """
