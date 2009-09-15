@@ -329,10 +329,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def stateChanged(self):
         print "State Changed"
         self.setProgSldr()
-        row = self.playlistTree.currentRow()
+#        row = self.playlistTree.currentRow()
+        row = self.sources.index(self.mediaObject.currentSource())
+#        print row, index
         
         if self.track_changing:
-            row += 1
+#            row += 1
             self.track_changing = False
             
         title = self.playlistTree.item(row, 1).text()
@@ -349,7 +351,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.statLbl.setText(message)
 #            self.statusBar.showMessage(QString(message), 0) # Turns out it's not permanent
 
-        self.playlistTree.selectRow(row)
+        self.playlistTree.selectRow(row) # Yeah. This isn't right
 
         self.url = "http://www.wikipedia.com/wiki/%s" % artist
         if row and self.wikiView.isVisible():
