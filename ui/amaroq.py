@@ -220,18 +220,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
 #        if dir:
 #            self.playlistTree.clearContents()
-        count = 0
+        # I'm going to have to break this loop into in order to utilise the
+        # progressbar. I need to know how many files there are to be processed
+        media = []
+        
         for root, dirname, filename in os.walk(str(self.mediaDir)):
             for x in filename:
-                fileNow = os.path.join(root, x)
-                
+                fileNow = os.path.join(root, x)                
                 if fileNow.endswith(".ogg") or fileNow.endswith(".mp3") or fileNow.endswith(".flac"):
-#                    print fileNow
-                    print fileNow, self.meta.extract(fileNow)
-                    count += 1
+                    media.append(fileNow)
                     
-        print "Total tracks = %s" % count
- 
+        medTotal = len(media)
+        
+        # extract tags and push into database
+        self.statLbl.setText("Scanning Media")
+        for track in range(medTotal):
+            prog = int(100 * ( float(track) / float(medTotal ) ))
+            track = media[track]
+            tags = self.meta.extract(track)            
+            self.statProg.setValue(prog)
+        
+        self.statLbl.setText("Finished")
+        self.statProg.setValue(100)
     
     @pyqtSignature("")
     def on_actionExit_triggered(self):
