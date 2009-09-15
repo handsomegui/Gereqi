@@ -21,17 +21,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #FIXME: This is a mess. Fix
     def __init__(self, parent = None):
         """
-        Initialistion of key items
-        """
-        self.dbase = "%s.amaroqdb" % QDir.homePath()
-        try:
-            self.dbase = sqlite.connect(self.dbase)
-            self.cursor = self.dbase.cursor()
-        except:
-            print "Probably not made database yet"
-        
+        Initialistion of key items. Some may be pulled
+        from other files as this file is getting messy
+        """ 
         QMainWindow.__init__(self, parent)
         self.setupUi(self)
+        
         self.mediaDB = media()
         self.mediaDir = None
         self.meta = metaData()
@@ -43,7 +38,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mediaObject.setTickInterval(1000)
         self.sources = []
         self.audioOutput.setVolume(1)
-        self.viewable = True
+#        self.tabViewable = True
         self.url = "about:blank"
         self.old_url = self.url
         self.playing = False # Had to as using mediaObject.state is fucking shit and useless
@@ -69,7 +64,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusBar.addPermanentWidget(self.statBttn)
         self.statusBar.addPermanentWidget(self.statPlyTypBttn)
 
-        headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), self.tr("Album"), self.tr("Year"), self.tr("Genre")]
+        headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), self.tr("Album"), self.tr("Year"), self.tr("Genre"), self.tr("FileName")]
         for val in range(len(headers)):
             self.playlistTree.insertColumn(val)
         self.playlistTree.setHorizontalHeaderLabels(headers)
@@ -353,6 +348,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.url = "http://www.wikipedia.com/wiki/%s" % artist
         if row and self.wikiView.isVisible():
+            # Prevents loading of the same url
             if self.url != self.old_url:
                 self.wikiView.setUrl(QUrl(self.url))
                 self.old_url = self.url
@@ -361,8 +357,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.progSldr.setValue(0)
         self.progLbl.setText("00:00")
         self.playing = False
-        
-
         
     def minimiseTray(self, state):
         if state:
@@ -485,6 +479,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         genreItem = QTableWidgetItem(QString(info[5]))
         genreItem.setFlags(genreItem.flags() ^ Qt.ItemIsEditable)
         
+        fileItem = QTableWidgetItem(QString(fileName))
+        
         currentRow = self.playlistTree.rowCount()
         self.playlistTree.insertRow(currentRow)
         self.playlistTree.setItem(currentRow, 0, trackItem)
@@ -493,6 +489,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playlistTree.setItem(currentRow, 3, albumItem)
         self.playlistTree.setItem(currentRow, 4, yearItem)
         self.playlistTree.setItem(currentRow, 5, genreItem)
+        self.playlistTree.setItem(currentRow, 6, fileItem)
 
         # I honestly cannot remember what this commented section does
 #        source = self.metaInformationResolver.currentSource() # This seems to be looking up something I don't think it is
