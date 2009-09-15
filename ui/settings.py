@@ -19,11 +19,11 @@ class settingDlg(QDialog):
         
         self.connect(bttnBox, SIGNAL("accepted()"), self, SLOT("accept()"))
         self.connect(bttnBox, SIGNAL("rejected()"), self, SLOT("reject()"))
-#        self.connect(dirBttn, SIGNAL("clicked()"), self, SLOT("accept()"))
+        #TODO: Figure out how to do custom slots, i think
+#        self.connect(dirBttn, SIGNAL("clicked()"), self.dirSel())
         self.setWindowTitle("Settings")
         
-    def directory(self):
-            print "Spam!"
+    def dirSel(self):
             dirselect= QFileDialog.getExistingDirectory(\
                 None,
                 self.trUtf8("Select Music Directory"),

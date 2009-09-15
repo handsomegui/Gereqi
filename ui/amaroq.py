@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-Module implementing MainWindow.
-"""
-
 from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, \
 QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel, \
 QProgressBar, QToolButton, QSpacerItem, QSizePolicy
@@ -224,14 +220,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
 #        if dir:
 #            self.playlistTree.clearContents()
+        count = 0
         for root, dirname, filename in os.walk(str(self.mediaDir)):
             for x in filename:
                 fileNow = os.path.join(root, x)
-                print fileNow
-#                    for type in self.formats:
-#                        if fileNow.endswith(type):
-#                                    index = len(self.sources)
-#                                    self.sources.append(Phonon.MediaSource(fileNow))   
+                
+                if fileNow.endswith(".ogg") or fileNow.endswith(".mp3") or fileNow.endswith(".flac"):
+#                    print fileNow
+                    print fileNow, self.meta.extract(fileNow)
+                    count += 1
+                    
+        print "Total tracks = %s" % count
+ 
     
     @pyqtSignature("")
     def on_actionExit_triggered(self):

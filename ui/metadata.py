@@ -14,35 +14,35 @@ class metaData:
     def extract(self, fileName):
         tags = tagpy.FileRef(str(fileName))
         try:track = tags.tag().track
-        except:print "no track"
+        except:track = 0
         
         try:
             title = tags.tag().title
 #            title = title.replace("&","and")
 #            title = title.strip("'")
 #            title = lower(title)
-        except:print "no title"
+        except:title = fileName
         
         try:
             artist = tags.tag().artist
 #            artist = artist.replace("&","and")
 #            artist = artist.strip("'")
 #            artist = lower(artist)
-        except:print "no artist"
+        except:artist = ""
             
         try:
             album = tags.tag().album
 #            album = album.replace("&","and")
 #            album = album.strip("'")
 #            album = lower(album)
-        except:print "no album"
+        except:album = ""
 
         try: genre = tags.tag().genre
 #            genre = lower(genre)
-        except:print "no genre"
+        except:genre = ""
         
         try: year = tags.tag().year
-        except: print "no year"
+        except: year = 0
         
         return track, title, artist, album, year, genre
         
