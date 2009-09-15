@@ -22,12 +22,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     Class documentation goes here.
     """
     
-    #TODO: This is a mess. Fix
+    #FIXME: This is a mess. Fix
     def __init__(self, parent = None):
         """
         Initialistion of key items
         """
-        self.formats = [".ogg", ".mp3"]
         self.dbase = "%s.amaroqdb" % QDir.homePath()
         try:
             self.dbase = sqlite.connect(self.dbase)
@@ -257,10 +256,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if mfiles:
             index = len(self.sources)
 #            self.metaInformationResolver.setCurrentSource(self.sources[index])
-            for item in mfiles:                   
-                self.sources.append(Phonon.MediaSource(item))
-                self.add2playlist(item)
-#                self.metaInformationResolver.setCurrentSource(self.sources[index])
+#            print self.metaInformationResolver.currentSource()
+            for item in mfiles:
+                if item.endsWith(".ogg") or item.endsWith(".mp3") or item.endsWith(".flac"):
+                    self.sources.append(Phonon.MediaSource(item))
+#                    self.metaInformationResolver.setCurrentSource(self.sources[index])
+                    self.add2playlist(item)
+
                 
 #            self.metaInformationResolver.setCurrentSource(self.sources[index])
 
@@ -284,12 +286,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.progLbl.setText("%s | %s" % (t_now.toString('mm:ss'), self.t_length.toString('mm:ss')))
         self.progSldr.setValue(time)
     
-    @pyqtSignature("int")
-    def on_progSldr_sliderMoved(self, position):
-        """
-        When the progress is moved by user input curent track seeks correspondingly
-        """
-        self.mediaObject.seek(position)
+#    @pyqtSignature("int")
+#    def on_progSldr_sliderMoved(self, position):
+#        """
+#        When the progress is moved by user input curent track seeks correspondingly
+#        """
+#        self.mediaObject.seek(position)
         
     def aboutToFinish(self):
         # Needs to select next track in playlist
@@ -470,17 +472,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playlistTree.setItem(currentRow, 4, yearItem)
         self.playlistTree.setItem(currentRow, 5, genreItem)
 
-        if not self.playlistTree.selectedItems():
-            self.playlistTree.selectRow(0)
-            self.mediaObject.setCurrentSource(self.metaInformationResolver.currentSource())
-
-        source = self.metaInformationResolver.currentSource()
-        print source
-        val = self.sources.index(source)+ 1
-
-        if len(self.sources) > val:
-            self.metaInformationResolver.setCurrentSource(self.sources[val])
-        else:
-            self.playlistTree.resizeColumnsToContents()
-            if self.playlistTree.columnWidth(0) > 300:
-                    self.playlistTree.setColumnWidth(0, 300)
+        # I honestly cannot remember what this commented section does
+#        source = self.metaInformationResolver.currentSource() # This seems to be looking up something I don't think it is
+#        if not self.playlistTree.selectedItems():
+#            print "Spam"
+#            self.playlistTree.selectRow(0)
+#            self.mediaObject.setCurrentSource(source)
+#
+#
+#        print source, self.sources[0]
+#        val = self.sources.index(source)+ 1
+#
+#        if len(self.sources) > val:
+#            self.metaInformationResolver.setCurrentSource(self.sources[val])
+#        else:
+        self.playlistTree.resizeColumnsToContents()
+        if self.playlistTree.columnWidth(0) > 300:
+                self.playlistTree.setColumnWidth(0, 300)
+    
+    
+    # A much cleaner solution. If when you seek the volume is momentarily
+    # set to 100% so it can really standout. 
+    @pyqtSignature("")
+    def on_progSldr_sliderReleased(self):
+        """
+        Slot documentation goes here.
+        """
+        # TODO: not implemented yet
+        val = self.progSldr.value()
+        self.mediaObject.seek(val)

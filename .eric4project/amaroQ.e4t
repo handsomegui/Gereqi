@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Tasks SYSTEM "Tasks-4.2.dtd">
 <!-- eric4 tasks file for project amaroQ -->
-<!-- Saved: 2009-09-13, 22:14:43 -->
+<!-- Saved: 2009-09-14, 22:31:54 -->
 <Tasks version="4.2">
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: not implemented yet</Summary>
@@ -12,10 +12,10 @@
       <Linenumber>65</Linenumber>
     </Resource>
   </Task>
-  <Task priority="1" completed="False" bugfix="False">
-    <Summary>TODO: This is a mess. Fix</Summary>
+  <Task priority="1" completed="False" bugfix="True">
+    <Summary>FIXME: This is a mess. Fix</Summary>
     <Description></Description>
-    <Created>2009-09-13, 22:11:57</Created>
+    <Created>2009-09-14, 22:30:56</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
       <Linenumber>25</Linenumber>
@@ -24,64 +24,73 @@
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: not finished</Summary>
     <Description></Description>
-    <Created>2009-09-13, 22:11:57</Created>
+    <Created>2009-09-14, 22:30:56</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
-      <Linenumber>120</Linenumber>
+      <Linenumber>119</Linenumber>
     </Resource>
   </Task>
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: not ifinished</Summary>
     <Description></Description>
-    <Created>2009-09-13, 22:11:57</Created>
+    <Created>2009-09-14, 22:30:56</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
-      <Linenumber>128</Linenumber>
+      <Linenumber>127</Linenumber>
     </Resource>
   </Task>
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: not implemented yet</Summary>
     <Description></Description>
-    <Created>2009-09-13, 22:11:57</Created>
+    <Created>2009-09-14, 22:30:56</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
-      <Linenumber>136</Linenumber>
+      <Linenumber>135</Linenumber>
     </Resource>
   </Task>
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: not implemented yet</Summary>
     <Description></Description>
-    <Created>2009-09-13, 22:11:57</Created>
+    <Created>2009-09-14, 22:30:56</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
-      <Linenumber>207</Linenumber>
+      <Linenumber>206</Linenumber>
     </Resource>
   </Task>
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: not implemented yet</Summary>
     <Description></Description>
-    <Created>2009-09-13, 22:11:57</Created>
+    <Created>2009-09-14, 22:30:56</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
-      <Linenumber>220</Linenumber>
+      <Linenumber>219</Linenumber>
     </Resource>
   </Task>
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: not implemented yet</Summary>
     <Description></Description>
-    <Created>2009-09-13, 22:11:57</Created>
+    <Created>2009-09-14, 22:30:56</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
-      <Linenumber>430</Linenumber>
+      <Linenumber>359</Linenumber>
     </Resource>
   </Task>
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: not implemented yet</Summary>
     <Description></Description>
-    <Created>2009-09-13, 22:11:57</Created>
+    <Created>2009-09-14, 22:30:56</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
-      <Linenumber>486</Linenumber>
+      <Linenumber>415</Linenumber>
+    </Resource>
+  </Task>
+  <Task priority="1" completed="False" bugfix="False">
+    <Summary>TODO: not implemented yet</Summary>
+    <Description></Description>
+    <Created>2009-09-14, 22:30:56</Created>
+    <Resource>
+      <Filename>ui/amaroq.py</Filename>
+      <Linenumber>498</Linenumber>
     </Resource>
   </Task>
 </Tasks>
