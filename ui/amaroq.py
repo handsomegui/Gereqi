@@ -80,6 +80,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def createActions(self):
         self.quitAction = QAction(self.tr("&Quit"), self)
         self.playAction = QAction(self.tr("&Play"), self)
+        self.nextAction = QAction(self.tr("&Next"), self)
+        self.prevAction = QAction(self.tr("&Previous"), self)
+        self.stopAction = QAction(self.tr("&Stop"), self)
         self.playAction.setCheckable(True)
         self.viewAction = QAction(self.tr("&Visible"), self)
         self.viewAction.setCheckable(True)
@@ -87,6 +90,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.connect(self.quitAction, SIGNAL("triggered()"), qApp, SLOT("quit()"))
         self.connect(self.playAction, SIGNAL("toggled(bool)"), self.on_playBttn_toggled)
+        self.connect(self.nextAction, SIGNAL("triggered()"), self.on_nxtBttn_pressed)
+        self.connect(self.prevAction, SIGNAL("triggered()"), self.on_prevBttn_pressed)
+        self.connect(self.stopAction, SIGNAL("triggered()"), self.on_stopBttn_pressed)
         self.connect(self.viewAction, SIGNAL("toggled(bool)"), self.minimiseTray)
 #        self.connect(self.metaInformationResolver, SIGNAL('stateChanged(Phonon::State, Phonon::State)'),self.metaStateChanged)
         self.connect(self.mediaObject, SIGNAL('tick(qint64)'), self.tick)
@@ -97,8 +103,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def createTrayIcon(self):
         self.trayIconMenu = QMenu(self)
+        
+        self.trayIconMenu.addAction(self.viewAction) 
+        self.trayIconMenu.addSeparator()
         self.trayIconMenu.addAction(self.playAction)
-        self.trayIconMenu.addAction(self.viewAction)
+        self.trayIconMenu.addAction(self.nextAction)
+        self.trayIconMenu.addAction(self.prevAction)
+        self.trayIconMenu.addAction(self.stopAction)
+        self.trayIconMenu.addSeparator()
         self.trayIconMenu.addAction(self.quitAction)
         
         # No. This icon isn't final. Just filler.
@@ -210,18 +222,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSignature("")
     def on_actionRescan_Collection_triggered(self):
         """
-        Slot documentation goes here.
+        Scans through a directory and looks for supported media,
+        extracts metadata and adds them to the database,hopefully.
+        Really needs to be done in a separate thread as scan could
+        take a while.
         """
-        # TODO: not implemented yet
-#        raise NotImplementedError
-#        dir = directory set in settings
         if not self.mediaDir:
-            self.on_actionEdit_triggered()
-            
-#        if dir:
-#            self.playlistTree.clearContents()
-        # I'm going to have to break this loop into in order to utilise the
-        # progressbar. I need to know how many files there are to be processed
+            self.on_actionEdit_triggered()         
+
         media = []
         
         for root, dirname, filename in os.walk(str(self.mediaDir)):
@@ -233,6 +241,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         medTotal = len(media)
         
         # extract tags and push into database
+        # as filenames are the PRIMARY KEY the idea is only to add to 
+        # the database if the file doesn't already exist. After this the mediatree
+        # in the ui is updated. This section really is top priority.
         self.statLbl.setText("Scanning Media")
         for track in range(medTotal):
             prog = int(100 * ( float(track) / float(medTotal ) ))
@@ -242,6 +253,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.statLbl.setText("Finished")
         self.statProg.setValue(100)
+        print medTotal
     
     @pyqtSignature("")
     def on_actionExit_triggered(self):
