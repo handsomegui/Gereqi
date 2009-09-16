@@ -51,11 +51,11 @@ class media:
         """
         # Next is a bodge
         values = ''' "%s","%s","%s","%s", "%s","%s","%s" ''' % (p[0], p[1], p[2], p[3], p[4], p[5], p[6])
-#        print values
+        
 # Here is probably a good place to put ina  check to see if the filename, PRIMARY KEY, already exists
+# Of course this would prevent tags/metadata being updated since first INSERT.
         query = "INSERT INTO media (filename,track,title,artist,album,year,genre) VALUES (%s)" % values
 
-# If there are "" in any of the strings the execute borks.
         self.mediaCurs.execute(query) 
         self.mediaDB.commit()    
 #        self.mediaDB()

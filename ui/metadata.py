@@ -13,15 +13,19 @@ class metaData:
     
     def extract(self, fileName):
         tags = tagpy.FileRef(str(fileName))
+        
         try:track = tags.tag().track
         except:track = 0
         
         try:
             title = tags.tag().title
             title = title.replace('''"''',"'")
-#            title = title.strip("'")
-#            title = lower(title)
-        except:title = fileName
+            if not title:
+                title = fileName.split("/")[-1]
+                title = title.split(".")[0]
+        except:
+            title = fileName.split("/")[-1]
+            title = title.split(".")[0]
         
         try:
             artist = tags.tag().artist
