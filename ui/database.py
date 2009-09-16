@@ -1,12 +1,12 @@
 #from PyQt4.QtSql import  QSqlDatabase
 from pysqlite2 import dbapi2 as sqlite
-from os import mkdir, getenv, path
+from os import mkdir, getenv, path, remove
 
     
 class media:
     def __init__(self):
 
-        # Again, despite  being boilerplate, does fuck all.
+        # Again, despite being boilerplate, does fuck all.
         # PyQt's databasing fails again. Switching to pysqlite
 #        self.db = QSqlDatabase()
 #        self.db.addDatabase("QSQLITE") 
@@ -18,6 +18,9 @@ class media:
         appDir = getenv("HOME")
         appDir = "%s/.amaroq/" % appDir
         self.mediaDB = "%samaroq.db" % appDir
+        
+        # For testing purposes
+        remove(self.mediaDB)
         
         if not path.exists(appDir):
             print "need to make a folder"
@@ -35,22 +38,27 @@ class media:
                 title   VARCHAR(50),
                 artist  VARCHAR(50),
                 album   VARCHAR(50),
-                year    SMALLINT(4)
+                year    SMALLINT(4),
+                genre   VARCHAR(50)
                 )
                 ''')
                 
-    def add_media(self, *p):
+    def add_media(self, p):
         """
         Here we add data into the media database
         Not sure what'll happen when the same filename comes up
         more than once.
         """
-        values = ''' "%s","%s","%s","%s" "%s","%s" ''' % p
-        print values
-        query = "INSERT INTO media (filename,track,title,artist,album,year) VALUES (%s)" % values
+        # Next is a bodge
+        values = ''' "%s","%s","%s","%s", "%s","%s","%s" ''' % (p[0], p[1], p[2], p[3], p[4], p[5], p[6])
+#        print values
+# Here is probably a good place to put ina  check to see if the filename, PRIMARY KEY, already exists
+        query = "INSERT INTO media (filename,track,title,artist,album,year,genre) VALUES (%s)" % values
+
+# If there are "" in any of the strings the execute borks.
         self.mediaCurs.execute(query) 
         self.mediaDB.commit()    
-        self.mediaDB()
+#        self.mediaDB()
         
         
     def queryDB(self):    

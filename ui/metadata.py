@@ -18,33 +18,35 @@ class metaData:
         
         try:
             title = tags.tag().title
-#            title = title.replace("&","and")
+            title = title.replace('''"''',"'")
 #            title = title.strip("'")
 #            title = lower(title)
         except:title = fileName
         
         try:
             artist = tags.tag().artist
-#            artist = artist.replace("&","and")
+            artist = artist.replace('''"''',"'")
 #            artist = artist.strip("'")
 #            artist = lower(artist)
         except:artist = ""
             
         try:
             album = tags.tag().album
-#            album = album.replace("&","and")
+            album = album.replace('''"''',"'")
 #            album = album.strip("'")
 #            album = lower(album)
         except:album = ""
 
-        try: genre = tags.tag().genre
+        try: 
+            genre = tags.tag().genre
+            genre = genre.replace('''"''',"'")
 #            genre = lower(genre)
         except:genre = ""
         
         try: year = tags.tag().year
         except: year = 0
         
-        return track, title, artist, album, year, genre
+        return [track, title, artist, album, year, genre]
         
         
 # If I can get it to work then i'll use it to reduce dependencies

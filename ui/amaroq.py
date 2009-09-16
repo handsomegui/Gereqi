@@ -243,7 +243,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for track in range(medTotal):
             prog = int(100 * ( float(track) / float(medTotal ) ))
             track = media[track]
-            tags = self.meta.extract(track)            
+#            tags = [track]
+            tags = self.meta.extract(track)
+            tags.insert(0, track)
+            self.mediaDB.add_media(tags)
             self.statProg.setValue(prog)
         
         self.statLbl.setText("Finished")
@@ -303,17 +306,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #        print t_now
         if t_now == QTime(0, 0, 0):
             self.track_changing = True
-            self.stateChanged()
+            self.stateChanged(None, None) #FIXME: use proper states here
         self.progLbl.setText("%s | %s" % (t_now.toString('mm:ss'), self.t_length.toString('mm:ss')))
         self.progSldr.setValue(time)
     
-#    @pyqtSignature("int")
-#    def on_progSldr_sliderMoved(self, position):
-#        """
-#        When the progress is moved by user input curent track seeks correspondingly
-#        """
-#        self.mediaObject.seek(position)
-        
     def aboutToFinish(self):
         # Needs to select next track in playlist
         index = self.sources.index(self.mediaObject.currentSource()) + 1
@@ -326,8 +322,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.progSldr.setRange(0, length)
         self.t_length = QTime(0, (length / 60000) % 60, (length / 1000) % 60)
             
-    def stateChanged(self):
-        print "State Changed"
+    def stateChanged(self, old, new):
+        print "State Changed", old, new
         self.setProgSldr()
 #        row = self.playlistTree.currentRow()
         row = self.sources.index(self.mediaObject.currentSource())
