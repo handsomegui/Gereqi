@@ -228,7 +228,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         media = []
         
         for root, dirname, filename in os.walk(str(self.mediaDir)):
-            print root
             for x in filename:
                 fileNow = os.path.join(root, x)                
                 if fileNow.endswith(".ogg") or fileNow.endswith(".mp3") or fileNow.endswith(".flac"):
@@ -244,7 +243,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for track in range(medTotal):
             prog = int(100 * ( float(track) / float(medTotal ) ))
             track = media[track]
-#            tags = [track]
             tags = self.meta.extract(track)
             tags.insert(0, track)
             self.mediaDB.add_media(tags)
@@ -252,7 +250,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.statLbl.setText("Finished")
         self.statProg.setValue(100)
-#        print medTotal
         self.mediaDB.lenDB()
     
     @pyqtSignature("")
@@ -277,16 +274,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
            
         if mfiles:
             index = len(self.sources)
-#            self.metaInformationResolver.setCurrentSource(self.sources[index])
-#            print self.metaInformationResolver.currentSource()
             for item in mfiles:
                 if item.endsWith(".ogg") or item.endsWith(".mp3") or item.endsWith(".flac"):
                     self.sources.append(Phonon.MediaSource(item))
-#                    self.metaInformationResolver.setCurrentSource(self.sources[index])
                     self.add2playlist(item)
-
-                
-#            self.metaInformationResolver.setCurrentSource(self.sources[index])
 
     @pyqtSignature("int, int")
     def on_playlistTree_cellDoubleClicked(self, row, column):
@@ -305,7 +296,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Every second update time labels and progres slider
         """
         t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
-#        print t_now
         if t_now == QTime(0, 0, 0):
             self.track_changing = True
             self.stateChanged(None, None) #FIXME: use proper states here
@@ -327,13 +317,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def stateChanged(self, old, new):
         print "State Changed", old, new
         self.setProgSldr()
-#        row = self.playlistTree.currentRow()
         # FIXME: put in a self.sources empty check here
         row = self.sources.index(self.mediaObject.currentSource())
 #        print row, index
         
         if self.track_changing:
-#            row += 1
             self.track_changing = False
             
         title = self.playlistTree.item(row, 1).text()
@@ -348,7 +336,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             time =  self.t_length.toString('mm:ss')
             message = "Playing: %s by %s on %s (%s)" % (title, artist, album, time)
             self.statLbl.setText(message)
-#            self.statusBar.showMessage(QString(message), 0) # Turns out it's not permanent
 
         self.playlistTree.selectRow(row) # Yeah. This isn't right
 

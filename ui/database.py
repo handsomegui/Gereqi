@@ -33,7 +33,7 @@ class media:
         # using filename as PRIMARY KEY to prevent multiple entries
         self.mediaCurs.execute('''
             CREATE TABLE IF NOT EXISTS media (
-                filename    TEXT PRIMARY KEY,
+                filename    TEXT PRIMARY KEY ON CONFLICT IGNORE,
                 track    TINYINT(2),
                 title   VARCHAR(50),
                 artist  VARCHAR(50),
@@ -51,15 +51,22 @@ class media:
         """
         # Next is a bodge
         values = ''' "%s","%s","%s","%s", "%s","%s","%s" ''' % (p[0], p[1], p[2], p[3], p[4], p[5], p[6])
-#        print p[0]
-        
+        cols = "filename,track,title,artist,album,year,genre"
 # Here is probably a good place to put in a  check to see if the filename, PRIMARY KEY, already exists
 # Of course this would prevent tags/metadata being updated since first INSERT.
-        query = "INSERT INTO media (filename,track,title,artist,album,year,genre) VALUES (%s)" % values
+        query = "INSERT INTO media (%s) VALUES (%s)" % (cols, values)
         
-        if not self.checkDB(p[0]):
-            self.mediaCurs.execute(query) 
-            self.mediaDB.commit()    
+        # The below query is what i'd prefer for additions to database. It won't work as i've no idea how to
+        # make it so.
+        '''INSERT INTO media (%s) VALUES (%s)
+            WHERE NOT EXISTS( 
+                          SELECT filename 
+                          FROM media 
+                          )'''
+        
+#        if not self.checkDB(p[0]):
+        self.mediaCurs.execute(query) 
+        self.mediaDB.commit()    
         
     def lenDB(self):
         primary = "SELECT filename FROM media"
@@ -79,6 +86,8 @@ class media:
         
         # This for loop is not ideal in the slighest, but it works. Fixes the issue mentioned above
         # Prefer if I could use "return fileName in primary"
+        #FIXME:This really needs to be better. Although a rescan of a fully created  database
+        # it is still really slow. At least it maxes out one core.
         for item in primary:
             # If fileName already present in database
             if item[0] == fileName:
