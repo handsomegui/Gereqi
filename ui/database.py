@@ -20,7 +20,7 @@ class media:
         self.mediaDB = "%samaroq.db" % appDir
         
         # For testing purposes
-        remove(self.mediaDB)
+#        remove(self.mediaDB)
         
         if not path.exists(appDir):
             print "need to make a folder"
@@ -51,16 +51,42 @@ class media:
         """
         # Next is a bodge
         values = ''' "%s","%s","%s","%s", "%s","%s","%s" ''' % (p[0], p[1], p[2], p[3], p[4], p[5], p[6])
+#        print p[0]
         
-# Here is probably a good place to put ina  check to see if the filename, PRIMARY KEY, already exists
+# Here is probably a good place to put in a  check to see if the filename, PRIMARY KEY, already exists
 # Of course this would prevent tags/metadata being updated since first INSERT.
         query = "INSERT INTO media (filename,track,title,artist,album,year,genre) VALUES (%s)" % values
+        
+        if not self.checkDB(p[0]):
+            self.mediaCurs.execute(query) 
+            self.mediaDB.commit()    
+        
+    def lenDB(self):
+        primary = "SELECT filename FROM media"
+        primary = self.mediaCurs.execute(primary)
+        primary =  self.mediaCurs.fetchall()
+        print len(primary)
+        
+    def checkDB(self, fileName):
+        """
+        To check that the file is not already present in database.
+        May replace with an UPDATE media THINGS WHERE
+        """
+        primary = "SELECT filename FROM media"
+        primary = self.mediaCurs.execute(primary)
+        # below creates a list,good, but for some reason there's a trailing comma in each item
+        primary =  self.mediaCurs.fetchall()
+        
+        # This for loop is not ideal in the slighest, but it works. Fixes the issue mentioned above
+        # Prefer if I could use "return fileName in primary"
+        for item in primary:
+            # If fileName already present in database
+            if item[0] == fileName:
+#                print "Here"
+                return True
+                break
+        return False
 
-        self.mediaCurs.execute(query) 
-        self.mediaDB.commit()    
-#        self.mediaDB()
-        
-        
     def queryDB(self):    
         """
         Ermm. Not sure what to put here yet.

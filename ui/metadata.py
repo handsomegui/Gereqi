@@ -50,6 +50,9 @@ class metaData:
         try: year = tags.tag().year
         except: year = 0
         
+#        bitrate = tags.tag().bitrate
+#        leng = tags.tag().length
+#        print leng
         return [track, title, artist, album, year, genre]
         
         

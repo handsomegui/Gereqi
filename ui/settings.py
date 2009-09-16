@@ -5,13 +5,14 @@ from PyQt4.QtCore import SIGNAL, SLOT
 class settingDlg(QDialog):
     def __init__(self, parent=None):
         super(settingDlg, self).__init__(parent)
-        print "init"
+
         self.directory = QLineEdit()
         dirBttn = QPushButton()
         dirBttn.setText("...")
         bttnBox = QDialogButtonBox(QDialogButtonBox.Ok|
                                    QDialogButtonBox.Cancel)
         grid = QGridLayout()
+        
         grid.addWidget(self.directory, 0, 0)
         grid.addWidget(dirBttn, 0, 1)
         grid.addWidget(bttnBox, 1, 0, 1, 2)

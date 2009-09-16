@@ -228,6 +228,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         media = []
         
         for root, dirname, filename in os.walk(str(self.mediaDir)):
+            print root
             for x in filename:
                 fileNow = os.path.join(root, x)                
                 if fileNow.endswith(".ogg") or fileNow.endswith(".mp3") or fileNow.endswith(".flac"):
@@ -251,7 +252,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.statLbl.setText("Finished")
         self.statProg.setValue(100)
-        print medTotal
+#        print medTotal
+        self.mediaDB.lenDB()
     
     @pyqtSignature("")
     def on_actionExit_triggered(self):
@@ -326,6 +328,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print "State Changed", old, new
         self.setProgSldr()
 #        row = self.playlistTree.currentRow()
+        # FIXME: put in a self.sources empty check here
         row = self.sources.index(self.mediaObject.currentSource())
 #        print row, index
         
@@ -384,6 +387,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Clear current playlist and if no music playing
         clear self.mediaObject
         """
+        #FIXME:clear mediaobject.currentsource
         self.sources = []
         self.playlistTree.clearContents()
         rows = self.playlistTree.rowCount()
