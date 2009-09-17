@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
 #
-# Created: Thu Sep 17 18:17:22 2009
+# Created: Thu Sep 17 19:04:32 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -157,6 +157,9 @@ font: 75 10pt \"DejaVu Sans\";
         self.horizontalLayout.addWidget(self.toolButton_4)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.collectTree = QtGui.QTreeWidget(self.tab_2)
+        self.collectTree.setAlternatingRowColors(True)
+        self.collectTree.setRootIsDecorated(True)
+        self.collectTree.setAnimated(True)
         self.collectTree.setObjectName("collectTree")
         self.verticalLayout_2.addWidget(self.collectTree)
         self.gridLayout_3.addLayout(self.verticalLayout_2, 0, 0, 1, 1)
@@ -333,6 +336,7 @@ font: 75 10pt \"DejaVu Sans\";
         sizePolicy.setHeightForWidth(self.playlistTree.sizePolicy().hasHeightForWidth())
         self.playlistTree.setSizePolicy(sizePolicy)
         self.playlistTree.setMinimumSize(QtCore.QSize(400, 0))
+        self.playlistTree.setAlternatingRowColors(True)
         self.playlistTree.setShowGrid(False)
         self.playlistTree.setGridStyle(QtCore.Qt.DotLine)
         self.playlistTree.setObjectName("playlistTree")
@@ -544,7 +548,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.srchplyEdit.setToolTip(QtGui.QApplication.translate("MainWindow", "Playlist Search", None, QtGui.QApplication.UnicodeUTF8))
         self.srchPlyBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Click to edit playlist filter", None, QtGui.QApplication.UnicodeUTF8))
         self.srchPlyBttn.setText(QtGui.QApplication.translate("MainWindow", "...", None, QtGui.QApplication.UnicodeUTF8))
-        self.playlistTree.setSortingEnabled(False)
+        self.playlistTree.setSortingEnabled(True)
         self.prevBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Previous Track", None, QtGui.QApplication.UnicodeUTF8))
         self.prevBttn.setText(QtGui.QApplication.translate("MainWindow", "<<", None, QtGui.QApplication.UnicodeUTF8))
         self.playBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Play/Pause", None, QtGui.QApplication.UnicodeUTF8))

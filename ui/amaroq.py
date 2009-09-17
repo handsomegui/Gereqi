@@ -53,7 +53,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
    
     def setupExtra(self):
         """
-        Extra things to add to the UI
+        Extra __init__ things to add to the UI
         """
         self.statLbl = QLabel("Finished")
         self.statProg = QProgressBar()
@@ -280,6 +280,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         When item is doubleclicked. Play its row.
         """
+        print row, column
         self.mediaObject.stop()
         self.mediaObject.setCurrentSource(self.sources[row])
         self.mediaObject.play()
@@ -310,10 +311,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.progSldr.setRange(0, length)
         self.t_length = QTime(0, (length / 60000) % 60, (length / 1000) % 60)
             
+#FIXME: this seems to be called 3 times on every track change
     def stateChanged(self, old, new):
         print "State Changed", old, new
         self.setProgSldr()
-        # FIXME: put in a self.sources empty check here
         if self.mediaObject.currentSource():
             row = self.sources.index(self.mediaObject.currentSource())
 #        print row, index
