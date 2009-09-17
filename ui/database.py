@@ -44,9 +44,8 @@ class media:
         self.mediaDB.commit()    
         
     def lenDB(self):
-        primary = "SELECT filename FROM media"
-        primary = self.mediaCurs.execute(primary)
-        primary =  self.mediaCurs.fetchall()
+        query = "SELECT filename FROM media"
+        primary = self.queryfetchall(query)
         print len(primary)
         
     def queryDB(self, column):    
@@ -55,27 +54,23 @@ class media:
         Maybe a testing thing
         """
         query = "SELECT DISTINCT %s FROM media" % column
-        self.mediaCurs.execute(query)
-        return self.mediaCurs.fetchall()
+        return self.queryfetchall(query)
         
     def searching(self, looknFr, looknIn, thing):
 #        print looknFr, looknIn, thing
         query = '''SELECT DISTINCT %s FROM media
                             WHERE %s="%s"''' % (looknFr, looknIn, thing)
-        self.mediaCurs.execute(query)
-        return self.mediaCurs.fetchall()
+        return self.queryfetchall(query)
     
     def filenames(self, artist, album):
         query = '''SELECT DISTINCT filename FROM media
                             WHERE artist="%s" AND album="%s"''' % (artist, album)
-        self.mediaCurs.execute(query)
-        return self.mediaCurs.fetchall()
+        return self.queryfetchall(query)
         
     def trackInfo(self, fileName):
         query = '''SELECT * FROM media
                             WHERE filename="%s"''' % fileName
-        self.mediaCurs.execute(query)
-        return self.mediaCurs.fetchall()
+        return self.queryfetchall(query)
         
     def closeDBs(self):
         #TODO: not implemented yet
@@ -83,4 +78,6 @@ class media:
         self.mediaDB.commit()
         
     
-
+    def queryfetchall(self, query):
+        self.mediaCurs.execute(query)
+        return self.mediaCurs.fetchall()
