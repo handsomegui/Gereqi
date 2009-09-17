@@ -156,7 +156,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         for track in tracks:
             track = track[0]
-            info = self.meta.extract(track) # To be changed by retrieving from mediaDB
+            info = self.mediaDB.trackInfo(track)[0][1:] # Retrieves metadata from database
             self.add2playlist(str(track), info)
     
     @pyqtSignature("")
@@ -314,33 +314,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print "State Changed", old, new
         self.setProgSldr()
         # FIXME: put in a self.sources empty check here
-        row = self.sources.index(self.mediaObject.currentSource())
+        if self.sources.index:
+            row = self.sources.index(self.mediaObject.currentSource())
 #        print row, index
         
-        if self.track_changing:
-            self.track_changing = False
-            
-        title = self.playlistTree.item(row, 1).text()
-        artist = self.playlistTree.item(row, 2).text()
-        
-        if self.playing:
-            message = "%s by %s" % (title, artist)
-            self.trayIcon.showMessage(QString("Now Playing"), QString(message), QSystemTrayIcon.NoIcon, 3000)
+            if self.track_changing:
+                self.track_changing = False
+                
             title = self.playlistTree.item(row, 1).text()
             artist = self.playlistTree.item(row, 2).text()
-            album = self.playlistTree.item(row, 3).text()
-            time =  self.t_length.toString('mm:ss')
-            message = "Playing: %s by %s on %s (%s)" % (title, artist, album, time)
-            self.statLbl.setText(message)
-
-        self.playlistTree.selectRow(row) # Yeah. This isn't right
-
-        self.url = "http://www.wikipedia.com/wiki/%s" % artist
-        if row and self.wikiView.isVisible():
-            # Prevents loading of the same url
-            if self.url != self.old_url:
-                self.wikiView.setUrl(QUrl(self.url))
-                self.old_url = self.url
+            
+            if self.playing:
+                message = "%s by %s" % (title, artist)
+                self.trayIcon.showMessage(QString("Now Playing"), QString(message), QSystemTrayIcon.NoIcon, 3000)
+                title = self.playlistTree.item(row, 1).text()
+                artist = self.playlistTree.item(row, 2).text()
+                album = self.playlistTree.item(row, 3).text()
+                time =  self.t_length.toString('mm:ss')
+                message = "Playing: %s by %s on %s (%s)" % (title, artist, album, time)
+                self.statLbl.setText(message)
+    
+            self.playlistTree.selectRow(row) # Yeah. This isn't right
+    
+            self.url = "http://www.wikipedia.com/wiki/%s" % artist
+            if row and self.wikiView.isVisible():
+                # Prevents loading of the same url
+                if self.url != self.old_url:
+                    self.wikiView.setUrl(QUrl(self.url))
+                    self.old_url = self.url
         
     def finished(self):
         self.progSldr.setValue(0)

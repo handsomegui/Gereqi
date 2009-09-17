@@ -71,6 +71,12 @@ class media:
         self.mediaCurs.execute(query)
         return self.mediaCurs.fetchall()
         
+    def trackInfo(self, fileName):
+        query = '''SELECT * FROM media
+                            WHERE filename="%s"''' % fileName
+        self.mediaCurs.execute(query)
+        return self.mediaCurs.fetchall()
+        
     def closeDBs(self):
         #TODO: not implemented yet
         print "Called when shutting down to cleanly close databases."
