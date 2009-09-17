@@ -31,6 +31,9 @@
        <enum>Qt::Horizontal</enum>
       </property>
       <widget class="QTabWidget" name="tabWidget">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -54,6 +57,9 @@
        </property>
        <property name="currentIndex">
         <number>1</number>
+       </property>
+       <property name="documentMode">
+        <bool>true</bool>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -81,7 +87,7 @@
             <bool>true</bool>
            </property>
            <property name="documentMode">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="tabsClosable">
             <bool>false</bool>
@@ -1107,22 +1113,5 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
  <resources>
   <include location="resource.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>clrsrchBttn</sender>
-   <signal>clicked()</signal>
-   <receiver>srchplyEdit</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>420</x>
-     <y>45</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>512</x>
-     <y>40</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
 #
-# Created: Thu Sep 17 16:54:53 2009
+# Created: Thu Sep 17 18:17:22 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -25,6 +25,7 @@ class Ui_MainWindow(object):
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.splitter.setObjectName("splitter")
         self.tabWidget = QtGui.QTabWidget(self.splitter)
+        self.tabWidget.setEnabled(True)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -33,6 +34,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setMinimumSize(QtCore.QSize(250, 0))
         self.tabWidget.setMaximumSize(QtCore.QSize(300, 16777215))
         self.tabWidget.setTabPosition(QtGui.QTabWidget.West)
+        self.tabWidget.setDocumentMode(True)
         self.tabWidget.setObjectName("tabWidget")
         self.tab = QtGui.QWidget()
         self.tab.setObjectName("tab")
@@ -47,7 +49,7 @@ class Ui_MainWindow(object):
         self.tabWidget_2.setSizePolicy(sizePolicy)
         self.tabWidget_2.setTabShape(QtGui.QTabWidget.Rounded)
         self.tabWidget_2.setUsesScrollButtons(True)
-        self.tabWidget_2.setDocumentMode(False)
+        self.tabWidget_2.setDocumentMode(True)
         self.tabWidget_2.setTabsClosable(False)
         self.tabWidget_2.setMovable(False)
         self.tabWidget_2.setObjectName("tabWidget_2")
@@ -492,7 +494,6 @@ font: 75 10pt \"DejaVu Sans\";
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(1)
         self.tabWidget_2.setCurrentIndex(0)
-        QtCore.QObject.connect(self.clrsrchBttn, QtCore.SIGNAL("clicked()"), self.srchplyEdit.clear)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

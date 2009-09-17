@@ -30,6 +30,8 @@ class media:
                 )
                 ''')
                 
+        # Create a settings database
+        
     def add_media(self, p):
         """
         Here we add data into the media database

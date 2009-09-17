@@ -67,6 +67,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusBar.addPermanentWidget(self.statPlyTypBttn)
 
         headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), self.tr("Album"), self.tr("Year"), self.tr("Genre"), self.tr("FileName")]
+        
         for val in range(len(headers)):
             self.playlistTree.insertColumn(val)
         self.playlistTree.setHorizontalHeaderLabels(headers)
@@ -138,8 +139,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Slot documentation goes here.
         """
         # TODO: not completed yet
-        # Need to detect if i'm double clicking an album
-#        print item, column
         album = item.text(column)
         
         try:
@@ -147,15 +146,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except:
             # Should go here if the artist item is double-clicked as it has no parent
             return
-#        albums = self.mediaDB.searching("album", "artist", artist)
         tracks = self.mediaDB.filenames(artist, album)
         
         for track in tracks:
             track = track[0]
-#            print os.path.exists(str())
-            self.sources.append(Phonon.MediaSource(track))
-            self.add2playlist(str(track))
-            print track
+            info = self.meta.extract(track) # To be changed by retrieving from mediaDB
+            self.add2playlist(str(track), info)
     
     @pyqtSignature("")
     def on_prevBttn_pressed(self):
@@ -177,6 +173,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
+        self.stopBttn.setEnabled(True)
         if checked:
             self.mediaObject.play()
             self.playBttn.setIcon(QIcon(QPixmap(":/Icons/media-playback-pause.png")))
@@ -198,6 +195,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playBttn.setChecked(False)
         self.progSldr.setValue(0)
         self.playing = False
+        self.stopBttn.setEnabled(False)
     
     @pyqtSignature("")
     def on_nxtBttn_pressed(self):
@@ -267,8 +265,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             index = len(self.sources)
             for item in mfiles:
                 if item.endsWith(".ogg") or item.endsWith(".mp3") or item.endsWith(".flac"):
-                    self.sources.append(Phonon.MediaSource(item))
-                    self.add2playlist(item)
+                    
+                    info = self.meta.extract(item) # Added this so add2playlist can have data added from mediaDB
+                    self.add2playlist(item, info)
 
     @pyqtSignature("int, int")
     def on_playlistTree_cellDoubleClicked(self, row, column):
@@ -443,8 +442,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.statPlyTypBttn.setText("N")
             self.play_norm = True
         
-    def add2playlist(self, fileName):
-        info = self.meta.extract(fileName)
+    def add2playlist(self, fileName, info):
+        
+        self.sources.append(Phonon.MediaSource(fileName))
         
         trackItem = QTableWidgetItem(str(info[0]))
         trackItem.setFlags(trackItem.flags() ^ Qt.ItemIsEditable)
@@ -495,7 +495,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.playlistTree.setColumnWidth(0, 300)
     
     
-    # A much cleaner solution. If when you seek the volume is momentarily
+    # A much cleaner solution. When you seek the volume is momentarily
     # set to 100% so it can really standout. 
     @pyqtSignature("")
     def on_progSldr_sliderReleased(self):
@@ -510,11 +510,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
-        # TODO: completed yet. See self.collection
+        # TODO: not completed yet. See self.collection
         self.collection(False)
 
 
     def collection(self, rebuild):
+        media = []
+        
         if rebuild:
             # Here we change the PRIMARY KEY in the database to
             # ON CONFLICT REPLACE as we want to rebuild.
@@ -527,22 +529,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not self.mediaDir:
             self.on_actionEdit_triggered()         
 
-        media = []
-        
         for root, dirname, filename in os.walk(str(self.mediaDir)):
             for x in filename:
                 fileNow = os.path.join(root, x)                
                 if fileNow.endswith(".ogg") or fileNow.endswith(".mp3") or fileNow.endswith(".flac"):
                     media.append(fileNow)
                     
-        medTotal = len(media)
-        
-        # extract tags and push into database
-        # as filenames are the PRIMARY KEY the idea is only to add to 
-        # the database if the file doesn't already exist. After this the mediatree
-        # in the ui is updated. This section really is top priority.
         self.statProg.setValue(0)
         self.statProg.setToolTip("Scanning Media")
+        
         for track in range(medTotal):
             prog = int(100 * ( float(track) / float(medTotal ) ))
             track = media[track]
