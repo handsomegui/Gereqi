@@ -56,9 +56,10 @@ class media:
         self.mediaCurs.execute(query)
         return self.mediaCurs.fetchall()
         
-    def albums(self, artist):
-        query = '''SELECT DISTINCT album FROM media
-                            WHERE artist="%s"''' % artist
+    def searching(self, looknFr, looknIn, thing):
+#        print looknFr, looknIn, thing
+        query = '''SELECT DISTINCT %s FROM media
+                            WHERE %s="%s"''' % (looknFr, looknIn, thing)
         self.mediaCurs.execute(query)
         return self.mediaCurs.fetchall()
     

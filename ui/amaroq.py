@@ -140,7 +140,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #        raise NotImplementedError
         artist = item.text(column)
 #        print artist
-        albums = self.mediaDB.albums(artist)
+        albums = self.mediaDB.searching("album", "artist", artist)
         print albums
     
     @pyqtSignature("")
