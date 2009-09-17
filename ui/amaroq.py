@@ -137,10 +137,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
-        # TODO: not implemented yet
-#        raise NotImplementedError
+        # TODO: not completed yet
+        # Need to detect if i'm double clicking an album
+        print item, column
         artist = item.text(column)
-#        print artist
         albums = self.mediaDB.searching("album", "artist", artist)
         print albums
     
@@ -528,7 +528,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # as filenames are the PRIMARY KEY the idea is only to add to 
         # the database if the file doesn't already exist. After this the mediatree
         # in the ui is updated. This section really is top priority.
-        self.statLbl.setText("Scanning Media")
+        self.statProg.setValue(0)
+        self.statProg.setToolTip("Scanning Media")
         for track in range(medTotal):
             prog = int(100 * ( float(track) / float(medTotal ) ))
             track = media[track]
@@ -537,9 +538,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.mediaDB.add_media(tags)
             self.statProg.setValue(prog)
         
-        self.statLbl.setText("Finished")
+        self.statProg.setToolTip("Finished")
         self.statProg.setValue(100)
         self.mediaDB.lenDB()
+        self.collectTree.clear()
+        self.setupDBtree()
         
     def setupDBtree(self):
         """
@@ -548,16 +551,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         artists = self.mediaDB.queryDB("artist") # This gives multiples of the same thing
         artists = sorted(artists)
         
-        for artist in artists:
-            
+        for artist in artists:            
             artist = artist[0]
             albums = self.mediaDB.searching("album", "artist", artist)
             artist = QStringList(artist)
-            artist = QTreeWidgetItem(self.collectTree, artist)
+            artist = QTreeWidgetItem(artist)
+            self.collectTree.addTopLevelItem(artist)
+            
+# There's a way of adding albums all in one command but it requires a list
+# which I would still have to loop to create
             for album in albums:           
                 album = album[0]
-                album = QStringList(album)
-                
-                album = QTreeWidgetItem(artist, album)
-#            QTreeWidgetItem.addChild(artist, "SPam")
-#            QTreeWidgetItem(self.collectTree).setText(0, list)
+                album = QStringList(album)                
+                album = QTreeWidgetItem(album)
+                artist.addChild(album)

@@ -57,7 +57,7 @@ class media:
         return self.mediaCurs.fetchall()
         
     def searching(self, looknFr, looknIn, thing):
-        print looknFr, looknIn, thing
+#        print looknFr, looknIn, thing
         query = '''SELECT DISTINCT %s FROM media
                             WHERE %s="%s"''' % (looknFr, looknIn, thing)
         self.mediaCurs.execute(query)
