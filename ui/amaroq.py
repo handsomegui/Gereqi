@@ -314,7 +314,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print "State Changed", old, new
         self.setProgSldr()
         # FIXME: put in a self.sources empty check here
-        if self.sources.index:
+        if self.mediaObject.currentSource():
             row = self.sources.index(self.mediaObject.currentSource())
 #        print row, index
         
