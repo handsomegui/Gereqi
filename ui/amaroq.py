@@ -141,8 +141,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Need to detect if i'm double clicking an album
         print item, column
         artist = item.text(column)
+        par = item.parent().text(0)
         albums = self.mediaDB.searching("album", "artist", artist)
-        print albums
+        print albums, par
     
     @pyqtSignature("")
     def on_prevBttn_pressed(self):
@@ -551,6 +552,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         artists = self.mediaDB.queryDB("artist") # This gives multiples of the same thing
         artists = sorted(artists)
         
+        #TODO: at the start of new letter in alphabet create a header/separator
         for artist in artists:            
             artist = artist[0]
             albums = self.mediaDB.searching("album", "artist", artist)
