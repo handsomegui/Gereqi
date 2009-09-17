@@ -139,11 +139,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         # TODO: not completed yet
         # Need to detect if i'm double clicking an album
-        print item, column
-        artist = item.text(column)
-        par = item.parent().text(0)
-        albums = self.mediaDB.searching("album", "artist", artist)
-        print albums, par
+#        print item, column
+        album = item.text(column)
+        
+        try:
+            artist= item.parent().text(0)
+        except:
+            # Should go here if the artist item is double-clicked as it has no parent
+            return
+#        albums = self.mediaDB.searching("album", "artist", artist)
+        tracks = self.mediaDB.filenames(artist, album)
+        
+        for track in tracks:
+            track = track[0]
+#            print os.path.exists(str())
+            self.sources.append(Phonon.MediaSource(track))
+            self.add2playlist(str(track))
+            print track
     
     @pyqtSignature("")
     def on_prevBttn_pressed(self):

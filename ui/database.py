@@ -63,6 +63,12 @@ class media:
         self.mediaCurs.execute(query)
         return self.mediaCurs.fetchall()
     
+    def filenames(self, artist, album):
+        query = '''SELECT DISTINCT filename FROM media
+                            WHERE artist="%s" AND album="%s"''' % (artist, album)
+        self.mediaCurs.execute(query)
+        return self.mediaCurs.fetchall()
+        
     def closeDBs(self):
         #TODO: not implemented yet
         print "Called when shutting down to cleanly close databases."
