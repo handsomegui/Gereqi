@@ -55,6 +55,12 @@ class media:
         query = "SELECT DISTINCT %s FROM media" % column
         self.mediaCurs.execute(query)
         return self.mediaCurs.fetchall()
+        
+    def albums(self, artist):
+        query = '''SELECT DISTINCT album FROM media
+                            WHERE artist="%s"''' % artist
+        self.mediaCurs.execute(query)
+        return self.mediaCurs.fetchall()
     
     def closeDBs(self):
         #TODO: not implemented yet

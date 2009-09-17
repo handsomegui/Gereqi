@@ -137,7 +137,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Slot documentation goes here.
         """
         # TODO: not implemented yet
-        raise NotImplementedError
+#        raise NotImplementedError
+        artist = item.text(column)
+#        print artist
+        albums = self.mediaDB.albums(artist)
+        print albums
     
     @pyqtSignature("")
     def on_prevBttn_pressed(self):
@@ -540,9 +544,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         The beginnings of viewing the media database in the QTreeView
         """
-        artists = self.mediaDB.queryDB("artist") # This gives multiples of the same thing
-        artists = sorted(artists)
+        values = self.mediaDB.queryDB("artist") # This gives multiples of the same thing
+        values = sorted(values)
         
-        for artist in artists:
-            artist = artist[0]
+        for value in values:
+            artist = value[0]
             QTreeWidgetItem(self.collectTree).setText(0,artist)
