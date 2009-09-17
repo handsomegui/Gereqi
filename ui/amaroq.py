@@ -46,6 +46,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playing = False # Had to as using mediaObject.state is fucking shit and useless
         self.track_changing = False
         
+        self.setupExtra()
+        self.createActions()
+        self.createTrayIcon()
+        self.trayIcon.show() 
+   
+    def setupExtra(self):
+        """
+        Extra things to add to the UI
+        """
         self.statLbl = QLabel("Finished")
         self.statProg = QProgressBar()
         self.statBttn = QToolButton()
@@ -71,9 +80,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for val in range(len(headers)):
             self.playlistTree.insertColumn(val)
         self.playlistTree.setHorizontalHeaderLabels(headers)
-        self.createActions()
-        self.createTrayIcon()
-        self.trayIcon.show()      
     
     def createActions(self):
         self.quitAction = QAction(self.tr("&Quit"), self)
