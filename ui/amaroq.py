@@ -3,7 +3,8 @@
 from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, \
 QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel, \
 QProgressBar, QToolButton, QSpacerItem, QSizePolicy, QTreeWidgetItem
-from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, QUrl, QSize
+from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, QUrl, \
+QSize,  QStringList
 from PyQt4.phonon import Phonon
 import os
 
@@ -504,11 +505,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if rebuild:
             # Here we change the PRIMARY KEY in the database to
             # ON CONFLICT REPLACE as we want to rebuild.
-            return
+            print "Do something here"
         else:
             # Here we check that the PRIMARY KEY in the database is
             # ON CONFLICT IGNORE as we want to add new files.
-            return
+            print "Do something here"
             
         if not self.mediaDir:
             self.on_actionEdit_triggered()         
@@ -544,9 +545,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         The beginnings of viewing the media database in the QTreeView
         """
-        values = self.mediaDB.queryDB("artist") # This gives multiples of the same thing
-        values = sorted(values)
+        artists = self.mediaDB.queryDB("artist") # This gives multiples of the same thing
+        artists = sorted(artists)
         
-        for value in values:
-            artist = value[0]
-            QTreeWidgetItem(self.collectTree).setText(0,artist)
+        for artist in artists:
+            
+            artist = artist[0]
+            albums = self.mediaDB.searching("album", "artist", artist)
+            artist = QStringList(artist)
+            artist = QTreeWidgetItem(self.collectTree, artist)
+            for album in albums:           
+                album = album[0]
+                album = QStringList(album)
+                
+                album = QTreeWidgetItem(artist, album)
+#            QTreeWidgetItem.addChild(artist, "SPam")
+#            QTreeWidgetItem(self.collectTree).setText(0, list)

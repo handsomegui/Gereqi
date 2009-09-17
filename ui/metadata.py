@@ -19,7 +19,7 @@ class metaData:
         
         try:
             title = tags.tag().title
-            title = title.replace('''"''',"'")
+            title = title.replace('''"''',"") # Use .strip !!!!
             if not title:
                 title = fileName.split("/")[-1]
                 title = title.split(".")[0]
@@ -29,21 +29,21 @@ class metaData:
         
         try:
             artist = tags.tag().artist
-            artist = artist.replace('''"''',"'")
+            artist = artist.replace('''"''',"")
 #            artist = artist.strip("'")
 #            artist = lower(artist)
         except:artist = ""
             
         try:
             album = tags.tag().album
-            album = album.replace('''"''',"'")
+            album = album.replace('''"''',"")
 #            album = album.strip("'")
 #            album = lower(album)
         except:album = ""
 
         try: 
             genre = tags.tag().genre
-            genre = genre.replace('''"''',"'")
+            genre = genre.replace('''"''',"")
 #            genre = lower(genre)
         except:genre = ""
         
