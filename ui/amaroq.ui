@@ -935,6 +935,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     <property name="title">
      <string>Tools</string>
     </property>
+    <addaction name="actionUpdate_Collection"/>
     <addaction name="actionRescan_Collection"/>
    </widget>
    <widget class="QMenu" name="menuSettings">
@@ -947,6 +948,9 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionHelp"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout_Amaroq"/>
    </widget>
    <addaction name="menuActions"/>
    <addaction name="menuPlaylist"/>
@@ -1023,6 +1027,24 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
   <action name="actionLoad">
    <property name="text">
     <string>Load</string>
+   </property>
+  </action>
+  <action name="actionUpdate_Collection">
+   <property name="text">
+    <string>Update Collection</string>
+   </property>
+  </action>
+  <action name="actionAbout_Amaroq">
+   <property name="text">
+    <string>About  Amaroq</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="text">
+    <string>Help</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
    </property>
   </action>
  </widget>

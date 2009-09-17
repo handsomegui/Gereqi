@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/media/CF512/amaroq/ui/amaroq.ui'
+# Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
 #
-# Created: Sun Sep 13 21:21:25 2009
+# Created: Thu Sep 17 11:12:53 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -463,6 +463,12 @@ font: 75 10pt \"DejaVu Sans\";
         self.actionSave_2.setObjectName("actionSave_2")
         self.actionLoad = QtGui.QAction(MainWindow)
         self.actionLoad.setObjectName("actionLoad")
+        self.actionUpdate_Collection = QtGui.QAction(MainWindow)
+        self.actionUpdate_Collection.setObjectName("actionUpdate_Collection")
+        self.actionAbout_Amaroq = QtGui.QAction(MainWindow)
+        self.actionAbout_Amaroq.setObjectName("actionAbout_Amaroq")
+        self.actionHelp = QtGui.QAction(MainWindow)
+        self.actionHelp.setObjectName("actionHelp")
         self.menuActions.addAction(self.actionPlay_Media)
         self.menuActions.addSeparator()
         self.menuActions.addAction(self.actionMinimise_to_Tray)
@@ -471,8 +477,12 @@ font: 75 10pt \"DejaVu Sans\";
         self.menuCurrent.addAction(self.actionSave_2)
         self.menuCurrent.addAction(self.actionLoad)
         self.menuPlaylist.addAction(self.menuCurrent.menuAction())
+        self.menuTools.addAction(self.actionUpdate_Collection)
         self.menuTools.addAction(self.actionRescan_Collection)
         self.menuSettings.addAction(self.actionEdit)
+        self.menuHelp.addAction(self.actionHelp)
+        self.menuHelp.addSeparator()
+        self.menuHelp.addAction(self.actionAbout_Amaroq)
         self.menuBar.addAction(self.menuActions.menuAction())
         self.menuBar.addAction(self.menuPlaylist.menuAction())
         self.menuBar.addAction(self.menuTools.menuAction())
@@ -549,6 +559,10 @@ font: 75 10pt \"DejaVu Sans\";
         self.actionClear.setText(QtGui.QApplication.translate("MainWindow", "Clear", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSave_2.setText(QtGui.QApplication.translate("MainWindow", "Save", None, QtGui.QApplication.UnicodeUTF8))
         self.actionLoad.setText(QtGui.QApplication.translate("MainWindow", "Load", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionUpdate_Collection.setText(QtGui.QApplication.translate("MainWindow", "Update Collection", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAbout_Amaroq.setText(QtGui.QApplication.translate("MainWindow", "About  Amaroq", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionHelp.setText(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionHelp.setShortcut(QtGui.QApplication.translate("MainWindow", "F1", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import resource_rc

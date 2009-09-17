@@ -222,35 +222,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Really needs to be done in a separate thread as scan could
         take a while.
         """
-        if not self.mediaDir:
-            self.on_actionEdit_triggered()         
-
-        media = []
-        
-        for root, dirname, filename in os.walk(str(self.mediaDir)):
-            for x in filename:
-                fileNow = os.path.join(root, x)                
-                if fileNow.endswith(".ogg") or fileNow.endswith(".mp3") or fileNow.endswith(".flac"):
-                    media.append(fileNow)
-                    
-        medTotal = len(media)
-        
-        # extract tags and push into database
-        # as filenames are the PRIMARY KEY the idea is only to add to 
-        # the database if the file doesn't already exist. After this the mediatree
-        # in the ui is updated. This section really is top priority.
-        self.statLbl.setText("Scanning Media")
-        for track in range(medTotal):
-            prog = int(100 * ( float(track) / float(medTotal ) ))
-            track = media[track]
-            tags = self.meta.extract(track)
-            tags.insert(0, track)
-            self.mediaDB.add_media(tags)
-            self.statProg.setValue(prog)
-        
-        self.statLbl.setText("Finished")
-        self.statProg.setValue(100)
-        self.mediaDB.lenDB()
+        self.collection(True)
     
     @pyqtSignature("")
     def on_actionExit_triggered(self):
@@ -514,3 +486,52 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # TODO: not implemented yet
         val = self.progSldr.value()
         self.mediaObject.seek(val)
+    
+    @pyqtSignature("")
+    def on_actionUpdate_Collection_triggered(self):
+        """
+        Slot documentation goes here.
+        """
+        # TODO: not implemented yet
+        self.collection(False)
+#        raise NotImplementedError
+
+
+    def collection(self, rebuild):
+        if rebuild:
+            # Here we change the PRIMARY KEY in the database to
+            # ON CONFLICT REPLACE as we want to rebuild.
+            return
+        else:
+            # Here we check that the PRIMARY KEY in the database is
+            # ON CONFLICT IGNORE as we want to add new files.
+            return
+        if not self.mediaDir:
+            self.on_actionEdit_triggered()         
+
+        media = []
+        
+        for root, dirname, filename in os.walk(str(self.mediaDir)):
+            for x in filename:
+                fileNow = os.path.join(root, x)                
+                if fileNow.endswith(".ogg") or fileNow.endswith(".mp3") or fileNow.endswith(".flac"):
+                    media.append(fileNow)
+                    
+        medTotal = len(media)
+        
+        # extract tags and push into database
+        # as filenames are the PRIMARY KEY the idea is only to add to 
+        # the database if the file doesn't already exist. After this the mediatree
+        # in the ui is updated. This section really is top priority.
+        self.statLbl.setText("Scanning Media")
+        for track in range(medTotal):
+            prog = int(100 * ( float(track) / float(medTotal ) ))
+            track = media[track]
+            tags = self.meta.extract(track)
+            tags.insert(0, track)
+            self.mediaDB.add_media(tags)
+            self.statProg.setValue(prog)
+        
+        self.statLbl.setText("Finished")
+        self.statProg.setValue(100)
+        self.mediaDB.lenDB()
