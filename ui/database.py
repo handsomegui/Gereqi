@@ -47,18 +47,19 @@ class media:
         primary =  self.mediaCurs.fetchall()
         print len(primary)
         
-    def queryDB(self):    
+    def queryDB(self, column):    
         """
         Ermm. Not sure what to put here yet.
         Maybe a testing thing
         """
-        self.mediaCurs.execute("SELECT * FROM history")
-        print self.mediaCurs.fetchall()
+        query = "SELECT DISTINCT %s FROM media" % column
+        self.mediaCurs.execute(query)
+        return self.mediaCurs.fetchall()
     
     def closeDBs(self):
         #TODO: not implemented yet
         print "Called when shutting down to cleanly close databases."
         self.mediaDB.commit()
         
-
+    
 

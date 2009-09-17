@@ -2,7 +2,7 @@
 
 from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, \
 QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel, \
-QProgressBar, QToolButton, QSpacerItem, QSizePolicy
+QProgressBar, QToolButton, QSpacerItem, QSizePolicy, QTreeWidgetItem
 from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, QUrl, QSize
 from PyQt4.phonon import Phonon
 import os
@@ -30,6 +30,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mediaDB = media()
         self.mediaDir = None
         self.meta = metaData()
+        self.setupDBtree()
         
         self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
         self.mediaObject = Phonon.MediaObject(self)
@@ -394,7 +395,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         When the wikiview becomes visible chances are
         it hasn't been viewed yet and needs to load
         """
-        # TODO: not implemented yet
+        # TODO: not finished yet
         #<div id="bodyContent">
         if index == 2:
 #            if self.url != self.old_url:
@@ -483,7 +484,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
-        # TODO: not implemented yet
         val = self.progSldr.value()
         self.mediaObject.seek(val)
     
@@ -492,9 +492,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
-        # TODO: not implemented yet
+        # TODO: completed yet. See self.collection
         self.collection(False)
-#        raise NotImplementedError
 
 
     def collection(self, rebuild):
@@ -506,6 +505,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Here we check that the PRIMARY KEY in the database is
             # ON CONFLICT IGNORE as we want to add new files.
             return
+            
         if not self.mediaDir:
             self.on_actionEdit_triggered()         
 
@@ -535,3 +535,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statLbl.setText("Finished")
         self.statProg.setValue(100)
         self.mediaDB.lenDB()
+        
+    def setupDBtree(self):
+        """
+        The beginnings of viewing the media database in the QTreeView
+        """
+        artists = self.mediaDB.queryDB("artist") # This gives multiples of the same thing
+        artists = sorted(artists)
+        
+        for artist in artists:
+            artist = artist[0]
+            QTreeWidgetItem(self.collectTree).setText(0,artist)

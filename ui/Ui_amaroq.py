@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
 #
-# Created: Thu Sep 17 11:12:53 2009
+# Created: Thu Sep 17 11:48:47 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -320,9 +320,9 @@ font: 75 10pt \"DejaVu Sans\";
         self.srchplyEdit.setMinimumSize(QtCore.QSize(200, 0))
         self.srchplyEdit.setObjectName("srchplyEdit")
         self.horizontalLayout_4.addWidget(self.srchplyEdit)
-        self.toolButton_3 = QtGui.QToolButton(self.layoutWidget)
-        self.toolButton_3.setObjectName("toolButton_3")
-        self.horizontalLayout_4.addWidget(self.toolButton_3)
+        self.srchPlyBttn = QtGui.QToolButton(self.layoutWidget)
+        self.srchPlyBttn.setObjectName("srchPlyBttn")
+        self.horizontalLayout_4.addWidget(self.srchPlyBttn)
         self.verticalLayout_3.addLayout(self.horizontalLayout_4)
         self.playlistTree = QtGui.QTableWidget(self.layoutWidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
@@ -532,7 +532,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.nxtplyBttn.setText(QtGui.QApplication.translate("MainWindow", "N", None, QtGui.QApplication.UnicodeUTF8))
         self.clrsrchBttn.setText(QtGui.QApplication.translate("MainWindow", "X", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MainWindow", "Search", None, QtGui.QApplication.UnicodeUTF8))
-        self.toolButton_3.setText(QtGui.QApplication.translate("MainWindow", "...", None, QtGui.QApplication.UnicodeUTF8))
+        self.srchPlyBttn.setText(QtGui.QApplication.translate("MainWindow", "...", None, QtGui.QApplication.UnicodeUTF8))
         self.playlistTree.setSortingEnabled(False)
         self.prevBttn.setText(QtGui.QApplication.translate("MainWindow", "<<", None, QtGui.QApplication.UnicodeUTF8))
         self.playBttn.setText(QtGui.QApplication.translate("MainWindow", ">", None, QtGui.QApplication.UnicodeUTF8))

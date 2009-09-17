@@ -662,7 +662,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
            </widget>
           </item>
           <item>
-           <widget class="QToolButton" name="toolButton_3">
+           <widget class="QToolButton" name="srchPlyBttn">
             <property name="text">
              <string>...</string>
             </property>
