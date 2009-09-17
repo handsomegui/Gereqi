@@ -546,6 +546,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statProg.setValue(0)
         self.statProg.setToolTip("Scanning Media")
         
+        medTotal = len(media)
+        
         for track in range(medTotal):
             prog = int(100 * ( float(track) / float(medTotal ) ))
             track = media[track]

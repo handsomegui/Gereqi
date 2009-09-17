@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Tasks SYSTEM "Tasks-4.2.dtd">
 <!-- eric4 tasks file for project amaroQ -->
-<!-- Saved: 2009-09-17, 19:15:25 -->
+<!-- Saved: 2009-09-17, 19:31:03 -->
 <Tasks version="4.2">
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: Figure out how to do custom slots, i think</Summary>
@@ -24,7 +24,7 @@
   <Task priority="1" completed="False" bugfix="True">
     <Summary>FIXME: This is a mess. Fix</Summary>
     <Description></Description>
-    <Created>2009-09-17, 18:58:17</Created>
+    <Created>2009-09-17, 19:31:01</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
       <Linenumber>22</Linenumber>
@@ -33,7 +33,7 @@
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: not finished</Summary>
     <Description></Description>
-    <Created>2009-09-17, 18:58:17</Created>
+    <Created>2009-09-17, 19:31:01</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
       <Linenumber>131</Linenumber>
@@ -42,7 +42,7 @@
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: not ifinished</Summary>
     <Description></Description>
-    <Created>2009-09-17, 18:58:17</Created>
+    <Created>2009-09-17, 19:31:01</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
       <Linenumber>139</Linenumber>
@@ -51,7 +51,7 @@
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: not completed yet</Summary>
     <Description></Description>
-    <Created>2009-09-17, 18:58:17</Created>
+    <Created>2009-09-17, 19:31:01</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
       <Linenumber>147</Linenumber>
@@ -60,7 +60,7 @@
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: not implemented yet</Summary>
     <Description></Description>
-    <Created>2009-09-17, 18:58:17</Created>
+    <Created>2009-09-17, 19:31:01</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
       <Linenumber>232</Linenumber>
@@ -69,7 +69,7 @@
   <Task priority="1" completed="False" bugfix="True">
     <Summary>FIXME: use proper states here</Summary>
     <Description></Description>
-    <Created>2009-09-17, 18:58:17</Created>
+    <Created>2009-09-17, 19:31:01</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
       <Linenumber>298</Linenumber>
@@ -78,7 +78,7 @@
   <Task priority="1" completed="False" bugfix="True">
     <Summary>FIXME: this seems to be called 3 times on every track change</Summary>
     <Description></Description>
-    <Created>2009-09-17, 18:58:17</Created>
+    <Created>2009-09-17, 19:31:01</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
       <Linenumber>314</Linenumber>
@@ -87,7 +87,7 @@
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: not implemented yet</Summary>
     <Description></Description>
-    <Created>2009-09-17, 18:58:17</Created>
+    <Created>2009-09-17, 19:31:01</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
       <Linenumber>366</Linenumber>
@@ -96,7 +96,7 @@
   <Task priority="1" completed="False" bugfix="True">
     <Summary>FIXME:clear mediaobject.currentsource</Summary>
     <Description></Description>
-    <Created>2009-09-17, 18:58:17</Created>
+    <Created>2009-09-17, 19:31:01</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
       <Linenumber>375</Linenumber>
@@ -105,7 +105,7 @@
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: not finished yet</Summary>
     <Description></Description>
-    <Created>2009-09-17, 18:58:17</Created>
+    <Created>2009-09-17, 19:31:01</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
       <Linenumber>423</Linenumber>
@@ -114,7 +114,7 @@
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: not completed yet. See self.collection</Summary>
     <Description></Description>
-    <Created>2009-09-17, 18:58:17</Created>
+    <Created>2009-09-17, 19:31:01</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
       <Linenumber>521</Linenumber>
@@ -123,10 +123,10 @@
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: at the start of new letter in alphabet create a header/separator</Summary>
     <Description></Description>
-    <Created>2009-09-17, 18:58:17</Created>
+    <Created>2009-09-17, 19:31:01</Created>
     <Resource>
       <Filename>ui/amaroq.py</Filename>
-      <Linenumber>570</Linenumber>
+      <Linenumber>572</Linenumber>
     </Resource>
   </Task>
 </Tasks>
