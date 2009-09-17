@@ -63,7 +63,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.statProg.setRange(0, 100)
         self.statProg.setValue(100)
-        self.statProg.setMaximumSize(QSize(100, 32))
+        self.statProg.setMaximumSize(QSize(100,18))
         self.statBttn.setIcon(icon)
         self.statBttn.setAutoRaise(True)
         self.statPlyTypBttn.setText("N")
@@ -341,7 +341,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if row and self.wikiView.isVisible():
                 # Prevents loading of the same url
                 if self.url != self.old_url:
-                    self.wikiView.setUrl(QUrl(self.url))
+                    print "I'm not a QWebview anymore. Sort out the html"
+#                    self.wikiView.setUrl(QUrl(self.url))
                     self.old_url = self.url
         
     def finished(self):
@@ -424,7 +425,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #<div id="bodyContent">
         if index == 2:
 #            if self.url != self.old_url:
-            self.wikiView.setUrl(QUrl(self.url))
+            print "I'm not a QWebview anymore. Fixme"
+#            self.wikiView.setUrl(QUrl(self.url))
 
     def calc_playlist(self):
         """
