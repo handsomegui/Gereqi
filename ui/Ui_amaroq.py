@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
 #
-# Created: Thu Sep 17 11:48:47 2009
+# Created: Thu Sep 17 16:54:53 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -508,7 +508,10 @@ font: 75 10pt \"DejaVu Sans\";
         self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_8), QtGui.QApplication.translate("MainWindow", "Lyrics", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_9), QtGui.QApplication.translate("MainWindow", "Wikipedia", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("MainWindow", "Context", None, QtGui.QApplication.UnicodeUTF8))
+        self.clrBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Clear Search Field", None, QtGui.QApplication.UnicodeUTF8))
         self.clrBttn.setText(QtGui.QApplication.translate("MainWindow", "X", None, QtGui.QApplication.UnicodeUTF8))
+        self.srchEdt.setToolTip(QtGui.QApplication.translate("MainWindow", "Enter search terms here", None, QtGui.QApplication.UnicodeUTF8))
+        self.toolButton_4.setToolTip(QtGui.QApplication.translate("MainWindow", "Click to edit collection filter", None, QtGui.QApplication.UnicodeUTF8))
         self.toolButton_4.setText(QtGui.QApplication.translate("MainWindow", "...", None, QtGui.QApplication.UnicodeUTF8))
         self.collectTree.headerItem().setText(0, QtGui.QApplication.translate("MainWindow", "Artist/Album", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("MainWindow", "Collection", None, QtGui.QApplication.UnicodeUTF8))
@@ -526,19 +529,31 @@ font: 75 10pt \"DejaVu Sans\";
         self.treeWidget_2.headerItem().setText(0, QtGui.QApplication.translate("MainWindow", "Artist/Album", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), QtGui.QApplication.translate("MainWindow", "Media Devices", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), QtGui.QApplication.translate("MainWindow", "Files", None, QtGui.QApplication.UnicodeUTF8))
+        self.clrplyBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Clear", None, QtGui.QApplication.UnicodeUTF8))
         self.clrplyBttn.setText(QtGui.QApplication.translate("MainWindow", "C", None, QtGui.QApplication.UnicodeUTF8))
+        self.svplyBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Save Playlist As", None, QtGui.QApplication.UnicodeUTF8))
         self.svplyBttn.setText(QtGui.QApplication.translate("MainWindow", "S", None, QtGui.QApplication.UnicodeUTF8))
+        self.prvplyBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Undo", None, QtGui.QApplication.UnicodeUTF8))
         self.prvplyBttn.setText(QtGui.QApplication.translate("MainWindow", "P", None, QtGui.QApplication.UnicodeUTF8))
+        self.nxtplyBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Redo", None, QtGui.QApplication.UnicodeUTF8))
         self.nxtplyBttn.setText(QtGui.QApplication.translate("MainWindow", "N", None, QtGui.QApplication.UnicodeUTF8))
+        self.clrsrchBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Clear search field", None, QtGui.QApplication.UnicodeUTF8))
         self.clrsrchBttn.setText(QtGui.QApplication.translate("MainWindow", "X", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("MainWindow", "Search", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("MainWindow", "Search:", None, QtGui.QApplication.UnicodeUTF8))
+        self.srchplyEdit.setToolTip(QtGui.QApplication.translate("MainWindow", "Playlist Search", None, QtGui.QApplication.UnicodeUTF8))
+        self.srchPlyBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Click to edit playlist filter", None, QtGui.QApplication.UnicodeUTF8))
         self.srchPlyBttn.setText(QtGui.QApplication.translate("MainWindow", "...", None, QtGui.QApplication.UnicodeUTF8))
         self.playlistTree.setSortingEnabled(False)
+        self.prevBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Previous Track", None, QtGui.QApplication.UnicodeUTF8))
         self.prevBttn.setText(QtGui.QApplication.translate("MainWindow", "<<", None, QtGui.QApplication.UnicodeUTF8))
+        self.playBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Play/Pause", None, QtGui.QApplication.UnicodeUTF8))
         self.playBttn.setText(QtGui.QApplication.translate("MainWindow", ">", None, QtGui.QApplication.UnicodeUTF8))
+        self.stopBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Stop", None, QtGui.QApplication.UnicodeUTF8))
         self.stopBttn.setText(QtGui.QApplication.translate("MainWindow", "O", None, QtGui.QApplication.UnicodeUTF8))
+        self.nxtBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Next Track", None, QtGui.QApplication.UnicodeUTF8))
         self.nxtBttn.setText(QtGui.QApplication.translate("MainWindow", ">>", None, QtGui.QApplication.UnicodeUTF8))
         self.muteBttn.setText(QtGui.QApplication.translate("MainWindow", "M", None, QtGui.QApplication.UnicodeUTF8))
+        self.volSldr.setToolTip(QtGui.QApplication.translate("MainWindow", "Volume Control", None, QtGui.QApplication.UnicodeUTF8))
         self.volLbl.setText(QtGui.QApplication.translate("MainWindow", "100", None, QtGui.QApplication.UnicodeUTF8))
         self.progLbl.setText(QtGui.QApplication.translate("MainWindow", "00:00", None, QtGui.QApplication.UnicodeUTF8))
         self.menuActions.setTitle(QtGui.QApplication.translate("MainWindow", "Actions", None, QtGui.QApplication.UnicodeUTF8))
