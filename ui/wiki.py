@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 import urllib
+import pycurl
 #from lxml import etree
 #from lxml.html import fromstring, parse
 #from lxml.html.soupparser import fromstring
 #from lxml import etree
-#from StringIO import StringIO
+from StringIO import StringIO
 from BeautifulSoup import BeautifulSoup
 
 class Wiki:
@@ -12,11 +13,31 @@ class Wiki:
         return
         
     def fetch(self, url):
-        print url
-        html = urllib.urlopen(url)
-        html = html.read()
+        print url, type(url)
+#        html = urllib.urlopen(url)
+#        html = html.read()
+#        
         
-        self.treat(html)
+        
+        
+        html = StringIO()
+        data = pycurl.Curl()
+        data.setopt(pycurl.URL, url)
+        data.setopt(pycurl.USERAGENT, "Firefox/3.0.10")
+        data.setopt(pycurl.FOLLOWLOCATION, 1)
+        data.setopt(pycurl.MAXREDIRS, 5)
+        data.setopt(pycurl.CONNECTTIMEOUT, 30)
+        data.setopt(pycurl.TIMEOUT, 300)
+        data.setopt(pycurl.NOSIGNAL, 1)
+        data.setopt(pycurl.WRITEFUNCTION, html.write)
+        data.perform()
+        
+        html = html.getvalue()
+#        print html[0:100]
+        content = self.treat(html)
+        
+       
+        return content
         
     # Oh jesus this is hard.
     def treat(self, html):
@@ -48,9 +69,11 @@ class Wiki:
 
         tree = BeautifulSoup(html)
         
-        print type(html)
-        print "the" in html        
-        print tree.find(text="the")
+#        print tree.contents
+#        print type(html)
+#        print "the" in html
+
+        return tree.find("div", id="bodyContent")
         
         
         

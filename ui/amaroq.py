@@ -343,9 +343,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if row and self.wikiView.isVisible():
                 # Prevents loading of the same url
                 if self.url != self.old_url:
-#                    print "I'm not a QWebview anymore. Sort out the html"
-                    self.wikipedia.fetch(self.url)
-#                    self.wikiView.setUrl(QUrl(self.url))
+                    html = self.wikipedia.fetch(str(self.url))
+                    self.wikiView.setHtml(str(html))
                     self.old_url = self.url
         
     def finished(self):
@@ -425,13 +424,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         it hasn't been viewed yet and needs to load
         """
         # TODO: not finished yet
-        #<div id="bodyContent">
         if index == 2:
 #            if self.url != self.old_url:
-#            print "I'm not a QWebview anymore. Fixme"
-            print type(self.url)
-            self.wikipedia.fetch(str(self.url))
-#            self.wikiView.setUrl(QUrl(self.url))
+            html = self.wikipedia.fetch(str(self.url))
+            print type(html)
+            self.wikiView.setHtml(str(html))
 
     def calc_playlist(self):
         """
