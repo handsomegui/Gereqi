@@ -35,6 +35,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupDBtree()
         self.wikipedia = Wiki()
         self.windowShow = True
+        self.playing = False # replace with Phonon.state
         
         self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
         self.mediaObject = Phonon.MediaObject(self)
@@ -598,11 +599,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def trayEvent(self, event):
         if event == 3:
             if self.windowShow:
-                state = False
+                self.minimiseTray(False)
             else:
-                state = True            
-            print state
-            self.minimiseTray(state)
+                self.minimiseTray(True)            
             
         elif event == 4:
-            print "Play/Pause"
+            if self.playing:
+                self.on_playBttn_toggled(False)
+            else:
+                self.on_playBttn_toggled(True)
