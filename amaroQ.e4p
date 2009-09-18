@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.6.dtd">
 <!-- eric4 project file for project amaroQ -->
-<!-- Saved: 2009-09-13, 21:41:02 -->
+<!-- Saved: 2009-09-18, 21:31:35 -->
 <!-- Copyright (C) 2009 ,  -->
 <Project version="4.6">
   <Language>en</Language>
@@ -21,6 +21,7 @@
     <Source>ui/database.py</Source>
     <Source>ui/settings.py</Source>
     <Source>ui/metadata.py</Source>
+    <Source>ui/wiki.py</Source>
   </Sources>
   <Forms>
     <Form>ui/amaroq.ui</Form>

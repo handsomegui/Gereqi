@@ -317,9 +317,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def stateChanged(self, old, new):
         print "State Changed", old, new
         self.setProgSldr()
-        if self.mediaObject.currentSource():
+        
+        # If there is any files in the playlist i.e. len(self.sources) > 0
+        if self.sources:
             row = self.sources.index(self.mediaObject.currentSource())
-#        print row, index
         
             if self.track_changing:
                 self.track_changing = False
@@ -343,6 +344,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if row and self.wikiView.isVisible():
                 # Prevents loading of the same url
                 if self.url != self.old_url:
+                    
+                    #TODO: Thread this. Put into own function first
                     html = self.wikipedia.fetch(str(self.url))
                     self.wikiView.setHtml(str(html))
                     self.old_url = self.url
@@ -364,9 +367,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSignature("bool")
     def on_actionMinimise_to_Tray_triggered(self, checked):
         """
-        Slot documentation goes here.
+        Things to do when ui is minimised
         """
-        # TODO: not implemented yet
         self.minimiseTray(checked)
     
     @pyqtSignature("")
@@ -375,7 +377,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Clear current playlist and if no music playing
         clear self.mediaObject
         """
-        #FIXME:clear mediaobject.currentsource
         self.sources = []
         self.playlistTree.clearContents()
         rows = self.playlistTree.rowCount()
@@ -384,8 +385,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for x in range(rows, -1, -1):
             self.playlistTree.removeRow(x)
         
-        if self.mediaObject.state() == 0:
-            self.mediaObject.clearQueue()
+        self.mediaObject.clearQueue()
     
     @pyqtSignature("")
     def on_clrplyBttn_clicked(self):

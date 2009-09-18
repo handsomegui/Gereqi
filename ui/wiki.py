@@ -13,7 +13,7 @@ class Wiki:
 #        return
         
     def fetch(self, url):
-        print url, type(url)
+#        print url, type(url)
 #        html = urllib.urlopen(url)
 #        html = html.read()
 #        
