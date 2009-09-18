@@ -342,13 +342,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
             self.url = "http://www.en.wikipedia.org/wiki/%s" % artist
             if row and self.wikiView.isVisible():
-                # Prevents loading of the same url
-                if self.url != self.old_url:
-                    
-                    #TODO: Thread this. Put into own function first
-                    html = self.wikipedia.fetch(str(self.url))
-                    self.wikiView.setHtml(str(html))
-                    self.old_url = self.url
+                self.setWiki()
         
     def finished(self):
         self.progSldr.setValue(0)
@@ -425,10 +419,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         # TODO: not finished yet
         if index == 2:
-            if self.url != self.old_url:
-                html = self.wikipedia.fetch(str(self.url))
-                self.wikiView.setHtml(str(html))
-                self.old_url = self.url
+            self.setWiki()
 
     def calc_playlist(self):
         """
@@ -488,6 +479,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playlistTree.setItem(currentRow, 5, genreItem)
         self.playlistTree.setItem(currentRow, 6, fileItem)
 
+#TODO: figure out the below
         # I honestly cannot remember what this commented section does
 #        source = self.metaInformationResolver.currentSource() # This seems to be looking up something I don't think it is
 #        if not self.playlistTree.selectedItems():
@@ -588,3 +580,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 album = QStringList(album)                
                 album = QTreeWidgetItem(album)
                 artist.addChild(album)
+
+#TODO: Thread me!
+    def setWiki(self):
+        """
+        The wikipedia page to current artist playing
+        """
+        if self.url != self.old_url:
+            html = self.wikipedia.fetch(str(self.url))
+            self.wikiView.setHtml(str(html))
+            self.old_url = self.url

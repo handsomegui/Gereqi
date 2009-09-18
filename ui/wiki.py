@@ -1,24 +1,21 @@
 #!/usr/bin/env python
-#import urllib
+
 import pycurl
+from StringIO import StringIO
+from BeautifulSoup import BeautifulSoup
+#import urllib
 #from lxml import etree
 #from lxml.html import fromstring, parse
 #from lxml.html.soupparser import fromstring
 #from lxml import etree
-from StringIO import StringIO
-from BeautifulSoup import BeautifulSoup
+
+#TODO: Put the url creation/handling in here
 
 class Wiki:
-#    def __init__(self):
-#        return
-        
     def fetch(self, url):
 #        print url, type(url)
 #        html = urllib.urlopen(url)
 #        html = html.read()
-#        
-        
-        
         
         html = StringIO()
         data = pycurl.Curl()
@@ -33,9 +30,7 @@ class Wiki:
         data.perform()
         
         html = html.getvalue()
-#        print html[0:100]
-        content = self.treat(html)
-        
+        content = self.treat(html)      
        
         return content
         
