@@ -34,6 +34,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.meta = metaData()
         self.setupDBtree()
         self.wikipedia = Wiki()
+        self.windowShow = True
         
         self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
         self.mediaObject = Phonon.MediaObject(self)
@@ -124,6 +125,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.trayIcon = QSystemTrayIcon(self)
         self.trayIcon.setIcon(icon)
         self.trayIcon.setContextMenu(self.trayIconMenu)
+        
+        self.connect(self.trayIcon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.trayEvent)
     
     @pyqtSignature("")
     def on_clrBttn_pressed(self):
@@ -351,10 +354,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     def minimiseTray(self, state):
         if state:
-            self.show()
+            self.show()            
         else:
             self.hide()
             
+        self.windowShow = state
         self.viewAction.setChecked(state)
         self.actionMinimise_to_Tray.setChecked(state)
         
@@ -590,3 +594,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             html = self.wikipedia.fetch(str(self.url))
             self.wikiView.setHtml(str(html))
             self.old_url = self.url
+
+    def trayEvent(self, event):
+        if event == 3:
+            if self.windowShow:
+                state = False
+            else:
+                state = True            
+            print state
+            self.minimiseTray(state)
+            
+        elif event == 4:
+            print "Play/Pause"
