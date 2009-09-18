@@ -339,7 +339,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
             self.playlistTree.selectRow(row) # Yeah. This isn't right
     
-            self.url = "http://www.wikipedia.com/wiki/%s" % artist
+            self.url = "http://www.en.wikipedia.org/wiki/%s" % artist
             if row and self.wikiView.isVisible():
                 # Prevents loading of the same url
                 if self.url != self.old_url:
