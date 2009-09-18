@@ -13,6 +13,7 @@ from Ui_amaroq import Ui_MainWindow
 import resource_rc
 from database import media
 from metadata import metaData
+from wiki import Wiki
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     """
@@ -32,6 +33,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mediaDir = None
         self.meta = metaData()
         self.setupDBtree()
+        self.wikipedia = Wiki()
         
         self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
         self.mediaObject = Phonon.MediaObject(self)
@@ -341,7 +343,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if row and self.wikiView.isVisible():
                 # Prevents loading of the same url
                 if self.url != self.old_url:
-                    print "I'm not a QWebview anymore. Sort out the html"
+#                    print "I'm not a QWebview anymore. Sort out the html"
+                    self.wikipedia.fetch(self.url)
 #                    self.wikiView.setUrl(QUrl(self.url))
                     self.old_url = self.url
         
@@ -425,7 +428,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #<div id="bodyContent">
         if index == 2:
 #            if self.url != self.old_url:
-            print "I'm not a QWebview anymore. Fixme"
+#            print "I'm not a QWebview anymore. Fixme"
+            print type(self.url)
+            self.wikipedia.fetch(str(self.url))
 #            self.wikiView.setUrl(QUrl(self.url))
 
     def calc_playlist(self):
