@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import urllib
+#import urllib
 import pycurl
 #from lxml import etree
 #from lxml.html import fromstring, parse
@@ -9,8 +9,8 @@ from StringIO import StringIO
 from BeautifulSoup import BeautifulSoup
 
 class Wiki:
-    def __init__(self):
-        return
+#    def __init__(self):
+#        return
         
     def fetch(self, url):
         print url, type(url)
@@ -39,7 +39,7 @@ class Wiki:
        
         return content
         
-    # Oh jesus this is hard.
+    # Try and see if lxml will work again after the issue was urllib all along
     def treat(self, html):
 #        <div id="bodyContent">
 #        parser = etree.XMLParser(ns_clean=True)
@@ -67,12 +67,12 @@ class Wiki:
 
 #        root = fromstring(html)
 
-        tree = BeautifulSoup(html)
+
         
 #        print tree.contents
 #        print type(html)
 #        print "the" in html
-
+        tree = BeautifulSoup(html)
         return tree.find("div", id="bodyContent")
         
         

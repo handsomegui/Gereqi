@@ -425,10 +425,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         # TODO: not finished yet
         if index == 2:
-#            if self.url != self.old_url:
-            html = self.wikipedia.fetch(str(self.url))
-            print type(html)
-            self.wikiView.setHtml(str(html))
+            if self.url != self.old_url:
+                html = self.wikipedia.fetch(str(self.url))
+                self.wikiView.setHtml(str(html))
+                self.old_url = self.url
 
     def calc_playlist(self):
         """

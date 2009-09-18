@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
 #
-# Created: Thu Sep 17 23:45:56 2009
+# Created: Fri Sep 18 20:47:26 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -32,7 +32,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
         self.tabWidget.setSizePolicy(sizePolicy)
         self.tabWidget.setMinimumSize(QtCore.QSize(250, 0))
-        self.tabWidget.setMaximumSize(QtCore.QSize(300, 16777215))
+        self.tabWidget.setMaximumSize(QtCore.QSize(400, 16777215))
         self.tabWidget.setTabPosition(QtGui.QTabWidget.West)
         self.tabWidget.setDocumentMode(True)
         self.tabWidget.setObjectName("tabWidget")
@@ -127,12 +127,8 @@ font: 75 10pt \"DejaVu Sans\";
         self.gridLayout_4 = QtGui.QGridLayout(self.tab_9)
         self.gridLayout_4.setMargin(2)
         self.gridLayout_4.setObjectName("gridLayout_4")
-        self.wikiView = QtGui.QTextBrowser(self.tab_9)
-        self.wikiView.setFrameShape(QtGui.QFrame.NoFrame)
-        self.wikiView.setFrameShadow(QtGui.QFrame.Plain)
-        self.wikiView.setAcceptRichText(False)
-        self.wikiView.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
-        self.wikiView.setOpenLinks(False)
+        self.wikiView = QtWebKit.QWebView(self.tab_9)
+        self.wikiView.setUrl(QtCore.QUrl("about:blank"))
         self.wikiView.setObjectName("wikiView")
         self.gridLayout_4.addWidget(self.wikiView, 0, 0, 1, 1)
         self.tabWidget_2.addTab(self.tab_9, "")
@@ -504,7 +500,7 @@ font: 75 10pt \"DejaVu Sans\";
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(1)
-        self.tabWidget_2.setCurrentIndex(2)
+        self.tabWidget_2.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -518,11 +514,6 @@ font: 75 10pt \"DejaVu Sans\";
         self.label_5.setText(QtGui.QApplication.translate("MainWindow", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_6), QtGui.QApplication.translate("MainWindow", "Home", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_8), QtGui.QApplication.translate("MainWindow", "Lyrics", None, QtGui.QApplication.UnicodeUTF8))
-        self.wikiView.setHtml(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Liberation Sans\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_9), QtGui.QApplication.translate("MainWindow", "Wikipedia", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("MainWindow", "Context", None, QtGui.QApplication.UnicodeUTF8))
         self.clrBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Clear Search Field", None, QtGui.QApplication.UnicodeUTF8))
@@ -596,6 +587,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.actionHelp.setText(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
         self.actionHelp.setShortcut(QtGui.QApplication.translate("MainWindow", "F1", None, QtGui.QApplication.UnicodeUTF8))
 
+from PyQt4 import QtWebKit
 import resource_rc
 
 if __name__ == "__main__":
