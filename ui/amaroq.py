@@ -323,7 +323,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
         if t_now == QTime(0, 0, 0):
             self.track_changing = True #FIXME: this cannot be the only way
-            self.stateChanged(None, None) #FIXME: use proper states here
+            # Used because no Phonon.state when the mediaobject goes to next queued track
+            # 2,3 is the same sig as when next/prev buttons are used
+            self.stateChanged(2, 3) 
         self.progLbl.setText("%s | %s" % (t_now.toString('mm:ss'), self.t_length.toString('mm:ss')))
         self.progSldr.setValue(time)
     
@@ -333,14 +335,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # However, the higlighting of a row is not permanent. Even if it's recorded
         # the position would be wrong after a resort. 
         
-        
-        index = self.sources.index(self.mediaObject.currentSource()) + 1
-        if len(self.sources) > index:
-            self.mediaObject.enqueue(self.sources[index])
-            self.track_changing = True
+        track = self.genTrack("next")
+        self.mediaObject.enqueue(track)
+        self.track_changing = True
+#        index = self.sources.index(self.mediaObject.currentSource()) + 1
+#        if len(self.sources) > index:
+#            self.mediaObject.enqueue(self.sources[index])
+#            self.track_changing = True
             
     def setProgSldr(self):
         length = self.mediaObject.totalTime()
+        self.progSldr.setValue(0)
         self.progSldr.setRange(0, length)
         self.t_length = QTime(0, (length / 60000) % 60, (length / 1000) % 60)
             
@@ -349,31 +354,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.oldState = new
         self.setProgSldr()
         
-        # If there is any files in the playlist i.e. len(self.sources) > 0
-#        if self.sources:
-#            row = self.sources.index(self.mediaObject.currentSource())
-#        
-#            if self.track_changing:
-#                self.track_changing = False
-#                
-#            title = self.playlistTree.item(row, 1).text()
-#            artist = self.playlistTree.item(row, 2).text()
-#            
-#            if self.playing:
-#                message = "%s by %s" % (title, artist)
-#                self.trayIcon.showMessage(QString("Now Playing"), QString(message), QSystemTrayIcon.NoIcon, 3000)
-#                title = self.playlistTree.item(row, 1).text()
-#                artist = self.playlistTree.item(row, 2).text()
-#                album = self.playlistTree.item(row, 3).text()
-#                time =  self.t_length.toString('mm:ss')
-#                message = "Playing: %s by %s on %s (%s)" % (title, artist, album, time)
-#                self.statLbl.setText(message)
-#    
-#            self.playlistTree.selectRow(row) # Yeah. This isn't right
-#    
-#            self.url = "http://www.en.wikipedia.org/wiki/%s" % artist
-#            if row and self.wikiView.isVisible():
-#                self.setWiki()
+        if old == 2 and new == 3:
+            self.genInfo()
+        
         
     def finished(self):
         self.progSldr.setValue(0)
@@ -478,11 +461,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.play_norm = True
         
     def add2playlist(self, fileName, info):
-         # I'm certain that this would prevent playlist sorting
-         # unless if it's possible to sort self.sources so that it matches
-         # the playlist, get rid of self.sources
-#        self.sources.append(Phonon.MediaSource(fileName))
-        
+        """
+        Called when adding tracks tot he playlist either locally
+        or from the database. Does not pull metadata from 
+        the database and is passed into the function directly
+        """
         
         track = "%02.u" % info[0]
         trackItem = QTableWidgetItem(track)
@@ -656,12 +639,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             current = self.mediaObject.currentSource().fileName()
             rows = self.playlistTree.rowCount() 
-#            if mode == "back":
-#                inc = (-1)
-#            elif mode == "next":
-#                inc = 1
-        
-#            print inc
             for row in range(rows):
                 fileName = self.playlistTree.item(row, column).text()
                 
@@ -679,29 +656,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return track
         
     def genInfo(self):
+        # This retrieves data from the playlist table, not the database. This is because
+        # the playlist may contain tracks added locally.
+        column = 6
+        rows = self.playlistTree.rowCount() 
         fileName = self.mediaObject.currentSource().fileName()
-        
-        if self.sources:
-#            row = self.sources.index(self.mediaObject.currentSource())
-        
-            if self.track_changing:
-                self.track_changing = False
+        for row in range(rows):
+            item = self.playlistTree.item(row, column).text()
+            if item == fileName:
+                row = row
+                break
                 
-            title = self.playlistTree.item(row, 1).text()
-            artist = self.playlistTree.item(row, 2).text()
-            
-            if self.playing:
-                message = "%s by %s" % (title, artist)
-                self.trayIcon.showMessage(QString("Now Playing"), QString(message), QSystemTrayIcon.NoIcon, 3000)
-                title = self.playlistTree.item(row, 1).text()
-                artist = self.playlistTree.item(row, 2).text()
-                album = self.playlistTree.item(row, 3).text()
-                time =  self.t_length.toString('mm:ss')
-                message = "Playing: %s by %s on %s (%s)" % (title, artist, album, time)
-                self.statLbl.setText(message)
-    
-            self.playlistTree.selectRow(row) # Yeah. This isn't right
-    
-            self.url = "http://www.en.wikipedia.org/wiki/%s" % artist
-            if row and self.wikiView.isVisible():
-                self.setWiki()
+        title = self.playlistTree.item(row, 1).text()
+        artist = self.playlistTree.item(row, 2).text()
+        album = self.playlistTree.item(row, 3).text()
+        
+        message = "%s by %s" % (title, artist)
+        self.trayIcon.showMessage(QString("Now Playing"), QString(message), QSystemTrayIcon.NoIcon, 3000)
+        
+        message = "Playing: %s by %s on %s" % (title, artist, album)
+        self.statLbl.setText(message)
+
+        self.playlistTree.selectRow(row) 
+
+        self.url = "http://www.en.wikipedia.org/wiki/%s" % artist
+        if row and self.wikiView.isVisible():
+            self.setWiki()
