@@ -41,7 +41,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.metaInformationResolver = Phonon.MediaObject(self)
         Phonon.createPath(self.mediaObject, self.audioOutput)
         self.mediaObject.setTickInterval(1000)
-        self.sources = []
         self.audioOutput.setVolume(1)
         self.url = "about:blank"
         self.old_url = self.url
@@ -283,7 +282,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         self.trUtf8("*.flac;;*.mp3;;*.ogg"))       
            
         if mfiles:
-            index = len(self.sources)
             for item in mfiles:
                 if item.endsWith(".ogg") or item.endsWith(".mp3") or item.endsWith(".flac"):
                     
@@ -364,7 +362,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Clear current playlist and if no music playing
         clear self.mediaObject
         """
-        self.sources = []
         self.playlistTree.clearContents()
         rows = self.playlistTree.rowCount()
         
@@ -414,22 +411,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if index == 2:
             self.setWiki()
 
-    def calc_playlist(self):
-        """
-        Bunch of arse.
-        """
-        time = 0
-        media_obj = Phonon.MediaObject()
-        for n in range(len(self.sources)):
-            obj = media_obj.setCurrentSource(self.sources[n])
-            t1 = obj.totalTime()
-            print t1
-            time += t1
-            
-        total_time = QTime(0, (time / 60000) % 60, (ltime / 1000) % 60)
-        total_time = total_time.toString('mm:ss')
-        print total_time
-        
     def play_type(self, checked):
         if checked:
             self.statPlyTypBttn.setText("R")
@@ -475,22 +456,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playlistTree.setItem(currentRow, 4, yearItem)
         self.playlistTree.setItem(currentRow, 5, genreItem)
         self.playlistTree.setItem(currentRow, 6, fileItem)
+        
+        # Figured out what the deleted section was supposed to do.
+        # If the playlist was empty it would add2playlist tracks and enque 
+        # the 1st track so playBttn would do something when 1st pressed.
+        # It would also select the 1st row in the playlist. It did something else 
+        # to do with appending the playlist but I've no idea. 
 
-#TODO: figure out the below
-        # I honestly cannot remember what this commented section does
-#        source = self.metaInformationResolver.currentSource() # This seems to be looking up something I don't think it is
-#        if not self.playlistTree.selectedItems():
-#            print "Spam"
-#            self.playlistTree.selectRow(0)
-#            self.mediaObject.setCurrentSource(source)
-#
-#
-#        print source, self.sources[0]
-#        val = self.sources.index(source)+ 1
-#
-#        if len(self.sources) > val:
-#            self.metaInformationResolver.setCurrentSource(self.sources[val])
-#        else:
         self.playlistTree.resizeColumnsToContents()
         if self.playlistTree.columnWidth(0) > 300:
                 self.playlistTree.setColumnWidth(0, 300)
