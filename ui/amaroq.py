@@ -49,6 +49,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.old_url = self.url
         self.playing = False # Had to as using mediaObject.state is fucking shit and useless
         self.track_changing = False
+        self.oldState  = 1
         
         self.setupExtra()
         self.createActions()
@@ -152,6 +153,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         # TODO: not completed yet
         album = item.text(column)
+        self.genPlylst()
         
         try:
             artist= item.parent().text(0)
@@ -186,7 +188,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Slot documentation goes here.
         """
         self.stopBttn.setEnabled(True)
+#        state = self.mediaObject.state()
+#        print state
+        
         if checked:
+            # Need to check if paused or stopped state
+            if self.oldState == 1:
+                self.genPlylst()
+                
             self.mediaObject.play()
             self.playBttn.setIcon(QIcon(QPixmap(":/Icons/media-playback-pause.png")))
         else:
@@ -214,6 +223,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Go to next item in playlist(down)
         """
+        self.genPlylst()
         row = self.playlistTree.currentRow() + 1
         if row < len(self.sources):
             self.playlistTree.selectRow(row)
@@ -286,7 +296,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         When item is doubleclicked. Play its row.
         """
-        print row, column
+#        print row, column
         self.mediaObject.stop()
         self.mediaObject.setCurrentSource(self.sources[row])
         self.mediaObject.play()
@@ -296,17 +306,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     def tick(self, time):
         """
-        Every second update time labels and progres slider
+        Every second update time labels and progress slider
         """
         t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
         if t_now == QTime(0, 0, 0):
-            self.track_changing = True
+            self.track_changing = True #FIXME: this cannot be the only way
             self.stateChanged(None, None) #FIXME: use proper states here
         self.progLbl.setText("%s | %s" % (t_now.toString('mm:ss'), self.t_length.toString('mm:ss')))
         self.progSldr.setValue(time)
     
     def aboutToFinish(self):
-        # Needs to select next track in playlist
+        # Needs to select next track in playlist not self.sources
+        # This would allow playlist sorting
+        # However, the higlighting of a row is not permanent. Even if it's recorded
+        # the position would be wrong after a resort. 
+        
+        
         index = self.sources.index(self.mediaObject.currentSource()) + 1
         if len(self.sources) > index:
             self.mediaObject.enqueue(self.sources[index])
@@ -319,7 +334,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
 #FIXME: this seems to be called 3 times on every track change
     def stateChanged(self, old, new):
-        print "State Changed", old, new
+        self.oldState = new
         self.setProgSldr()
         
         # If there is any files in the playlist i.e. len(self.sources) > 0
@@ -452,7 +467,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     def add2playlist(self, fileName, info):
         
+         # I'm certain that this would prevent playlist sorting
+         # unless if it's possible to sort self.sources so that it matches
+         # the playlist, get rid of self.sources
         self.sources.append(Phonon.MediaSource(fileName))
+        
         
         trackItem = QTableWidgetItem(str(info[0]))
         trackItem.setFlags(trackItem.flags() ^ Qt.ItemIsEditable)
@@ -597,6 +616,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.old_url = self.url
 
     def trayEvent(self, event):
+        """
+        Things to perform on user-interaction of the tray icon
+        other than bringing up it's menu
+        """
         if event == 3:
             if self.windowShow:
                 self.minimiseTray(False)
@@ -608,3 +631,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.on_playBttn_toggled(False)
             else:
                 self.on_playBttn_toggled(True)
+
+    def genPlylst(self):
+        """
+        As the playlist changes on sorting, the playlist has
+        to be regenerated before the queing of the next track
+        """
+        
+        current = self.mediaObject.currentSource().fileName()
+        rows = self.playlistTree.rowCount() 
+        
+        print current
+        column = 6 # So that it can be dynamic later on when columns can be moved
+        for row in range(rows):
+            fileName = self.playlistTree.item(row, column)
+            fileName = fileName.text()
+            
+            if fileName == current:
+                nxtTrack = self.playlistTree.item(row + 1, column)
+                nxtTrack = nxtTrack.text()
+#                print nxtTrack
+                break
+        

@@ -9,8 +9,6 @@ from lxml.html import fromstring, tostring
 
 class Wiki:
     def fetch(self, url):
-        print url, type(url)
-        
 #403's
 #        req = Request(url)
 #        try:
