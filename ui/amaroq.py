@@ -153,7 +153,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         # TODO: not completed yet
         album = item.text(column)
-        self.genPlylst()
+#        self.genTrack("now")
         
         try:
             artist= item.parent().text(0)
@@ -176,8 +176,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if row >= 0:
             self.playlistTree.selectRow(row)
             self.mediaObject.stop()
-            self.mediaObject.setCurrentSource(self.sources[row])
-            if self.playing:
+#            self.mediaObject.setCurrentSource(self.sources[row])
+            self.genTrack("back")
+            if not self.playing:
                 self.mediaObject.play()
 
     # Because of the 2 signals that can trigger this, it's possible
@@ -193,8 +194,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         if checked:
             # Need to check if paused or stopped state
-            if self.oldState == 1:
-                self.genPlylst()
+#            if self.oldState == 1:
+#                self.genTrack("now")
                 
             self.mediaObject.play()
             self.playBttn.setIcon(QIcon(QPixmap(":/Icons/media-playback-pause.png")))
@@ -223,7 +224,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Go to next item in playlist(down)
         """
-        self.genPlylst()
+        self.genTrack("next")
         row = self.playlistTree.currentRow() + 1
         if row < len(self.sources):
             self.playlistTree.selectRow(row)
@@ -296,9 +297,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         When item is doubleclicked. Play its row.
         """
-#        print row, column
         self.mediaObject.stop()
-        self.mediaObject.setCurrentSource(self.sources[row])
+
+        track = self.genTrack("now", row)
+        self.mediaObject.setCurrentSource(track)
         self.mediaObject.play()
         self.playBttn.setChecked(True) 
         self.playAction.setChecked(True)
@@ -338,30 +340,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setProgSldr()
         
         # If there is any files in the playlist i.e. len(self.sources) > 0
-        if self.sources:
-            row = self.sources.index(self.mediaObject.currentSource())
-        
-            if self.track_changing:
-                self.track_changing = False
-                
-            title = self.playlistTree.item(row, 1).text()
-            artist = self.playlistTree.item(row, 2).text()
-            
-            if self.playing:
-                message = "%s by %s" % (title, artist)
-                self.trayIcon.showMessage(QString("Now Playing"), QString(message), QSystemTrayIcon.NoIcon, 3000)
-                title = self.playlistTree.item(row, 1).text()
-                artist = self.playlistTree.item(row, 2).text()
-                album = self.playlistTree.item(row, 3).text()
-                time =  self.t_length.toString('mm:ss')
-                message = "Playing: %s by %s on %s (%s)" % (title, artist, album, time)
-                self.statLbl.setText(message)
-    
-            self.playlistTree.selectRow(row) # Yeah. This isn't right
-    
-            self.url = "http://www.en.wikipedia.org/wiki/%s" % artist
-            if row and self.wikiView.isVisible():
-                self.setWiki()
+#        if self.sources:
+#            row = self.sources.index(self.mediaObject.currentSource())
+#        
+#            if self.track_changing:
+#                self.track_changing = False
+#                
+#            title = self.playlistTree.item(row, 1).text()
+#            artist = self.playlistTree.item(row, 2).text()
+#            
+#            if self.playing:
+#                message = "%s by %s" % (title, artist)
+#                self.trayIcon.showMessage(QString("Now Playing"), QString(message), QSystemTrayIcon.NoIcon, 3000)
+#                title = self.playlistTree.item(row, 1).text()
+#                artist = self.playlistTree.item(row, 2).text()
+#                album = self.playlistTree.item(row, 3).text()
+#                time =  self.t_length.toString('mm:ss')
+#                message = "Playing: %s by %s on %s (%s)" % (title, artist, album, time)
+#                self.statLbl.setText(message)
+#    
+#            self.playlistTree.selectRow(row) # Yeah. This isn't right
+#    
+#            self.url = "http://www.en.wikipedia.org/wiki/%s" % artist
+#            if row and self.wikiView.isVisible():
+#                self.setWiki()
         
     def finished(self):
         self.progSldr.setValue(0)
@@ -466,11 +468,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.play_norm = True
         
     def add2playlist(self, fileName, info):
-        
          # I'm certain that this would prevent playlist sorting
          # unless if it's possible to sort self.sources so that it matches
          # the playlist, get rid of self.sources
-        self.sources.append(Phonon.MediaSource(fileName))
+#        self.sources.append(Phonon.MediaSource(fileName))
         
         
         trackItem = QTableWidgetItem(str(info[0]))
@@ -632,24 +633,58 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 self.on_playBttn_toggled(True)
 
-    def genPlylst(self):
+    def genTrack(self, mode, row=None):
         """
         As the playlist changes on sorting, the playlist has
         to be regenerated before the queing of the next track
         """
-        
-        current = self.mediaObject.currentSource().fileName()
-        rows = self.playlistTree.rowCount() 
-        
-        print current
         column = 6 # So that it can be dynamic later on when columns can be moved
-        for row in range(rows):
-            fileName = self.playlistTree.item(row, column)
-            fileName = fileName.text()
+        if mode == "now":
+            print row
+            track = self.playlistTree.item(row, column).text()
             
-            if fileName == current:
-                nxtTrack = self.playlistTree.item(row + 1, column)
-                nxtTrack = nxtTrack.text()
-#                print nxtTrack
-                break
+        else:
+            current = self.mediaObject.currentSource().fileName()
+            rows = self.playlistTree.rowCount() 
+            if mode == "back":
+                inc = -1
+            elif mode == "next":
+                inc = 1
         
+            print current
+           
+            for row in range(rows):
+                fileName = self.playlistTree.item(row, column).text()
+                
+                if fileName == current:
+                    track = self.playlistTree.item(row + inc, column).text()
+                    
+        print track
+        track = Phonon.MediaSource(track)        
+        return track
+        
+    def genInfo(self, fileName):
+        if self.sources:
+#            row = self.sources.index(self.mediaObject.currentSource())
+        
+            if self.track_changing:
+                self.track_changing = False
+                
+            title = self.playlistTree.item(row, 1).text()
+            artist = self.playlistTree.item(row, 2).text()
+            
+            if self.playing:
+                message = "%s by %s" % (title, artist)
+                self.trayIcon.showMessage(QString("Now Playing"), QString(message), QSystemTrayIcon.NoIcon, 3000)
+                title = self.playlistTree.item(row, 1).text()
+                artist = self.playlistTree.item(row, 2).text()
+                album = self.playlistTree.item(row, 3).text()
+                time =  self.t_length.toString('mm:ss')
+                message = "Playing: %s by %s on %s (%s)" % (title, artist, album, time)
+                self.statLbl.setText(message)
+    
+            self.playlistTree.selectRow(row) # Yeah. This isn't right
+    
+            self.url = "http://www.en.wikipedia.org/wiki/%s" % artist
+            if row and self.wikiView.isVisible():
+                self.setWiki()
