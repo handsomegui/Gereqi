@@ -5,18 +5,23 @@ from StringIO import StringIO
 #from urllib2 import urlopen, Request, URLError
 from lxml.html import fromstring, tostring
 
-#TODO: Put the url creation/handling in here
-#http://www.google.co.uk/search?hl=en&q=wikipedia+audioslave+music&btnI=745
-
 class Wiki:
+    
+    #TODO:finish
     def createUrl(self, artist):
-        url = artist.split(" ")
-        url = "+".join(url)
-        url = "http://www.google.com/search?hl=en&q=wikipedia+%s+music&btnI=745" % url
+        """
+        As i'm not using the api some url hackery has
+        to be performed. Not finished.
+        """
+        exc = '''!,.%%$&(){}[]'''
+        url = ''.join([c for c in artist if c not in exc])
+        url = url.replace(" ", "+")
         print url
+        url = "http://www.google.com/search?hl=en&q=wikipedia+%s+band+artist&btnI=745" % url
         return url
         
     def fetch(self, artist):
+#TODO:get urllib2 to works
 #403's
 #        req = Request(url)
 #        try:
@@ -43,9 +48,11 @@ class Wiki:
        
         return content
         
-    # Try and see if lxml will work again after the issue was urllib all along
     def treat(self, html):
-   
+        """
+        Goes through, hopefully, a wikipedia page looking for data
+        between div tags with id 'bodyContent'
+        """
         # This appears to be considerably quicker than beatifulsoup
         tree = fromstring(html)        
         try:

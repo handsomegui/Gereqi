@@ -2,7 +2,8 @@
 from pysqlite2 import dbapi2 as sqlite
 from os import mkdir, getenv, path, remove
 
-    
+#TODO: stats database
+
 class media:
     def __init__(self):
 
