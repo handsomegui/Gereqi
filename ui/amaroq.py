@@ -35,6 +35,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupDBtree()
         self.wikipedia = Wiki()
         self.windowShow = True
+        self.playRandom = False
         
         self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
         self.mediaObject = Phonon.MediaObject(self)
@@ -44,7 +45,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.audioOutput.setVolume(1)
         self.url = "about:blank"
         self.old_url = self.url
-        self.oldState  = 1
         
         self.setupExtra()
         self.createActions()
@@ -138,7 +138,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
-        # TODO: not ifinished
+        # TODO: not finished
         print self.srchEdt.text()
     
     @pyqtSignature("QTreeWidgetItem*, int")
@@ -240,10 +240,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSignature("")
     def on_actionEdit_triggered(self):
         """
-        Slot documentation goes here.
+       Brings up the settings Dialog
         """
-        # TODO: not implemented yet
-#        raise NotImplementedError
+        # TODO: not finished yet
         dialog = settingDlg(self)
         
         if dialog.exec_():
@@ -323,9 +322,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.progSldr.setRange(0, length)
         self.t_length = QTime(0, (length / 60000) % 60, (length / 1000) % 60)
             
-#FIXME: this seems to be called 3 times on every track change
     def stateChanged(self, old, new):
-        self.oldState = new
         self.setProgSldr()
         
         if old == 2 and new == 3:
@@ -342,7 +339,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.hide()
             
-        self.windowShow = state
+        self.windowShow = state #FIXME:Try and replace with a PyQt4 function
         self.viewAction.setChecked(state)
         self.actionMinimise_to_Tray.setChecked(state)
         
@@ -411,10 +408,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def play_type(self, checked):
         if checked:
             self.statPlyTypBttn.setText("R")
-            self.play_norm = False
+            self.playRandom = True
         else:
             self.statPlyTypBttn.setText("N")
-            self.play_norm = True
+            self.playRandom = False
         
     def add2playlist(self, fileName, info):
         """
@@ -530,17 +527,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         artists = self.mediaDB.queryDB("artist") # This gives multiples of the same thing
         artists = sorted(artists)
+        oldChar= None
+        char = None
         
         #TODO: at the start of new letter in alphabet create a header/separator
-        for artist in artists:            
-            artist = artist[0]
+        for artist in artists:
+            print oldChar
+            artist = str(artist[0])
+            try:char = artist[0]
+            except:char = "..."            
+            
+            if char != oldChar:
+                oldChar = char  
+                char = QTreeWidgetItem(char)
+                self.collectTree.addTopLevelItem(char)
+               
             albums = self.mediaDB.searching("album", "artist", artist)
             artist = QStringList(artist)
             artist = QTreeWidgetItem(artist)
             self.collectTree.addTopLevelItem(artist)
-            
-# There's a way of adding albums all in one command but it requires a list
-# which I would still have to loop to create
+
             for album in albums:           
                 album = album[0]
                 album = QStringList(album)                

@@ -47,7 +47,7 @@ class media:
         """
         Here we add data into the media database
         """
-        values = ''' "%s","%s","%s","%s", "%s","%s","%s" ''' % (p[0], p[1], p[2], p[3], p[4], p[5], p[6]) #FIXME:ugly
+        values = ''' "%s","%s","%s","%s", "%s","%s","%s" ''' % (p[0], p[1], p[2], p[3], p[4], p[5], p[6]) #ugly
         cols = "filename,track,title,artist,album,year,genre"
         query = "INSERT INTO media (%s) VALUES (%s)" % (cols, values)
         
