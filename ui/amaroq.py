@@ -534,8 +534,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         #TODO: at the start of new letter in alphabet create a header/separator
         for n in range(len(artists)):
-            artist = str(artists[n][0])
-            try:char = artist[0]
+            artist = artists[n][0]
+            try:char = str(artist)[0]
             except:char = ""            
             
             if char != oldChar:
