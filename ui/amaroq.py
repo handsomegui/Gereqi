@@ -3,7 +3,7 @@
 from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, \
 QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel, \
 QProgressBar, QToolButton, QSpacerItem, QSizePolicy, QTreeWidgetItem, QFont
-from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, QUrl, \
+from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, \
 QSize,  QStringList
 from PyQt4.phonon import Phonon
 import os
@@ -43,8 +43,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Phonon.createPath(self.mediaObject, self.audioOutput)
         self.mediaObject.setTickInterval(1000)
         self.audioOutput.setVolume(1)
-        self.url = "about:blank"
-        self.old_url = self.url
+        self.art = "None"
+        self.old_art = self.art
         
         self.setupExtra()
         self.createActions()
@@ -562,10 +562,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         The wikipedia page to current artist playing
         """
-        if self.url != self.old_url:
-            html = self.wikipedia.fetch(str(self.url))
+        if self.art != self.old_art  and self.art:
+            html = self.wikipedia.fetch(self.art)
             self.wikiView.setHtml(str(html))
-            self.old_url = self.url
+            self.old_art = self.art
 
     def trayEvent(self, event):
         """
@@ -648,7 +648,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.playlistTree.selectRow(row) 
 
-        self.url = "http://www.en.wikipedia.org/wiki/%s" % artist
+        self.art = str(artist)
         if row and self.wikiView.isVisible():
             self.setWiki()
 

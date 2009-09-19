@@ -6,9 +6,17 @@ from StringIO import StringIO
 from lxml.html import fromstring, tostring
 
 #TODO: Put the url creation/handling in here
+#http://www.google.co.uk/search?hl=en&q=wikipedia+audioslave+music&btnI=745
 
 class Wiki:
-    def fetch(self, url):
+    def createUrl(self, artist):
+        url = artist.split(" ")
+        url = "+".join(url)
+        url = "http://www.google.com/search?hl=en&q=wikipedia+%s+music&btnI=745" % url
+        print url
+        return url
+        
+    def fetch(self, artist):
 #403's
 #        req = Request(url)
 #        try:
@@ -16,7 +24,8 @@ class Wiki:
 #            html = html.read()
 #        except URLError, e:
 #            print e
-            
+
+        url = self.createUrl(artist)
         html = StringIO()
         data = pycurl.Curl()
         data.setopt(pycurl.URL, url)
