@@ -35,7 +35,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupDBtree()
         self.wikipedia = Wiki()
         self.windowShow = True
-        self.playing = False # replace with Phonon.state
         
         self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
         self.mediaObject = Phonon.MediaObject(self)
@@ -44,10 +43,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mediaObject.setTickInterval(1000)
         self.sources = []
         self.audioOutput.setVolume(1)
-#        self.tabViewable = True
         self.url = "about:blank"
         self.old_url = self.url
-        self.playing = False # Had to as using mediaObject.state is fucking shit and useless
         self.track_changing = False
         self.oldState  = 1
         
@@ -177,7 +174,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.mediaObject.stop()
             self.mediaObject.setCurrentSource(track)
             
-            if self.playing:
+            if self.playing():
                 self.mediaObject.play()            
             else:
                 self.genInfo()
@@ -198,7 +195,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.mediaObject.play()
             self.stopBttn.setEnabled(True)
             self.playBttn.setIcon(QIcon(QPixmap(":/Icons/media-playback-pause.png")))
-            if not self.playing:
+            if not self.playing():
                 self.genInfo()
                 
         else:
@@ -206,7 +203,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.playBttn.setIcon(QIcon(QPixmap(":/Icons/media-playback-start.png")))
             self.statLbl.setText("Paused")
             
-        self.playing = checked    
         self.playAction.setChecked(checked)
         
     @pyqtSignature("")
@@ -217,7 +213,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mediaObject.stop()
         self.playBttn.setChecked(False)
         
-        self.playing = False
         self.stopBttn.setEnabled(False)
         self.progSldr.setValue(0)
         self.statLbl.setText("Stopped")
@@ -233,7 +228,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.mediaObject.stop()       
             self.mediaObject.setCurrentSource(track)
             
-            if self.playing:
+            if self.playing():
                 self.mediaObject.play()
         
     @pyqtSignature("int")
@@ -307,7 +302,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mediaObject.play()
         self.playBttn.setChecked(True) 
         self.playAction.setChecked(True)
-        self.playing = True
         
     def tick(self, time):
         """
@@ -346,7 +340,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def finished(self):
         self.progSldr.setValue(0)
         self.progLbl.setText("00:00")
-        self.playing = False
         
     def minimiseTray(self, state):
         if state:
@@ -607,7 +600,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.minimiseTray(True)            
             
         elif event == 4:
-            if self.playing:
+            if self.playing():
                 self.on_playBttn_toggled(False)
             else:
                 self.on_playBttn_toggled(True)
@@ -679,3 +672,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.url = "http://www.en.wikipedia.org/wiki/%s" % artist
         if row and self.wikiView.isVisible():
             self.setWiki()
+
+    def playing(self):
+        state = self.mediaObject.state()
+        if state == 2:
+            return True
+        else:
+            return False
