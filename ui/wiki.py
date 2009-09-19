@@ -5,6 +5,9 @@ from StringIO import StringIO
 #from urllib2 import urlopen, Request, URLError
 from lxml.html import fromstring, tostring
 
+# Amazon image
+#<img id="prodImage" width="240" height="240" border="0" alt="Audioslave" src="http://ecx.images-amazon.com/images/I/514QWQX4eHL._SL500_AA240_.jpg" onload="if (typeof uet == 'function') { uet('af'); }"/>
+#</a>
 class Wiki:
     
     #TODO:finish
@@ -17,7 +20,8 @@ class Wiki:
         url = ''.join([c for c in artist if c not in exc])
         url = url.replace(" ", "+")
         print url
-        url = "http://www.google.com/search?hl=en&q=wikipedia+%s+band+artist&btnI=745" % url
+        # tried "site%%3wikipedia.org" but that is a joke. Fatboy slim == David Byrne?
+        url = "http://www.google.com/search?hl=en&q=wikipedia+%s+music+OR+band+OR+artist&btnI=745" % url
         return url
         
     def fetch(self, artist):
