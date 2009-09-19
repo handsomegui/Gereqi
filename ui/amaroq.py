@@ -172,20 +172,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
-        track = self.mediaObject.stop()
+        
         track = self.genTrack("back")
-        self.mediaObject.setCurrentSource(track)
-        self.mediaObject.play()
-#        row = self.playlistTree.currentRow() - 1
-#        if row >= 0:
-#            self.playlistTree.selectRow(row)
-#            self.mediaObject.stop()
-##            self.mediaObject.setCurrentSource(self.sources[row])
-#            
-#            
-#            self.mediaObject.setCurrentSource(track)
-#            if not self.playing:
-#                self.mediaObject.play()
+        if track:
+            self.mediaObject.stop()
+            self.mediaObject.setCurrentSource(track)
+            
+            if self.playing:
+                self.mediaObject.play()            
+            else:
+                self.genInfo()
+
 
     # Because of the 2 signals that can trigger this, it's possible
     # this method is called twice when one or the other is called.
@@ -230,10 +227,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Go to next item in playlist(down)
         """
-        self.mediaObject.stop()
         track = self.genTrack("next")
-        self.mediaObject.setCurrentSource(track)
-        self.mediaObject.play()
+        if track:
+            self.mediaObject.stop()       
+            self.mediaObject.setCurrentSource(track)
+            
+            if self.playing:
+                self.mediaObject.play()
         
 #        row = self.playlistTree.currentRow() + 1
 #        if row < len(self.sources):
@@ -329,20 +329,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.progLbl.setText("%s | %s" % (t_now.toString('mm:ss'), self.t_length.toString('mm:ss')))
         self.progSldr.setValue(time)
     
-    def aboutToFinish(self):
-        # Needs to select next track in playlist not self.sources
-        # This would allow playlist sorting
-        # However, the higlighting of a row is not permanent. Even if it's recorded
-        # the position would be wrong after a resort. 
-        
+    def aboutToFinish(self):    
         track = self.genTrack("next")
-        self.mediaObject.enqueue(track)
-        self.track_changing = True
-#        index = self.sources.index(self.mediaObject.currentSource()) + 1
-#        if len(self.sources) > index:
-#            self.mediaObject.enqueue(self.sources[index])
-#            self.track_changing = True
-            
+        if track:
+            self.mediaObject.enqueue(track)
+            self.track_changing = True
+
     def setProgSldr(self):
         length = self.mediaObject.totalTime()
         self.progSldr.setValue(0)
@@ -638,29 +630,41 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
         else:
             current = self.mediaObject.currentSource().fileName()
-            rows = self.playlistTree.rowCount() 
+            rows = self.playlistTree.rowCount()
+            
             for row in range(rows):
                 fileName = self.playlistTree.item(row, column).text()
                 
+                # Track, track, track.
                 if fileName == current:
                     if mode == "back":
-                        track = self.playlistTree.item(row - 1 , column).text() # Why won't you go back!
+                        if (row - 1) >= 0:
+                            track = self.playlistTree.item(row - 1 , column).text()
+                        else:
+                            track = None
                         break
+                        
                     elif mode == "next":
-                        track = self.playlistTree.item(row + 1, column).text()
-                        break
-                    
-                    
-        print track
-        track = Phonon.MediaSource(track)        
+                        if (row + 1) < rows:
+                            track = self.playlistTree.item(row + 1, column).text()
+                        else:
+                            track = None                            
+                        break                        
+                 
+        if track:
+            track = Phonon.MediaSource(track)      
+            
         return track
         
     def genInfo(self):
         # This retrieves data from the playlist table, not the database. This is because
         # the playlist may contain tracks added locally.
+        
+        # DUPLICATION
         column = 6
         rows = self.playlistTree.rowCount() 
         fileName = self.mediaObject.currentSource().fileName()
+        
         for row in range(rows):
             item = self.playlistTree.item(row, column).text()
             if item == fileName:
