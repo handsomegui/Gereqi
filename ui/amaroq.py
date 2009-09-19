@@ -149,14 +149,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSignature("QTreeWidgetItem*, int")
     def on_collectTree_itemDoubleClicked(self, item, column):
         """
-        Slot documentation goes here.
+        When double click and abum in the collection browser
+        add the album's tracks to the playlist.
         """
-        # TODO: not completed yet
         album = item.text(column)
-#        self.genTrack("now")
         
         try:
-            artist= item.parent().text(0)
+            artist = item.parent().text(0)
         except:
             # Should go here if the artist item is double-clicked as it has no parent
             return
@@ -189,18 +188,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSignature("bool")
     def on_playBttn_toggled(self, checked):
         """
-        Slot documentation goes here.
+        The play button either resumes or starts playback.
+        Not possible to play a highlighted row.
         """
-        self.stopBttn.setEnabled(True)
-#        state = self.mediaObject.state()
-#        print state
-        
+        print checked
+
+        # Strange bug where if the playback was stopped by stopBttn
+        # starting takes a while (varies). 
         if checked:
-            # Need to check if paused or stopped state
-#            if self.oldState == 1:
-#                self.genTrack("now")
-                
             self.mediaObject.play()
+            self.stopBttn.setEnabled(True)
             self.playBttn.setIcon(QIcon(QPixmap(":/Icons/media-playback-pause.png")))
         else:
             self.mediaObject.pause()
@@ -208,8 +205,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
         self.playing = checked    
         self.playAction.setChecked(checked)
-        self.playBttn.setChecked(checked)
-
         
     @pyqtSignature("")
     def on_stopBttn_pressed(self):
@@ -218,9 +213,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         self.mediaObject.stop()
         self.playBttn.setChecked(False)
-        self.progSldr.setValue(0)
+        
         self.playing = False
         self.stopBttn.setEnabled(False)
+        self.progSldr.setValue(0)
+        self.statLbl.setText("Stopped")
     
     @pyqtSignature("")
     def on_nxtBttn_pressed(self):
@@ -234,14 +231,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
             if self.playing:
                 self.mediaObject.play()
-        
-#        row = self.playlistTree.currentRow() + 1
-#        if row < len(self.sources):
-#            self.playlistTree.selectRow(row)
-#            self.mediaObject.stop()
-#            self.mediaObject.setCurrentSource(self.sources[row])
-#            if self.playing:
-#                self.mediaObject.play()
         
     @pyqtSignature("int")
     def on_volSldr_valueChanged(self, value):
