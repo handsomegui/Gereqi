@@ -2,7 +2,7 @@
 
 from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, \
 QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel, \
-QProgressBar, QToolButton, QSpacerItem, QSizePolicy, QTreeWidgetItem
+QProgressBar, QToolButton, QSpacerItem, QSizePolicy, QTreeWidgetItem, QFont
 from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, QUrl, \
 QSize,  QStringList
 from PyQt4.phonon import Phonon
@@ -529,17 +529,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         artists = sorted(artists)
         oldChar= None
         char = None
+        font = QFont()
+        font.setBold(True)
         
         #TODO: at the start of new letter in alphabet create a header/separator
-        for artist in artists:
-            print oldChar
-            artist = str(artist[0])
+        for n in range(len(artists)):
+            artist = str(artists[n][0])
             try:char = artist[0]
-            except:char = "..."            
+            except:char = ""            
             
             if char != oldChar:
                 oldChar = char  
+                char = "== %s ==" % char
+                char = QStringList(char)
                 char = QTreeWidgetItem(char)
+                char.setFont(0, font)
                 self.collectTree.addTopLevelItem(char)
                
             albums = self.mediaDB.searching("album", "artist", artist)
