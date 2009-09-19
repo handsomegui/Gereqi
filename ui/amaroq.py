@@ -172,14 +172,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
-        row = self.playlistTree.currentRow() - 1
-        if row >= 0:
-            self.playlistTree.selectRow(row)
-            self.mediaObject.stop()
-#            self.mediaObject.setCurrentSource(self.sources[row])
-            self.genTrack("back")
-            if not self.playing:
-                self.mediaObject.play()
+        track = self.mediaObject.stop()
+        track = self.genTrack("back")
+        self.mediaObject.setCurrentSource(track)
+        self.mediaObject.play()
+#        row = self.playlistTree.currentRow() - 1
+#        if row >= 0:
+#            self.playlistTree.selectRow(row)
+#            self.mediaObject.stop()
+##            self.mediaObject.setCurrentSource(self.sources[row])
+#            
+#            
+#            self.mediaObject.setCurrentSource(track)
+#            if not self.playing:
+#                self.mediaObject.play()
 
     # Because of the 2 signals that can trigger this, it's possible
     # this method is called twice when one or the other is called.
@@ -224,14 +230,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Go to next item in playlist(down)
         """
-        self.genTrack("next")
-        row = self.playlistTree.currentRow() + 1
-        if row < len(self.sources):
-            self.playlistTree.selectRow(row)
-            self.mediaObject.stop()
-            self.mediaObject.setCurrentSource(self.sources[row])
-            if self.playing:
-                self.mediaObject.play()
+        self.mediaObject.stop()
+        track = self.genTrack("next")
+        self.mediaObject.setCurrentSource(track)
+        self.mediaObject.play()
+        
+#        row = self.playlistTree.currentRow() + 1
+#        if row < len(self.sources):
+#            self.playlistTree.selectRow(row)
+#            self.mediaObject.stop()
+#            self.mediaObject.setCurrentSource(self.sources[row])
+#            if self.playing:
+#                self.mediaObject.play()
         
     @pyqtSignature("int")
     def on_volSldr_valueChanged(self, value):
@@ -474,7 +484,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #        self.sources.append(Phonon.MediaSource(fileName))
         
         
-        trackItem = QTableWidgetItem(str(info[0]))
+        track = "%02.u" % info[0]
+        trackItem = QTableWidgetItem(track)
         trackItem.setFlags(trackItem.flags() ^ Qt.ItemIsEditable)
         
         titleItem = QTableWidgetItem(QString(info[1]))
@@ -640,30 +651,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         column = 6 # So that it can be dynamic later on when columns can be moved
         if mode == "now":
-            print row
             track = self.playlistTree.item(row, column).text()
             
         else:
             current = self.mediaObject.currentSource().fileName()
             rows = self.playlistTree.rowCount() 
-            if mode == "back":
-                inc = -1
-            elif mode == "next":
-                inc = 1
+#            if mode == "back":
+#                inc = (-1)
+#            elif mode == "next":
+#                inc = 1
         
-            print current
-           
+#            print inc
             for row in range(rows):
                 fileName = self.playlistTree.item(row, column).text()
                 
                 if fileName == current:
-                    track = self.playlistTree.item(row + inc, column).text()
+                    if mode == "back":
+                        track = self.playlistTree.item(row - 1 , column).text() # Why won't you go back!
+                        break
+                    elif mode == "next":
+                        track = self.playlistTree.item(row + 1, column).text()
+                        break
+                    
                     
         print track
         track = Phonon.MediaSource(track)        
         return track
         
-    def genInfo(self, fileName):
+    def genInfo(self):
+        fileName = self.mediaObject.currentSource().fileName()
+        
         if self.sources:
 #            row = self.sources.index(self.mediaObject.currentSource())
         
