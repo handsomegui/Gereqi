@@ -2,21 +2,23 @@
 
 import pycurl
 from StringIO import StringIO
-from BeautifulSoup import BeautifulSoup
-#import urllib
-#from lxml import etree
-#from lxml.html import fromstring, parse
-#from lxml.html.soupparser import fromstring
-#from lxml import etree
+#from urllib2 import urlopen, Request, URLError
+from lxml.html import fromstring, tostring
 
 #TODO: Put the url creation/handling in here
 
 class Wiki:
     def fetch(self, url):
-#        print url, type(url)
-#        html = urllib.urlopen(url)
-#        html = html.read()
+        print url, type(url)
         
+#403's
+#        req = Request(url)
+#        try:
+#            html = urlopen(req)
+#            html = html.read()
+#        except URLError, e:
+#            print e
+            
         html = StringIO()
         data = pycurl.Curl()
         data.setopt(pycurl.URL, url)
@@ -36,40 +38,13 @@ class Wiki:
         
     # Try and see if lxml will work again after the issue was urllib all along
     def treat(self, html):
-#        <div id="bodyContent">
-#        parser = etree.XMLParser(ns_clean=True)
-#        tree = etree.parse(StringIO(html), parser)
-#        tree = etree.tostring(tree.getroot())
+   
+        # This appears to be considerably quicker than beatifulsoup
+        tree = fromstring(html)        
+        try:
+            tree = tree.get_element_by_id("bodyContent")
+            tree = tostring(tree)
+        except:
+            tree = "about:blank"        
         
-#        print tree[0:100]
-        
-#        tree = fromstring(html)
-#        
-#        print tree.get_element_by_id("bodyContent")
-        
-#        events = ("start", "end")
-#        context = etree.iterparse(html, tag="div")
-#        for action, elem in context:
-#            print "%s: %s" % (action, elem.tag)
-            
-#        return etree.tostring(tree.getroot())
-
-#        start = "bodyContent"
-#        start = "html"
-        
-#        startPos = html.find(start)
-#        print startPos
-
-#        root = fromstring(html)
-
-
-        
-#        print tree.contents
-#        print type(html)
-#        print "the" in html
-        tree = BeautifulSoup(html)
-        return tree.find("div", id="bodyContent")
-        
-        
-        
-        
+        return tree
