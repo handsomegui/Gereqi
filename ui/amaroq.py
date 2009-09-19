@@ -44,7 +44,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.audioOutput.setVolume(1)
         self.url = "about:blank"
         self.old_url = self.url
-        self.track_changing = False
         self.oldState  = 1
         
         self.setupExtra()
@@ -307,7 +306,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
         if t_now == QTime(0, 0, 0):
-            self.track_changing = True #FIXME: this cannot be the only way
             # Used because no Phonon.state when the mediaobject goes to next queued track
             # 2,3 is the same sig as when next/prev buttons are used
             self.stateChanged(2, 3) 
@@ -318,7 +316,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         track = self.genTrack("next")
         if track:
             self.mediaObject.enqueue(track)
-            self.track_changing = True
 
     def setProgSldr(self):
         length = self.mediaObject.totalTime()
