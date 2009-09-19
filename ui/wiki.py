@@ -5,11 +5,7 @@ from StringIO import StringIO
 #from urllib2 import urlopen, Request, URLError
 from lxml.html import fromstring, tostring
 
-# Amazon image
-#<img id="prodImage" width="240" height="240" border="0" alt="Audioslave" src="http://ecx.images-amazon.com/images/I/514QWQX4eHL._SL500_AA240_.jpg" onload="if (typeof uet == 'function') { uet('af'); }"/>
-#</a>
 class Wiki:
-    
     #TODO:finish
     def createUrl(self, artist):
         """
@@ -66,3 +62,11 @@ class Wiki:
             tree = "about:blank"        
         
         return tree
+
+class amazon:
+    def createUrl(self, artist, album):
+        # The url would give google's image results
+        # Only thing is google must omit amazon results
+        url = "http://images.google.com/images?hl=en&source=hp&q=amazon+%s+%s" % (artist, album)
+        # This may be better. Have to treat it like the wiki class. The image is in <img id="prodImage" 
+        url = "http://www.google.com/search?hl=en&q=amazon+%s+%s&btnI=745" % (artist, album)
