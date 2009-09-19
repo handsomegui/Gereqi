@@ -191,7 +191,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         The play button either resumes or starts playback.
         Not possible to play a highlighted row.
         """
-        print checked
 
         # Strange bug where if the playback was stopped by stopBttn
         # starting takes a while (varies). 
@@ -199,9 +198,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.mediaObject.play()
             self.stopBttn.setEnabled(True)
             self.playBttn.setIcon(QIcon(QPixmap(":/Icons/media-playback-pause.png")))
+            if not self.playing:
+                self.genInfo()
+                
         else:
             self.mediaObject.pause()
             self.playBttn.setIcon(QIcon(QPixmap(":/Icons/media-playback-start.png")))
+            self.statLbl.setText("Paused")
             
         self.playing = checked    
         self.playAction.setChecked(checked)
@@ -218,6 +221,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.stopBttn.setEnabled(False)
         self.progSldr.setValue(0)
         self.statLbl.setText("Stopped")
+        self.progLbl.setText("00:00 | 00:00")
     
     @pyqtSignature("")
     def on_nxtBttn_pressed(self):

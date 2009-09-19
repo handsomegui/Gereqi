@@ -961,7 +961,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
             <item>
              <widget class="QLabel" name="progLbl">
               <property name="text">
-               <string>00:00</string>
+               <string>00:00 | 00:00</string>
               </property>
              </widget>
             </item>
