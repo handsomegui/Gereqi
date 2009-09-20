@@ -62,6 +62,16 @@ class Wiki:
             tree = "about:blank"        
         
         return tree
+        
+        # Things to remove
+        #<h3 id="siteSub">From Wikipedia, the free encyclopedia</h3>
+        #<div id="contentSub"/>
+        #<div class="rellink relarticle mainarticle">
+        #<div class="references-small references-column-width" style="-moz-column-width: 30em;">
+        #<table class="metadata plainlinks mbox-small" style="border: 1px solid rgb(170, 170, 170); background-color: rgb(249, 249, 249);">
+        #<table class="navbox" cellspacing="0" style="">
+        #<div id="catlinks" class="catlinks">
+        
 
 class amazon:
     def createUrl(self, artist, album):

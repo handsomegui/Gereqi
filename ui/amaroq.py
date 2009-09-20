@@ -36,6 +36,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.wikipedia = Wiki()
         self.windowShow = True
         self.playRandom = False
+        self.oldPos = 0
         
         self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
         self.mediaObject = Phonon.MediaObject(self)
@@ -303,14 +304,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Every second update time labels and progress slider
         """
+        pos = self.progSldr.sliderPosition()
         t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
         if t_now == QTime(0, 0, 0):
-            # Used because no Phonon.state when the mediaobject goes to next queued track
-            # 2,3 is the same sig as when next/prev buttons are used
+                # Used because no Phonon.state when the mediaobject goes to next queued track
+                # 2,3 is the same sig as when next/prev buttons are used
             self.stateChanged(2, 3) 
-        self.progLbl.setText("%s | %s" % (t_now.toString('mm:ss'), self.t_length.toString('mm:ss')))
-        self.progSldr.setValue(time)
-    
+        self.progLbl.setText("%s | %s" % (t_now.toString('mm:ss'), self.t_length.toString('mm:ss')))            
+            
+        # This only goes(?) if  the user has not grabbed the slider
+        if pos == self.oldPos:
+            self.progSldr.setValue(time)
+        self.oldPos = time
+            
     def aboutToFinish(self):    
         track = self.genTrack("next")
         if track:
@@ -469,8 +475,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
+        
         val = self.progSldr.value()
         self.mediaObject.seek(val)
+        self.oldPos = val
     
     @pyqtSignature("")
     def on_actionUpdate_Collection_triggered(self):
