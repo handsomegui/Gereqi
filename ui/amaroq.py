@@ -213,10 +213,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playBttn.setChecked(False)
         
         self.stopBttn.setEnabled(False)
-        self.progSldr.setValue(0)
-        self.oldPos = 0
-        self.statLbl.setText("Stopped")
-        self.progLbl.setText("00:00 | 00:00")
+        self.finished()
     
     @pyqtSignature("")
     def on_nxtBttn_pressed(self):
@@ -227,7 +224,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if track:
             self.mediaObject.stop()       
             self.mediaObject.setCurrentSource(track)
-            
             if self.playing():
                 self.mediaObject.play()
         
@@ -330,16 +326,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.oldPos = 0
         self.t_length = QTime(0, (length / 60000) % 60, (length / 1000) % 60)
             
-    def stateChanged(self, old, new):
-        self.setProgSldr()
-        if old == 2 and new == 3:
+    def stateChanged(self, old, new):        
+        # This shouldn't be called all the time as
+        # it resets progSldr on a  pause/unpause
+        self.setProgSldr() 
+        if old == 2 and new == 3:            
             self.genInfo()
         
+        elif old == 1 and new == 2:
+            # Stopped,nxt,prev, next in playlist
+            self.finished()
+            
         
     def finished(self):
+#        self.playBttn.setChecked(False)
+#        self.stopBttn.setEnabled(False)
+        
         self.progSldr.setValue(0)
         self.oldPos = 0
-        self.progLbl.setText("00:00")
+        self.statLbl.setText("Stopped")
+        self.progLbl.setText("00:00 | 00:00")
         
     def minimiseTray(self, state):
         if state:
