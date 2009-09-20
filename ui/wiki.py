@@ -56,12 +56,24 @@ class Wiki:
         try:
             tree = tree.get_element_by_id("bodyContent")
             tree = tostring(tree)
+            
+#            try:
+#                tree2 = fromstring(tree)
+#                tree2 = tree2.find_class("references") # if it can find references we split
+#                tree2 = tostring(tree2)
+#                print tree2                
+#            except:
+#                tree2 = ""
+                
+            tree = tree.split('''<div class="references''')[0]
+#            tree = "".join(tree)
         except:
             tree = "about:blank"        
         
         return tree
         
         # Things to remove
+        #<div class="references-small">
         #<h3 id="siteSub">From Wikipedia, the free encyclopedia</h3>
         #<div id="contentSub"/>
         #<div class="rellink relarticle mainarticle">
