@@ -214,6 +214,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.stopBttn.setEnabled(False)
         self.progSldr.setValue(0)
+        self.oldPos = 0
         self.statLbl.setText("Stopped")
         self.progLbl.setText("00:00 | 00:00")
     
@@ -313,7 +314,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.progLbl.setText("%s | %s" % (t_now.toString('mm:ss'), self.t_length.toString('mm:ss')))            
             
         # This only goes(?) if  the user has not grabbed the slider
-        if pos == self.oldPos:
+        if pos == self.oldPos or pos < 1: # This or stops a problem where the slider doesn't move after the track finishes
             self.progSldr.setValue(time)
         self.oldPos = time
             
@@ -326,17 +327,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         length = self.mediaObject.totalTime()
         self.progSldr.setValue(0)
         self.progSldr.setRange(0, length)
+        self.oldPos = 0
         self.t_length = QTime(0, (length / 60000) % 60, (length / 1000) % 60)
             
     def stateChanged(self, old, new):
         self.setProgSldr()
-        
         if old == 2 and new == 3:
             self.genInfo()
         
         
     def finished(self):
         self.progSldr.setValue(0)
+        self.oldPos = 0
         self.progLbl.setText("00:00")
         
     def minimiseTray(self, state):
