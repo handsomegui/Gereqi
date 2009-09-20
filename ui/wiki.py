@@ -15,8 +15,6 @@ class Wiki:
         exc = '''!,.%%$&(){}[]'''
         url = ''.join([c for c in artist if c not in exc])
         url = url.replace(" ", "+")
-        print url
-        # tried "site%%3wikipedia.org" but that is a joke. Fatboy slim == David Byrne?
         url = "http://www.google.com/search?hl=en&q=wikipedia+%s+music+OR+band+OR+artist&btnI=745" % url
         return url
         

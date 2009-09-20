@@ -37,6 +37,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.windowShow = True
         self.playRandom = False
         self.oldPos = 0
+        self.playLstEnd = False
         
         self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
         self.mediaObject = Phonon.MediaObject(self)
@@ -173,7 +174,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.mediaObject.stop()
             self.mediaObject.setCurrentSource(track)
             
-            if self.playing():
+            if self.isPlaying():
                 self.mediaObject.play()            
             else:
                 self.genInfo()
@@ -194,7 +195,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.mediaObject.play()
             self.stopBttn.setEnabled(True)
             self.playBttn.setIcon(QIcon(QPixmap(":/Icons/media-playback-pause.png")))
-            if not self.playing():
+            if not self.isPlaying():
                 self.genInfo()
                 
         else:
@@ -224,7 +225,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if track:
             self.mediaObject.stop()       
             self.mediaObject.setCurrentSource(track)
-            if self.playing():
+            if self.isPlaying():
                 self.mediaObject.play()
         
     @pyqtSignature("int")
@@ -333,14 +334,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if old == 2 and new == 3:            
             self.genInfo()
         
-        elif old == 1 and new == 2:
+        #FIXME: only let this happen if the  playlist finishes
+        #  otherwise the ui stuff is called when using prev/next bttns
+        elif old == 1 and new == 2 and self.isLast():
             # Stopped,nxt,prev, next in playlist
+#            print self.oldOld, old, new
             self.finished()
             
-        
     def finished(self):
-#        self.playBttn.setChecked(False)
-#        self.stopBttn.setEnabled(False)
+        self.playBttn.setChecked(False)
+        self.stopBttn.setEnabled(False)
         
         self.progSldr.setValue(0)
         self.oldPos = 0
@@ -595,7 +598,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.minimiseTray(True)            
             
         elif event == 4:
-            if self.playing():
+            if self.isPlaying():
                 self.on_playBttn_toggled(False)
             else:
                 self.on_playBttn_toggled(True)
@@ -636,12 +639,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             track = Phonon.MediaSource(track)      
             
         return track
-        
+
+#FIXME: DUPLICATION       
     def genInfo(self):
         # This retrieves data from the playlist table, not the database. This is because
         # the playlist may contain tracks added locally.
         
-        # DUPLICATION
+
         column = 6
         rows = self.playlistTree.rowCount() 
         fileName = self.mediaObject.currentSource().fileName()
@@ -655,22 +659,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         title = self.playlistTree.item(row, 1).text()
         artist = self.playlistTree.item(row, 2).text()
         album = self.playlistTree.item(row, 3).text()
-        
         message = "%s by %s" % (title, artist)
         self.trayIcon.showMessage(QString("Now Playing"), QString(message), QSystemTrayIcon.NoIcon, 3000)
         
         message = "Playing: %s by %s on %s" % (title, artist, album)
         self.statLbl.setText(message)
-
         self.playlistTree.selectRow(row) 
-
         self.art = str(artist)
         if row and self.wikiView.isVisible():
             self.setWiki()
 
-    def playing(self):
+    def isPlaying(self):
         state = self.mediaObject.state()
         if state == 2:
             return True
         else:
             return False
+
+#FIXME:DUPLICATION
+    def isLast(self):
+        """
+        Checks whether the current track in self.mediaObject
+        is the last in the viewable playlist
+        """
+        column = 6
+        now = self.mediaObject.currentSource().fileName()
+        rows = self.playlistTree.rowCount() 
+        for row in range(rows):
+            item = self.playlistTree.item(row, column).text()
+            if item == now and row == rows:
+                return True

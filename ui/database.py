@@ -19,6 +19,7 @@ class media:
         self.mediaCurs = self.mediaDB.cursor()
         
         # using filename as PRIMARY KEY to prevent multiple entries
+        # TODO:add 'playcount' and 'rating'
         self.mediaCurs.execute('''
             CREATE TABLE IF NOT EXISTS media (
                 filename    TEXT ,
