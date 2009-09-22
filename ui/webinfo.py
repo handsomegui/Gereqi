@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+#FIXME: too much of the same code duplicated
 from StringIO import StringIO
 from urllib2 import URLError, build_opener
 from lxml.html import fromstring, tostring
@@ -105,13 +106,13 @@ class amazon:
         Goes through, hopefully, a wikipedia page looking for data
         between div tags with id 'bodyContent'
         """
-        # This appears to be considerably quicker than beatifulsoup
-        tree = fromstring(html)        
+        imgUrl = fromstring(html)        
         try:
-            tree = tree.get_element_by_id("prodImage")
-            tree = tostring(tree)
+            imgUrl = imgUrl .get_element_by_id("prodImage")
+            imgUrl  = tostring(imgUrl )
+            imgUrl = imgUrl .split("src=")[1].split(" ")[0]
+            imgUrl = imgUrl.strip('''"''')
         except:
             tree = "about:blank"        
         
-        print tree
-
+        print imgUrl 

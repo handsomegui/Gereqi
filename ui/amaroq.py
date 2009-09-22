@@ -581,10 +581,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         The wikipedia page to current artist playing
         """
-        print type(self.art[0]), self.art[1]
-        print type(self.old_art[0]), self.old_art[1]
         #TODO: thread me!!!! If internet is slow the ui locks up!
-        if self.art[0] != self.old_art[0]:#  and self.art[0]: # Not sure if 'and self.art' will do anything now
+        if self.art[0] != self.old_art[0] and self.art[0]: # Not sure if 'and self.art' will do anything now
             print "Artist!"
             wiki = wikipedia()
             html = wiki.fetch(self.art[0])
