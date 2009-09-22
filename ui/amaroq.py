@@ -5,10 +5,9 @@ QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel,
 QProgressBar, QToolButton, QSpacerItem, QSizePolicy, QTreeWidgetItem, QFont, QPixmap,  \
 QImage
 from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, \
-QSize,  QStringList, QByteArray, QBuffer, QIODevice, QThread
+QSize,  QStringList, QThread
 from PyQt4.phonon import Phonon
 import os
-#from cStringIO import StringIO
 
 from settings import settingDlg
 from Ui_amaroq import Ui_MainWindow
@@ -39,7 +38,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playRandom = False
         self.oldPos = 0
         self.playLstEnd = False 
-        self.tester = testThread()
+        self.coverThread = testThread()
         self.htmlThread = getHtml()
 
         self.art = [None, None] # The current playing artist
@@ -116,7 +115,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.mediaObject, SIGNAL('finished()'),self.finished)
         self.connect(self.mediaObject, SIGNAL('stateChanged(Phonon::State, Phonon::State)'),self.stateChanged)
         self.connect(self.statPlyTypBttn, SIGNAL('toggled(bool)'), self.play_type)
-        self.connect(self.tester, SIGNAL("Activated ( QImage ) "), self.setCover) # Linked to QThread
+        self.connect(self.coverThread, SIGNAL("Activated ( QImage ) "), self.setCover) # Linked to QThread
         self.connect(self.htmlThread, SIGNAL("Activated ( QString ) "), self.setWiki)
 
     def createTrayIcon(self):
@@ -597,8 +596,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.old_art[0] = self.art[0]
             
         if self.art[1] != self.old_art[1] and self.art[1]:
-            self.tester.setValues(self.art[0], self.art[1])
-            self.tester.start()
+            self.coverThread.setValues(self.art[0], self.art[1])
+            self.coverThread.start()
             self.old_art[1] = self.art[1]
 
     def trayEvent(self, event):
@@ -725,10 +724,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         cover = QPixmap()
         cover = cover.fromImage(img)
         self.coverView.setPixmap(cover)
-        self.tester.exit()
+        self.coverThread.exit() #Not sure if really necessary
         
     def setWiki(self, html):
         self.wikiView.setHtml(str(html))
+        self.htmlThread.exit()
         
         
         
