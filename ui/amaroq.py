@@ -20,7 +20,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     Class documentation goes here.
     """
     
-    #FIXME: This is a mess. Fix
     def __init__(self, parent = None):
         """
         Initialisation of key items. Some may be pulled
@@ -337,12 +336,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setProgSldr() 
         if old == 2 and new == 3:            
             self.genInfo()
-        
-        #FIXME: only let this happen if the  playlist finishes
-        #  otherwise the ui stuff is called when using prev/next bttns
+            
+        # Stopped playing and at end of playlist
         elif old == 1 and new == 2 and self.isLast():
-            # Stopped,nxt,prev, next in playlist
-#            print self.oldOld, old, new
             self.finished()
             
     def finished(self):
@@ -612,11 +608,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.on_playBttn_toggled(False)
             else:
                 self.on_playBttn_toggled(True)
-
+                
+# TODO: these could be pushed into their own class
     def genTrack(self, mode, row=None):
         """
-        As the playlist changes on sorting, the playlist has
-        to be regenerated before the queing of the next track
+        As the playlist changes on sorting, the playlist (the immediately next/previous 
+        tracks) has to be regenerated before the queing of the next track
         """
         column = 6 # So that it can be dynamic later on when columns can be moved
         if mode == "now":
