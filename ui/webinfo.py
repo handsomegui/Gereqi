@@ -77,8 +77,6 @@ class amazon:
     def createUrl(self, artist, album):
         # This may be better. Have to treat it like the wiki class. The image is in <img id="prodImage" 
 
-#        exc = '''!,.%%$&(){}[]'''
-#        url = ''.join([c for c in artist if c not in exc])
         artist = artist.replace(" ", "+")
         album = album.replace(" ", "+")
         url = "http://www.google.com/search?hl=en&q=amazon+%s+%s&btnI=745" % (artist, album)
@@ -88,7 +86,6 @@ class amazon:
     def fetch(self, artist, album):
         url = self.createUrl(artist, album)
         print url
-#        return 
         try:
             opener = build_opener()
             opener.addheaders = [('User-agent', 'amaroQ')]
@@ -97,8 +94,7 @@ class amazon:
             print e
             html = "about:blank"
 
-        content = self.treat(html)      
-       
+        content = self.treat(html) 
         return content
         
     def treat(self, html):
@@ -116,3 +112,51 @@ class amazon:
             tree = "about:blank"        
         
         print imgUrl 
+
+class switch2():
+    def createUrl(self, site, *params):        
+        # Cleans up the string
+        for n in range(len(params)):
+            exc = '''!,.%%$&(){}[]'''
+            params[n] = ''.join([c for c in params[n] if c not in exc])
+            params[n] = params.replace(" ", "+")
+            
+        params = "+".join(params)
+        url = "http://www.google.com/search?hl=en&q=%s+%s&btnI=745" % (site, params)
+        
+        return url
+        
+    def fetch(self, *params):
+        url = self.createUrl(site, params)
+        
+        try:
+            opener = build_opener()
+            opener.addheaders = [('User-agent', 'amaroQ')]
+            html = opener.open( url ).read()
+        except URLError, e:
+            print e
+            html = "about:blank"
+
+        content = self.treat(site, html)      
+       
+        return content
+
+    def treat(self, site, html):
+        """
+        Goes through, hopefully, a wikipedia page looking for data
+        between div tags with id 'bodyContent'
+        """
+        if site == "amazon": 
+            tag = "prodImage"
+        elif site == "wikipedia":
+            tag = bodyContent
+            
+        tree = fromstring(html)        
+        try:
+            tree = tree.get_element_by_id(tag)
+            tree  = tostring(tree)
+        except:
+            tree = "about:blank"        
+        
+        return tree
+        
