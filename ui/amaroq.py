@@ -597,13 +597,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             result = self.info.getInfo("cover", self.art[0], self.art[1])
             
             cover = QPixmap()
+            cover.loadFromData(result)
             bytes = QByteArray()
             buffer = QBuffer(bytes)
-            buffer.open(QIODevice.WriteOnly);
-            pixmap.save(&buffer, "PNG");
+            buffer.open(QIODevice.WriteOnly)
+            cover.save(buffer, "JPG")
             
-            cover.loadFromData(result)
-            cover.save()
             self.coverView.setPixmap(cover)
             self.old_art[1] = self.art[1]
 
