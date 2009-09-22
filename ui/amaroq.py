@@ -2,11 +2,12 @@
 
 from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, \
 QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel, \
-QProgressBar, QToolButton, QSpacerItem, QSizePolicy, QTreeWidgetItem, QFont
+QProgressBar, QToolButton, QSpacerItem, QSizePolicy, QTreeWidgetItem, QFont, QPixmap
 from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, \
-QSize,  QStringList, QUrl
+QSize,  QStringList, QByteArray, QBuffer, QIODevice
 from PyQt4.phonon import Phonon
 import os
+#from cStringIO import StringIO
 
 from settings import settingDlg
 from Ui_amaroq import Ui_MainWindow
@@ -593,8 +594,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
         elif self.art[1] != self.old_art[1] and self.art[1]:
             print "Album"
-            cover = self.info.getInfo("cover", self.art[0], self.art[1])
-            self.coverView.load(QUrl(cover))
+            result = self.info.getInfo("cover", self.art[0], self.art[1])
+            
+            cover = QPixmap()
+            bytes = QByteArray()
+            buffer = QBuffer(bytes)
+            buffer.open(QIODevice.WriteOnly);
+            pixmap.save(&buffer, "PNG");
+            
+            cover.loadFromData(result)
+            cover.save()
+            self.coverView.setPixmap(cover)
             self.old_art[1] = self.art[1]
 
     def trayEvent(self, event):

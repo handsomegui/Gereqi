@@ -115,11 +115,18 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
                  <number>2</number>
                 </property>
                 <item row="0" column="0">
-                 <widget class="QWebView" name="coverView">
-                  <property name="url">
-                   <url>
-                    <string>about:blank</string>
-                   </url>
+                 <widget class="QLabel" name="coverView">
+                  <property name="text">
+                   <string notr="true"/>
+                  </property>
+                  <property name="pixmap">
+                   <pixmap resource="resource.qrc">:/Icons/music.png</pixmap>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                  <property name="textInteractionFlags">
+                   <set>Qt::NoTextInteraction</set>
                   </property>
                  </widget>
                 </item>

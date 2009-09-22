@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #FIXME: too much of the same code duplicated
-from StringIO import StringIO
+#from StringIO import StringIO
 from urllib2 import URLError, build_opener
 from lxml.html import fromstring, tostring
 import socket
@@ -67,11 +67,21 @@ class webInfo:
             return result
             
         elif thing == "cover":
+            
             site = "amazon"
             result = self.fetch(site, params)
             result = result .split("src=")[1].split(" ")[0]
             result = result.strip('''"''')
-            return result
+            opener = build_opener()
+            opener.addheaders = [('User-agent', 'amaroQ')]
+            html = opener.open( result ).read()
+            
+            # This works. Takes the html "string" and binary writes it
+            fNow = open("/tmp/cover.jpg", "wb")
+            fNow.write(html) 
+            fNow.close()
+            
+            return html # maybe convert to stringIO
             
             # Here I need to figure out if a QPixmap can be created from an url
                 
