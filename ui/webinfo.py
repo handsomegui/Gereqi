@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
-import pycurl
 from StringIO import StringIO
-#from urllib2 import urlopen, Request, URLError
+from urllib2 import URLError, build_opener
 from lxml.html import fromstring, tostring
 
 class wikipedia:
@@ -19,29 +18,15 @@ class wikipedia:
         return url
         
     def fetch(self, artist):
-#TODO:get urllib2 to works
-#403's
-#        req = Request(url)
-#        try:
-#            html = urlopen(req)
-#            html = html.read()
-#        except URLError, e:
-#            print e
-
         url = self.createUrl(artist)
-        html = StringIO()
-        data = pycurl.Curl()
-        data.setopt(pycurl.URL, url)
-        data.setopt(pycurl.USERAGENT, "Firefox/3.0.10")
-        data.setopt(pycurl.FOLLOWLOCATION, 1)
-        data.setopt(pycurl.MAXREDIRS, 5)
-        data.setopt(pycurl.CONNECTTIMEOUT, 30)
-        data.setopt(pycurl.TIMEOUT, 300)
-        data.setopt(pycurl.NOSIGNAL, 1)
-        data.setopt(pycurl.WRITEFUNCTION, html.write)
-        data.perform()
-        
-        html = html.getvalue()
+        try:
+            opener = build_opener()
+            opener.addheaders = [('User-agent', 'amaroQ')]
+            html = opener.open( url ).read()
+        except URLError, e:
+            print e
+            html = "about:blank"
+
         content = self.treat(html)      
        
         return content

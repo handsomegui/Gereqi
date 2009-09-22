@@ -23,7 +23,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #FIXME: This is a mess. Fix
     def __init__(self, parent = None):
         """
-        Initialistion of key items. Some may be pulled
+        Initialisation of key items. Some may be pulled
         from other files as this file is getting messy
         """ 
         QMainWindow.__init__(self, parent)
@@ -50,6 +50,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.trayIcon.show() 
         
     def setupAudio(self):
+        """
+        Audio backend stuff
+        """
         self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
         self.mediaObject = Phonon.MediaObject(self)
         Phonon.createPath(self.mediaObject, self.audioOutput)
@@ -585,6 +588,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         The wikipedia page to current artist playing
         """
+        #TODO: thread me!!!! If internet is slow the ui locks up!
         if self.art != self.old_art  and self.art:
             html = self.wiki.fetch(self.art)
             self.wikiView.setHtml(str(html))
