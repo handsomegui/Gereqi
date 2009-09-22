@@ -592,23 +592,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         #TODO: thread me!!!! If internet is slow the ui locks up!
         if self.art[0] != self.old_art[0] and self.art[0]: 
+            self.htmlThread.setValues(self.art[0])
             self.htmlThread.start()
-#            html = self.info.getInfo("info", str(self.art[0]))
-#            self.wikiView.setHtml(str(html))
             self.old_art[0] = self.art[0]
             
         if self.art[1] != self.old_art[1] and self.art[1]:
+            self.tester.setValues(self.art[0], self.art[1])
             self.tester.start()
-#            result = self.info.getInfo("cover", self.art[0], self.art[1])
-#            
-#            cover = QPixmap()
-#            cover.loadFromData(result)
-#            bytes = QByteArray()
-#            buffer = QBuffer(bytes)
-#            buffer.open(QIODevice.WriteOnly)
-#            cover.save(buffer, "JPG")
-#            
-#            self.coverView.setPixmap(cover)
             self.old_art[1] = self.art[1]
 
     def trayEvent(self, event):
@@ -745,9 +735,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #This will fetch the cover in a seperate thread. Once found it'll emit a signal
 # which MainWindow will connect to and grap ther QImage. It has to be  QImage
 # as QPixmap won't work between threads.
-# No idea how to pass parameters to this thread so atm audioslave is the only 
-# entry for artist and album.
-
 class testThread(QThread):
     def __init__(self,parent=None):
         QThread.__init__(self,parent)
@@ -755,11 +742,16 @@ class testThread(QThread):
     def run(self):
         print "Thread!"
         info = webInfo()
-        result = info.getInfo("cover", "audioslave", "audioslave")
+        result = info.getInfo("cover", self.artist, self.album)
         img = QImage()
         img.loadFromData(result, "JPG")
         
         self.emit(SIGNAL("Activated( QImage )"), img)
+        
+    def setValues(self, art, alb):
+        self.artist = art
+        self.album = alb
+        
         
 class getHtml(QThread):
     def __init__(self,parent=None):
@@ -768,7 +760,9 @@ class getHtml(QThread):
     def run(self):
         print "Thread!"
         info = webInfo()
-        result = info.getInfo("info", "audioslave")
-        result = QString(result)
-        
+        result = info.getInfo("info", self.artist)
+        result = QString(result)        
         self.emit(SIGNAL("Activated( QString )"), result)
+    
+    def setValues(self, art):
+        self.artist = art
