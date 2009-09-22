@@ -4,7 +4,7 @@ from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem,
 QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel, \
 QProgressBar, QToolButton, QSpacerItem, QSizePolicy, QTreeWidgetItem, QFont, QPixmap
 from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, \
-QSize,  QStringList, QByteArray, QBuffer, QIODevice
+QSize,  QStringList, QByteArray, QBuffer, QIODevice, QThread
 from PyQt4.phonon import Phonon
 import os
 #from cStringIO import StringIO
@@ -37,7 +37,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.windowShow = True
         self.playRandom = False
         self.oldPos = 0
-        self.playLstEnd = False        
+        self.playLstEnd = False 
+        self.tester = testThread()
 
         self.art = [None, None] # The current playing artist
         self.old_art = [None, None] # The last playing artist
@@ -47,6 +48,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.createActions()
         self.createTrayIcon()
         self.trayIcon.show() 
+        
         
     def setupAudio(self):
         """
@@ -112,6 +114,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.mediaObject, SIGNAL('finished()'),self.finished)
         self.connect(self.mediaObject, SIGNAL('stateChanged(Phonon::State, Phonon::State)'),self.stateChanged)
         self.connect(self.statPlyTypBttn, SIGNAL('toggled(bool)'), self.play_type)
+        self.connect(self.tester, SIGNAL("Activated ( QPixmap ) "), self.setCover) # Linked to QThread
 
     def createTrayIcon(self):
         self.trayIconMenu = QMenu(self)
@@ -585,15 +588,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         The wikipedia page to current artist playing
         """
         #TODO: thread me!!!! If internet is slow the ui locks up!
-        if self.art[0] != self.old_art[0] and self.art[0]: # Not sure if 'and self.art' will do anything now
-            print "Artist!"
+        if self.art[0] != self.old_art[0] and self.art[0]: 
             html = self.info.getInfo("info", str(self.art[0]))
-
             self.wikiView.setHtml(str(html))
             self.old_art[0] = self.art[0]
             
         if self.art[1] != self.old_art[1] and self.art[1]:
-            print "Album"
+#            self.tester.start()
             result = self.info.getInfo("cover", self.art[0], self.art[1])
             
             cover = QPixmap()
@@ -723,4 +724,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             item = self.playlistTree.item(row, column).text()
             fileList.append(item)  
         
-        return fileList    
+        return fileList   
+        
+    def setCover(self, cover):
+        self.coverView.setPixmap(cover)
+        
+        
+        
+        
+        
+        
+class testThread(QThread):
+    def __init__(self,parent=None):
+        QThread.__init__(self,parent)
+        
+    def run(self):
+        info = webInfo()
+        result = info.getInfo("cover", mc.art[0], mc.art[1])        
+        cover = QPixmap()
+        cover.loadFromData(result)
+        bytes = QByteArray()
+        buffer = QBuffer(bytes)
+        buffer.open(QIODevice.WriteOnly)
+        cover.save(buffer, "JPG")        
+        self.emit(SIGNAL("Activated( QPixmap )"),cover)
