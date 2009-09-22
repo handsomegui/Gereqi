@@ -3,6 +3,10 @@
 from StringIO import StringIO
 from urllib2 import URLError, build_opener
 from lxml.html import fromstring, tostring
+import socket
+
+timeout = 10
+socket.setdefaulttimeout(timeout)
 
 class wikipedia:
     #TODO:finish
@@ -70,8 +74,44 @@ class wikipedia:
 
 class amazon:
     def createUrl(self, artist, album):
-        # The url would give google's image results
-        # Only thing is google must omit amazon results
-        url = "http://images.google.com/images?hl=en&source=hp&q=amazon+%s+%s" % (artist, album)
         # This may be better. Have to treat it like the wiki class. The image is in <img id="prodImage" 
+
+#        exc = '''!,.%%$&(){}[]'''
+#        url = ''.join([c for c in artist if c not in exc])
+        artist = artist.replace(" ", "+")
+        album = album.replace(" ", "+")
         url = "http://www.google.com/search?hl=en&q=amazon+%s+%s&btnI=745" % (artist, album)
+        return url
+       
+#FIXME: oh god
+    def fetch(self, artist, album):
+        url = self.createUrl(artist, album)
+        print url
+#        return 
+        try:
+            opener = build_opener()
+            opener.addheaders = [('User-agent', 'amaroQ')]
+            html = opener.open( url ).read()
+        except URLError, e:
+            print e
+            html = "about:blank"
+
+        content = self.treat(html)      
+       
+        return content
+        
+    def treat(self, html):
+        """
+        Goes through, hopefully, a wikipedia page looking for data
+        between div tags with id 'bodyContent'
+        """
+        # This appears to be considerably quicker than beatifulsoup
+        tree = fromstring(html)        
+        try:
+            tree = tree.get_element_by_id("prodImage")
+            tree = tostring(tree)
+        except:
+            tree = "about:blank"        
+        
+        print tree
+

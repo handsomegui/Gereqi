@@ -37,8 +37,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.oldPos = 0
         self.playLstEnd = False        
 
-        self.art = "None" # The current playing artist
-        self.old_art = self.art # The last playing artist
+        self.art = [None, None] # The current playing artist
+        self.old_art = [None, None] # The last playing artist
         
         self.setupAudio()
         self.setupExtra()
@@ -581,12 +581,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         The wikipedia page to current artist playing
         """
+        print type(self.art[0]), self.art[1]
+        print type(self.old_art[0]), self.old_art[1]
         #TODO: thread me!!!! If internet is slow the ui locks up!
-        if self.art != self.old_art  and self.art:
+        if self.art[0] != self.old_art[0]:#  and self.art[0]: # Not sure if 'and self.art' will do anything now
+            print "Artist!"
             wiki = wikipedia()
-            html = wiki.fetch(self.art)
+            html = wiki.fetch(self.art[0])
+
             self.wikiView.setHtml(str(html))
-            self.old_art = self.art
+            self.old_art[0] = self.art[0]
+            
+        elif self.art[1] != self.old_art[1] and self.art[1]:
+            print "Album"
+            albArt = amazon()
+            albArt.fetch(self.art[0], self.art[1])
+            self.old_art[1] = self.art[1]
+
 
     def trayEvent(self, event):
         """
@@ -663,7 +674,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         message = "Playing: %s by %s on %s" % (title, artist, album)
         self.statLbl.setText(message)
         self.playlistTree.selectRow(row) 
-        self.art = str(artist)
+        self.art[0] = str(artist)
+        self.art[1] = str(album)
         if row and self.wikiView.isVisible():
             self.setWiki()
 
