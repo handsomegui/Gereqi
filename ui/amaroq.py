@@ -2,7 +2,8 @@
 
 from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, \
 QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel, \
-QProgressBar, QToolButton, QSpacerItem, QSizePolicy, QTreeWidgetItem, QFont, QPixmap
+QProgressBar, QToolButton, QSpacerItem, QSizePolicy, QTreeWidgetItem, QFont, QPixmap,  \
+QImage
 from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, \
 QSize,  QStringList, QByteArray, QBuffer, QIODevice, QThread
 from PyQt4.phonon import Phonon
@@ -114,7 +115,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.mediaObject, SIGNAL('finished()'),self.finished)
         self.connect(self.mediaObject, SIGNAL('stateChanged(Phonon::State, Phonon::State)'),self.stateChanged)
         self.connect(self.statPlyTypBttn, SIGNAL('toggled(bool)'), self.play_type)
-        self.connect(self.tester, SIGNAL("Activated ( QPixmap ) "), self.setCover) # Linked to QThread
+        self.connect(self.tester, SIGNAL("Activated ( QImage ) "), self.setCover) # Linked to QThread
 
     def createTrayIcon(self):
         self.trayIconMenu = QMenu(self)
@@ -594,17 +595,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.old_art[0] = self.art[0]
             
         if self.art[1] != self.old_art[1] and self.art[1]:
-#            self.tester.start()
-            result = self.info.getInfo("cover", self.art[0], self.art[1])
-            
-            cover = QPixmap()
-            cover.loadFromData(result)
-            bytes = QByteArray()
-            buffer = QBuffer(bytes)
-            buffer.open(QIODevice.WriteOnly)
-            cover.save(buffer, "JPG")
-            
-            self.coverView.setPixmap(cover)
+            self.tester.start()
+#            result = self.info.getInfo("cover", self.art[0], self.art[1])
+#            
+#            cover = QPixmap()
+#            cover.loadFromData(result)
+#            bytes = QByteArray()
+#            buffer = QBuffer(bytes)
+#            buffer.open(QIODevice.WriteOnly)
+#            cover.save(buffer, "JPG")
+#            
+#            self.coverView.setPixmap(cover)
             self.old_art[1] = self.art[1]
 
     def trayEvent(self, event):
@@ -726,25 +727,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         return fileList   
         
-    def setCover(self, cover):
+    def setCover(self, img):
+        print type(img)
+        cover = QPixmap()
+        cover = cover.fromImage(img)
         self.coverView.setPixmap(cover)
+        self.tester.exit()
         
         
         
         
         
-        
+#This will fetch the cover in a seperate thread. Once found it'll emit a signal
+# which MainWindow will connect to and grap ther QImage. It has to be  QImage
+# as QPixmap won't work between threads.
+# No idea how to pass parameters to this thread so atm audioslave is the only 
+# entry for artist and album.
+
 class testThread(QThread):
     def __init__(self,parent=None):
         QThread.__init__(self,parent)
         
     def run(self):
+        print "Thread!"
         info = webInfo()
-        result = info.getInfo("cover", mc.art[0], mc.art[1])        
-        cover = QPixmap()
-        cover.loadFromData(result)
-        bytes = QByteArray()
-        buffer = QBuffer(bytes)
-        buffer.open(QIODevice.WriteOnly)
-        cover.save(buffer, "JPG")        
-        self.emit(SIGNAL("Activated( QPixmap )"),cover)
+        result = info.getInfo("cover", "audioslave", "audioslave")
+        img = QImage()
+        img.loadFromData(result, "JPG")
+        
+        self.emit(SIGNAL("Activated( QImage )"), img)
