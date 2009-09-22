@@ -13,7 +13,7 @@ from Ui_amaroq import Ui_MainWindow
 import resource_rc
 from database import media
 from metadata import metaData
-from webinfo import wikipedia, amazon
+from webinfo import webInfo
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     """
@@ -29,6 +29,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         
         self.mediaDB = media()
+        self.info = webInfo()
         self.mediaDir = None
         self.meta = metaData()
         self.setupDBtree()
@@ -584,18 +585,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #TODO: thread me!!!! If internet is slow the ui locks up!
         if self.art[0] != self.old_art[0] and self.art[0]: # Not sure if 'and self.art' will do anything now
             print "Artist!"
-            wiki = wikipedia()
-            html = wiki.fetch(self.art[0])
+            html = self.info.getInfo("info", str(self.art[0]))
 
             self.wikiView.setHtml(str(html))
             self.old_art[0] = self.art[0]
             
         elif self.art[1] != self.old_art[1] and self.art[1]:
             print "Album"
-            albArt = amazon()
-            albArt.fetch(self.art[0], self.art[1])
+            self.info.getInfo("cover", self.art[0], self.art[1])
             self.old_art[1] = self.art[1]
-
 
     def trayEvent(self, event):
         """
