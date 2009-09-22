@@ -40,6 +40,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.oldPos = 0
         self.playLstEnd = False 
         self.tester = testThread()
+        self.htmlThread = getHtml()
 
         self.art = [None, None] # The current playing artist
         self.old_art = [None, None] # The last playing artist
@@ -116,6 +117,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.mediaObject, SIGNAL('stateChanged(Phonon::State, Phonon::State)'),self.stateChanged)
         self.connect(self.statPlyTypBttn, SIGNAL('toggled(bool)'), self.play_type)
         self.connect(self.tester, SIGNAL("Activated ( QImage ) "), self.setCover) # Linked to QThread
+        self.connect(self.htmlThread, SIGNAL("Activated ( QString ) "), self.setWiki)
 
     def createTrayIcon(self):
         self.trayIconMenu = QMenu(self)
@@ -590,8 +592,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         #TODO: thread me!!!! If internet is slow the ui locks up!
         if self.art[0] != self.old_art[0] and self.art[0]: 
-            html = self.info.getInfo("info", str(self.art[0]))
-            self.wikiView.setHtml(str(html))
+            self.htmlThread.start()
+#            html = self.info.getInfo("info", str(self.art[0]))
+#            self.wikiView.setHtml(str(html))
             self.old_art[0] = self.art[0]
             
         if self.art[1] != self.old_art[1] and self.art[1]:
@@ -713,8 +716,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except:
             pos = None
         if  pos and  pos == fileCnt:
-            return True
-        
+            return True        
 
     def genFilelist(self):
         column = 6
@@ -726,7 +728,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             fileList.append(item)  
         
         return fileList   
-        
+ 
+#FIXME: this is getting ridiculous. We need new classes. 
     def setCover(self, img):
         print type(img)
         cover = QPixmap()
@@ -734,7 +737,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.coverView.setPixmap(cover)
         self.tester.exit()
         
-        
+    def setWiki(self, html):
+        self.wikiView.setHtml(str(html))
         
         
         
@@ -756,3 +760,15 @@ class testThread(QThread):
         img.loadFromData(result, "JPG")
         
         self.emit(SIGNAL("Activated( QImage )"), img)
+        
+class getHtml(QThread):
+    def __init__(self,parent=None):
+        QThread.__init__(self,parent)
+        
+    def run(self):
+        print "Thread!"
+        info = webInfo()
+        result = info.getInfo("info", "audioslave")
+        result = QString(result)
+        
+        self.emit(SIGNAL("Activated( QString )"), result)
