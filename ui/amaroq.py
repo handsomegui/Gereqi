@@ -628,26 +628,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
         else:
             current = self.mediaObject.currentSource().fileName()
-            rows = self.playlistTree.rowCount()
+            rows = self.playlistTree.rowCount() # If 0 then the playlist is empty
             
-            for row in range(rows):
-                fileName = self.playlistTree.item(row, column).text()
-                
-                # Track, track, track.
-                if fileName == current:
-                    if mode == "back":
-                        if (row - 1) >= 0:
-                            track = self.playlistTree.item(row - 1 , column).text()
-                        else:
-                            track = None
-                        break
-                        
-                    elif mode == "next":
-                        if (row + 1) < rows:
-                            track = self.playlistTree.item(row + 1, column).text()
-                        else:
-                            track = None                            
-                        break                        
+            #FIXME: the elses encased in the 1st if are probably now pointless
+            if rows > 0:
+                for row in range(rows):
+                    fileName = self.playlistTree.item(row, column).text()
+                    
+                    # Track, track, track.
+                    if fileName == current:
+                        if mode == "back":
+                            if (row - 1) >= 0:
+                                track = self.playlistTree.item(row - 1 , column).text()
+                            else:
+                                track = None
+                            break
+                            
+                        elif mode == "next":
+                            if (row + 1) < rows:
+                                track = self.playlistTree.item(row + 1, column).text()
+                            else:
+                                track = None                            
+                            break
+                            
+            else:
+                track = None
                  
         if track:
             track = Phonon.MediaSource(track)      
