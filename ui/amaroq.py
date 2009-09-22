@@ -650,20 +650,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
         return track
 
-#FIXME: DUPLICATION       
     def genInfo(self):
         # This retrieves data from the playlist table, not the database. This is because
         # the playlist may contain tracks added locally.
-        column = 6
-        rows = self.playlistTree.rowCount() 
+        fileList = self.genFilelist()
         fileName = self.mediaObject.currentSource().fileName()
+        row = fileList.index(fileName)
         
-        for row in range(rows):
-            item = self.playlistTree.item(row, column).text()
-            if item == fileName:
-                row = row
-                break
-                
         title = self.playlistTree.item(row, 1).text()
         artist = self.playlistTree.item(row, 2).text()
         album = self.playlistTree.item(row, 3).text()
@@ -707,7 +700,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         for row in range(rows):
             item = self.playlistTree.item(row, column).text()
-            fileList.append(row)            
+            fileList.append(item)  
+        
         return fileList  
         
                 
