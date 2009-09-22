@@ -177,7 +177,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSignature("")
     def on_prevBttn_pressed(self):
         """
-        Slot documentation goes here.
+        Skip to previous track in viewable playlist
+        if possible
         """
         
         track = self.genTrack("back")
@@ -720,7 +721,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
  
 #FIXME: this is getting ridiculous. We need new classes. 
     def setCover(self, img):
-        print type(img)
         cover = QPixmap()
         cover = cover.fromImage(img)
         self.coverView.setPixmap(cover)
@@ -739,30 +739,29 @@ class testThread(QThread):
     def __init__(self,parent=None):
         QThread.__init__(self,parent)
         
-    def run(self):
-        print "Thread!"
-        info = webInfo()
-        result = info.getInfo("cover", self.artist, self.album)
-        img = QImage()
-        img.loadFromData(result, "JPG")
-        
-        self.emit(SIGNAL("Activated( QImage )"), img)
-        
     def setValues(self, art, alb):
         self.artist = art
         self.album = alb
+        
+    def run(self):
+        info = webInfo()
+        result = info.getInfo("cover", self.artist, self.album)
+        img = QImage()
+        img.loadFromData(result, "JPG")        
+        self.emit(SIGNAL("Activated( QImage )"), img)
         
         
 class getHtml(QThread):
     def __init__(self,parent=None):
         QThread.__init__(self,parent)
+    
+    def setValues(self, art):
+        self.artist = art
         
     def run(self):
-        print "Thread!"
         info = webInfo()
         result = info.getInfo("info", self.artist)
         result = QString(result)        
         self.emit(SIGNAL("Activated( QString )"), result)
     
-    def setValues(self, art):
-        self.artist = art
+
