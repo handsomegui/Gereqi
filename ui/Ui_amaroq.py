@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
 #
-# Created: Sat Sep 19 17:16:54 2009
+# Created: Tue Sep 22 17:24:32 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -65,12 +65,10 @@ font: 75 10pt \"DejaVu Sans\";
         self.gridLayout_8 = QtGui.QGridLayout(self.groupBox)
         self.gridLayout_8.setMargin(2)
         self.gridLayout_8.setObjectName("gridLayout_8")
-        self.label_3 = QtGui.QLabel(self.groupBox)
-        self.label_3.setMinimumSize(QtCore.QSize(128, 128))
-        self.label_3.setMaximumSize(QtCore.QSize(128, 128))
-        self.label_3.setPixmap(QtGui.QPixmap(":/Icons/music.png"))
-        self.label_3.setObjectName("label_3")
-        self.gridLayout_8.addWidget(self.label_3, 0, 0, 1, 1)
+        self.coverView = QtWebKit.QWebView(self.groupBox)
+        self.coverView.setUrl(QtCore.QUrl("about:blank"))
+        self.coverView.setObjectName("coverView")
+        self.gridLayout_8.addWidget(self.coverView, 0, 0, 1, 1)
         self.gridLayout_12.addWidget(self.groupBox, 0, 0, 1, 1)
         self.groupBox_2 = QtGui.QGroupBox(self.tab_6)
         self.groupBox_2.setStyleSheet("""text-decoration: underline;

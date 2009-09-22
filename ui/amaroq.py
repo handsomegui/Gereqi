@@ -4,7 +4,7 @@ from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem,
 QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel, \
 QProgressBar, QToolButton, QSpacerItem, QSizePolicy, QTreeWidgetItem, QFont
 from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, \
-QSize,  QStringList
+QSize,  QStringList, QUrl
 from PyQt4.phonon import Phonon
 import os
 
@@ -82,7 +82,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusBar.addPermanentWidget(self.statBttn)
         self.statusBar.addPermanentWidget(self.statPlyTypBttn)
 
-        headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), self.tr("Album"), self.tr("Year"), self.tr("Genre"), self.tr("FileName")]
+        headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), self.tr("Album"), \
+                   self.tr("Year"), self.tr("Genre"), self.tr("FileName")]
         
         for val in range(len(headers)):
             self.playlistTree.insertColumn(val)
@@ -592,7 +593,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
         elif self.art[1] != self.old_art[1] and self.art[1]:
             print "Album"
-            self.info.getInfo("cover", self.art[0], self.art[1])
+            cover = self.info.getInfo("cover", self.art[0], self.art[1])
+            self.coverView.load(QUrl(cover))
             self.old_art[1] = self.art[1]
 
     def trayEvent(self, event):
@@ -712,7 +714,4 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             item = self.playlistTree.item(row, column).text()
             fileList.append(item)  
         
-        return fileList  
-        
-                
-                
+        return fileList    

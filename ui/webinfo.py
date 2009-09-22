@@ -71,7 +71,7 @@ class webInfo:
             result = self.fetch(site, params)
             result = result .split("src=")[1].split(" ")[0]
             result = result.strip('''"''')
-            print result
+            return result
             
             # Here I need to figure out if a QPixmap can be created from an url
                 
