@@ -5,7 +5,7 @@ from StringIO import StringIO
 #from urllib2 import urlopen, Request, URLError
 from lxml.html import fromstring, tostring
 
-class Wiki:
+class wikipedia:
     #TODO:finish
     def createUrl(self, artist):
         """

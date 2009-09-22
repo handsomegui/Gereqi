@@ -13,7 +13,7 @@ from Ui_amaroq import Ui_MainWindow
 import resource_rc
 from database import media
 from metadata import metaData
-from wiki import Wiki
+from webinfo import wikipedia, amazon
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     """
@@ -33,25 +33,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mediaDir = None
         self.meta = metaData()
         self.setupDBtree()
-        self.wikipedia = Wiki()
+        self.wiki = wikipedia()
         self.windowShow = True
         self.playRandom = False
         self.oldPos = 0
         self.playLstEnd = False
         
-        self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
-        self.mediaObject = Phonon.MediaObject(self)
-        self.metaInformationResolver = Phonon.MediaObject(self)
-        Phonon.createPath(self.mediaObject, self.audioOutput)
-        self.mediaObject.setTickInterval(1000)
-        self.audioOutput.setVolume(1)
+
         self.art = "None"
         self.old_art = self.art
         
+        self.setupAudio()
         self.setupExtra()
         self.createActions()
         self.createTrayIcon()
         self.trayIcon.show() 
+        
+    def setupAudio(self):
+        self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
+        self.mediaObject = Phonon.MediaObject(self)
+        Phonon.createPath(self.mediaObject, self.audioOutput)
+        self.mediaObject.setTickInterval(1000)
+        self.audioOutput.setVolume(1)
+        
    
     def setupExtra(self):
         """
@@ -582,7 +586,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         The wikipedia page to current artist playing
         """
         if self.art != self.old_art  and self.art:
-            html = self.wikipedia.fetch(self.art)
+            html = self.wiki.fetch(self.art)
             self.wikiView.setHtml(str(html))
             self.old_art = self.art
 

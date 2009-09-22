@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Tasks SYSTEM "Tasks-4.2.dtd">
 <!-- eric4 tasks file for project amaroQ -->
-<!-- Saved: 2009-09-20, 21:19:45 -->
+<!-- Saved: 2009-09-21, 20:37:20 -->
 <Tasks version="4.2">
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: Figure out how to do custom slots, i think</Summary>
@@ -10,114 +10,6 @@
     <Resource>
       <Filename>ui/settings.py</Filename>
       <Linenumber>23</Linenumber>
-    </Resource>
-  </Task>
-  <Task priority="1" completed="False" bugfix="True">
-    <Summary>FIXME: This is a mess. Fix</Summary>
-    <Description></Description>
-    <Created>2009-09-20, 19:30:20</Created>
-    <Resource>
-      <Filename>ui/amaroq.py</Filename>
-      <Linenumber>23</Linenumber>
-    </Resource>
-  </Task>
-  <Task priority="1" completed="False" bugfix="False">
-    <Summary>TODO: not finished</Summary>
-    <Description></Description>
-    <Created>2009-09-20, 19:30:20</Created>
-    <Resource>
-      <Filename>ui/amaroq.py</Filename>
-      <Linenumber>135</Linenumber>
-    </Resource>
-  </Task>
-  <Task priority="1" completed="False" bugfix="False">
-    <Summary>TODO: not finished</Summary>
-    <Description></Description>
-    <Created>2009-09-20, 19:30:20</Created>
-    <Resource>
-      <Filename>ui/amaroq.py</Filename>
-      <Linenumber>143</Linenumber>
-    </Resource>
-  </Task>
-  <Task priority="1" completed="False" bugfix="False">
-    <Summary>TODO: not finished yet</Summary>
-    <Description></Description>
-    <Created>2009-09-20, 19:30:20</Created>
-    <Resource>
-      <Filename>ui/amaroq.py</Filename>
-      <Linenumber>244</Linenumber>
-    </Resource>
-  </Task>
-  <Task priority="1" completed="False" bugfix="True">
-    <Summary>FIXME: only let this happen if the  playlist finishes</Summary>
-    <Description></Description>
-    <Created>2009-09-20, 19:30:20</Created>
-    <Resource>
-      <Filename>ui/amaroq.py</Filename>
-      <Linenumber>337</Linenumber>
-    </Resource>
-  </Task>
-  <Task priority="1" completed="False" bugfix="True">
-    <Summary>FIXME:Try and replace with a PyQt4 function</Summary>
-    <Description></Description>
-    <Created>2009-09-20, 19:30:20</Created>
-    <Resource>
-      <Filename>ui/amaroq.py</Filename>
-      <Linenumber>359</Linenumber>
-    </Resource>
-  </Task>
-  <Task priority="1" completed="False" bugfix="False">
-    <Summary>TODO: not finished yet</Summary>
-    <Description></Description>
-    <Created>2009-09-20, 19:30:20</Created>
-    <Resource>
-      <Filename>ui/amaroq.py</Filename>
-      <Linenumber>421</Linenumber>
-    </Resource>
-  </Task>
-  <Task priority="1" completed="False" bugfix="False">
-    <Summary>TODO: not completed yet. See self.collection</Summary>
-    <Description></Description>
-    <Created>2009-09-20, 19:30:20</Created>
-    <Resource>
-      <Filename>ui/amaroq.py</Filename>
-      <Linenumber>499</Linenumber>
-    </Resource>
-  </Task>
-  <Task priority="1" completed="False" bugfix="False">
-    <Summary>TODO: at the start of new letter in alphabet create a header/separator</Summary>
-    <Description></Description>
-    <Created>2009-09-20, 19:30:20</Created>
-    <Resource>
-      <Filename>ui/amaroq.py</Filename>
-      <Linenumber>554</Linenumber>
-    </Resource>
-  </Task>
-  <Task priority="1" completed="False" bugfix="False">
-    <Summary>TODO: Thread me!</Summary>
-    <Description></Description>
-    <Created>2009-09-20, 19:30:20</Created>
-    <Resource>
-      <Filename>ui/amaroq.py</Filename>
-      <Linenumber>579</Linenumber>
-    </Resource>
-  </Task>
-  <Task priority="1" completed="False" bugfix="True">
-    <Summary>FIXME: DUPLICATION</Summary>
-    <Description></Description>
-    <Created>2009-09-20, 19:30:20</Created>
-    <Resource>
-      <Filename>ui/amaroq.py</Filename>
-      <Linenumber>643</Linenumber>
-    </Resource>
-  </Task>
-  <Task priority="1" completed="False" bugfix="True">
-    <Summary>FIXME:DUPLICATION</Summary>
-    <Description></Description>
-    <Created>2009-09-20, 19:30:20</Created>
-    <Resource>
-      <Filename>ui/amaroq.py</Filename>
-      <Linenumber>679</Linenumber>
     </Resource>
   </Task>
   <Task priority="1" completed="False" bugfix="False">
@@ -163,6 +55,114 @@
     <Resource>
       <Filename>ui/wiki.py</Filename>
       <Linenumber>22</Linenumber>
+    </Resource>
+  </Task>
+  <Task priority="1" completed="False" bugfix="True">
+    <Summary>FIXME: This is a mess. Fix</Summary>
+    <Description></Description>
+    <Created>2009-09-21, 20:30:24</Created>
+    <Resource>
+      <Filename>ui/amaroq.py</Filename>
+      <Linenumber>23</Linenumber>
+    </Resource>
+  </Task>
+  <Task priority="1" completed="False" bugfix="False">
+    <Summary>TODO: not finished</Summary>
+    <Description></Description>
+    <Created>2009-09-21, 20:30:24</Created>
+    <Resource>
+      <Filename>ui/amaroq.py</Filename>
+      <Linenumber>139</Linenumber>
+    </Resource>
+  </Task>
+  <Task priority="1" completed="False" bugfix="False">
+    <Summary>TODO: not finished</Summary>
+    <Description></Description>
+    <Created>2009-09-21, 20:30:24</Created>
+    <Resource>
+      <Filename>ui/amaroq.py</Filename>
+      <Linenumber>147</Linenumber>
+    </Resource>
+  </Task>
+  <Task priority="1" completed="False" bugfix="False">
+    <Summary>TODO: not finished yet</Summary>
+    <Description></Description>
+    <Created>2009-09-21, 20:30:24</Created>
+    <Resource>
+      <Filename>ui/amaroq.py</Filename>
+      <Linenumber>248</Linenumber>
+    </Resource>
+  </Task>
+  <Task priority="1" completed="False" bugfix="True">
+    <Summary>FIXME: only let this happen if the  playlist finishes</Summary>
+    <Description></Description>
+    <Created>2009-09-21, 20:30:24</Created>
+    <Resource>
+      <Filename>ui/amaroq.py</Filename>
+      <Linenumber>341</Linenumber>
+    </Resource>
+  </Task>
+  <Task priority="1" completed="False" bugfix="True">
+    <Summary>FIXME:Try and replace with a PyQt4 function</Summary>
+    <Description></Description>
+    <Created>2009-09-21, 20:30:24</Created>
+    <Resource>
+      <Filename>ui/amaroq.py</Filename>
+      <Linenumber>363</Linenumber>
+    </Resource>
+  </Task>
+  <Task priority="1" completed="False" bugfix="False">
+    <Summary>TODO: not finished yet</Summary>
+    <Description></Description>
+    <Created>2009-09-21, 20:30:24</Created>
+    <Resource>
+      <Filename>ui/amaroq.py</Filename>
+      <Linenumber>425</Linenumber>
+    </Resource>
+  </Task>
+  <Task priority="1" completed="False" bugfix="False">
+    <Summary>TODO: not completed yet. See self.collection</Summary>
+    <Description></Description>
+    <Created>2009-09-21, 20:30:24</Created>
+    <Resource>
+      <Filename>ui/amaroq.py</Filename>
+      <Linenumber>503</Linenumber>
+    </Resource>
+  </Task>
+  <Task priority="1" completed="False" bugfix="False">
+    <Summary>TODO: at the start of new letter in alphabet create a header/separator</Summary>
+    <Description></Description>
+    <Created>2009-09-21, 20:30:24</Created>
+    <Resource>
+      <Filename>ui/amaroq.py</Filename>
+      <Linenumber>558</Linenumber>
+    </Resource>
+  </Task>
+  <Task priority="1" completed="False" bugfix="False">
+    <Summary>TODO: Thread me!</Summary>
+    <Description></Description>
+    <Created>2009-09-21, 20:30:24</Created>
+    <Resource>
+      <Filename>ui/amaroq.py</Filename>
+      <Linenumber>583</Linenumber>
+    </Resource>
+  </Task>
+  <Task priority="1" completed="False" bugfix="True">
+    <Summary>FIXME: DUPLICATION</Summary>
+    <Description></Description>
+    <Created>2009-09-21, 20:30:24</Created>
+    <Resource>
+      <Filename>ui/amaroq.py</Filename>
+      <Linenumber>647</Linenumber>
+    </Resource>
+  </Task>
+  <Task priority="1" completed="False" bugfix="True">
+    <Summary>FIXME:DUPLICATION</Summary>
+    <Description></Description>
+    <Created>2009-09-21, 20:30:24</Created>
+    <Resource>
+      <Filename>ui/amaroq.py</Filename>
+      <Linenumber>683</Linenumber>
     </Resource>
   </Task>
 </Tasks>
