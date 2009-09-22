@@ -33,15 +33,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mediaDir = None
         self.meta = metaData()
         self.setupDBtree()
-        self.wiki = wikipedia()
         self.windowShow = True
         self.playRandom = False
         self.oldPos = 0
-        self.playLstEnd = False
-        
+        self.playLstEnd = False        
 
-        self.art = "None"
-        self.old_art = self.art
+        self.art = "None" # The current playing artist
+        self.old_art = self.art # The last playing artist
         
         self.setupAudio()
         self.setupExtra()
@@ -107,7 +105,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.prevAction, SIGNAL("triggered()"), self.on_prevBttn_pressed)
         self.connect(self.stopAction, SIGNAL("triggered()"), self.on_stopBttn_pressed)
         self.connect(self.viewAction, SIGNAL("toggled(bool)"), self.minimiseTray)
-#        self.connect(self.metaInformationResolver, SIGNAL('stateChanged(Phonon::State, Phonon::State)'),self.metaStateChanged)
         self.connect(self.mediaObject, SIGNAL('tick(qint64)'), self.tick)
         self.connect(self.mediaObject, SIGNAL('aboutToFinish()'),self.aboutToFinish)
         self.connect(self.mediaObject, SIGNAL('finished()'),self.finished)
@@ -590,7 +587,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         #TODO: thread me!!!! If internet is slow the ui locks up!
         if self.art != self.old_art  and self.art:
-            html = self.wiki.fetch(self.art)
+            wiki = wikipedia()
+            html = wiki.fetch(self.art)
             self.wikiView.setHtml(str(html))
             self.old_art = self.art
 
@@ -599,6 +597,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Things to perform on user-interaction of the tray icon
         other than bringing up it's menu
         """
+        winState = self.windowState()
+        # hex val is supposed to indicate minimised
+        # no idea how to extract it from windowState
+#        print winState == 0x00000001 
         if event == 3:
             if self.windowShow:
                 self.minimiseTray(False)
@@ -652,8 +654,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def genInfo(self):
         # This retrieves data from the playlist table, not the database. This is because
         # the playlist may contain tracks added locally.
-        
-
         column = 6
         rows = self.playlistTree.rowCount() 
         fileName = self.mediaObject.currentSource().fileName()
@@ -684,16 +684,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             return False
 
-#FIXME:DUPLICATION
     def isLast(self):
         """
         Checks whether the current track in self.mediaObject
         is the last in the viewable playlist
         """
+        now = self.mediaObject.currentSource().fileName()                
+        fileList = self.genFilelist()
+        fileCnt = len(fileList)
+        try:
+            pos = fileList.index(now)
+        except:
+            pos = None
+        if  pos and  pos == fileCnt:
+            return True
+        
+
+    def genFilelist(self):
         column = 6
-        now = self.mediaObject.currentSource().fileName()
         rows = self.playlistTree.rowCount() 
+        fileList = []
+        
         for row in range(rows):
             item = self.playlistTree.item(row, column).text()
-            if item == now and row == rows:
-                return True
+            fileList.append(row)            
+        return fileList  
+        
+                
+                
