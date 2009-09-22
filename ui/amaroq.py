@@ -423,7 +423,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         # TODO: not finished yet
         if index == 2:
-            self.setWiki()
+            self.setInfo()
 
     def play_type(self, checked):
         if checked:
@@ -580,7 +580,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 artist.addChild(album)
 
 #TODO: Thread me!
-    def setWiki(self):
+    def setInfo(self):
         """
         The wikipedia page to current artist playing
         """
@@ -592,7 +592,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.wikiView.setHtml(str(html))
             self.old_art[0] = self.art[0]
             
-        elif self.art[1] != self.old_art[1] and self.art[1]:
+        if self.art[1] != self.old_art[1] and self.art[1]:
             print "Album"
             result = self.info.getInfo("cover", self.art[0], self.art[1])
             
@@ -689,7 +689,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.art[0] = str(artist)
         self.art[1] = str(album)
         if row and self.wikiView.isVisible():
-            self.setWiki()
+            self.setInfo()
 
     def isPlaying(self):
         state = self.mediaObject.state()

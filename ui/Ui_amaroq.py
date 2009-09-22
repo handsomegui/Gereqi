@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
 #
-# Created: Tue Sep 22 17:50:37 2009
+# Created: Tue Sep 22 18:47:18 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -66,6 +66,8 @@ font: 75 10pt \"DejaVu Sans\";
         self.gridLayout_8.setMargin(2)
         self.gridLayout_8.setObjectName("gridLayout_8")
         self.coverView = QtGui.QLabel(self.groupBox)
+        self.coverView.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.coverView.setFrameShadow(QtGui.QFrame.Raised)
         self.coverView.setPixmap(QtGui.QPixmap(":/Icons/music.png"))
         self.coverView.setAlignment(QtCore.Qt.AlignCenter)
         self.coverView.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
