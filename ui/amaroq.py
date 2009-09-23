@@ -222,6 +222,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         To stop current track.
         """
+        #TODO: disable the lyrics and wiki tabs
         self.mediaObject.stop()
         self.playBttn.setChecked(False)
         
@@ -243,9 +244,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSignature("int")
     def on_volSldr_valueChanged(self, value):
         """
-        Slot documentation goes here.
-        """
-        
+        Self explanatory
+        """        
         self.volLbl.setText("%s" % value)
         value = (value / 100.0) ** 2
         self.audioOutput.setVolume(value)
@@ -275,7 +275,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSignature("")
     def on_actionExit_triggered(self):
         """
-        Closing Down
+        Closing Down. Maybe some database interaction.
         """
         exit()
     
@@ -283,8 +283,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_actionPlay_Media_triggered(self):
         """
         Extract music files and shove into current playlist.
-        """
-        
+        """        
         # As the kde4 dialogs are being used (somehow) I can't see if the filters work
         mfiles = QFileDialog.getOpenFileNames(\
                         None, 
