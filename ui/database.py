@@ -23,12 +23,14 @@ class media:
         self.mediaCurs.execute('''
             CREATE TABLE IF NOT EXISTS media (
                 filename    TEXT ,
-                track    TINYINT(2),
+                track    UNSIGNED TINYINT(2),
                 title   VARCHAR(50),
                 artist  VARCHAR(50),
                 album   VARCHAR(50),
-                year    SMALLINT(4),
+                year    UNSIGNED SMALLINT(4),
                 genre   VARCHAR(50),
+                rating  UNSIGNED TINYINT(1),
+                playcount   UNSIGNED SMALLINT,
                 PRIMARY KEY (filename) ON CONFLICT IGNORE
                 )
                 ''')

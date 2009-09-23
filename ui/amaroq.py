@@ -520,7 +520,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print "Scanned dir"
             self.statProg.setToolTip("Finished")
             self.statProg.setValue(100)
-#            self.mediaDB.lenDB()
             self.collectTree.clear()
             self.setupDBtree()
             
@@ -545,33 +544,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.mediaDir:
             self.buildThread.setValues(self.mediaDir)
             self.statProg.setToolTip("Scanning Media")
+            self.statProg.setValue(0)
             self.buildThread.start()
 
-#        for root, dirname, filename in os.walk(str(self.mediaDir)):
-#            for x in filename:
-#                fileNow = os.path.join(root, x)                
-#                if fileNow.endswith(".ogg") or fileNow.endswith(".mp3") or fileNow.endswith(".flac"):
-#                    media.append(fileNow)
-#                    
-#        self.statProg.setValue(0)
-#        self.statProg.setToolTip("Scanning Media")
-#        
-#        medTotal = len(media)
-#        
-#        for track in range(medTotal):
-#            prog = int(100 * ( float(track) / float(medTotal ) ))
-#            track = media[track]
-#            tags = self.meta.extract(track)
-#            tags.insert(0, track)
-#            self.mediaDB.add_media(tags)
-#            self.statProg.setValue(prog)
-#        
-#        self.statProg.setToolTip("Finished")
-#        self.statProg.setValue(100)
-#        self.mediaDB.lenDB()
-#        self.collectTree.clear()
-#        self.setupDBtree()
-        
     def setupDBtree(self):
         """
         The beginnings of viewing the media database in the QTreeView
