@@ -20,6 +20,9 @@ class webInfo:
             things.append(item)
             
         things = "+".join(things)
+        if site == "wikipedia":
+            things = "%s+music+OR+band+OR+artist&btnI=745" % things
+            
         url = "http://www.google.com/search?hl=en&q=%s+%s&btnI=745" % (site, things)        
         return url
         
