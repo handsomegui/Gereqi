@@ -62,6 +62,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Extra __init__ things to add to the UI
         """
+        self.progSldr.setPageStep(0)
+        self.progSldr.setSingleStep(0)
         self.statLbl = QLabel("Finished")
         self.statProg = QProgressBar()
         self.statBttn = QToolButton()
@@ -326,11 +328,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # This only goes(?) if  the user has not grabbed the slider
         if pos == self.oldPos or pos < 1: # This or stops a problem where the slider doesn't move after the track finishes
             self.progSldr.setValue(time)
+        
+        
         self.oldPos = time
             
     def aboutToFinish(self):    
         track = self.genTrack("next")
+        print track
         if track:
+            print "enque"
             self.mediaObject.enqueue(track)
 
     def setProgSldr(self):
