@@ -14,7 +14,8 @@ from Ui_amaroq import Ui_MainWindow
 import resource_rc
 from database import media
 from metadata import metaData
-from webinfo import webInfo
+#from webinfo import webInfo
+from threads import getCover, getWiki
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     """
@@ -30,7 +31,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         
         self.mediaDB = media()
-        self.info = webInfo()
         self.mediaDir = None
         self.meta = metaData()
         self.setupDBtree()
@@ -38,8 +38,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playRandom = False
         self.oldPos = 0
         self.playLstEnd = False 
-        self.coverThread = testThread()
-        self.htmlThread = getHtml()
+        self.coverThread = getCover()
+        self.htmlThread = getWiki()
 
         self.art = [None, None] # The current playing artist
         self.old_art = [None, None] # The last playing artist
@@ -732,38 +732,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.wikiView.setHtml(str(html))
         self.htmlThread.exit()
         
-        
-        
-#This will fetch the cover in a seperate thread. Once found it'll emit a signal
-# which MainWindow will connect to and grap ther QImage. It has to be  QImage
-# as QPixmap won't work between threads.
-class testThread(QThread):
-    def __init__(self,parent=None):
-        QThread.__init__(self,parent)
-        
-    def setValues(self, art, alb):
-        self.artist = art
-        self.album = alb
-        
-    def run(self):
-        info = webInfo()
-        result = info.getInfo("cover", self.artist, self.album)
-        img = QImage()
-        img.loadFromData(result, "JPG")        
-        self.emit(SIGNAL("Activated( QImage )"), img)
-        
-        
-class getHtml(QThread):
-    def __init__(self,parent=None):
-        QThread.__init__(self,parent)
-    
-    def setValues(self, art):
-        self.artist = art
-        
-    def run(self):
-        info = webInfo()
-        result = info.getInfo("info", self.artist)
-        result = QString(result)        
-        self.emit(SIGNAL("Activated( QString )"), result)
+
     
 
