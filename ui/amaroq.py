@@ -334,9 +334,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
     def aboutToFinish(self):    
         track = self.genTrack("next")
-        print track
         if track:
-            print "enque"
             self.mediaObject.enqueue(track)
 
     def setProgSldr(self):
@@ -711,14 +709,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 # These are linked to the threads emitting signals
     def setCover(self, img):
         cover = QPixmap()
-        #FIXME: this check is to see if the image is not null.
-        # See the FIXME in getCOver of threads.py for more
-        # details
-        if not img.isNull():
-            cover = cover.fromImage(img)
-            cover = cover.scaledToWidth(200, Qt.SmoothTransformation)
-            self.coverView.setPixmap(cover)        
-        self.coverThread.exit() #Not sure if really necessary
+        cover = cover.fromImage(img)
+        cover = cover.scaledToWidth(200, Qt.SmoothTransformation)
+        self.coverView.setPixmap(cover)        
+        self.coverThread.exit() # Can't  hurt
         
     def setWiki(self, html):
         self.wikiView.setHtml(str(html))

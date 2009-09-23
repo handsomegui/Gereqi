@@ -12,19 +12,16 @@ class getCover(QThread):
     def setValues(self, art, alb):
         self.artist = art
         self.album = alb
-        
+      
+    # Seems threads are self-exiting as I can start this up fine even if
+    # the last time I ran it it emitted nothing.
     def run(self):
         info = webInfo()
         result = info.getInfo("cover", self.artist, self.album)
-        img = QImage()
-        
-        #FIXME: We always emit the signal even if the  image is null.
-        # See if threads automatically exit and can be started again without
-        # explicitly telling them to stop
         if result:
-            img.loadFromData(result, "JPG")        
-            
-        self.emit(SIGNAL("Activated( QImage )"), img)
+            img = QImage()
+            img.loadFromData(result, "JPG")
+            self.emit(SIGNAL("Activated( QImage )"), img) 
         
         
 class getWiki(QThread):
