@@ -6,14 +6,12 @@ QProgressBar, QToolButton, QSpacerItem, QSizePolicy, QTreeWidgetItem, QFont, QPi
 from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, \
 QSize,  QStringList
 from PyQt4.phonon import Phonon
-import os
 
 from settings import settingDlg
 from Ui_amaroq import Ui_MainWindow
 import resource_rc
 from database import media
 from metadata import metaData
-#from webinfo import webInfo
 from threads import getCover, getWiki, buildDB
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -721,7 +719,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def setCover(self, img):
         cover = QPixmap()
         cover = cover.fromImage(img)
+        cover = cover.scaledToWidth(200, Qt.SmoothTransformation)
         self.coverView.setPixmap(cover)
+        
         self.coverThread.exit() #Not sure if really necessary
         
     def setWiki(self, html):
