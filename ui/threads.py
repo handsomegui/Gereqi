@@ -17,7 +17,13 @@ class getCover(QThread):
         info = webInfo()
         result = info.getInfo("cover", self.artist, self.album)
         img = QImage()
-        img.loadFromData(result, "JPG")        
+        
+        #FIXME: We always emit the signal even if the  image is null.
+        # See if threads automatically exit and can be started again without
+        # explicitly telling them to stop
+        if result:
+            img.loadFromData(result, "JPG")        
+            
         self.emit(SIGNAL("Activated( QImage )"), img)
         
         

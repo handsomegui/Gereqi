@@ -70,10 +70,13 @@ class webInfo:
         elif thing == "cover":            
             site = "amazon"
             result = self.fetch(site, params)
-            result = result .split("src=")[1].split(" ")[0]
-            result = result.strip('''"''')
-            opener = build_opener()
-            opener.addheaders = [('User-agent', 'amaroQ')]
-            html = opener.open( result ).read()
+            html = None
+            
+            if result != "about:blank":
+                result = result .split("src=")[1].split(" ")[0]
+                result = result.strip('''"''')
+                opener = build_opener()
+                opener.addheaders = [('User-agent', 'amaroQ')]
+                html = opener.open( result ).read()
             
             return html 

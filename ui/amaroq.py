@@ -707,13 +707,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return fileList   
  
 #FIXME: this is getting ridiculous. We need new classes. .
+
 # These are linked to the threads emitting signals
     def setCover(self, img):
         cover = QPixmap()
-        cover = cover.fromImage(img)
-        cover = cover.scaledToWidth(200, Qt.SmoothTransformation)
-        self.coverView.setPixmap(cover)
-        
+        #FIXME: this check is to see if the image is not null.
+        # See the FIXME in getCOver of threads.py for more
+        # details
+        if not img.isNull():
+            cover = cover.fromImage(img)
+            cover = cover.scaledToWidth(200, Qt.SmoothTransformation)
+            self.coverView.setPixmap(cover)        
         self.coverThread.exit() #Not sure if really necessary
         
     def setWiki(self, html):
@@ -725,7 +729,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print str(status)
         if str(status) == "finished":
             self.buildThread.exit()
-            print "Scanned dir"
+            print "Scanned directory."
             self.statProg.setToolTip("Finished")
             self.statProg.setValue(100)
             self.collectTree.clear()
