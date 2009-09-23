@@ -245,8 +245,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
+        
         self.volLbl.setText("%s" % value)
-        self.audioOutput.setVolume(value/100.0)
+        value = (value / 100.0) ** 2
+        self.audioOutput.setVolume(value)
     
     @pyqtSignature("")
     def on_actionEdit_triggered(self):
