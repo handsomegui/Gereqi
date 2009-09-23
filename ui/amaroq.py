@@ -16,9 +16,8 @@ from threads import getCover, getWiki, buildDB
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     """
-    Class documentation goes here.
-    """
-    
+    The main class of the app
+    """    
     def __init__(self, parent = None):
         """
         Initialisation of key items. Some may be pulled
@@ -37,17 +36,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playLstEnd = False 
         self.coverThread = getCover()
         self.htmlThread = getWiki()
-        self.buildThread = buildDB()
-        
+        self.buildThread = buildDB()        
 
         self.art = [None, None] # The current playing artist
         self.old_art = [None, None] # The last playing artist
         
         self.setupAudio()
-        self.setupExtra()
-        self.createActions()
-        self.createTrayIcon()
-        self.trayIcon.show() 
+        self.setupExtra()        
+        self.createActions()        
+        self.trayIcon.show()
         
         
     def setupAudio(self):
@@ -103,6 +100,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.viewAction.setCheckable(True)
         self.viewAction.setChecked(True)
         
+        self.createTrayIcon()
+        
         self.connect(self.quitAction, SIGNAL("triggered()"), qApp, SLOT("quit()"))
         self.connect(self.playAction, SIGNAL("toggled(bool)"), self.on_playBttn_toggled)
         self.connect(self.nextAction, SIGNAL("triggered()"), self.on_nxtBttn_pressed)
@@ -118,6 +117,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.htmlThread, SIGNAL("Activated ( QString ) "), self.setWiki)
         self.connect(self.buildThread, SIGNAL("Activated ( int ) "), self.statProg.setValue)
         self.connect(self.buildThread, SIGNAL("Activated ( QString ) "), self.finBuild)
+        self.connect(self.trayIcon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.trayEvent)
         
     def createTrayIcon(self):
         self.trayIconMenu = QMenu(self)
@@ -135,9 +135,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         icon = QIcon(QPixmap(":/Icons/drawing.png"))
         self.trayIcon = QSystemTrayIcon(self)
         self.trayIcon.setIcon(icon)
-        self.trayIcon.setContextMenu(self.trayIconMenu)
+        self.trayIcon.setContextMenu(self.trayIconMenu)       
         
-        self.connect(self.trayIcon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.trayEvent)
     
     @pyqtSignature("")
     def on_clrBttn_pressed(self):
@@ -348,6 +347,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setProgSldr() 
         if old == 2 and new == 3:            
             self.genInfo()
+            self.setInfo()
             
         # Stopped playing and at end of playlist
         elif old == 1 and new == 2 and self.isLast():
@@ -424,16 +424,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.muteBttn.setIcon(QIcon(QPixmap(":/Icons/audio-volume-high.png")))
     
-    @pyqtSignature("int")
-    def on_tabWidget_2_currentChanged(self, index):
-        """
-        When the wikiview becomes visible chances are
-        it hasn't been viewed yet and needs to load
-        """
-        # TODO: not finished yet
-        if index == 2:
-            self.setInfo()
-
     def play_type(self, checked):
         if checked:
             self.statPlyTypBttn.setText("R")
@@ -506,39 +496,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSignature("")
     def on_actionUpdate_Collection_triggered(self):
         """
-        Slot documentation goes here.
+        Updates collection for new files. Ignore files already in database
         """
         # TODO: not completed yet. See self.collection
         self.collection(False)
 
-    def finBuild(self, status):
-        print str(status)
-        if str(status) == "finished":
-            self.buildThread.exit()
-            print "Scanned dir"
-            self.statProg.setToolTip("Finished")
-            self.statProg.setValue(100)
-            self.collectTree.clear()
-            self.setupDBtree()
-            
 
-# The scanning section I want to put into a thread. No idea
-# if calling the DB from multiple threads is wise
     def collection(self, rebuild):
-#        media = []
+        """
+        Either generates a new DB or adds new files to it
+        Not finished
+        """
+        #TODO: finish the DB interaction
         
         if rebuild:
             # Here we change the PRIMARY KEY in the database to
             # ON CONFLICT REPLACE as we want to rebuild.
-            print "Do something here"
+            print "Do something here:rebuild"
         else:
             # Here we check that the PRIMARY KEY in the database is
             # ON CONFLICT IGNORE as we want to add new files.
-            print "Do something here"
+            print "Do something here:rescan"
             
         if not self.mediaDir:
             self.on_actionEdit_triggered()
    
+        # If the dialog is cancelled in last if statement the below is ignored
         if self.mediaDir:
             self.buildThread.setValues(self.mediaDir)
             self.statProg.setToolTip("Scanning Media")
@@ -584,14 +567,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #TODO: Thread me!
     def setInfo(self):
         """
-        The wikipedia page to current artist playing
-        """
-        #TODO: thread me!!!! If internet is slow the ui locks up!
+        The wikipedia page + album art to current artist playing
+        """        
+        # Wikipedia info
         if self.art[0] != self.old_art[0] and self.art[0]: 
-            self.htmlThread.setValues(self.art[0])
-            self.htmlThread.start()
-            self.old_art[0] = self.art[0]
-            
+            self.htmlThread.setValues(self.art[0]) # passes the artist to the thread
+            self.htmlThread.start() # starts the thread
+            self.old_art[0] = self.art[0]         
+        # Album art
         if self.art[1] != self.old_art[1] and self.art[1]:
             self.coverThread.setValues(self.art[0], self.art[1])
             self.coverThread.start()
@@ -715,7 +698,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         return fileList   
  
-#FIXME: this is getting ridiculous. We need new classes. 
+#FIXME: this is getting ridiculous. We need new classes. .
+# These are linked to the threads emitting signals
     def setCover(self, img):
         cover = QPixmap()
         cover = cover.fromImage(img)
@@ -729,5 +713,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.htmlThread.exit()
         
 
-    
+    def finBuild(self, status):
+        print str(status)
+        if str(status) == "finished":
+            self.buildThread.exit()
+            print "Scanned dir"
+            self.statProg.setToolTip("Finished")
+            self.statProg.setValue(100)
+            self.collectTree.clear()
+            self.setupDBtree()
 

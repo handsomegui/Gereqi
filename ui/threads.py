@@ -57,7 +57,7 @@ class buildDB(QThread):
         tracksTotal = len(tracks)
 
         for n in range(tracksTotal):            
-            prog = int(round( 100 * ( float(n) / float(tracksTotal) ) )) # may need a rnd
+            prog = int(round( 100 * ( float(n) / float(tracksTotal) ) )) 
             if prog > oldProg:
                 oldProg = prog
                 self.emit(SIGNAL("Activated ( int )"), prog)
