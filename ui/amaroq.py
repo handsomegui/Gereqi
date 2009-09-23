@@ -341,11 +341,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.oldPos = 0
         self.t_length = QTime(0, (length / 60000) % 60, (length / 1000) % 60)
             
-    def stateChanged(self, old, new):        
-        # This shouldn't be called all the time as
-        # it resets progSldr on a  pause/unpause
-        self.setProgSldr() 
-        if old == 2 and new == 3:            
+    def stateChanged(self, old, new):      
+        # Prevents the slider being reset if playback is paused
+        # or unpaused
+        if self.isPlaying():
+            if not ((old == 2) and ( new == 4)):
+                self.setProgSldr()
+            
+        if old == 2 and new == 3:         
             self.genInfo()
             self.setInfo()
             
