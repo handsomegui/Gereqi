@@ -2,10 +2,9 @@
 
 from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, \
 QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel, \
-QProgressBar, QToolButton, QSpacerItem, QSizePolicy, QTreeWidgetItem, QFont, QPixmap,  \
-QImage
+QProgressBar, QToolButton, QSpacerItem, QSizePolicy, QTreeWidgetItem, QFont, QPixmap
 from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, \
-QSize,  QStringList, QThread
+QSize,  QStringList
 from PyQt4.phonon import Phonon
 import os
 
@@ -15,7 +14,7 @@ import resource_rc
 from database import media
 from metadata import metaData
 #from webinfo import webInfo
-from threads import getCover, getWiki
+from threads import getCover, getWiki, buildDB
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     """
@@ -40,6 +39,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playLstEnd = False 
         self.coverThread = getCover()
         self.htmlThread = getWiki()
+        self.buildThread = buildDB()
+        
 
         self.art = [None, None] # The current playing artist
         self.old_art = [None, None] # The last playing artist
@@ -117,7 +118,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.statPlyTypBttn, SIGNAL('toggled(bool)'), self.play_type)
         self.connect(self.coverThread, SIGNAL("Activated ( QImage ) "), self.setCover) # Linked to QThread
         self.connect(self.htmlThread, SIGNAL("Activated ( QString ) "), self.setWiki)
-
+        self.connect(self.buildThread, SIGNAL("Activated ( int ) "), self.statProg.setValue)
+        self.connect(self.buildThread, SIGNAL("Activated ( QString ) "), self.finBuild)
+        
     def createTrayIcon(self):
         self.trayIconMenu = QMenu(self)
         
@@ -510,9 +513,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # TODO: not completed yet. See self.collection
         self.collection(False)
 
+    def finBuild(self, status):
+        print str(status)
+        if str(status) == "finished":
+            self.buildThread.exit()
+            print "Scanned dir"
+            self.statProg.setToolTip("Finished")
+            self.statProg.setValue(100)
+#            self.mediaDB.lenDB()
+            self.collectTree.clear()
+            self.setupDBtree()
+            
 
+# The scanning section I want to put into a thread. No idea
+# if calling the DB from multiple threads is wise
     def collection(self, rebuild):
-        media = []
+#        media = []
         
         if rebuild:
             # Here we change the PRIMARY KEY in the database to
@@ -524,32 +540,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print "Do something here"
             
         if not self.mediaDir:
-            self.on_actionEdit_triggered()         
+            self.on_actionEdit_triggered()
+   
+        if self.mediaDir:
+            self.buildThread.setValues(self.mediaDir)
+            self.statProg.setToolTip("Scanning Media")
+            self.buildThread.start()
 
-        for root, dirname, filename in os.walk(str(self.mediaDir)):
-            for x in filename:
-                fileNow = os.path.join(root, x)                
-                if fileNow.endswith(".ogg") or fileNow.endswith(".mp3") or fileNow.endswith(".flac"):
-                    media.append(fileNow)
-                    
-        self.statProg.setValue(0)
-        self.statProg.setToolTip("Scanning Media")
-        
-        medTotal = len(media)
-        
-        for track in range(medTotal):
-            prog = int(100 * ( float(track) / float(medTotal ) ))
-            track = media[track]
-            tags = self.meta.extract(track)
-            tags.insert(0, track)
-            self.mediaDB.add_media(tags)
-            self.statProg.setValue(prog)
-        
-        self.statProg.setToolTip("Finished")
-        self.statProg.setValue(100)
-        self.mediaDB.lenDB()
-        self.collectTree.clear()
-        self.setupDBtree()
+#        for root, dirname, filename in os.walk(str(self.mediaDir)):
+#            for x in filename:
+#                fileNow = os.path.join(root, x)                
+#                if fileNow.endswith(".ogg") or fileNow.endswith(".mp3") or fileNow.endswith(".flac"):
+#                    media.append(fileNow)
+#                    
+#        self.statProg.setValue(0)
+#        self.statProg.setToolTip("Scanning Media")
+#        
+#        medTotal = len(media)
+#        
+#        for track in range(medTotal):
+#            prog = int(100 * ( float(track) / float(medTotal ) ))
+#            track = media[track]
+#            tags = self.meta.extract(track)
+#            tags.insert(0, track)
+#            self.mediaDB.add_media(tags)
+#            self.statProg.setValue(prog)
+#        
+#        self.statProg.setToolTip("Finished")
+#        self.statProg.setValue(100)
+#        self.mediaDB.lenDB()
+#        self.collectTree.clear()
+#        self.setupDBtree()
         
     def setupDBtree(self):
         """
