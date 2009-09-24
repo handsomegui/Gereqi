@@ -217,6 +217,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.playBttn.setIcon(QIcon(QPixmap(":/Icons/media-playback-start.png")))
             self.statLbl.setText("Paused")
             
+        self.playBttn.setChecked(checked)    
         self.playAction.setChecked(checked)
         
     @pyqtSignature("")
@@ -601,6 +602,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 self.minimiseTray(True)            
             
+        # Middle-click to pause/play
         elif event == 4:
             if self.isPlaying():
                 self.on_playBttn_toggled(False)
