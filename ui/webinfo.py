@@ -3,12 +3,17 @@
 from urllib2 import URLError, build_opener
 from lxml.html import fromstring, tostring
 import socket
+from time import time
 
 timeout = 10
 socket.setdefaulttimeout(timeout)
 
 class webInfo:
-    def createUrl(self, site, *params):      
+    def createUrl(self, site, *params):
+        if site == "amazon":
+            print "Createurl", time() - self.tStart
+            site = "amazon+uk"
+        
         # Cleans up the string
         exc = '''!,.%%$&(){}[]'''
         params = params[0][0] # Hack. Result of passing *params 2 times here
@@ -28,6 +33,9 @@ class webInfo:
         
         
     def fetch(self, site, *params):
+        if site == "amazon":
+            print "Fetch", time() - self.tStart
+            
         url = self.createUrl(site, params)        
         try:
             opener = build_opener()
@@ -46,7 +54,12 @@ class webInfo:
         Goes through, hopefully, a wikipedia page looking for data
         between div tags with id 'bodyContent'
         """
+        
         if site == "amazon": 
+            print "Treat", time() - self.tStart
+            # for wikipedia cover art the image is in class="image". use src="..
+            # the wikipedia method is more difficult as the image is in a named class
+            # which is used more than once in the page            
             tag = "prodImage" # album art
         elif site == "wikipedia":
             tag = "bodyContent"
@@ -61,13 +74,19 @@ class webInfo:
         return tree
         
     def getInfo(self, thing, *params):
+        """
+        Where everything starts from
+        """
+        
         if thing == "info":
             site = "wikipedia"
             result = self.fetch(site, params)
             result = result.split('''<div class="references''')[0] # Cuts out everything from References down
             return result
             
-        elif thing == "cover":            
+        elif thing == "cover":    
+            self.tStart = time()
+            print "Start"
             site = "amazon"
             result = self.fetch(site, params)
             html = None
@@ -79,4 +98,5 @@ class webInfo:
                 opener.addheaders = [('User-agent', 'amaroQ')]
                 html = opener.open( result ).read()
             
+            print "Finished", time() - self.tStart
             return html 
