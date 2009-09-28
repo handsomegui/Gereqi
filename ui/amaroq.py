@@ -36,7 +36,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playLstEnd = False 
         self.coverThread = getCover()
         self.htmlThread = getWiki()
-        self.buildThread = buildDB()        
+        self.buildThread = buildDB()     
+        self.localisation = "uk" # this needs to be editable in the settings Dialog
 
         self.art = [None, None] # The current playing artist
         self.old_art = [None, None] # The last playing artist
@@ -583,7 +584,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.old_art[0] = self.art[0]         
         # Album art
         if self.art[1] != self.old_art[1] and self.art[1]:
-            self.coverThread.setValues(self.art[0], self.art[1])
+            self.coverThread.setValues(self.art[0], self.art[1], self.localisation)
             self.coverThread.start()
             self.old_art[1] = self.art[1]
 

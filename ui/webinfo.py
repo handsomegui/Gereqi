@@ -10,10 +10,6 @@ socket.setdefaulttimeout(timeout)
 
 class webInfo:
     def createUrl(self, site, *params):
-        if site == "amazon":
-            print "Createurl", time() - self.tStart
-            site = "amazon+uk"
-        
         # Cleans up the string
         exc = '''!,.%%$&(){}[]'''
         params = params[0][0] # Hack. Result of passing *params 2 times here
@@ -25,18 +21,24 @@ class webInfo:
             things.append(item)
             
         things = "+".join(things)
-        if site == "wikipedia":
+        if "wikipedia" in site:
             things = "%s+music+OR+band+OR+artist&btnI=745" % things
             
-        url = "http://www.google.com/search?hl=en&q=%s+%s&btnI=745" % (site, things)        
+        url = "http://www.google.com/search?hl=en&q=%s+%s&btnI=745" % (site, things)
         return url
         
         
     def fetch(self, site, *params):
-        if site == "amazon":
+        
+        if "amazon" in site:
             print "Fetch", time() - self.tStart
             
-        url = self.createUrl(site, params)        
+        url = self.createUrl(site, params)
+
+        # Here we need a check to see if the loaded link is from amazon
+        # Some localisations don't seem to have the entire amazon.com 
+        # catalog and the google search seems to got to discogs.com thus
+        # no cover returned
         try:
             opener = build_opener()
             opener.addheaders = [('User-agent', 'amaroQ')]
@@ -55,13 +57,9 @@ class webInfo:
         between div tags with id 'bodyContent'
         """
         
-        if site == "amazon": 
-            print "Treat", time() - self.tStart
-            # for wikipedia cover art the image is in class="image". use src="..
-            # the wikipedia method is more difficult as the image is in a named class
-            # which is used more than once in the page            
+        if "amazon" in site: 
             tag = "prodImage" # album art
-        elif site == "wikipedia":
+        elif "wikipedia" in site:
             tag = "bodyContent"
             
         tree = fromstring(html) # loads html into lxml        
@@ -73,7 +71,7 @@ class webInfo:
 
         return tree
         
-    def getInfo(self, thing, *params):
+    def getInfo(self, thing, locale=None, *params):
         """
         Where everything starts from
         """
@@ -85,9 +83,7 @@ class webInfo:
             return result
             
         elif thing == "cover":    
-            self.tStart = time()
-            print "Start"
-            site = "amazon"
+            site = "amazon+%s" % locale
             result = self.fetch(site, params)
             html = None
             
@@ -98,5 +94,4 @@ class webInfo:
                 opener.addheaders = [('User-agent', 'amaroQ')]
                 html = opener.open( result ).read()
             
-            print "Finished", time() - self.tStart
             return html 

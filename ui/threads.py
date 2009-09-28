@@ -9,15 +9,16 @@ class getCover(QThread):
     def __init__(self,parent=None):
         QThread.__init__(self,parent)
         
-    def setValues(self, art, alb):
+    def setValues(self, art, alb, loc=None):
         self.artist = art
         self.album = alb
+        self.locale = loc
       
     # Seems threads are self-exiting as I can start this up fine even if
     # the last time I ran it it emitted nothing.
     def run(self):
         info = webInfo()
-        result = info.getInfo("cover", self.artist, self.album)
+        result = info.getInfo("cover", self.locale, self.artist, self.album)
         if result:
             img = QImage()
             img.loadFromData(result, "JPG")
@@ -33,7 +34,7 @@ class getWiki(QThread):
         
     def run(self):
         info = webInfo()
-        result = info.getInfo("info", self.artist)
+        result = info.getInfo("info",None,  self.artist)
         result = QString(result)        
         self.emit(SIGNAL("Activated( QString )"), result)
         
