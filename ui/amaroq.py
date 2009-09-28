@@ -37,7 +37,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.coverThread = getCover()
         self.htmlThread = getWiki()
         self.buildThread = buildDB()     
-        self.localisation = "uk" # this needs to be editable in the settings Dialog
+        self.localisation = ".co.uk" # this needs to be editable in the settings Dialog
 
         self.art = [None, None] # The current playing artist
         self.old_art = [None, None] # The last playing artist

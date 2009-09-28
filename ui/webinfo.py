@@ -25,6 +25,7 @@ class webInfo:
             things = "%s+music+OR+band+OR+artist&btnI=745" % things
             
         url = "http://www.google.com/search?hl=en&q=%s+%s&btnI=745" % (site, things)
+        print url
         return url
         
         
@@ -80,7 +81,7 @@ class webInfo:
             return result
             
         elif thing == "cover":    
-            site = "amazon+%s" % locale
+            site = "amazon%s" % locale
             result = self.fetch(site, params)
             html = None
             
