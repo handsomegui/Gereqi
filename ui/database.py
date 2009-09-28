@@ -45,6 +45,14 @@ class media:
                 )
                 ''')
                 
+        self.mediaCurs.execute('''
+            CREATE TABLE IF NOT EXISTS settings (
+                setting   TEXT,
+                value   TEXT,
+                PRIMARY KEY (setting) ON CONFLICT  REPLACE
+                )
+                ''')
+                
         # Create a settings database
         
     def add_media(self, p):
