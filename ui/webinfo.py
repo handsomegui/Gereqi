@@ -29,9 +29,6 @@ class webInfo:
         
         
     def fetch(self, site, *params):
-        
-        if "amazon" in site:
-            print "Fetch", time() - self.tStart
             
         url = self.createUrl(site, params)
 
