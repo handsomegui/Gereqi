@@ -207,6 +207,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Strange bug where if the playback was stopped by stopBttn
         # starting takes a while (varies). 
         if checked:
+            queued = self.mediaObject.currentSource().fileName()
+            if not queued:
+                selected = self.playlistTree.currentRow()
+                if selected >= 0:
+                    selected = self.genTrack("now", selected)                
+                    self.mediaObject.enqueue(selected)
+                else:
+                    self.playBttn.setChecked(False)
+                    return
+                    
             self.mediaObject.play()
             self.stopBttn.setEnabled(True)
             self.playBttn.setIcon(QIcon(QPixmap(":/Icons/media-playback-pause.png")))
