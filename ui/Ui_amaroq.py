@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
 #
-# Created: Tue Sep 22 18:47:18 2009
+# Created: Tue Sep 29 20:08:52 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PyQt4 import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(730, 469)
+        MainWindow.resize(723, 450)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/Icons/drawing.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -340,9 +340,15 @@ font: 75 10pt \"DejaVu Sans\";
         sizePolicy.setHeightForWidth(self.playlistTree.sizePolicy().hasHeightForWidth())
         self.playlistTree.setSizePolicy(sizePolicy)
         self.playlistTree.setMinimumSize(QtCore.QSize(400, 0))
+        self.playlistTree.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.playlistTree.setDragEnabled(True)
+        self.playlistTree.setDragDropOverwriteMode(False)
+        self.playlistTree.setDragDropMode(QtGui.QAbstractItemView.DragOnly)
         self.playlistTree.setAlternatingRowColors(True)
+        self.playlistTree.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
+        self.playlistTree.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.playlistTree.setShowGrid(False)
-        self.playlistTree.setGridStyle(QtCore.Qt.DotLine)
+        self.playlistTree.setGridStyle(QtCore.Qt.DashLine)
         self.playlistTree.setCornerButtonEnabled(False)
         self.playlistTree.setObjectName("playlistTree")
         self.playlistTree.setColumnCount(0)
@@ -432,7 +438,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 730, 21))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 723, 21))
         self.menuBar.setObjectName("menuBar")
         self.menuActions = QtGui.QMenu(self.menuBar)
         self.menuActions.setObjectName("menuActions")

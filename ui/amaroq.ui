@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>730</width>
-    <height>469</height>
+    <width>723</width>
+    <height>450</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -739,14 +739,32 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
             <height>0</height>
            </size>
           </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="dragEnabled">
+           <bool>true</bool>
+          </property>
+          <property name="dragDropOverwriteMode">
+           <bool>false</bool>
+          </property>
+          <property name="dragDropMode">
+           <enum>QAbstractItemView::DragOnly</enum>
+          </property>
           <property name="alternatingRowColors">
            <bool>true</bool>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::ExtendedSelection</enum>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
           </property>
           <property name="showGrid">
            <bool>false</bool>
           </property>
           <property name="gridStyle">
-           <enum>Qt::DotLine</enum>
+           <enum>Qt::DashLine</enum>
           </property>
           <property name="sortingEnabled">
            <bool>true</bool>
@@ -756,6 +774,9 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
           </property>
           <attribute name="horizontalHeaderVisible">
            <bool>true</bool>
+          </attribute>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
           </attribute>
           <attribute name="verticalHeaderVisible">
            <bool>false</bool>
@@ -980,7 +1001,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>730</width>
+     <width>723</width>
      <height>21</height>
     </rect>
    </property>

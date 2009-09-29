@@ -626,8 +626,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         items = self.playlistTree.selectedItems()
         for item in items:
-            row = item.row()
-            self.playlistTree.removeRow(row)
+            try:
+                row = item.row()
+                self.playlistTree.removeRow(row)
+            except:
+                return # it's probably deleted already i.e we selected the same row but multiple columns FIXME:tidy up
       
 # TODO: these could be pushed into their own class
     def genTrack(self, mode, row=None):
