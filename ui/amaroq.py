@@ -7,6 +7,7 @@ QShortcut, QKeySequence
 from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, \
 QSize,  QStringList
 from PyQt4.phonon import Phonon
+from random import randrange
 
 from settings import settingDlg
 from Ui_amaroq import Ui_MainWindow
@@ -656,7 +657,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         elif mode == "next":
                             if self.statPlyTypBttn.isChecked():
                                 # Here we need to randomly choose the next track
-                                return
+                                row = randrange(0, rows)
+                                track = self.playlistTree.item(row, column).text()
                             else:
                                 if (row + 1) < rows:
                                     track = self.playlistTree.item(row + 1, column).text()
