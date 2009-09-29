@@ -259,6 +259,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.stopBttn.setEnabled(False)
         self.finished()
+        
+        
     
     @pyqtSignature("")
     def on_nxtBttn_pressed(self):
@@ -396,6 +398,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.oldPos = 0
         self.statLbl.setText("Stopped")
         self.progLbl.setText("00:00 | 00:00")
+        
+        # clear things like wiki and reset cover art to default        
+        self.wikiView.setHtml(QString(""))
+        self.coverView.setPixmap(QPixmap(":/Icons/music.png"))
+        self.old_art = [None, None]
         
     def minimiseTray(self, state):
         if state:
