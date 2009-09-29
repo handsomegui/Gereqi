@@ -66,8 +66,11 @@ class media:
         cols = "filename,track,title,artist,album,year,genre"
         query = "INSERT INTO media (%s) VALUES (%s)" % (cols, values)
         
-        self.mediaCurs.execute(query) 
-        self.mediaDB.commit()    
+        try:
+            self.mediaCurs.execute(query) 
+            self.mediaDB.commit()    
+        except:
+            print "Database Failure: %s" % values
         
     def lenDB(self):
         query = "SELECT filename FROM media"
