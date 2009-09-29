@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
 #
-# Created: Tue Sep 29 20:08:52 2009
+# Created: Tue Sep 29 20:56:54 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -341,6 +341,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.playlistTree.setSizePolicy(sizePolicy)
         self.playlistTree.setMinimumSize(QtCore.QSize(400, 0))
         self.playlistTree.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.playlistTree.setProperty("showDropIndicator", QtCore.QVariant(False))
         self.playlistTree.setDragEnabled(True)
         self.playlistTree.setDragDropOverwriteMode(False)
         self.playlistTree.setDragDropMode(QtGui.QAbstractItemView.DragOnly)

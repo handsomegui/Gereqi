@@ -742,6 +742,9 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
           <property name="editTriggers">
            <set>QAbstractItemView::NoEditTriggers</set>
           </property>
+          <property name="showDropIndicator" stdset="0">
+           <bool>false</bool>
+          </property>
           <property name="dragEnabled">
            <bool>true</bool>
           </property>
