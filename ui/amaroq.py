@@ -2,7 +2,8 @@
 
 from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, \
 QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel, \
-QProgressBar, QToolButton, QSpacerItem, QSizePolicy, QTreeWidgetItem, QFont, QPixmap
+QProgressBar, QToolButton, QSpacerItem, QSizePolicy, QTreeWidgetItem, QFont, QPixmap,  \
+QShortcut, QKeySequence
 from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, \
 QSize,  QStringList
 from PyQt4.phonon import Phonon
@@ -43,6 +44,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.old_art = [None, None] # The last playing artist
         
         self.setupAudio()
+        self.setupShortcuts()
         self.setupExtra()        
         self.createActions()        
         self.trayIcon.show()
@@ -58,7 +60,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mediaObject.setTickInterval(1000)
         self.audioOutput.setVolume(1)
         
-   
+    def setupShortcuts(self):
+        delete = QShortcut(QKeySequence(self.tr("Del")), self)
+        
+        self.connect(delete, SIGNAL("activated()"), self.delTrack) 
+        
     def setupExtra(self):
         """
         Extra __init__ things to add to the UI
@@ -572,7 +578,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 album = QTreeWidgetItem(album)
                 artist.addChild(album)
 
-#TODO: Thread me!
     def setInfo(self):
         """
         The wikipedia page + album art to current artist playing
@@ -610,6 +615,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 self.on_playBttn_toggled(True)
                 
+    def delTrack(self):
+        items = self.playlistTree.selectedItems()
+        rows = []
+        for item in items:
+            row = item.row()
+            self.playlistTree.removeRow(row)
+      
 # TODO: these could be pushed into their own class
     def genTrack(self, mode, row=None):
         """

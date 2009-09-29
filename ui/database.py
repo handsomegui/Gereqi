@@ -6,7 +6,12 @@ from os import mkdir, getenv, path, remove
 
 class media:
     def __init__(self):
-
+        """
+        The table creations perform every class instance(?)
+        but only creates them if they don't already exist. This means 
+        to add extra columns to an existing table te database file amaroq.db
+        has to be deleted.
+        """
         appDir = getenv("HOME")
         appDir = "%s/.amaroq/" % appDir
         self.mediaDB = "%samaroq.db" % appDir
@@ -19,7 +24,6 @@ class media:
         self.mediaCurs = self.mediaDB.cursor()
         
         # using filename as PRIMARY KEY to prevent multiple entries
-        # TODO: add 'playcount' and 'rating'
         self.mediaCurs.execute('''
             CREATE TABLE IF NOT EXISTS media (
                 filename    TEXT ,
@@ -53,7 +57,6 @@ class media:
                 )
                 ''')
                 
-        # Create a settings database
         
     def add_media(self, p):
         """
