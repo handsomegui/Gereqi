@@ -96,7 +96,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusBar.addPermanentWidget(self.statPlyTypBttn)
 
         headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), self.tr("Album"), \
-                   self.tr("Year"), self.tr("Genre"), self.tr("FileName")]
+                   self.tr("Year"), self.tr("Genre"),  self.tr("Bitrate"),  self.tr("Length"), self.tr("FileName")]
         
         for val in range(len(headers)):
             self.playlistTree.insertColumn(val)
@@ -219,17 +219,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Strange bug where if the playback was stopped by stopBttn
         # starting takes a while (varies). 
         if checked:
-            # Need a check to see if anything is actually queued up
-            # If not use the track/row highighlighted
+            # Need a check to see currentsource  matches higlighted track
             queued = self.mediaObject.currentSource().fileName()
-            print queued
             
             if not queued:
                 selected = self.playlistTree.currentRow()
-                print selected
                 if selected >= 0:
                     selected = self.genTrack("now", selected)                
-                    self.mediaObject.enqueue(selected)
+                    self.mediaObject.setCurrentSource(selected)
                 else:
                     self.playBttn.setChecked(False)
                     return
@@ -500,15 +497,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         fileItem = QTableWidgetItem(QString(fileName))
         
+        
+        
         currentRow = self.playlistTree.rowCount()
         self.playlistTree.insertRow(currentRow)
+        
+        fnameCol = 8
+        #TODO: These column assignments have to be dynamic at some point
         self.playlistTree.setItem(currentRow, 0, trackItem)
         self.playlistTree.setItem(currentRow, 1, titleItem)
         self.playlistTree.setItem(currentRow, 2, artistItem)
         self.playlistTree.setItem(currentRow, 3, albumItem)
         self.playlistTree.setItem(currentRow, 4, yearItem)
         self.playlistTree.setItem(currentRow, 5, genreItem)
-        self.playlistTree.setItem(currentRow, 6, fileItem)
+        self.playlistTree.setItem(currentRow, fnameCol , fileItem)
         
         # Figured out what the deleted section was supposed to do.
         # If the playlist was empty it would add2playlist tracks and enque 
@@ -660,7 +662,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         As the playlist changes on sorting, the playlist (the immediately next/previous 
         tracks) has to be regenerated before the queing of the next track
         """
-        column = 6 # So that it can be dynamic later on when columns can be moved
+        column = 8 # So that it can be dynamic later on when columns can be moved
         if mode == "now":
             track = self.playlistTree.item(row, column).text()
             
@@ -746,7 +748,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return True        
 
     def genFilelist(self):
-        column = 6
+        column = 8
         rows = self.playlistTree.rowCount() 
         fileList = []
         
