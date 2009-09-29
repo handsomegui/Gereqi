@@ -81,8 +81,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statProg.setRange(0, 100)
         self.statProg.setValue(100)
         self.statProg.setMaximumSize(QSize(100,18))
+        
         self.statBttn.setIcon(icon)
         self.statBttn.setAutoRaise(True)
+        self.statBttn.setEnabled(False)
+        
         self.statPlyTypBttn.setText("N")
         self.statPlyTypBttn.setCheckable(True)
         self.statPlyTypBttn.setAutoRaise(True)
@@ -128,6 +131,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.buildThread, SIGNAL("Activated ( int ) "), self.statProg.setValue)
         self.connect(self.buildThread, SIGNAL("Activated ( QString ) "), self.finBuild)
         self.connect(self.trayIcon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.trayEvent)
+        self.connect(self.statBttn, SIGNAL("triggered()"), self.buildThread.exit)
         
     def createTrayIcon(self):
         self.trayIconMenu = QMenu(self)
@@ -443,10 +447,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def play_type(self, checked):
         if checked:
             self.statPlyTypBttn.setText("R")
-            self.playRandom = True
         else:
             self.statPlyTypBttn.setText("N")
-            self.playRandom = False
         
     def add2playlist(self, fileName, info):
         """
@@ -539,6 +541,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
    
         # If the dialog is cancelled in last if statement the below is ignored
         if self.mediaDir:
+            self.statBttn.setEnabled(True)
             self.buildThread.setValues(self.mediaDir)
             self.statProg.setToolTip("Scanning Media")
             self.statProg.setValue(0)
@@ -748,6 +751,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if str(status) == "finished":
             self.buildThread.exit()
             print "Scanned directory."
+            self.statBttn.setEnabled(False)
             self.statProg.setToolTip("Finished")
             self.statProg.setValue(100)
             self.collectTree.clear()
