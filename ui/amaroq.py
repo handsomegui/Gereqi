@@ -130,18 +130,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     def createTrayIcon(self):
         self.trayIconMenu = QMenu(self)
+        icon = QIcon(QPixmap(":/Icons/drawing.png"))
         
-        self.trayIconMenu.addAction(self.viewAction) 
+        self.trayIconMenu.addAction(icon, QString("Amaroq"))
         self.trayIconMenu.addSeparator()
-        self.trayIconMenu.addAction(self.playAction)
-        self.trayIconMenu.addAction(self.nextAction)
         self.trayIconMenu.addAction(self.prevAction)
+        self.trayIconMenu.addAction(self.playAction)
         self.trayIconMenu.addAction(self.stopAction)
+        self.trayIconMenu.addAction(self.nextAction)
         self.trayIconMenu.addSeparator()
+        self.trayIconMenu.addAction(self.viewAction)
         self.trayIconMenu.addAction(self.quitAction)
         
         # No. This icon isn't final. Just filler.
-        icon = QIcon(QPixmap(":/Icons/drawing.png"))
         self.trayIcon = QSystemTrayIcon(self)
         self.trayIcon.setIcon(icon)
         self.trayIcon.setContextMenu(self.trayIconMenu)       
@@ -616,8 +617,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.on_playBttn_toggled(True)
                 
     def delTrack(self):
+        """
+        Deletes selected tracks from playlist
+        """
         items = self.playlistTree.selectedItems()
-        rows = []
         for item in items:
             row = item.row()
             self.playlistTree.removeRow(row)
@@ -651,11 +654,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             break
                             
                         elif mode == "next":
-                            if (row + 1) < rows:
-                                track = self.playlistTree.item(row + 1, column).text()
+                            if self.statPlyTypBttn.isChecked():
+                                # Here we need to randomly choose the next track
+                                return
                             else:
-                                track = None                            
-                            break
+                                if (row + 1) < rows:
+                                    track = self.playlistTree.item(row + 1, column).text()
+                                else:
+                                    track = None                            
+                                break
                             
             else:
                 track = None
