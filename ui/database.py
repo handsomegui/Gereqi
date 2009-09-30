@@ -33,6 +33,8 @@ class media:
                 album   VARCHAR(50),
                 year    UNSIGNED SMALLINT(4),
                 genre   VARCHAR(50),
+                length  VARCHAR(5),
+                bitrate UNSIGNED TINYINT(4),
                 rating  UNSIGNED TINYINT(1),
                 playcount   UNSIGNED SMALLINT,
                 PRIMARY KEY (filename) ON CONFLICT IGNORE
@@ -62,8 +64,8 @@ class media:
         """
         Here we add data into the media database
         """
-        values = ''' "%s","%s","%s","%s", "%s","%s","%s" ''' % (p[0], p[1], p[2], p[3], p[4], p[5], p[6]) #ugly
-        cols = "filename,track,title,artist,album,year,genre"
+        values = ''' "%s","%s","%s","%s", "%s","%s","%s","%s","%s"  ''' % (p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]) #FIXME:ugly
+        cols = "filename,track,title,artist,album,year,genre,length,bitrate"
         query = "INSERT INTO media (%s) VALUES (%s)" % (cols, values)
         
         try:

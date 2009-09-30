@@ -96,7 +96,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusBar.addPermanentWidget(self.statPlyTypBttn)
 
         headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), self.tr("Album"), \
-                   self.tr("Year"), self.tr("Genre"),  self.tr("Bitrate"),  self.tr("Length"), self.tr("FileName")]
+                   self.tr("Year"), self.tr("Genre"),   self.tr("Length"), self.tr("Bitrate"), self.tr("FileName")]
         
         for val in range(len(headers)):
             self.playlistTree.insertColumn(val)
@@ -468,10 +468,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.statPlyTypBttn.setText("R")
         else:
             self.statPlyTypBttn.setText("N")
-        
+
+#FIXME: This is awful even if it's mostly a Trolltech example. Tidy up
     def add2playlist(self, fileName, info):
         """
-        Called when adding tracks tot he playlist either locally
+        Called when adding tracks to the playlist either locally
         or from the database. Does not pull metadata from 
         the database and is passed into the function directly
         """
@@ -495,9 +496,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         genreItem = QTableWidgetItem(QString(info[5]))
         genreItem.setFlags(genreItem.flags() ^ Qt.ItemIsEditable)
         
+        lengthItem = QTableWidgetItem(QString(info[6]))
+        lengthItem.setFlags(lengthItem.flags() ^ Qt.ItemIsEditable)
+        
+        bitrateItem = QTableWidgetItem(QString(str(info[7]))) # if i don't use str I get weird unicode
+        bitrateItem.setFlags(bitrateItem.flags() ^ Qt.ItemIsEditable)
+        
         fileItem = QTableWidgetItem(QString(fileName))
-        
-        
         
         currentRow = self.playlistTree.rowCount()
         self.playlistTree.insertRow(currentRow)
@@ -510,6 +515,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playlistTree.setItem(currentRow, 3, albumItem)
         self.playlistTree.setItem(currentRow, 4, yearItem)
         self.playlistTree.setItem(currentRow, 5, genreItem)
+        self.playlistTree.setItem(currentRow, 6, lengthItem)
+        self.playlistTree.setItem(currentRow, 7, bitrateItem)
         self.playlistTree.setItem(currentRow, fnameCol , fileItem)
         
         # Figured out what the deleted section was supposed to do.

@@ -58,7 +58,6 @@ class metaData:
             length = "%02d:%02d" % (min, rem)
         except:
             length = "0"
-        print length, bitrate
         
         return [track, title, artist, album, year, genre, length, bitrate]
         
