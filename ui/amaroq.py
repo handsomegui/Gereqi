@@ -488,39 +488,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 itemInfo = "info[%d]" % n
                 
             itemName = "%sItem" % meta[n]
-            val1 = "QTableWidgetItem(QString(str(%s)))" % itemInfo
-            val2 = "%s.setFlags(%s.flags() ^ Qt.ItemIsEditable)" % (itemName, itemName)
+            func1 = "QTableWidgetItem(QString(str(%s)))" % itemInfo
+            func2 = "%s.setFlags(%s.flags() ^ Qt.ItemIsEditable)" % (itemName, itemName)
             
-            exec "%s = %s" % (itemName, val1)
-            exec val2
+            exec "%s = %s" % (itemName, func1)
+            exec func2
             
-#        track = "%02u" % info[0]
-#        trackItem = QTableWidgetItem(QString(track))
-#        trackItem.setFlags(trackItem.flags() ^ Qt.ItemIsEditable)
-#        
-#        titleItem = QTableWidgetItem(QString(info[1]))
-#        titleItem.setFlags(titleItem.flags() ^ Qt.ItemIsEditable)
-#
-#        artistItem = QTableWidgetItem(QString(info[2]))
-#        artistItem.setFlags(artistItem.flags() ^ Qt.ItemIsEditable)
-#
-#        albumItem = QTableWidgetItem(QString(info[3]))
-#        albumItem.setFlags(albumItem.flags() ^ Qt.ItemIsEditable)
-#        
-#        yearItem = QTableWidgetItem(str(info[4]))
-#        yearItem.setFlags(yearItem.flags() ^ Qt.ItemIsEditable)
-#
-#        genreItem = QTableWidgetItem(QString(info[5]))
-#        genreItem.setFlags(genreItem.flags() ^ Qt.ItemIsEditable)
-#        
-#        lengthItem = QTableWidgetItem(QString(info[6]))
-#        lengthItem.setFlags(lengthItem.flags() ^ Qt.ItemIsEditable)
-#        
-#        bitrateItem = QTableWidgetItem(QString(str(info[7]))) # if i don't use str I get weird unicode
-#        bitrateItem.setFlags(bitrateItem.flags() ^ Qt.ItemIsEditable)
-#        
-#        fileItem = QTableWidgetItem(QString(fileName))
-        
+    
         currentRow = self.playlistTree.rowCount()
         self.playlistTree.insertRow(currentRow)
         
@@ -536,12 +510,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playlistTree.setItem(currentRow, 7, bitrateItem)
         self.playlistTree.setItem(currentRow, fnameCol , fileItem)
         
-        # Figured out what the deleted section was supposed to do.
-        # If the playlist was empty it would add2playlist tracks and enque 
-        # the 1st track so playBttn would do something when 1st pressed.
-        # It would also select the 1st row in the playlist. It did something else 
-        # to do with appending the playlist but I've no idea. 
-
         self.playlistTree.resizeColumnsToContents()
         if self.playlistTree.columnWidth(0) > 300:
                 self.playlistTree.setColumnWidth(0, 300)
