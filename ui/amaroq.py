@@ -445,12 +445,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Filters current playlist based on input
         """
-        # Case sensitive
         srch_txt = self.srchplyEdit.text()
-        for x in range(self.playlistTree.rowCount()):
-            for y in range(self.playlistTree.columnCount()):
-                if srch_txt in self.playlistTree.item(x, y).text():
-                    print "spam!: ", self.playlistTree.item(x, y).text()
+        rows = []
+        searched = self.playlistTree.findItems(srch_txt, Qt.MatchContains)
+        for search in searched:
+            row = search.row()
+            if not row in rows:
+                rows.append(row)
+                
+        print rows
+    
     
     @pyqtSignature("bool")
     def on_muteBttn_toggled(self, checked):

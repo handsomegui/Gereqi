@@ -54,7 +54,8 @@ class metaData:
         try:
             seconds = tags.audioProperties().length
             min = seconds // 60
-            rem = (seconds % 60) - 1 # Taken one away as this value always seems to be +1 what Phonon says
+            rem = (seconds % 60) 
+
             length = "%02d:%02d" % (min, rem)
         except:
             length = "00:00"
