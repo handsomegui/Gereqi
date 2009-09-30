@@ -57,7 +57,7 @@ class metaData:
             rem = (seconds % 60) - 1 # Taken one away as this value always seems to be +1 what Phonon says
             length = "%02d:%02d" % (min, rem)
         except:
-            length = "0"
+            length = "00:00"
         
         return [track, title, artist, album, year, genre, length, bitrate]
         
