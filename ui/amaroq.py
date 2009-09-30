@@ -476,33 +476,50 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         or from the database. Does not pull metadata from 
         the database and is passed into the function directly
         """
+        meta = ["track", "title", "artist", "album", "year", "genre", "length", "bitrate", "file"]
+        vals = len(meta)
         
-        track = "%02.u" % info[0]
-        trackItem = QTableWidgetItem(track)
-        trackItem.setFlags(trackItem.flags() ^ Qt.ItemIsEditable)
-        
-        titleItem = QTableWidgetItem(QString(info[1]))
-        titleItem.setFlags(titleItem.flags() ^ Qt.ItemIsEditable)
-
-        artistItem = QTableWidgetItem(QString(info[2]))
-        artistItem.setFlags(artistItem.flags() ^ Qt.ItemIsEditable)
-
-        albumItem = QTableWidgetItem(QString(info[3]))
-        albumItem.setFlags(albumItem.flags() ^ Qt.ItemIsEditable)
-        
-        yearItem = QTableWidgetItem(str(info[4]))
-        yearItem.setFlags(yearItem.flags() ^ Qt.ItemIsEditable)
-
-        genreItem = QTableWidgetItem(QString(info[5]))
-        genreItem.setFlags(genreItem.flags() ^ Qt.ItemIsEditable)
-        
-        lengthItem = QTableWidgetItem(QString(info[6]))
-        lengthItem.setFlags(lengthItem.flags() ^ Qt.ItemIsEditable)
-        
-        bitrateItem = QTableWidgetItem(QString(str(info[7]))) # if i don't use str I get weird unicode
-        bitrateItem.setFlags(bitrateItem.flags() ^ Qt.ItemIsEditable)
-        
-        fileItem = QTableWidgetItem(QString(fileName))
+        for n in range(vals):
+            if meta[n] == "track":
+                itemInfo = '''"%02u"''' % info[0]
+            elif meta[n] == "file":
+                itemInfo = '''"%s"''' % fileName
+            else:
+                itemInfo = "info[%d]" % n
+                
+            itemName = "%sItem" % meta[n]
+            val1 = "QTableWidgetItem(QString(str(%s)))" % itemInfo
+            val2 = "%s.setFlags(%s.flags() ^ Qt.ItemIsEditable)" % (itemName, itemName)
+            
+            exec "%s = %s" % (itemName, val1)
+            exec val2
+            
+#        track = "%02u" % info[0]
+#        trackItem = QTableWidgetItem(QString(track))
+#        trackItem.setFlags(trackItem.flags() ^ Qt.ItemIsEditable)
+#        
+#        titleItem = QTableWidgetItem(QString(info[1]))
+#        titleItem.setFlags(titleItem.flags() ^ Qt.ItemIsEditable)
+#
+#        artistItem = QTableWidgetItem(QString(info[2]))
+#        artistItem.setFlags(artistItem.flags() ^ Qt.ItemIsEditable)
+#
+#        albumItem = QTableWidgetItem(QString(info[3]))
+#        albumItem.setFlags(albumItem.flags() ^ Qt.ItemIsEditable)
+#        
+#        yearItem = QTableWidgetItem(str(info[4]))
+#        yearItem.setFlags(yearItem.flags() ^ Qt.ItemIsEditable)
+#
+#        genreItem = QTableWidgetItem(QString(info[5]))
+#        genreItem.setFlags(genreItem.flags() ^ Qt.ItemIsEditable)
+#        
+#        lengthItem = QTableWidgetItem(QString(info[6]))
+#        lengthItem.setFlags(lengthItem.flags() ^ Qt.ItemIsEditable)
+#        
+#        bitrateItem = QTableWidgetItem(QString(str(info[7]))) # if i don't use str I get weird unicode
+#        bitrateItem.setFlags(bitrateItem.flags() ^ Qt.ItemIsEditable)
+#        
+#        fileItem = QTableWidgetItem(QString(fileName))
         
         currentRow = self.playlistTree.rowCount()
         self.playlistTree.insertRow(currentRow)
