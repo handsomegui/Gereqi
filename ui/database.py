@@ -1,5 +1,5 @@
 from pysqlite2 import dbapi2 as sqlite
-from os import mkdir, getenv, path, remove
+from os import mkdir, getenv, path
 
 #TODO: stats database
 
@@ -64,7 +64,6 @@ class MEDIA:
         Here we add data into the media database
         The values var is better than before. Still too verbose.
         """
-#        values = ''' "{0[0]}","{0[1]}","{0[2]}","{0[3]}", "{0[4]}","{0[5]}","{0[6]}","{0[7]}","{0[8]}"  '''.format(args)
         values = '"%s"' % '", "'.join(meta)
         cols = "file_name,track,title,artist,album,year,genre,length,bitrate"
         query = "INSERT INTO media (%s) VALUES (%s)" % (cols, values)

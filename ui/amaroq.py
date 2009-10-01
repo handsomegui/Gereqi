@@ -13,7 +13,7 @@ from settings import settingDlg
 from Ui_amaroq import Ui_MainWindow
 import resource_rc
 from database import MEDIA
-from metadata import metaData
+from metadata import METADATA
 from threads import getCover, getWiki, buildDB
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -30,7 +30,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.mediaDB = MEDIA()
         self.mediaDir = None
-        self.meta = metaData()
+        self.meta = METADATA()
         self.setupDBtree()
         self.windowShow = True
         self.playRandom = False
