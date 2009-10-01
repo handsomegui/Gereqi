@@ -2,7 +2,7 @@ from PyQt4.QtCore import QThread, QString, SIGNAL
 from PyQt4.QtGui import QImage
 from webinfo import webInfo
 from database import MEDIA
-from metadata import metaData
+from metadata import METADATA
 import os
 
 class getCover(QThread):
@@ -47,10 +47,10 @@ class buildDB(QThread):
         self.mediaDir = dir
         
     def run(self):
-        oldProg = 0
+        old_prog = 0
         tracks = []
-        meta = metaData()
-        mediaDB = MEDIA()
+        meta = METADATA()
+        media_db = MEDIA()
         
         for root, dirname, filename in os.walk(str(self.mediaDir)):
             for x in filename:
@@ -62,14 +62,14 @@ class buildDB(QThread):
 
         for n in range(tracksTotal):            
             prog = int(round( 100 * ( float(n) / float(tracksTotal) ) )) 
-            if prog > oldProg:
-                oldProg = prog
+            if prog > old_prog:
+                old_prog = prog
                 self.emit(SIGNAL("Activated ( int )"), prog)
             
             track = tracks[n]
             tags = meta.extract(track)
             tags.insert(0, track) # prepends the fileName
-            mediaDB.add_media(tags)
+            media_db.add_media(tags)
         
         status = QString("finished")
         self.emit(SIGNAL("Activated ( QString )"), status)
