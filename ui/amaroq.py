@@ -561,7 +561,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # If the dialog is cancelled in last if statement the below is ignored
         if self.mediaDir:
             self.statBttn.setEnabled(True)
-            self.buildThread.setValues(self.mediaDir)
+            self.buildThread.set_values(self.mediaDir)
             self.statProg.setToolTip("Scanning Media")
             self.statProg.setValue(0)
             self.buildThread.start()
@@ -608,12 +608,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """        
         # Wikipedia info
         if self.art[0] != self.old_art[0] and self.art[0]: 
-            self.htmlThread.setValues(self.art[0]) # passes the artist to the thread
+            self.htmlThread.set_values(self.art[0]) # passes the artist to the thread
             self.htmlThread.start() # starts the thread
             self.old_art[0] = self.art[0]         
         # Album art
         if self.art[1] != self.old_art[1] and self.art[1]:
-            self.coverThread.setValues(self.art[0], self.art[1], self.localisation)
+            self.coverThread.set_values(self.art[0], self.art[1], self.localisation)
             self.coverThread.start()
             self.old_art[1] = self.art[1]
 

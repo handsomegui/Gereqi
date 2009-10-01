@@ -9,13 +9,11 @@ class GETCOVER(QThread):
     def __init__(self,parent=None):
         QThread.__init__(self,parent)
         
-    def setValues(self, art, alb, loc=None):
+    def set_values(self, art, alb, loc=None):
         self.artist = art
         self.album = alb
         self.locale = loc
       
-    # Seems threads are self-exiting as I can start this up fine even if
-    # the last time I ran it it emitted nothing.
     def run(self):
         info = WEBINFO()
         result = info.get_info("cover", self.locale, self.artist, self.album)
@@ -29,7 +27,7 @@ class GETWIKI(QThread):
     def __init__(self,parent=None):
         QThread.__init__(self,parent)
     
-    def setValues(self, art):
+    def set_values(self, art):
         self.artist = art
         
     def run(self):
@@ -43,7 +41,7 @@ class BUILDDB(QThread):
     def __init__(self,parent=None):
         QThread.__init__(self,parent)
         
-    def setValues(self, dir):
+    def set_values(self, dir):
         self.mediaDir = dir
         
     def run(self):
@@ -57,6 +55,8 @@ class BUILDDB(QThread):
             for x in filename:
                 fileNow = os.path.join(root, x)
                 ender = fileNow.split(".")[-1]
+                # We only want to get tags for certain file formats as
+                # tagpy can only work with certain types
                 if ender in formats:
                     tracks.append(fileNow)
                     
@@ -70,7 +70,9 @@ class BUILDDB(QThread):
             
             track = tracks[n]
             tags = meta.extract(track)
-            tags.insert(0, track) # prepends the fileName
+            # prepends the fileName as the DB function expects
+            # a certain order to the args passed
+            tags.insert(0, track) 
             media_db.add_media(tags)
         
         status = QString("finished")
