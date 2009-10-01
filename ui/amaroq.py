@@ -9,7 +9,7 @@ QSize,  QStringList
 from PyQt4.phonon import Phonon
 from random import randrange
 
-from settings import settingDlg
+from settings import SETTINGDLG
 from Ui_amaroq import Ui_MainWindow
 import resource_rc
 from database import MEDIA
@@ -286,10 +286,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
        Brings up the settings Dialog
         """
         # TODO: not finished yet
-        dialog = settingDlg(self)
+        dialog = SETTINGDLG(self)
         
         if dialog.exec_():
-            self.mediaDir = dialog.dirVal()
+            self.mediaDir = dialog.dir_val()
             print self.mediaDir
             
     @pyqtSignature("")
@@ -479,6 +479,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         or from the database. Does not pull metadata from 
         the database and is passed into the function directly
         """
+        #TODO: prevent creation of empty rows
         meta = ["track", "title", "artist", "album", "year", "genre", "length", "bitrate", "file"]
         vals = len(meta)
         
