@@ -683,6 +683,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         # So that it can be dynamic later on when columns can be moved
         column = 8 
+        track = None
+        
         if mode == "now":
             track = self.playlistTree.item(row, column).text()
             
@@ -691,7 +693,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # If 0 then the playlist is empty
             rows = self.playlistTree.rowCount() 
             
-            #FIXME: the elses encased in the 1st if are probably now pointless
             if rows > 0:
                 for row in range(rows):
                     file_name = self.playlistTree.item(row, column).text()
@@ -702,10 +703,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             if (row - 1) >= 0:
                                 track = self.playlistTree.item(row - 1 , column)
                                 track = track.text()
-                            else:
-                                track = None
-                            break
-                            
+
                         elif mode == "next":
                             if self.play_type_bttn.isChecked():
                                 # Here we need to randomly choose the next track
@@ -716,17 +714,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                 if (row + 1) < rows:
                                     track = self.playlistTree.item(row + 1, column)
                                     track = track.text()
-                                else:
-                                    track = None                            
-                                break
-                            
-            else:
-                track = None
-                 
+
         if track:
-            track = Phonon.MediaSource(track)      
-            
-        return track
+            track = Phonon.MediaSource(track)     
+            return track
 
     def generate_info(self):
         # This retrieves data from the playlist table, not the database. 
