@@ -59,13 +59,13 @@ class MEDIA:
                 ''')
                 
         
-    def add_media(self, p):
+    def add_media(self, meta):
         """
         Here we add data into the media database
         The values var is better than before. Still too verbose.
         """
 #        values = ''' "{0[0]}","{0[1]}","{0[2]}","{0[3]}", "{0[4]}","{0[5]}","{0[6]}","{0[7]}","{0[8]}"  '''.format(args)
-        values = ''' "%s","%s","%s","%s", "%s","%s","%s","%s","%s"  ''' % (p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]) 
+        values = '"%s"' % '", "'.join(meta)
         cols = "file_name,track,title,artist,album,year,genre,length,bitrate"
         query = "INSERT INTO media (%s) VALUES (%s)" % (cols, values)
         
@@ -100,12 +100,6 @@ class MEDIA:
                             WHERE file_name="%s"''' % file_name
         return self.queryfetchall(query)
         
-    def close_db(self):
-        #TODO: not implemented yet
-        print "Called when shutting down to cleanly close databases."
-        self.media_db.commit()
-        
-    
     def queryfetchall(self, query):
         self.media_curs.execute(query)
         return self.media_curs.fetchall()

@@ -12,8 +12,10 @@ class metaData:
         
         tags = tagpy.FileRef(str(fileName))
         
-        try:track = tags.tag().track
-        except:track = 0
+        try:
+            track = tags.tag().track
+            track = str(track)
+        except:track = "0"
         
         try:
             title = tags.tag().title
@@ -43,13 +45,17 @@ class metaData:
         except:
             genre = ""
         
-        try: year = tags.tag().year
-        except: year = 0
+        try: 
+            year = tags.tag().year
+            year = str(year)
+        except: 
+            year = "0"
         
         try:
             bitrate = tags.audioProperties().bitrate
+            bitrate = str(bitrate)
         except:
-            bitrate = 0
+            bitrate = "0"
             
         try:
             seconds = tags.audioProperties().length
