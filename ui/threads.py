@@ -5,7 +5,7 @@ from database import MEDIA
 from metadata import METADATA
 import os
 
-class getCover(QThread):
+class GETCOVER(QThread):
     def __init__(self,parent=None):
         QThread.__init__(self,parent)
         
@@ -25,7 +25,7 @@ class getCover(QThread):
             self.emit(SIGNAL("Activated( QImage )"), img) 
         
         
-class getWiki(QThread):
+class GETWIKI(QThread):
     def __init__(self,parent=None):
         QThread.__init__(self,parent)
     
@@ -39,7 +39,7 @@ class getWiki(QThread):
         self.emit(SIGNAL("Activated( QString )"), result)
         
         
-class buildDB(QThread):
+class BUILDDB(QThread):
     def __init__(self,parent=None):
         QThread.__init__(self,parent)
         
@@ -47,6 +47,7 @@ class buildDB(QThread):
         self.mediaDir = dir
         
     def run(self):
+        formats = ["ogg", "mp3", "flac"]
         old_prog = 0
         tracks = []
         meta = METADATA()
@@ -55,8 +56,8 @@ class buildDB(QThread):
         for root, dirname, filename in os.walk(str(self.mediaDir)):
             for x in filename:
                 fileNow = os.path.join(root, x)
-#                ending = fileNow.endswith()
-                if fileNow.endswith(".ogg") or fileNow.endswith(".mp3") or fileNow.endswith(".flac"):
+                ender = fileNow.split(".")[-1]
+                if ender in formats:
                     tracks.append(fileNow)
                     
         tracksTotal = len(tracks)

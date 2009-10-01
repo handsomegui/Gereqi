@@ -14,7 +14,7 @@ from Ui_amaroq import Ui_MainWindow
 import resource_rc
 from database import MEDIA
 from metadata import METADATA
-from threads import getCover, getWiki, buildDB
+from threads import GETCOVER, GETWIKI, BUILDDB
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     """
@@ -36,9 +36,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playRandom = False
         self.oldPos = 0
         self.playLstEnd = False 
-        self.coverThread = getCover()
-        self.htmlThread = getWiki()
-        self.buildThread = buildDB()     
+        self.coverThread = GETCOVER()
+        self.htmlThread = GETWIKI()
+        self.buildThread = BUILDDB()     
         self.localisation = ".co.uk" # this needs to be editable in the settings Dialog
 
         self.art = [None, None] # The current playing artist
