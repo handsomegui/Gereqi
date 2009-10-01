@@ -1,7 +1,7 @@
 from PyQt4.QtCore import QThread, QString, SIGNAL
 from PyQt4.QtGui import QImage
 from webinfo import webInfo
-from database import media
+from database import MEDIA
 from metadata import metaData
 import os
 
@@ -50,7 +50,7 @@ class buildDB(QThread):
         oldProg = 0
         tracks = []
         meta = metaData()
-        mediaDB = media()
+        mediaDB = MEDIA()
         
         for root, dirname, filename in os.walk(str(self.mediaDir)):
             for x in filename:

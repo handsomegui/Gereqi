@@ -1,10 +1,9 @@
-#from PyQt4.QtSql import  QSqlDatabase
 from pysqlite2 import dbapi2 as sqlite
 from os import mkdir, getenv, path, remove
 
 #TODO: stats database
 
-class media:
+class MEDIA:
     def __init__(self):
         """
         The table creations perform every class instance(?)
@@ -12,21 +11,21 @@ class media:
         to add extra columns to an existing table te database file amaroq.db
         has to be deleted.
         """
-        appDir = getenv("HOME")
-        appDir = "%s/.amaroq/" % appDir
-        self.mediaDB = "%samaroq.db" % appDir
+        app_dir = getenv("HOME")
+        app_dir = "%s/.amaroq/" % app_dir
+        self.media_db = "%samaroq.db" % app_dir
         
-        if not path.exists(appDir):
+        if not path.exists(app_dir):
             print "need to make a folder"
-            mkdir(appDir)
+            mkdir(app_dir)
 
-        self.mediaDB = sqlite.connect(self.mediaDB)
-        self.mediaCurs = self.mediaDB.cursor()
+        self.media_db = sqlite.connect(self.media_db)
+        self.media_curs = self.media_db.cursor()
         
-        # using filename as PRIMARY KEY to prevent multiple entries
-        self.mediaCurs.execute('''
+        # using file_name as PRIMARY KEY to prevent multiple entries
+        self.media_curs.execute('''
             CREATE TABLE IF NOT EXISTS media (
-                filename    TEXT ,
+                file_name    TEXT ,
                 track    UNSIGNED TINYINT(2),
                 title   VARCHAR(50),
                 artist  VARCHAR(50),
@@ -37,21 +36,21 @@ class media:
                 bitrate UNSIGNED TINYINT(4),
                 rating  UNSIGNED TINYINT(1),
                 playcount   UNSIGNED SMALLINT,
-                PRIMARY KEY (filename) ON CONFLICT IGNORE
+                PRIMARY KEY (file_name) ON CONFLICT IGNORE
                 )
                 ''')
                 
-        self.mediaCurs.execute('''
+        self.media_curs.execute('''
             CREATE TABLE IF NOT EXISTS playlist (
                 id   SMALLINT UNSIGNED IDENTITY (1, 1),
                 name    VARCHAR(20),
-                filename    TEXT,
+                file_name    TEXT,
                 track  SMALLINT(3),
                 PRIMARY KEY (id)
                 )
                 ''')
                 
-        self.mediaCurs.execute('''
+        self.media_curs.execute('''
             CREATE TABLE IF NOT EXISTS settings (
                 setting   TEXT,
                 value   TEXT,
@@ -63,23 +62,21 @@ class media:
     def add_media(self, p):
         """
         Here we add data into the media database
+        The values var is better than before. Still too verbose.
         """
-        values = ''' "%s","%s","%s","%s", "%s","%s","%s","%s","%s"  ''' % (p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]) #FIXME:ugly
-        cols = "filename,track,title,artist,album,year,genre,length,bitrate"
+#        values = ''' "{0[0]}","{0[1]}","{0[2]}","{0[3]}", "{0[4]}","{0[5]}","{0[6]}","{0[7]}","{0[8]}"  '''.format(args)
+        values = ''' "%s","%s","%s","%s", "%s","%s","%s","%s","%s"  ''' % (p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]) 
+        cols = "file_name,track,title,artist,album,year,genre,length,bitrate"
         query = "INSERT INTO media (%s) VALUES (%s)" % (cols, values)
         
         try:
-            self.mediaCurs.execute(query) 
-            self.mediaDB.commit()    
+            self.media_curs.execute(query) 
+            self.media_db.commit()    
         except:
             print "Database Failure: %s" % values
         
-    def lenDB(self):
-        query = "SELECT filename FROM media"
-        primary = self.queryfetchall(query)
-        print len(primary)
-        
-    def queryDB(self, column):    
+
+    def query_db(self, column):    
         """
         Ermm. Not sure what to put here yet.
         Maybe a testing thing
@@ -87,28 +84,28 @@ class media:
         query = "SELECT DISTINCT %s FROM media" % column
         return self.queryfetchall(query)
         
-    def searching(self, looknFr, looknIn, thing):
-#        print looknFr, looknIn, thing
+    def searching(self, look_for, look_in, thing):
+#        print look_for, look_in, thing
         query = '''SELECT DISTINCT %s FROM media
-                            WHERE %s="%s"''' % (looknFr, looknIn, thing)
+                            WHERE %s="%s"''' % (look_for, look_in, thing)
         return self.queryfetchall(query)
     
-    def filenames(self, artist, album):
-        query = '''SELECT DISTINCT filename FROM media
+    def file_names(self, artist, album):
+        query = '''SELECT DISTINCT file_name FROM media
                             WHERE artist="%s" AND album="%s"''' % (artist, album)
         return self.queryfetchall(query)
         
-    def trackInfo(self, fileName):
+    def track_info(self, file_name):
         query = '''SELECT * FROM media
-                            WHERE filename="%s"''' % fileName
+                            WHERE file_name="%s"''' % file_name
         return self.queryfetchall(query)
         
-    def closeDBs(self):
+    def close_db(self):
         #TODO: not implemented yet
         print "Called when shutting down to cleanly close databases."
-        self.mediaDB.commit()
+        self.media_db.commit()
         
     
     def queryfetchall(self, query):
-        self.mediaCurs.execute(query)
-        return self.mediaCurs.fetchall()
+        self.media_curs.execute(query)
+        return self.media_curs.fetchall()

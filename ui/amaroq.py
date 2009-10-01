@@ -12,7 +12,7 @@ from random import randrange
 from settings import settingDlg
 from Ui_amaroq import Ui_MainWindow
 import resource_rc
-from database import media
+from database import MEDIA
 from metadata import metaData
 from threads import getCover, getWiki, buildDB
 
@@ -28,7 +28,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         QMainWindow.__init__(self, parent)
         self.setupUi(self)
         
-        self.mediaDB = media()
+        self.mediaDB = MEDIA()
         self.mediaDir = None
         self.meta = metaData()
         self.setupDBtree()
@@ -182,11 +182,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except:
             # Should go here if the artist item is double-clicked as it has no parent
             return
-        tracks = self.mediaDB.filenames(artist, album)
+        tracks = self.mediaDB.file_names(artist, album)
         
         for track in tracks:
             track = track[0]
-            info = self.mediaDB.trackInfo(track)[0][1:] # Retrieves metadata from database
+            info = self.mediaDB.track_info(track)[0][1:] # Retrieves metadata from database
             self.add2playlist(str(track), info)
     
     @pyqtSignature("")
@@ -473,7 +473,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.statPlyTypBttn.setText("N")
 
-#FIXME: This is awful even if it's mostly a Trolltech example. Tidy up
     def add2playlist(self, fileName, info):
         """
         Called when adding tracks to the playlist either locally
@@ -502,7 +501,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         currentRow = self.playlistTree.rowCount()
         self.playlistTree.insertRow(currentRow)
         
-        fnameCol = 8
+        fileCol = 8
         #TODO: These column assignments have to be dynamic at some point
         self.playlistTree.setItem(currentRow, 0, trackItem)
         self.playlistTree.setItem(currentRow, 1, titleItem)
@@ -512,7 +511,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playlistTree.setItem(currentRow, 5, genreItem)
         self.playlistTree.setItem(currentRow, 6, lengthItem)
         self.playlistTree.setItem(currentRow, 7, bitrateItem)
-        self.playlistTree.setItem(currentRow, fnameCol , fileItem)
+        self.playlistTree.setItem(currentRow, fileCol , fileItem)
         
         self.playlistTree.resizeColumnsToContents()
         if self.playlistTree.columnWidth(0) > 300:
@@ -571,7 +570,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         The beginnings of viewing the media database in the QTreeView
         """
-        artists = self.mediaDB.queryDB("artist") # This gives multiples of the same thing
+        artists = self.mediaDB.query_db("artist") # This gives multiples of the same thing
         artists = sorted(artists)
         oldChar= None
         char = None
