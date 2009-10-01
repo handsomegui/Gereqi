@@ -64,7 +64,14 @@ class MEDIA:
         Here we add data into the media database
         The values var is better than before. Still too verbose.
         """
-        values = '"%s"' % '", "'.join(meta)
+        
+        # A debug
+        try:
+            values = '"%s"' % '", "'.join(meta)
+        except:
+            print meta
+            return
+            
         cols = "file_name,track,title,artist,album,year,genre,length,bitrate"
         query = "INSERT INTO media (%s) VALUES (%s)" % (cols, values)
         
