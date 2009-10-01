@@ -62,10 +62,10 @@ class METADATA:
             
         try:
             seconds = tags.audioProperties().length
-            min = seconds // 60
+            minim = seconds // 60
             rem = seconds % 60
 
-            length = "%02d:%02d" % (min, rem)
+            length = "%02d:%02d" % (minim, rem)
         except:
             length = "00:00"
         
