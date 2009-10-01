@@ -1,6 +1,6 @@
 from PyQt4.QtCore import QThread, QString, SIGNAL
 from PyQt4.QtGui import QImage
-from webinfo import webInfo
+from webinfo import WEBINFO
 from database import MEDIA
 from metadata import METADATA
 import os
@@ -17,8 +17,8 @@ class getCover(QThread):
     # Seems threads are self-exiting as I can start this up fine even if
     # the last time I ran it it emitted nothing.
     def run(self):
-        info = webInfo()
-        result = info.getInfo("cover", self.locale, self.artist, self.album)
+        info = WEBINFO()
+        result = info.get_info("cover", self.locale, self.artist, self.album)
         if result:
             img = QImage()
             img.loadFromData(result, "JPG")
@@ -33,8 +33,8 @@ class getWiki(QThread):
         self.artist = art
         
     def run(self):
-        info = webInfo()
-        result = info.getInfo("info",None,  self.artist)
+        info = WEBINFO()
+        result = info.get_info("info",None,  self.artist)
         result = QString(result)        
         self.emit(SIGNAL("Activated( QString )"), result)
         
@@ -54,7 +54,8 @@ class buildDB(QThread):
         
         for root, dirname, filename in os.walk(str(self.mediaDir)):
             for x in filename:
-                fileNow = os.path.join(root, x)                
+                fileNow = os.path.join(root, x)
+#                ending = fileNow.endswith()
                 if fileNow.endswith(".ogg") or fileNow.endswith(".mp3") or fileNow.endswith(".flac"):
                     tracks.append(fileNow)
                     

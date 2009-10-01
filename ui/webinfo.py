@@ -3,13 +3,15 @@
 from urllib2 import URLError, build_opener
 from lxml.html import fromstring, tostring
 import socket
-from time import time
 
-timeout = 10
-socket.setdefaulttimeout(timeout)
+TIMEOUT = 10
+socket.setdefaulttimeout(TIMEOUT )
 
-class webInfo:
-    def createUrl(self, site, *params):
+class WEBINFO:
+    def __init__(self):
+        return
+        
+    def create_url(self, site, *params):
         # Cleans up the string
         exc = '''!,.%%$&(){}[]'''
         params = params[0][0] # Hack. Result of passing *params 2 times here
@@ -24,14 +26,15 @@ class webInfo:
         if "wikipedia" in site:
             things = "%s+music+OR+band+OR+artist&btnI=745" % things
             
-        url = "http://www.google.com/search?hl=en&q=%s+%s&btnI=745" % (site, things)
+        url = "http://www.google.com/search?hl=en&q=%s+%s&btnI=745" 
+        url = url % (site, things)
         print url
         return url
         
         
     def fetch(self, site, *params):
             
-        url = self.createUrl(site, params)
+        url = self.create_url(site, params)
 
         # Here we need a check to see if the loaded link is from amazon
         # Some localisations don't seem to have the entire amazon.com 
@@ -41,8 +44,8 @@ class webInfo:
             opener = build_opener()
             opener.addheaders = [('User-agent', 'amaroQ')]
             html = opener.open( url ).read()
-        except URLError, e:
-            print e
+        except URLError, err:
+            print err
             html = "about:blank"
 
         content = self.treat(site, html)             
@@ -69,7 +72,7 @@ class webInfo:
 
         return tree
         
-    def getInfo(self, thing, locale=None, *params):
+    def get_info(self, thing, locale=None, *params):
         """
         Where everything starts from
         """
@@ -77,7 +80,8 @@ class webInfo:
         if thing == "info":
             site = "wikipedia"
             result = self.fetch(site, params)
-            result = result.split('''<div class="references''')[0] # Cuts out everything from References down
+            # Cuts out everything from References down
+            result = result.split('''<div class="references''')[0] 
             return result
             
         elif thing == "cover":    
@@ -85,6 +89,8 @@ class webInfo:
             result = self.fetch(site, params)
             html = None
             
+            # Here we need some check that if we haven't found the cover
+            # we try again not using the amazon localisation
             if result != "about:blank":
                 result = result .split("src=")[1].split(" ")[0]
                 result = result.strip('''"''')
