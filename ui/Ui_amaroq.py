@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
 #
-# Created: Wed Sep 30 14:46:46 2009
+# Created: Thu Oct  1 21:16:39 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -66,6 +66,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.gridLayout_8.setMargin(2)
         self.gridLayout_8.setObjectName("gridLayout_8")
         self.coverView = QtGui.QLabel(self.groupBox)
+        self.coverView.setMaximumSize(QtCore.QSize(210, 210))
         self.coverView.setFrameShape(QtGui.QFrame.StyledPanel)
         self.coverView.setFrameShadow(QtGui.QFrame.Raised)
         self.coverView.setPixmap(QtGui.QPixmap(":/Icons/music.png"))
@@ -131,6 +132,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.wikiView = QtWebKit.QWebView(self.tab_9)
         self.wikiView.setUrl(QtCore.QUrl("about:blank"))
+        self.wikiView.setZoomFactor(0.800000011921)
         self.wikiView.setObjectName("wikiView")
         self.gridLayout_4.addWidget(self.wikiView, 0, 0, 1, 1)
         self.tabWidget_2.addTab(self.tab_9, "")
