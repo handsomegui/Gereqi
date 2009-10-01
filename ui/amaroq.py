@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, \
-QDesktopServices, QAction, QMenu, QSystemTrayIcon, qApp, QIcon, QPixmap, QLabel, \
-QProgressBar, QToolButton, QSpacerItem, QSizePolicy, QTreeWidgetItem, QFont, QPixmap,  \
-QShortcut, QKeySequence
-from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, SLOT, \
-QSize,  QStringList
+from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox, \
+QTableWidgetItem, QDesktopServices, QAction, QMenu, QSystemTrayIcon, \
+qApp, QIcon, QPixmap, QLabel, QProgressBar, QToolButton, QSpacerItem, \
+QSizePolicy, QTreeWidgetItem, QFont, QPixmap, QShortcut, QKeySequence
+
+from PyQt4.QtCore import pyqtSignature, QDir, QString, Qt, SIGNAL, QTime, \
+SLOT, QSize,  QStringList
+
 from PyQt4.phonon import Phonon
 from random import randrange
 
@@ -39,7 +41,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.coverThread = GETCOVER()
         self.htmlThread = GETWIKI()
         self.buildThread = BUILDDB()     
-        self.localisation = ".co.uk" # this needs to be editable in the settings Dialog
+        self.locale = ".co.uk" # needs to be editable in SETTINGDLG
 
         self.art = [None, None] # The current playing artist
         self.old_art = [None, None] # The last playing artist
@@ -95,8 +97,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusBar.addPermanentWidget(self.statBttn)
         self.statusBar.addPermanentWidget(self.statPlyTypBttn)
 
-        headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), self.tr("Album"), \
-                   self.tr("Year"), self.tr("Genre"),   self.tr("Length"), self.tr("Bitrate"), self.tr("FileName")]
+        headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), \
+                   self.tr("Album"), self.tr("Year"), self.tr("Genre"),   \
+                   self.tr("Length"), self.tr("Bitrate"), self.tr("FileName")]
         
         for val in range(len(headers)):
             self.playlistTree.insertColumn(val)
@@ -179,14 +182,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         try:
             artist = item.parent().text(0)
+            
+         # Should go here if artist item is double-clicked as it has no parent
         except:
-            # Should go here if the artist item is double-clicked as it has no parent
             return
+            
         tracks = self.mediaDB.file_names(artist, album)
-        
         for track in tracks:
             track = track[0]
-            info = self.mediaDB.track_info(track)[0][1:] # Retrieves metadata from database
+            # Retrieves metadata from database
+            info = self.mediaDB.track_info(track)[0][1:] 
             self.add2playlist(str(track), info)
     
     @pyqtSignature("")
@@ -230,16 +235,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 else:
                     self.playBttn.setChecked(False)
                     return
-                
+                    
             self.mediaObject.play()
             self.stopBttn.setEnabled(True)
-            self.playBttn.setIcon(QIcon(QPixmap(":/Icons/media-playback-pause.png")))
+            icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
+            self.playBttn.setIcon(icon)
             if not self.isPlaying():
                 self.genInfo()
                 
         else:
             self.mediaObject.pause()
-            self.playBttn.setIcon(QIcon(QPixmap(":/Icons/media-playback-start.png")))
+            icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
+            self.playBttn.setIcon(icon)
             self.statLbl.setText("Paused")
             
         self.playBttn.setChecked(checked)    
@@ -314,7 +321,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Extract music files and shove into current playlist.
         """        
-        # As the kde4 dialogs are being used (somehow) I can't see if the filters work
+        # kde4 dialogs are being used somehow so can't see if the filters work
         mfiles = QFileDialog.getOpenFileNames(\
                         None, 
                         self.tr("Select Music Files"),
@@ -322,10 +329,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         self.trUtf8("*.flac;;*.mp3;;*.ogg"))       
            
         if mfiles:
+            formats = ["ogg", "mp3", "flac"]
             for item in mfiles:
-                if item.endsWith(".ogg") or item.endsWith(".mp3") or item.endsWith(".flac"):
-                    
-                    info = self.meta.extract(item) # Added this so add2playlist can have data added from mediaDB
+                ender = item.split(".")[-1]
+                if ender in formats:
+                    info = self.meta.extract(item) 
                     self.add2playlist(item, info)
 
     @pyqtSignature("int, int")
@@ -348,13 +356,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         pos = self.progSldr.sliderPosition()
         t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
         if t_now == QTime(0, 0, 0):
-                # Used because no Phonon.state when the mediaobject goes to next queued track
-                # 2,3 is the same sig as when next/prev buttons are used
+            # Used because no Phonon.state when the mediaobject goes 
+            # to next queued track 2,3 is the same sig as when next/prev
+            # buttons are used
             self.stateChanged(2, 3) 
-        self.progLbl.setText("%s | %s" % (t_now.toString('mm:ss'), self.t_length.toString('mm:ss')))            
+        
+        now = t_now.toString('mm:ss')
+        max = self.t_length.toString('mm:ss')
+        msg = "%s | %s" % (now, max)
+        self.progLbl.setText(msg)            
             
         # This only goes(?) if  the user has not grabbed the slider
-        if pos == self.oldPos or pos < 1: # This or stops a problem where the slider doesn't move after the track finishes
+        # The 'or' stops issue where the slider doesn't move after track finishes
+        if pos == self.oldPos or pos < 1: 
             self.progSldr.setValue(time)
         
         
@@ -463,9 +477,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         self.audioOutput.setMuted(checked)
         if checked:
-            self.muteBttn.setIcon(QIcon(QPixmap(":/Icons/audio-volume-muted.png")))
+            icon = QIcon(QPixmap(":/Icons/audio-volume-muted.png"))
+            self.muteBttn.setIcon(icon)
         else:
-            self.muteBttn.setIcon(QIcon(QPixmap(":/Icons/audio-volume-high.png")))
+            icon = QIcon(QPixmap(":/Icons/audio-volume-high.png"))
+            self.muteBttn.setIcon(icon)
     
     def play_type(self, checked):
         if checked:
@@ -480,22 +496,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         the database and is passed into the function directly
         """
         #TODO: prevent creation of empty rows
-        meta = ["track", "title", "artist", "album", "year", "genre", "length", "bitrate", "file"]
+        meta = ["track", "title", "artist", "album", "year", \
+            "genre", "length", "bitrate", "file"]
         vals = len(meta)
         
         for n in range(vals):
             if meta[n] == "track":
-                itemInfo = '''"%02u"''' % info[0]
+                num = int(info[0])
+                val = '''"%02u"''' % num
             elif meta[n] == "file":
-                itemInfo = '''"%s"''' % fileName
+                val = '''"%s"''' % fileName
             else:
-                itemInfo = "info[%d]" % n
+                val = "info[%d]" % n
                 
-            itemName = "%sItem" % meta[n]
-            func1 = "QTableWidgetItem(QString(str(%s)))" % itemInfo
-            func2 = "%s.setFlags(%s.flags() ^ Qt.ItemIsEditable)" % (itemName, itemName)
+            name = "%sItem" % meta[n]
+            func1 = "QTableWidgetItem(QString(str(%s)))" % val
+            func2 = "%s.setFlags(%s.flags() ^ Qt.ItemIsEditable)" % (name, name)
             
-            exec "%s = %s" % (itemName, func1)
+            exec "%s = %s" % (name, func1)
             exec func2
             
     
@@ -516,7 +534,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.playlistTree.resizeColumnsToContents()
         if self.playlistTree.columnWidth(0) > 300:
-                self.playlistTree.setColumnWidth(0, 300)
+            self.playlistTree.setColumnWidth(0, 300)
     
     
     # A much cleaner solution. When you seek the volume is momentarily
@@ -571,9 +589,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         The beginnings of viewing the media database in the QTreeView
         """
-        artists = self.mediaDB.query_db("artist") # This gives multiples of the same thing
+         # This gives multiples of the same thing i.e albums
+        artists = self.mediaDB.query_db("artist")
         artists = sorted(artists)
-        oldChar= None
+        oldChar = None
         char = None
         font = QFont()
         font.setBold(True)
@@ -609,12 +628,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """        
         # Wikipedia info
         if self.art[0] != self.old_art[0] and self.art[0]: 
-            self.htmlThread.set_values(self.art[0]) # passes the artist to the thread
-            self.htmlThread.start() # starts the thread
-            self.old_art[0] = self.art[0]         
+            # passes the artist to the thread
+            self.htmlThread.set_values(self.art[0]) 
+            # starts the thread
+            self.htmlThread.start() 
+            self.old_art[0] = self.art[0]  
+            
         # Album art
         if self.art[1] != self.old_art[1] and self.art[1]:
-            self.coverThread.set_values(self.art[0], self.art[1], self.localisation)
+            self.coverThread.set_values(self.art[0], self.art[1], self.locale)
             self.coverThread.start()
             self.old_art[1] = self.art[1]
 
@@ -650,7 +672,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 row = item.row()
                 self.playlistTree.removeRow(row)
             except:
-                return # it's probably deleted already i.e we selected the same row but multiple columns FIXME:tidy up
+                #FIXME:tidy up
+                # likely deleted already i.e selected same row but multiple columns
+                return  
       
 # TODO: these could be pushed into their own class
     def genTrack(self, mode, row=None):
@@ -658,13 +682,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         As the playlist changes on sorting, the playlist (the immediately next/previous 
         tracks) has to be regenerated before the queing of the next track
         """
-        column = 8 # So that it can be dynamic later on when columns can be moved
+        # So that it can be dynamic later on when columns can be moved
+        column = 8 
         if mode == "now":
             track = self.playlistTree.item(row, column).text()
             
         else:
             current = self.mediaObject.currentSource().fileName()
-            rows = self.playlistTree.rowCount() # If 0 then the playlist is empty
+            # If 0 then the playlist is empty
+            rows = self.playlistTree.rowCount() 
             
             #FIXME: the elses encased in the 1st if are probably now pointless
             if rows > 0:
@@ -675,7 +701,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     if fileName == current:
                         if mode == "back":
                             if (row - 1) >= 0:
-                                track = self.playlistTree.item(row - 1 , column).text()
+                                track = self.playlistTree.item(row - 1 , column)
+                                track = track.text()
                             else:
                                 track = None
                             break
@@ -684,10 +711,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             if self.statPlyTypBttn.isChecked():
                                 # Here we need to randomly choose the next track
                                 row = randrange(0, rows)
-                                track = self.playlistTree.item(row, column).text()
+                                track = self.playlistTree.item(row, column)
+                                track = track.text()
                             else:
                                 if (row + 1) < rows:
-                                    track = self.playlistTree.item(row + 1, column).text()
+                                    track = self.playlistTree.item(row + 1, column)
+                                    track = track.text()
                                 else:
                                     track = None                            
                                 break
@@ -701,8 +730,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return track
 
     def genInfo(self):
-        # This retrieves data from the playlist table, not the database. This is because
-        # the playlist may contain tracks added locally.
+        # This retrieves data from the playlist table, not the database. 
+        # This is because the playlist may contain tracks added locally.
         fileList = self.genFilelist()
         fileName = self.mediaObject.currentSource().fileName()
         row = fileList.index(fileName)
@@ -710,8 +739,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         title = self.playlistTree.item(row, 1).text()
         artist = self.playlistTree.item(row, 2).text()
         album = self.playlistTree.item(row, 3).text()
-        message = "%s by %s" % (title, artist)
-        self.trayIcon.showMessage(QString("Now Playing"), QString(message), QSystemTrayIcon.NoIcon, 3000)
+        
+        msg1 = QString("Now Playing")
+        msg2 = QString("%s by %s" % (title, artist))
+        icon = QSystemTrayIcon.NoIcon
+        
+        self.trayIcon.showMessage(msg1, msg2, icon, 3000)
         
         message = "Playing: %s by %s on %s" % (title, artist, album)
         self.statLbl.setText(message)
@@ -754,7 +787,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         return fileList   
  
-#FIXME: this is getting ridiculous. We need new classes. .
+#FIXME: this is getting ridiculous. We need new classes. 
 
 # These are linked to the threads emitting signals
     def setCover(self, img):
