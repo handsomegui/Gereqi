@@ -1,9 +1,16 @@
+"""
+This file contains all the necessary threads for the app
+to make it easier to manage
+"""
+
 from PyQt4.QtCore import QThread, QString, SIGNAL
 from PyQt4.QtGui import QImage
 from webinfo import WEBINFO
 from database import MEDIA
 from metadata import METADATA
 import os
+
+
 
 class GETCOVER(QThread):
     def __init__(self,parent=None):
@@ -51,9 +58,9 @@ class BUILDDB(QThread):
         meta = METADATA()
         media_db = MEDIA()
         
-        for root, dirname, filename in os.walk(str(self.mediaDir)):
-            for x in filename:
-                fileNow = os.path.join(root, x)
+        for root, dirname, filenames in os.walk(str(self.mediaDir)):
+            for name in filenames:
+                fileNow = os.path.join(root, name)
                 ender = fileNow.split(".")[-1]
                 # We only want to get tags for certain file formats as
                 # tagpy can only work with certain types
@@ -62,13 +69,15 @@ class BUILDDB(QThread):
                     
         tracksTotal = len(tracks)
 
-        for n in range(tracksTotal):            
-            prog = int(round( 100 * ( float(n) / float(tracksTotal) ) )) 
+        for cnt in range(tracksTotal):
+            prog = float(cnt ) /  float(tracksTotal)
+            prog = round(100 * prog)
+            prog = int(prog)
             if prog > old_prog:
                 old_prog = prog
                 self.emit(SIGNAL("Activated ( int )"), prog)
             
-            track = tracks[n]
+            track = tracks[cnt ]
             tags = meta.extract(track)
             # prepends the fileName as the DB function expects
             # a certain order to the args passed

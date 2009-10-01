@@ -62,9 +62,7 @@ class MEDIA:
     def add_media(self, meta):
         """
         Here we add data into the media database
-        The values var is better than before. Still too verbose.
         """
-        
         # A debug
         try:
             values = '"%s"' % '", "'.join(meta)
