@@ -118,8 +118,8 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
                  <widget class="QLabel" name="coverView">
                   <property name="maximumSize">
                    <size>
-                    <width>210</width>
-                    <height>210</height>
+                    <width>215</width>
+                    <height>215</height>
                    </size>
                   </property>
                   <property name="frameShape">
@@ -261,7 +261,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
                 </url>
                </property>
                <property name="zoomFactor">
-                <double>0.800000011920929</double>
+                <double>1.000000000000000</double>
                </property>
               </widget>
              </item>
