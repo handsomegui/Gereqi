@@ -3,7 +3,7 @@
 from PyQt4.QtGui import QMainWindow, QFileDialog,  QKeySequence,  \
 QTableWidgetItem, QDesktopServices, QAction, QMenu, QSystemTrayIcon, \
 qApp, QIcon, QPixmap, QLabel, QProgressBar, QToolButton, QTreeWidgetItem, \
-QFont, QPixmap, QShortcut
+QFont, QPixmap, QShortcut, QMessageBox
 
 from PyQt4.QtCore import pyqtSignature, QString, Qt, SIGNAL, QTime, \
 SLOT, QSize,  QStringList
@@ -802,4 +802,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.stat_prog.setValue(100)
             self.collectTree.clear()
             self.setup_db_tree()
+    
+    @pyqtSignature("")
+    def on_actionHelp_activated(self):
+        """
+        Slot documentation goes here.
+        """
+        # TODO: not implemented yet
+        QMessageBox.information(None,
+            self.trUtf8("Help"),
+            self.trUtf8("""Just a note. If you have used amarog-0.1.* and are now trying the dev branch you need to delete "~/.amaroq/amaroq.db" 
 
+The old database format is no longer compatible with the new implementation."""))
