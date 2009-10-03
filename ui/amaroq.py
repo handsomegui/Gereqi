@@ -17,7 +17,33 @@ from database import MEDIA
 from metadata import METADATA
 from threads import GETCOVER, GETWIKI, BUILDDB
 
-class MainWindow(QMainWindow, Ui_MainWindow):
+
+class FINISHES(Ui_MainWindow):
+    def __init__(self):
+        return
+    
+    def set_cover(self, img):
+        cover = QPixmap()
+        cover = cover.fromImage(img)
+        cover = cover.scaledToWidth(200, Qt.SmoothTransformation)
+        self.coverView.setPixmap(cover)        
+        
+    def set_wiki(self, html):
+        print "Wiki"
+        self.wikiView.setHtml(str(html))
+        
+
+    def finish_build(self, status):
+        print str(status)
+        if str(status) == "finished":
+            print "Scanned directory."
+            self.stat_bttn.setEnabled(False)
+            self.stat_prog.setToolTip("Finished")
+            self.stat_prog.setValue(100)
+            self.collectTree.clear()
+            self.setup_db_tree()
+
+class MainWindow(QMainWindow, FINISHES):
     """
     The main class of the app
     """    
@@ -778,31 +804,4 @@ The old database format is no longer compatible with the new implementation.""")
         self.playlistTree.resizeColumnsToContents()
         if self.playlistTree.columnWidth(0) > 300:
             self.playlistTree.setColumnWidth(0, 300)
-    
- 
-#FIXME: this is getting ridiculous. We need new classes. 
-
-# These are linked to the threads emitting signals
-    def set_cover(self, img):
-        cover = QPixmap()
-        cover = cover.fromImage(img)
-        cover = cover.scaledToWidth(200, Qt.SmoothTransformation)
-        self.coverView.setPixmap(cover)        
-        self.cover_thread.exit() # Can't  hurt
-        
-    def set_wiki(self, html):
-        self.wikiView.setHtml(str(html))
-        self.html_thread.exit()
-        
-
-    def finish_build(self, status):
-        print str(status)
-        if str(status) == "finished":
-            self.build_db_thread.exit()
-            print "Scanned directory."
-            self.stat_bttn.setEnabled(False)
-            self.stat_prog.setToolTip("Finished")
-            self.stat_prog.setValue(100)
-            self.collectTree.clear()
-            self.setup_db_tree()
     
