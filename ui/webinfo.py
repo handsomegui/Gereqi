@@ -28,7 +28,6 @@ class WEBINFO:
             
         url = "http://www.google.com/search?hl=en&q=%s+%s&btnI=745" 
         url = url % (site, things)
-        print url
         return url
         
         

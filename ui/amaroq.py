@@ -232,6 +232,7 @@ class MainWindow(QMainWindow, SETUPS):
         track = self.generate_track("back")
         if track:
             self.media_object.stop()
+            self.media_object.clear()    
             self.media_object.setCurrentSource(track)
             
             if self.is_playing():
@@ -301,7 +302,8 @@ class MainWindow(QMainWindow, SETUPS):
         """
         track = self.generate_track("next")
         if track:
-            self.media_object.stop()       
+            self.media_object.stop() 
+            self.media_object.clear()      
             self.media_object.setCurrentSource(track)
             if self.is_playing():
                 self.media_object.play()
@@ -320,7 +322,8 @@ class MainWindow(QMainWindow, SETUPS):
         """
        Brings up the settings Dialog
         """
-        # TODO: not finished yet
+        # TODO: not finished yet. Need to learn
+        # more about modal dialogs
         dialog = SETTINGDLG(self)
         
         if dialog.exec_():
@@ -335,7 +338,8 @@ class MainWindow(QMainWindow, SETUPS):
         Really needs to be done in a separate thread as scan could
         take a while.
         """
-        self.collection(True)
+        print "Rebuild: Ensure the db is ON CONFLICT REPLACE"
+        self.collection()
     
     @pyqtSignature("")
     def on_actionExit_triggered(self):
@@ -439,7 +443,8 @@ class MainWindow(QMainWindow, SETUPS):
         Updates collection for new files. Ignore files already in database
         """
         # TODO: not completed yet. See self.collection
-        self.collection(False)
+        print "Rebuild: Ensure the db is ON CONFLICT IGNORE"
+        self.collection()
 
     @pyqtSignature("int, int")
     def on_playlistTree_cellDoubleClicked(self, row, column):
@@ -465,13 +470,6 @@ class MainWindow(QMainWindow, SETUPS):
             self.trUtf8("""Just a note. If you have used amaroq-0.1.* and are now trying the dev branch you need to delete "~/.amaroq/amaroq.db" \n
 The old database format is no longer compatible with the new implementation."""))
 
-
-        
-
-        
-    
- 
-        
     def tick(self, time):
         """
         Every second update time labels and progress slider
@@ -498,6 +496,7 @@ The old database format is no longer compatible with the new implementation.""")
     def about_to_finish(self):    
         track = self.generate_track("next")
         if track:
+            self.media_object.clearQueue()
             self.media_object.enqueue(track)
 
     def set_prog_sldr(self):
@@ -507,19 +506,30 @@ The old database format is no longer compatible with the new implementation.""")
         self.old_pos = 0
         self.t_length = QTime(0, (length / 60000) % 60, (length / 1000) % 60)
             
-    def state_changed(self, old, new):      
+    def state_changed(self, new, old):
+        """
+        This is linked to phonon.State. A very unreliable feature.
+        """
+        print "debug: %s -> %s" % (new, old)
         # Prevents the slider being reset if playback is paused
         # or unpaused
         if self.is_playing():
-            if not ((old == 2) and ( new == 4)):
+            if not ((new == 2) and ( old == 4)):
                 self.set_prog_sldr()
-            
-        if old == 2 and new == 3:         
+         
+        # Track change state
+        # This is really iffy as phonon.state appears
+        # to be 'misfiring'. Perhaps use the functions in here
+        # directly from the buttons
+        if new == 2 and old == 3: 
+            print "debug: track change\n"
             self.generate_info()
             self.set_info()
+            self.media_object.clearQueue()
             
         # Stopped playing and at end of playlist
-        elif old == 1 and new == 2 and self.is_last():
+        elif new == 1 and old == 2 and self.is_last():
+            print "debug: stopped\n"
             self.finished()
             
     def finished(self):
@@ -547,22 +557,11 @@ The old database format is no longer compatible with the new implementation.""")
         self.view_action.setChecked(state)
         self.actionMinimise_to_Tray.setChecked(state)
     
-    def collection(self, rebuild):
+    def collection(self):
         """
         Either generates a new DB or adds new files to it
         Not finished
         """
-        #TODO: finish the DB interaction
-        
-        if rebuild:
-            # Here we change the PRIMARY KEY in the database to
-            # ON CONFLICT REPLACE as we want to rebuild.
-            print "Do something here:rebuild"
-        else:
-            # Here we check that the PRIMARY KEY in the database is
-            # ON CONFLICT IGNORE as we want to add new files.
-            print "Do something here:rescan"
-            
         if not self.media_dir:
             self.on_actionEdit_triggered()
    

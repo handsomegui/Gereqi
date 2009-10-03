@@ -65,7 +65,7 @@ class MEDIA:
         """
         # A debug
         try:
-            # This doesn't seem to like unicode
+            #FIXME: This doesn't seem to like unicode
             values = '"%s"' % '", "'.join(meta)
         except:
             print meta
