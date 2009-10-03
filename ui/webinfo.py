@@ -14,7 +14,6 @@ class WEBINFO:
     def create_url(self, site, *params):
         # Cleans up the string
         exc = '''!,.%%$&(){}[]'''
-        params = params[0][0] # Hack. Result of passing *params 2 times here
         things = []
         
         for item in params:
@@ -30,10 +29,12 @@ class WEBINFO:
         url = url % (site, things)
         return url
         
-        
     def fetch(self, site, *params):
-            
-        url = self.create_url(site, params)
+        """
+        Using urllib2 the html is retrieved via an url
+        generated via create_url.
+        """
+        url = self.create_url(site, *params)
 
         # Here we need a check to see if the loaded link is from amazon
         # Some localisations don't seem to have the entire amazon.com 
@@ -78,14 +79,14 @@ class WEBINFO:
         
         if thing == "info":
             site = "wikipedia"
-            result = self.fetch(site, params)
+            result = self.fetch(site, *params)
             # Cuts out everything from References down
             result = result.split('''<div class="references''')[0] 
             return result
             
         elif thing == "cover":    
             site = "amazon%s" % locale
-            result = self.fetch(site, params)
+            result = self.fetch(site, *params)
             html = None
             
             # Here we need some check that if we haven't found the cover
