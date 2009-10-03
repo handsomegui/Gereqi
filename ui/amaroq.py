@@ -358,7 +358,7 @@ class MainWindow(QMainWindow, SETUPS):
                         None, 
                         self.tr("Select Music Files"),
                         QDesktopServices.storageLocation(QDesktopServices.MusicLocation), 
-                        self.trUtf8("*.flac;;*.mp3;;*.ogg"))       
+                        self.trUtf8("*.flac;*.mp3;*.ogg"))       
            
         if mfiles:
             formats = ["ogg", "mp3", "flac"]
