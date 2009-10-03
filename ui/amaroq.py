@@ -49,9 +49,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.create_actions()        
         self.tray_icon.show()
         
-        
-
-    
     @pyqtSignature("")
     def on_clrBttn_pressed(self):
         """
@@ -107,7 +104,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 self.generate_info()
 
-
     # Because of the 2 signals that can trigger this, it's possible
     # this method is called twice when one or the other is called.
     @pyqtSignature("bool")
@@ -160,8 +156,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.stopBttn.setEnabled(False)
         self.finished()
         
-        
-    
     @pyqtSignature("")
     def on_nxtBttn_pressed(self):
         """
@@ -233,9 +227,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     info = self.meta.extract(item) 
                     self.add2playlist(item, info)
 
-    @pyqtSignature("int, int")
-
-        
     @pyqtSignature("bool")
     def on_actionMinimise_to_Tray_triggered(self, checked):
         """
@@ -280,7 +271,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 
         print rows
     
-    
     @pyqtSignature("bool")
     def on_muteBttn_toggled(self, checked):
         """
@@ -294,60 +284,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             icon = QIcon(QPixmap(":/Icons/audio-volume-high.png"))
             self.muteBttn.setIcon(icon)
     
-    def play_type(self, checked):
-        if checked:
-            self.play_type_bttn.setText("R")
-        else:
-            self.play_type_bttn.setText("N")
-
-    def add2playlist(self, file_name, info):
-        """
-        Called when adding tracks to the playlist either locally
-        or from the database. Does not pull metadata from 
-        the database and is passed into the function directly
-        """
-        #TODO: prevent creation of empty rows
-        meta = ["track", "title", "artist", "album", "year", \
-            "genre", "length", "bitrate", "file"]
-        vals = len(meta)
-        
-        for cnt in range(vals):
-            if meta[cnt] == "track":
-                num = int(info[0])
-                val = '''"%02u"''' % num
-            elif meta[cnt] == "file":
-                val = '''"%s"''' % file_name
-            else:
-                val = "info[%d]" % cnt
-                
-            name = "%sItem" % meta[cnt]
-            func1 = "QTableWidgetItem(QString(str(%s)))" % val
-            func2 = "%s.setFlags(%s.flags() ^ Qt.ItemIsEditable)" % (name, name)
-            
-            exec "%s = %s" % (name, func1)
-            exec func2
-            
-    
-        current_row = self.playlistTree.rowCount()
-        self.playlistTree.insertRow(current_row)
-        
-        file_col = 8
-        #TODO: These column assignments have to be dynamic at some point
-        self.playlistTree.setItem(current_row, 0, trackItem)
-        self.playlistTree.setItem(current_row, 1, titleItem)
-        self.playlistTree.setItem(current_row, 2, artistItem)
-        self.playlistTree.setItem(current_row, 3, albumItem)
-        self.playlistTree.setItem(current_row, 4, yearItem)
-        self.playlistTree.setItem(current_row, 5, genreItem)
-        self.playlistTree.setItem(current_row, 6, lengthItem)
-        self.playlistTree.setItem(current_row, 7, bitrateItem)
-        self.playlistTree.setItem(current_row, file_col , fileItem)
-        
-        self.playlistTree.resizeColumnsToContents()
-        if self.playlistTree.columnWidth(0) > 300:
-            self.playlistTree.setColumnWidth(0, 300)
-    
-    
     # A much cleaner solution. When you seek the volume is momentarily
     # set to 100% so it can really standout. 
     @pyqtSignature("")
@@ -355,7 +291,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
-        
         val = self.progSldr.value()
         self.media_object.seek(val)
         self.old_pos = val
@@ -368,8 +303,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # TODO: not completed yet. See self.collection
         self.collection(False)
 
-
-   
+    @pyqtSignature("int, int")
     def on_playlistTree_cellDoubleClicked(self, row, column):
         """
         When item is doubleclicked. Play its row.
@@ -516,8 +450,6 @@ The old database format is no longer compatible with the new implementation.""")
         # The 'or' stops issue where the slider doesn't move after track finishes
         if pos == self.old_pos or pos < 1: 
             self.progSldr.setValue(time)
-        
-        
         self.old_pos = time
             
     def about_to_finish(self):    
@@ -793,6 +725,60 @@ The old database format is no longer compatible with the new implementation.""")
             file_list.append(item)  
         
         return file_list   
+        
+    def play_type(self, checked):
+        if checked:
+            self.play_type_bttn.setText("R")
+        else:
+            self.play_type_bttn.setText("N")
+
+    def add2playlist(self, file_name, info):
+        """
+        Called when adding tracks to the playlist either locally
+        or from the database. Does not pull metadata from 
+        the database and is passed into the function directly
+        """
+        #TODO: prevent creation of empty rows
+        meta = ["track", "title", "artist", "album", "year", \
+            "genre", "length", "bitrate", "file"]
+        vals = len(meta)
+        
+        for cnt in range(vals):
+            if meta[cnt] == "track":
+                num = int(info[0])
+                val = '''"%02u"''' % num
+            elif meta[cnt] == "file":
+                val = '''"%s"''' % file_name
+            else:
+                val = "info[%d]" % cnt
+                
+            name = "%sItem" % meta[cnt]
+            func1 = "QTableWidgetItem(QString(str(%s)))" % val
+            func2 = "%s.setFlags(%s.flags() ^ Qt.ItemIsEditable)" % (name, name)
+            
+            exec "%s = %s" % (name, func1)
+            exec func2
+            
+    
+        current_row = self.playlistTree.rowCount()
+        self.playlistTree.insertRow(current_row)
+        
+        file_col = 8
+        #TODO: These column assignments have to be dynamic at some point
+        self.playlistTree.setItem(current_row, 0, trackItem)
+        self.playlistTree.setItem(current_row, 1, titleItem)
+        self.playlistTree.setItem(current_row, 2, artistItem)
+        self.playlistTree.setItem(current_row, 3, albumItem)
+        self.playlistTree.setItem(current_row, 4, yearItem)
+        self.playlistTree.setItem(current_row, 5, genreItem)
+        self.playlistTree.setItem(current_row, 6, lengthItem)
+        self.playlistTree.setItem(current_row, 7, bitrateItem)
+        self.playlistTree.setItem(current_row, file_col , fileItem)
+        
+        self.playlistTree.resizeColumnsToContents()
+        if self.playlistTree.columnWidth(0) > 300:
+            self.playlistTree.setColumnWidth(0, 300)
+    
  
 #FIXME: this is getting ridiculous. We need new classes. 
 
