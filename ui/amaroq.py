@@ -564,7 +564,7 @@ The old database format is no longer compatible with the new implementation.""")
     def minimise_to_tray(self, state):
         if state:
             self.show()
-            self.setWindowState()
+            self.setWindowState(Qt.WindowActive)
         else:
             self.hide()
             
