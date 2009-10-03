@@ -329,7 +329,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             formats = ["ogg", "mp3", "flac"]
             for item in mfiles:
                 ender = item.split(".")[-1]
-				ender = ender.lower()
+                ender = ender.lower()
                 if ender in formats:
                     info = self.meta.extract(item) 
                     self.add2playlist(item, info)
