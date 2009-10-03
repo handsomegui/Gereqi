@@ -62,6 +62,7 @@ class BUILDDB(QThread):
             for name in filenames:
                 fileNow = os.path.join(root, name)
                 ender = fileNow.split(".")[-1]
+		ender = ender.lower()
                 # We only want to get tags for certain file formats as
                 # tagpy can only work with certain types
                 if ender in formats:
