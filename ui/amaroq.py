@@ -21,7 +21,9 @@ from threads import GETCOVER, GETWIKI, BUILDDB
 class FINISHES(Ui_MainWindow):
     def __init__(self):
         Ui_MainWindow.__init__(self) # A guess
-        
+    
+    def set_lyrics(self, lyr):
+        self.tabWidget_2.setTabEnabled(1, True)
     
     def set_cover(self, img):
         cover = QPixmap()
@@ -30,11 +32,10 @@ class FINISHES(Ui_MainWindow):
         self.coverView.setPixmap(cover)        
         
     def set_wiki(self, html):
-        print "Wiki"
+        self.tabWidget_2.setTabEnabled(2, True)
         self.wikiView.setHtml(str(html))
         
     def finish_build(self, status):
-        print str(status)
         if str(status) == "finished":
             print "Scanned directory."
             self.stat_bttn.setEnabled(False)
@@ -46,7 +47,8 @@ class FINISHES(Ui_MainWindow):
             
 class SETUPS(FINISHES):
     def __init__(self):
-        FINISHES.__init__(self)
+        # I've no idea what an instance is
+        FINISHES.__init__(self) 
     
     def setup_shortcuts(self):
         delete = QShortcut(QKeySequence(self.tr("Del")), self)
@@ -66,6 +68,8 @@ class SETUPS(FINISHES):
         """
         Extra __init__ things to add to the UI
         """
+        self.tabWidget_2.setTabEnabled(1, False)
+        self.tabWidget_2.setTabEnabled(2, False)
         self.progSldr.setPageStep(0)
         self.progSldr.setSingleStep(0)
         self.stat_lbl = QLabel("Finished")
@@ -225,7 +229,6 @@ class MainWindow(QMainWindow, SETUPS):
         Skip to previous track in viewable playlist
         if possible
         """
-        
         track = self.generate_track("back")
         if track:
             self.media_object.stop()
@@ -244,18 +247,20 @@ class MainWindow(QMainWindow, SETUPS):
         The play button either resumes or starts playback.
         Not possible to play a highlighted row.
         """
-
         # Strange bug where if the playback was stopped by stopBttn
         # starting takes a while (varies). 
         if checked:
             # Need a check to see currentsource  matches higlighted track
             queued = self.media_object.currentSource().fileName()
             
+            # Nothing already loaded into phonon
             if not queued:
                 selected = self.playlistTree.currentRow()
+                # A row is selected
                 if selected >= 0:
                     selected = self.generate_track("now", selected)                
                     self.media_object.setCurrentSource(selected)
+                # Just reset the play button and stop here
                 else:
                     self.playBttn.setChecked(False)
                     return
@@ -281,7 +286,8 @@ class MainWindow(QMainWindow, SETUPS):
         """
         To stop current track.
         """
-        #TODO: disable the lyrics and wiki tabs
+        self.tabWidget_2.setTabEnabled(1, False)
+        self.tabWidget_2.setTabEnabled(2, False)
         self.media_object.stop()
         self.playBttn.setChecked(False)
         
