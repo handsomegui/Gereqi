@@ -335,93 +335,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.add2playlist(item, info)
 
     @pyqtSignature("int, int")
-    def on_playlistTree_cellDoubleClicked(self, row, column):
-        """
-        When item is doubleclicked. Play its row.
-        """
-        self.media_object.stop()
 
-        track = self.generate_track("now", row)
-        self.media_object.setCurrentSource(track)
-        self.media_object.play()
-        self.playBttn.setChecked(True) 
-        self.play_action.setChecked(True)
-        
-    def tick(self, time):
-        """
-        Every second update time labels and progress slider
-        """
-        pos = self.progSldr.sliderPosition()
-        t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
-        if t_now == QTime(0, 0, 0):
-            # Used because no Phonon.state when the mediaobject goes 
-            # to next queued track 2,3 is the same sig as when next/prev
-            # buttons are used
-            self.state_changed(2, 3) 
-        
-        now = t_now.toString('mm:ss')
-        maxtime = self.t_length.toString('mm:ss')
-        msg = "%s | %s" % (now, maxtime)
-        self.progLbl.setText(msg)            
-            
-        # This only goes(?) if  the user has not grabbed the slider
-        # The 'or' stops issue where the slider doesn't move after track finishes
-        if pos == self.old_pos or pos < 1: 
-            self.progSldr.setValue(time)
-        
-        
-        self.old_pos = time
-            
-    def about_to_finish(self):    
-        track = self.generate_track("next")
-        if track:
-            self.media_object.enqueue(track)
-
-    def set_prog_sldr(self):
-        length = self.media_object.totalTime()
-        self.progSldr.setValue(0)
-        self.progSldr.setRange(0, length)
-        self.old_pos = 0
-        self.t_length = QTime(0, (length / 60000) % 60, (length / 1000) % 60)
-            
-    def state_changed(self, old, new):      
-        # Prevents the slider being reset if playback is paused
-        # or unpaused
-        if self.is_playing():
-            if not ((old == 2) and ( new == 4)):
-                self.set_prog_sldr()
-            
-        if old == 2 and new == 3:         
-            self.generate_info()
-            self.set_info()
-            
-        # Stopped playing and at end of playlist
-        elif old == 1 and new == 2 and self.is_last():
-            self.finished()
-            
-    def finished(self):
-        self.playBttn.setChecked(False)
-        self.stopBttn.setEnabled(False)
-        
-        self.progSldr.setValue(0)
-        self.old_pos = 0
-        self.stat_lbl.setText("Stopped")
-        self.progLbl.setText("00:00 | 00:00")
-        
-        # clear things like wiki and reset cover art to default        
-        self.wikiView.setHtml(QString(""))
-        self.coverView.setPixmap(QPixmap(":/Icons/music.png"))
-        self.old_art = [None, None]
-        
-    def minimise_to_tray(self, state):
-        if state:
-            self.show()            
-        else:
-            self.hide()
-            
-        self.window_show = state #FIXME:Try and replace with a PyQt4 function
-        self.view_action.setChecked(state)
-        self.actionMinimise_to_Tray.setChecked(state)
         
     @pyqtSignature("bool")
     def on_actionMinimise_to_Tray_triggered(self, checked):
@@ -556,6 +470,96 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.collection(False)
 
 
+   
+    def on_playlistTree_cellDoubleClicked(self, row, column):
+        """
+        When item is doubleclicked. Play its row.
+        """
+        self.media_object.stop()
+
+        track = self.generate_track("now", row)
+        self.media_object.setCurrentSource(track)
+        self.media_object.play()
+        self.playBttn.setChecked(True) 
+        self.play_action.setChecked(True)
+        
+    def tick(self, time):
+        """
+        Every second update time labels and progress slider
+        """
+        pos = self.progSldr.sliderPosition()
+        t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
+        if t_now == QTime(0, 0, 0):
+            # Used because no Phonon.state when the mediaobject goes 
+            # to next queued track 2,3 is the same sig as when next/prev
+            # buttons are used
+            self.state_changed(2, 3) 
+        
+        now = t_now.toString('mm:ss')
+        maxtime = self.t_length.toString('mm:ss')
+        msg = "%s | %s" % (now, maxtime)
+        self.progLbl.setText(msg)            
+            
+        # This only goes(?) if  the user has not grabbed the slider
+        # The 'or' stops issue where the slider doesn't move after track finishes
+        if pos == self.old_pos or pos < 1: 
+            self.progSldr.setValue(time)
+        
+        
+        self.old_pos = time
+            
+    def about_to_finish(self):    
+        track = self.generate_track("next")
+        if track:
+            self.media_object.enqueue(track)
+
+    def set_prog_sldr(self):
+        length = self.media_object.totalTime()
+        self.progSldr.setValue(0)
+        self.progSldr.setRange(0, length)
+        self.old_pos = 0
+        self.t_length = QTime(0, (length / 60000) % 60, (length / 1000) % 60)
+            
+    def state_changed(self, old, new):      
+        # Prevents the slider being reset if playback is paused
+        # or unpaused
+        if self.is_playing():
+            if not ((old == 2) and ( new == 4)):
+                self.set_prog_sldr()
+            
+        if old == 2 and new == 3:         
+            self.generate_info()
+            self.set_info()
+            
+        # Stopped playing and at end of playlist
+        elif old == 1 and new == 2 and self.is_last():
+            self.finished()
+            
+    def finished(self):
+        self.playBttn.setChecked(False)
+        self.stopBttn.setEnabled(False)
+        
+        self.progSldr.setValue(0)
+        self.old_pos = 0
+        self.stat_lbl.setText("Stopped")
+        self.progLbl.setText("00:00 | 00:00")
+        
+        # clear things like wiki and reset cover art to default        
+        self.wikiView.setHtml(QString(""))
+        self.coverView.setPixmap(QPixmap(":/Icons/music.png"))
+        self.old_art = [None, None]
+        
+    def minimise_to_tray(self, state):
+        if state:
+            self.show()
+            self.setWindowState(Qt.WindowActive)
+        else:
+            self.hide()
+            
+        self.window_show = state #FIXME:Try and replace with a PyQt4 function
+        self.view_action.setChecked(state)
+        self.actionMinimise_to_Tray.setChecked(state)
+    
     def collection(self, rebuild):
         """
         Either generates a new DB or adds new files to it
