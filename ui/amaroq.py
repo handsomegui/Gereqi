@@ -50,108 +50,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tray_icon.show()
         
         
-    def setup_audio(self):
-        """
-        Audio backend stuff
-        """
-        self.audio_output = Phonon.AudioOutput(Phonon.MusicCategory, self)
-        self.media_object = Phonon.MediaObject(self)
-        Phonon.createPath(self.media_object, self.audio_output)
-        self.media_object.setTickInterval(1000)
-        self.audio_output.setVolume(1)
-        
-    def setup_shortcuts(self):
-        delete = QShortcut(QKeySequence(self.tr("Del")), self)
-        
-        self.connect(delete, SIGNAL("activated()"), self.del_track) 
-        
-    def setup_extra(self):
-        """
-        Extra __init__ things to add to the UI
-        """
-        self.progSldr.setPageStep(0)
-        self.progSldr.setSingleStep(0)
-        self.stat_lbl = QLabel("Finished")
-        self.stat_prog = QProgressBar()
-        self.stat_bttn = QToolButton()
-        self.play_type_bttn = QToolButton()
-        icon = QIcon(QPixmap(":/Icons/application-exit.png"))
-        
-        self.stat_prog.setRange(0, 100)
-        self.stat_prog.setValue(100)
-        self.stat_prog.setMaximumSize(QSize(100, 18))
-        
-        self.stat_bttn.setIcon(icon)
-        self.stat_bttn.setAutoRaise(True)
-        self.stat_bttn.setEnabled(False)
-        
-        self.play_type_bttn.setText("N")
-        self.play_type_bttn.setCheckable(True)
-        self.play_type_bttn.setAutoRaise(True)
 
-        self.statusBar.addPermanentWidget(self.stat_lbl)
-        self.statusBar.addPermanentWidget(self.stat_prog)
-        self.statusBar.addPermanentWidget(self.stat_bttn)
-        self.statusBar.addPermanentWidget(self.play_type_bttn)
-
-        headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), \
-                   self.tr("Album"), self.tr("Year"), self.tr("Genre"),   \
-                   self.tr("Length"), self.tr("Bitrate"), self.tr("FileName")]
-        
-        for val in range(len(headers)):
-            self.playlistTree.insertColumn(val)
-        self.playlistTree.setHorizontalHeaderLabels(headers)
-    
-    def create_actions(self):
-        self.quit_action = QAction(self.tr("&Quit"), self)
-        self.play_action = QAction(self.tr("&Play"), self)
-        self.next_action = QAction(self.tr("&Next"), self)
-        self.prev_action = QAction(self.tr("&Previous"), self)
-        self.stop_action = QAction(self.tr("&Stop"), self)
-        self.play_action.setCheckable(True)
-        self.view_action = QAction(self.tr("&Visible"), self)
-        self.view_action.setCheckable(True)
-        self.view_action.setChecked(True)
-        
-        self.create_tray_icon()
-        
-        self.connect(self.quit_action, SIGNAL("triggered()"), qApp, SLOT("quit()"))
-        self.connect(self.play_action, SIGNAL("toggled(bool)"), self.on_playBttn_toggled)
-        self.connect(self.next_action, SIGNAL("triggered()"), self.on_nxtBttn_pressed)
-        self.connect(self.prev_action, SIGNAL("triggered()"), self.on_prevBttn_pressed)
-        self.connect(self.stop_action, SIGNAL("triggered()"), self.on_stopBttn_pressed)
-        self.connect(self.view_action, SIGNAL("toggled(bool)"), self.minimise_to_tray)
-        self.connect(self.media_object, SIGNAL('tick(qint64)'), self.tick)
-        self.connect(self.media_object, SIGNAL('aboutToFinish()'), self.about_to_finish)
-        self.connect(self.media_object, SIGNAL('finished()'), self.finished)
-        self.connect(self.media_object, SIGNAL('stateChanged(Phonon::State, Phonon::State)'), self.state_changed)
-        self.connect(self.play_type_bttn, SIGNAL('toggled(bool)'), self.play_type)
-        self.connect(self.cover_thread, SIGNAL("Activated ( QImage ) "), self.set_cover) # Linked to QThread
-        self.connect(self.html_thread, SIGNAL("Activated ( QString ) "), self.set_wiki)
-        self.connect(self.build_db_thread, SIGNAL("Activated ( int ) "), self.stat_prog.setValue)
-        self.connect(self.build_db_thread, SIGNAL("Activated ( QString ) "), self.finish_build)
-        self.connect(self.tray_icon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.tray_event)
-        self.connect(self.stat_bttn, SIGNAL("triggered()"), self.build_db_thread.exit)
-        
-    def create_tray_icon(self):
-        self.tray_icon_menu = QMenu(self)
-        icon = QIcon(QPixmap(":/Icons/drawing.png"))
-        
-        self.tray_icon_menu.addAction(icon, QString("Amaroq"))
-        self.tray_icon_menu.addSeparator()
-        self.tray_icon_menu.addAction(self.prev_action)
-        self.tray_icon_menu.addAction(self.play_action)
-        self.tray_icon_menu.addAction(self.stop_action)
-        self.tray_icon_menu.addAction(self.next_action)
-        self.tray_icon_menu.addSeparator()
-        self.tray_icon_menu.addAction(self.view_action)
-        self.tray_icon_menu.addAction(self.quit_action)
-        
-        # No. This icon isn't final. Just filler.
-        self.tray_icon = QSystemTrayIcon(self)
-        self.tray_icon.setIcon(icon)
-        self.tray_icon.setContextMenu(self.tray_icon_menu)       
-        
     
     @pyqtSignature("")
     def on_clrBttn_pressed(self):
@@ -483,6 +382,119 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.playBttn.setChecked(True) 
         self.play_action.setChecked(True)
         
+    @pyqtSignature("")
+    def on_actionHelp_activated(self):
+        """
+        Slot documentation goes here.
+        """
+        # TODO: not implemented yet
+        QMessageBox.information(None,
+            self.trUtf8("Help"),
+            self.trUtf8("""Just a note. If you have used amaroq-0.1.* and are now trying the dev branch you need to delete "~/.amaroq/amaroq.db" \n
+The old database format is no longer compatible with the new implementation."""))
+
+    def setup_audio(self):
+        """
+        Audio backend initialisation
+        """
+        self.audio_output = Phonon.AudioOutput(Phonon.MusicCategory, self)
+        self.media_object = Phonon.MediaObject(self)
+        Phonon.createPath(self.media_object, self.audio_output)
+        self.media_object.setTickInterval(1000)
+        self.audio_output.setVolume(1)
+        
+    def setup_shortcuts(self):
+        delete = QShortcut(QKeySequence(self.tr("Del")), self)
+        
+        self.connect(delete, SIGNAL("activated()"), self.del_track) 
+        
+    def setup_extra(self):
+        """
+        Extra __init__ things to add to the UI
+        """
+        self.progSldr.setPageStep(0)
+        self.progSldr.setSingleStep(0)
+        self.stat_lbl = QLabel("Finished")
+        self.stat_prog = QProgressBar()
+        self.stat_bttn = QToolButton()
+        self.play_type_bttn = QToolButton()
+        icon = QIcon(QPixmap(":/Icons/application-exit.png"))
+        
+        self.stat_prog.setRange(0, 100)
+        self.stat_prog.setValue(100)
+        self.stat_prog.setMaximumSize(QSize(100, 18))
+        
+        self.stat_bttn.setIcon(icon)
+        self.stat_bttn.setAutoRaise(True)
+        self.stat_bttn.setEnabled(False)
+        
+        self.play_type_bttn.setText("N")
+        self.play_type_bttn.setCheckable(True)
+        self.play_type_bttn.setAutoRaise(True)
+
+        self.statusBar.addPermanentWidget(self.stat_lbl)
+        self.statusBar.addPermanentWidget(self.stat_prog)
+        self.statusBar.addPermanentWidget(self.stat_bttn)
+        self.statusBar.addPermanentWidget(self.play_type_bttn)
+
+        headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), \
+                   self.tr("Album"), self.tr("Year"), self.tr("Genre"),   \
+                   self.tr("Length"), self.tr("Bitrate"), self.tr("FileName")]
+        
+        for val in range(len(headers)):
+            self.playlistTree.insertColumn(val)
+        self.playlistTree.setHorizontalHeaderLabels(headers)
+    
+    def create_actions(self):
+        self.quit_action = QAction(self.tr("&Quit"), self)
+        self.play_action = QAction(self.tr("&Play"), self)
+        self.next_action = QAction(self.tr("&Next"), self)
+        self.prev_action = QAction(self.tr("&Previous"), self)
+        self.stop_action = QAction(self.tr("&Stop"), self)
+        self.play_action.setCheckable(True)
+        self.view_action = QAction(self.tr("&Visible"), self)
+        self.view_action.setCheckable(True)
+        self.view_action.setChecked(True)
+        
+        self.create_tray_icon()
+        
+        self.connect(self.quit_action, SIGNAL("triggered()"), qApp, SLOT("quit()"))
+        self.connect(self.play_action, SIGNAL("toggled(bool)"), self.on_playBttn_toggled)
+        self.connect(self.next_action, SIGNAL("triggered()"), self.on_nxtBttn_pressed)
+        self.connect(self.prev_action, SIGNAL("triggered()"), self.on_prevBttn_pressed)
+        self.connect(self.stop_action, SIGNAL("triggered()"), self.on_stopBttn_pressed)
+        self.connect(self.view_action, SIGNAL("toggled(bool)"), self.minimise_to_tray)
+        self.connect(self.media_object, SIGNAL('tick(qint64)'), self.tick)
+        self.connect(self.media_object, SIGNAL('aboutToFinish()'), self.about_to_finish)
+        self.connect(self.media_object, SIGNAL('finished()'), self.finished)
+        self.connect(self.media_object, SIGNAL('stateChanged(Phonon::State, Phonon::State)'), self.state_changed)
+        self.connect(self.play_type_bttn, SIGNAL('toggled(bool)'), self.play_type)
+        self.connect(self.cover_thread, SIGNAL("Activated ( QImage ) "), self.set_cover) # Linked to QThread
+        self.connect(self.html_thread, SIGNAL("Activated ( QString ) "), self.set_wiki)
+        self.connect(self.build_db_thread, SIGNAL("Activated ( int ) "), self.stat_prog.setValue)
+        self.connect(self.build_db_thread, SIGNAL("Activated ( QString ) "), self.finish_build)
+        self.connect(self.tray_icon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.tray_event)
+        self.connect(self.stat_bttn, SIGNAL("triggered()"), self.build_db_thread.exit)
+        
+    def create_tray_icon(self):
+        self.tray_icon_menu = QMenu(self)
+        icon = QIcon(QPixmap(":/Icons/drawing.png"))
+        
+        self.tray_icon_menu.addAction(icon, QString("Amaroq"))
+        self.tray_icon_menu.addSeparator()
+        self.tray_icon_menu.addAction(self.prev_action)
+        self.tray_icon_menu.addAction(self.play_action)
+        self.tray_icon_menu.addAction(self.stop_action)
+        self.tray_icon_menu.addAction(self.next_action)
+        self.tray_icon_menu.addSeparator()
+        self.tray_icon_menu.addAction(self.view_action)
+        self.tray_icon_menu.addAction(self.quit_action)
+        
+        # No. This icon isn't final. Just filler.
+        self.tray_icon = QSystemTrayIcon(self)
+        self.tray_icon.setIcon(icon)
+        self.tray_icon.setContextMenu(self.tray_icon_menu)       
+        
     def tick(self, time):
         """
         Every second update time labels and progress slider
@@ -552,7 +564,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def minimise_to_tray(self, state):
         if state:
             self.show()
-            self.setWindowState(Qt.WindowActive)
+            self.setWindowState()
         else:
             self.hide()
             
@@ -808,14 +820,3 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.collectTree.clear()
             self.setup_db_tree()
     
-    @pyqtSignature("")
-    def on_actionHelp_activated(self):
-        """
-        Slot documentation goes here.
-        """
-        # TODO: not implemented yet
-        QMessageBox.information(None,
-            self.trUtf8("Help"),
-            self.trUtf8("""Just a note. If you have used amarog-0.1.* and are now trying the dev branch you need to delete "~/.amaroq/amaroq.db" 
-
-The old database format is no longer compatible with the new implementation."""))
