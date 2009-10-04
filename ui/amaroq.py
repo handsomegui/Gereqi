@@ -28,6 +28,7 @@ class FINISHES(Ui_MainWindow):
     def set_cover(self, img):
         cover = QPixmap()
         cover = cover.fromImage(img)
+        cover = cover.fromImage(img)
         cover = cover.scaledToWidth(200, Qt.SmoothTransformation)
         self.coverView.setPixmap(cover)        
         
@@ -318,7 +319,7 @@ class MainWindow(QMainWindow, SETUPS):
         self.audio_output.setVolume(value)
     
     @pyqtSignature("")
-    def on_actionEdit_triggered(self):
+    def on_actionConfigure_triggered(self):
         """
        Brings up the settings Dialog
         """
@@ -563,7 +564,7 @@ The old database format is no longer compatible with the new implementation.""")
         Not finished
         """
         if not self.media_dir:
-            self.on_actionEdit_triggered()
+            self.on_actionConfigure_triggered()
    
         # If the dialog is cancelled in last if statement the below is ignored
         if self.media_dir:
