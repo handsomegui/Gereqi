@@ -308,7 +308,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <item>
-              <widget class="QToolButton" name="clrBttn">
+              <widget class="QToolButton" name="clrCollectBttn">
                <property name="toolTip">
                 <string>Clear Search Field</string>
                </property>
@@ -331,7 +331,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="srchEdt">
+              <widget class="QLineEdit" name="srchCollectEdt">
                <property name="toolTip">
                 <string>Enter search terms here</string>
                </property>
@@ -718,6 +718,9 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
           </item>
           <item>
            <widget class="QToolButton" name="nxtplyBttn">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="toolTip">
              <string>Redo</string>
             </property>
@@ -1093,7 +1096,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     <addaction name="separator"/>
     <addaction name="actionMinimise_to_Tray"/>
     <addaction name="actionPrevious_Track"/>
-    <addaction name="actionPlay_Pause"/>
+    <addaction name="actionPlay"/>
     <addaction name="actionStop"/>
     <addaction name="actionNext_Track"/>
     <addaction name="separator"/>
@@ -1333,9 +1336,12 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     <string>Previous Track</string>
    </property>
   </action>
-  <action name="actionPlay_Pause">
+  <action name="actionPlay">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>Play/Pause</string>
+    <string>Play</string>
    </property>
   </action>
   <action name="actionStop">

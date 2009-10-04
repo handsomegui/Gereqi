@@ -45,7 +45,7 @@ class FINISHES(Ui_MainWindow):
             self.collectTree.clear()
             self.setup_db_tree()
             
-            
+    
 class SETUPS(FINISHES):
     def __init__(self):
         # I've no idea what an instance is
@@ -118,11 +118,20 @@ class SETUPS(FINISHES):
         self.create_tray_icon()
         
         self.connect(self.quit_action, SIGNAL("triggered()"), qApp, SLOT("quit()"))
+        
+        # These actions are from the traymenu
         self.connect(self.play_action, SIGNAL("toggled(bool)"), self.on_playBttn_toggled)
         self.connect(self.next_action, SIGNAL("triggered()"), self.on_nxtBttn_pressed)
         self.connect(self.prev_action, SIGNAL("triggered()"), self.on_prevBttn_pressed)
         self.connect(self.stop_action, SIGNAL("triggered()"), self.on_stopBttn_pressed)
         self.connect(self.view_action, SIGNAL("toggled(bool)"), self.minimise_to_tray)
+  
+        # These playing actions are from the toolbar.
+        self.connect(self.actionPlay, SIGNAL("toggled(bool)"), self.on_playBttn_toggled)
+        self.connect(self.actionNext_Track, SIGNAL("triggered()"), self.on_nxtBttn_pressed)
+        self.connect(self.actionPrevious_Track, SIGNAL("triggered()"), self.on_prevBttn_pressed)  
+        self.connect(self.actionStop, SIGNAL("triggered()"), self.on_stopBttn_pressed)
+    
         self.connect(self.media_object, SIGNAL('tick(qint64)'), self.tick)
         self.connect(self.media_object, SIGNAL('aboutToFinish()'), self.about_to_finish)
         self.connect(self.media_object, SIGNAL('finished()'), self.finished)
@@ -182,18 +191,12 @@ class SETUPS(FINISHES):
                 char.setFont(0, font)
                 self.collectTree.addTopLevelItem(char)
                
-#            albums = self.media_db.searching("album", "artist", artist)
             artist = QStringList(artist)
             artist = QTreeWidgetItem(artist)
             self.collectTree.addTopLevelItem(artist)
             
             blank = QTreeWidgetItem()
             artist.addChild(blank)
-#            for album in albums:           
-#                album = album[0]
-#                album = QStringList(album)                
-#                album = QTreeWidgetItem(album)
-#                artist.addChild(album)
 
 class MainWindow(QMainWindow, SETUPS):
     """
@@ -229,20 +232,20 @@ class MainWindow(QMainWindow, SETUPS):
         self.tray_icon.show()
         
     @pyqtSignature("")
-    def on_clrBttn_pressed(self):
+    def on_clrCollectBttn_pressed(self):
         """
         Slot documentation goes here.
         """
         # TODO: not finished
-        self.srchEdt.clear()
+        self.srchCollectEdt.clear()
     
     @pyqtSignature("")
-    def on_srchEdt_editingFinished(self):
+    def on_srchCollectEdt_editingFinished(self):
         """
         Slot documentation goes here.
         """
         # TODO: not finished
-        print self.srchEdt.text()
+        print self.srchCollectEdt.text()
     
     @pyqtSignature("QTreeWidgetItem*, int")
     def on_collectTree_itemDoubleClicked(self, item, column):
@@ -444,7 +447,8 @@ class MainWindow(QMainWindow, SETUPS):
     @pyqtSignature("")
     def on_srchplyEdit_returnPressed(self):
         """
-        Filters current playlist based on input
+        Filters current playlist based on input.
+        Not sure whether to highlight row or item
         """
         srch_txt = self.srchplyEdit.text()
         rows = []
@@ -531,6 +535,18 @@ The old database format is no longer compatible with the new implementation.""")
                     album = QStringList(album)                
                     album = QTreeWidgetItem(album)
                     item.insertChild(cnt, album)
+
+    @pyqtSignature("")
+    def on_clrsrchBttn_clicked(self):
+        """
+        Reset the playlist after searching it
+        """
+        # TODO: not implemented yet
+        self.srchplyEdit.clear()
+
+
+#######################################
+#######################################
 
     def tick(self, time):
         """
@@ -851,4 +867,3 @@ The old database format is no longer compatible with the new implementation.""")
             self.playlistTree.setColumnWidth(0, 300)
     
 
-        
