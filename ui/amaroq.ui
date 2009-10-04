@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>760</width>
-    <height>450</height>
+    <width>792</width>
+    <height>533</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -42,7 +42,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>250</width>
+         <width>280</width>
          <height>0</height>
         </size>
        </property>
@@ -67,10 +67,13 @@
         </attribute>
         <layout class="QGridLayout" name="gridLayout_2">
          <property name="margin">
-          <number>2</number>
+          <number>1</number>
          </property>
          <item row="0" column="1">
           <widget class="QTabWidget" name="tabWidget_2">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -90,7 +93,7 @@
             <number>0</number>
            </property>
            <property name="usesScrollButtons">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="documentMode">
             <bool>true</bool>
@@ -106,6 +109,9 @@
              <string>Home</string>
             </attribute>
             <layout class="QGridLayout" name="gridLayout_12">
+             <property name="margin">
+              <number>2</number>
+             </property>
              <item row="0" column="0">
               <widget class="QGroupBox" name="groupBox">
                <property name="styleSheet">
@@ -118,10 +124,16 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
                </property>
                <layout class="QGridLayout" name="gridLayout_8">
                 <property name="margin">
-                 <number>2</number>
+                 <number>1</number>
                 </property>
                 <item row="0" column="0">
                  <widget class="QLabel" name="coverView">
+                  <property name="minimumSize">
+                   <size>
+                    <width>215</width>
+                    <height>215</height>
+                   </size>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>215</width>
@@ -163,7 +175,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
                </property>
                <layout class="QGridLayout" name="gridLayout_9">
                 <property name="margin">
-                 <number>2</number>
+                 <number>1</number>
                 </property>
                 <item row="0" column="0">
                  <widget class="QLabel" name="label_2">
@@ -187,7 +199,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
                </property>
                <layout class="QGridLayout" name="gridLayout_10">
                 <property name="margin">
-                 <number>2</number>
+                 <number>1</number>
                 </property>
                 <item row="0" column="0">
                  <widget class="QLabel" name="label_4">
@@ -211,7 +223,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
                </property>
                <layout class="QGridLayout" name="gridLayout_11">
                 <property name="margin">
-                 <number>2</number>
+                 <number>1</number>
                 </property>
                 <item row="0" column="0">
                  <widget class="QLabel" name="label_5">
@@ -261,6 +273,12 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
              </property>
              <item row="0" column="0">
               <widget class="QWebView" name="wikiView">
+               <property name="autoFillBackground">
+                <bool>true</bool>
+               </property>
+               <property name="styleSheet">
+                <string/>
+               </property>
                <property name="url">
                 <url>
                  <string>about:blank</string>
@@ -1019,7 +1037,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>760</width>
+     <width>792</width>
      <height>21</height>
     </rect>
    </property>

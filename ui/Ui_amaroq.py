@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
 #
-# Created: Fri Oct  2 15:46:42 2009
+# Created: Sun Oct  4 14:29:01 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PyQt4 import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(723, 450)
+        MainWindow.resize(792, 533)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/Icons/drawing.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -31,7 +31,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
         self.tabWidget.setSizePolicy(sizePolicy)
-        self.tabWidget.setMinimumSize(QtCore.QSize(250, 0))
+        self.tabWidget.setMinimumSize(QtCore.QSize(280, 0))
         self.tabWidget.setMaximumSize(QtCore.QSize(400, 16777215))
         self.tabWidget.setTabPosition(QtGui.QTabWidget.West)
         self.tabWidget.setDocumentMode(True)
@@ -39,16 +39,18 @@ class Ui_MainWindow(object):
         self.tab = QtGui.QWidget()
         self.tab.setObjectName("tab")
         self.gridLayout_2 = QtGui.QGridLayout(self.tab)
-        self.gridLayout_2.setMargin(2)
+        self.gridLayout_2.setMargin(1)
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.tabWidget_2 = QtGui.QTabWidget(self.tab)
+        self.tabWidget_2.setEnabled(True)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tabWidget_2.sizePolicy().hasHeightForWidth())
         self.tabWidget_2.setSizePolicy(sizePolicy)
+        self.tabWidget_2.setMinimumSize(QtCore.QSize(250, 0))
         self.tabWidget_2.setTabShape(QtGui.QTabWidget.Rounded)
-        self.tabWidget_2.setUsesScrollButtons(True)
+        self.tabWidget_2.setUsesScrollButtons(False)
         self.tabWidget_2.setDocumentMode(True)
         self.tabWidget_2.setTabsClosable(False)
         self.tabWidget_2.setMovable(False)
@@ -56,6 +58,7 @@ class Ui_MainWindow(object):
         self.tab_6 = QtGui.QWidget()
         self.tab_6.setObjectName("tab_6")
         self.gridLayout_12 = QtGui.QGridLayout(self.tab_6)
+        self.gridLayout_12.setMargin(2)
         self.gridLayout_12.setObjectName("gridLayout_12")
         self.groupBox = QtGui.QGroupBox(self.tab_6)
         self.groupBox.setStyleSheet("""text-decoration: underline;
@@ -63,9 +66,10 @@ font: 75 10pt \"DejaVu Sans\";
 """)
         self.groupBox.setObjectName("groupBox")
         self.gridLayout_8 = QtGui.QGridLayout(self.groupBox)
-        self.gridLayout_8.setMargin(2)
+        self.gridLayout_8.setMargin(1)
         self.gridLayout_8.setObjectName("gridLayout_8")
         self.coverView = QtGui.QLabel(self.groupBox)
+        self.coverView.setMinimumSize(QtCore.QSize(215, 215))
         self.coverView.setMaximumSize(QtCore.QSize(215, 215))
         self.coverView.setFrameShape(QtGui.QFrame.StyledPanel)
         self.coverView.setFrameShadow(QtGui.QFrame.Raised)
@@ -81,7 +85,7 @@ font: 75 10pt \"DejaVu Sans\";
 """)
         self.groupBox_2.setObjectName("groupBox_2")
         self.gridLayout_9 = QtGui.QGridLayout(self.groupBox_2)
-        self.gridLayout_9.setMargin(2)
+        self.gridLayout_9.setMargin(1)
         self.gridLayout_9.setObjectName("gridLayout_9")
         self.label_2 = QtGui.QLabel(self.groupBox_2)
         self.label_2.setObjectName("label_2")
@@ -93,7 +97,7 @@ font: 75 10pt \"DejaVu Sans\";
 """)
         self.groupBox_3.setObjectName("groupBox_3")
         self.gridLayout_10 = QtGui.QGridLayout(self.groupBox_3)
-        self.gridLayout_10.setMargin(2)
+        self.gridLayout_10.setMargin(1)
         self.gridLayout_10.setObjectName("gridLayout_10")
         self.label_4 = QtGui.QLabel(self.groupBox_3)
         self.label_4.setObjectName("label_4")
@@ -105,7 +109,7 @@ font: 75 10pt \"DejaVu Sans\";
 """)
         self.groupBox_4.setObjectName("groupBox_4")
         self.gridLayout_11 = QtGui.QGridLayout(self.groupBox_4)
-        self.gridLayout_11.setMargin(2)
+        self.gridLayout_11.setMargin(1)
         self.gridLayout_11.setObjectName("gridLayout_11")
         self.label_5 = QtGui.QLabel(self.groupBox_4)
         self.label_5.setObjectName("label_5")
@@ -131,6 +135,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.gridLayout_4.setMargin(2)
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.wikiView = QtWebKit.QWebView(self.tab_9)
+        self.wikiView.setAutoFillBackground(True)
         self.wikiView.setUrl(QtCore.QUrl("about:blank"))
         self.wikiView.setZoomFactor(1.0)
         self.wikiView.setObjectName("wikiView")
@@ -442,7 +447,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 723, 21))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 792, 21))
         self.menuBar.setObjectName("menuBar")
         self.menuActions = QtGui.QMenu(self.menuBar)
         self.menuActions.setObjectName("menuActions")
