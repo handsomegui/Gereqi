@@ -327,6 +327,7 @@ class MainWindow(QMainWindow, SETUPS):
             
         self.playBttn.setChecked(checked)    
         self.play_action.setChecked(checked)
+        self.actionPlay.setChecked(checked)
         
     @pyqtSignature("")
     def on_stopBttn_pressed(self):
