@@ -182,16 +182,18 @@ class SETUPS(FINISHES):
                 char.setFont(0, font)
                 self.collectTree.addTopLevelItem(char)
                
-            albums = self.media_db.searching("album", "artist", artist)
+#            albums = self.media_db.searching("album", "artist", artist)
             artist = QStringList(artist)
             artist = QTreeWidgetItem(artist)
             self.collectTree.addTopLevelItem(artist)
-
-            for album in albums:           
-                album = album[0]
-                album = QStringList(album)                
-                album = QTreeWidgetItem(album)
-                artist.addChild(album)
+            
+            blank = QTreeWidgetItem()
+            artist.addChild(blank)
+#            for album in albums:           
+#                album = album[0]
+#                album = QStringList(album)                
+#                album = QTreeWidgetItem(album)
+#                artist.addChild(album)
 
 class MainWindow(QMainWindow, SETUPS):
     """
@@ -511,6 +513,23 @@ class MainWindow(QMainWindow, SETUPS):
             self.trUtf8("""Just a note. If you have used amaroq-0.1.* and are now trying the dev branch you need to delete "~/.amaroq/amaroq.db" \n
 The old database format is no longer compatible with the new implementation."""))
 
+    @pyqtSignature("QTreeWidgetItem*")
+    def on_collectTree_itemExpanded(self, item):
+        """
+        Slot documentation goes here.
+        """
+        # TODO: not implemented yet
+#        raise NotImplementedError
+#        print item.childCount()
+        
+        artist = item.text(0)
+        albums = self.media_db.searching("album", "artist", artist)
+        for cnt in range(len(albums)):
+            album = albums[cnt][0]
+            album = QStringList(album)                
+            album = QTreeWidgetItem(album)
+            item.insertChild(cnt, album)
+
     def tick(self, time):
         """
         Every second update time labels and progress slider
@@ -829,3 +848,5 @@ The old database format is no longer compatible with the new implementation.""")
         if self.playlistTree.columnWidth(0) > 300:
             self.playlistTree.setColumnWidth(0, 300)
     
+
+        
