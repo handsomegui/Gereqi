@@ -516,19 +516,21 @@ The old database format is no longer compatible with the new implementation.""")
     @pyqtSignature("QTreeWidgetItem*")
     def on_collectTree_itemExpanded(self, item):
         """
-        Slot documentation goes here.
+        Generates the albums to go with the artists in
+        the collection tree when expanded. Only if empty.
         """
-        # TODO: not implemented yet
-#        raise NotImplementedError
-#        print item.childCount()
-        
-        artist = item.text(0)
-        albums = self.media_db.searching("album", "artist", artist)
-        for cnt in range(len(albums)):
-            album = albums[cnt][0]
-            album = QStringList(album)                
-            album = QTreeWidgetItem(album)
-            item.insertChild(cnt, album)
+        if item.childCount() == 1:
+            test = item.child(0)
+            
+            if not test.text(0):
+                item.removeChild(test)
+                artist = item.text(0)
+                albums = self.media_db.searching("album", "artist", artist)
+                for cnt in range(len(albums)):
+                    album = albums[cnt][0]
+                    album = QStringList(album)                
+                    album = QTreeWidgetItem(album)
+                    item.insertChild(cnt, album)
 
     def tick(self, time):
         """
