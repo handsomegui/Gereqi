@@ -350,6 +350,49 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
             </layout>
            </item>
            <item>
+            <widget class="QComboBox" name="comboBox_4">
+             <property name="maxVisibleItems">
+              <number>6</number>
+             </property>
+             <property name="maxCount">
+              <number>6</number>
+             </property>
+             <property name="frame">
+              <bool>true</bool>
+             </property>
+             <item>
+              <property name="text">
+               <string>Entire Collection</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Added Today</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Added Within 1 Week</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Added Within 1 Month</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Added Within 3 Months</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Added Within 1 Year</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
             <widget class="QTreeWidget" name="collectTree">
              <property name="alternatingRowColors">
               <bool>true</bool>
