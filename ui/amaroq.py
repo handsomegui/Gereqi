@@ -103,6 +103,7 @@ class SETUPS(FINISHES):
         for val in range(len(headers)):
             self.playlistTree.insertColumn(val)
         self.playlistTree.setHorizontalHeaderLabels(headers)
+        
     def create_actions(self):
         self.quit_action = QAction(self.tr("&Quit"), self)
         self.play_action = QAction(self.tr("&Play"), self)
@@ -152,6 +153,45 @@ class SETUPS(FINISHES):
         self.tray_icon = QSystemTrayIcon(self)
         self.tray_icon.setIcon(icon)
         self.tray_icon.setContextMenu(self.tray_icon_menu)      
+        
+    def setup_db_tree(self):
+        """
+        The beginnings of viewing the media database in the QTreeView
+        """
+         # This gives multiples of the same thing i.e albums
+        artists = self.media_db.query_db("artist")
+        artists = sorted(artists)
+        old_char = None
+        char = None
+        font = QFont()
+        font.setBold(True)
+        
+        #TODO: at the start of new letter in alphabet create a header/separator
+        for cnt in range(len(artists)):
+            artist = artists[cnt][0]
+            try:
+                char = str(artist)[0]
+            except:
+                char = ""            
+            
+            if char != old_char:
+                old_char = char  
+                char = "== %s ==" % char
+                char = QStringList(char)
+                char = QTreeWidgetItem(char)
+                char.setFont(0, font)
+                self.collectTree.addTopLevelItem(char)
+               
+            albums = self.media_db.searching("album", "artist", artist)
+            artist = QStringList(artist)
+            artist = QTreeWidgetItem(artist)
+            self.collectTree.addTopLevelItem(artist)
+
+            for album in albums:           
+                album = album[0]
+                album = QStringList(album)                
+                album = QTreeWidgetItem(album)
+                artist.addChild(album)
 
 class MainWindow(QMainWindow, SETUPS):
     """
@@ -534,6 +574,12 @@ The old database format is no longer compatible with the new implementation.""")
             self.finished()
             
     def finished(self):
+        """
+        Things to be performed when the playlist finishes
+        """
+        self.tabWidget_2.setTabEnabled(1, False)
+        self.tabWidget_2.setTabEnabled(2, False)
+        
         self.playBttn.setChecked(False)
         self.stopBttn.setEnabled(False)
         
@@ -573,45 +619,6 @@ The old database format is no longer compatible with the new implementation.""")
             self.stat_prog.setToolTip("Scanning Media")
             self.stat_prog.setValue(0)
             self.build_db_thread.start()
-
-    def setup_db_tree(self):
-        """
-        The beginnings of viewing the media database in the QTreeView
-        """
-         # This gives multiples of the same thing i.e albums
-        artists = self.media_db.query_db("artist")
-        artists = sorted(artists)
-        old_char = None
-        char = None
-        font = QFont()
-        font.setBold(True)
-        
-        #TODO: at the start of new letter in alphabet create a header/separator
-        for cnt in range(len(artists)):
-            artist = artists[cnt][0]
-            try:
-                char = str(artist)[0]
-            except:
-                char = ""            
-            
-            if char != old_char:
-                old_char = char  
-                char = "== %s ==" % char
-                char = QStringList(char)
-                char = QTreeWidgetItem(char)
-                char.setFont(0, font)
-                self.collectTree.addTopLevelItem(char)
-               
-            albums = self.media_db.searching("album", "artist", artist)
-            artist = QStringList(artist)
-            artist = QTreeWidgetItem(artist)
-            self.collectTree.addTopLevelItem(artist)
-
-            for album in albums:           
-                album = album[0]
-                album = QStringList(album)                
-                album = QTreeWidgetItem(album)
-                artist.addChild(album)
 
     def set_info(self):
         """

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
 #
-# Created: Sun Oct  4 18:50:01 2009
+# Created: Sun Oct  4 19:00:19 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -167,6 +167,18 @@ font: 75 10pt \"DejaVu Sans\";
         self.toolButton_4.setObjectName("toolButton_4")
         self.horizontalLayout.addWidget(self.toolButton_4)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
+        self.comboBox_4 = QtGui.QComboBox(self.tab_2)
+        self.comboBox_4.setMaxVisibleItems(6)
+        self.comboBox_4.setMaxCount(6)
+        self.comboBox_4.setFrame(True)
+        self.comboBox_4.setObjectName("comboBox_4")
+        self.comboBox_4.addItem(QtCore.QString())
+        self.comboBox_4.addItem(QtCore.QString())
+        self.comboBox_4.addItem(QtCore.QString())
+        self.comboBox_4.addItem(QtCore.QString())
+        self.comboBox_4.addItem(QtCore.QString())
+        self.comboBox_4.addItem(QtCore.QString())
+        self.verticalLayout_2.addWidget(self.comboBox_4)
         self.collectTree = QtGui.QTreeWidget(self.tab_2)
         self.collectTree.setAlternatingRowColors(True)
         self.collectTree.setRootIsDecorated(True)
@@ -597,6 +609,12 @@ font: 75 10pt \"DejaVu Sans\";
         self.srchEdt.setToolTip(QtGui.QApplication.translate("MainWindow", "Enter search terms here", None, QtGui.QApplication.UnicodeUTF8))
         self.toolButton_4.setToolTip(QtGui.QApplication.translate("MainWindow", "Click to edit collection filter", None, QtGui.QApplication.UnicodeUTF8))
         self.toolButton_4.setText(QtGui.QApplication.translate("MainWindow", "...", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboBox_4.setItemText(0, QtGui.QApplication.translate("MainWindow", "Entire Collection", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboBox_4.setItemText(1, QtGui.QApplication.translate("MainWindow", "Added Today", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboBox_4.setItemText(2, QtGui.QApplication.translate("MainWindow", "Added Within 1 Week", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboBox_4.setItemText(3, QtGui.QApplication.translate("MainWindow", "Added Within 1 Month", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboBox_4.setItemText(4, QtGui.QApplication.translate("MainWindow", "Added Within 3 Months", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboBox_4.setItemText(5, QtGui.QApplication.translate("MainWindow", "Added Within 1 Year", None, QtGui.QApplication.UnicodeUTF8))
         self.collectTree.headerItem().setText(0, QtGui.QApplication.translate("MainWindow", "Artist/Album", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("MainWindow", "Collection", None, QtGui.QApplication.UnicodeUTF8))
         self.comboBox.setItemText(0, QtGui.QApplication.translate("MainWindow", "Add", None, QtGui.QApplication.UnicodeUTF8))
