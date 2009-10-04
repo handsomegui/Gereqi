@@ -22,9 +22,57 @@ class MEDIA:
         self.media_db = sqlite.connect(self.media_db)
         self.media_curs = self.media_db.cursor()
         
+        self.setup_tables()
+        #TODO: Tables could possibly be put in own function and simplified
+        
         # using file_name as PRIMARY KEY to prevent multiple entries
-        self.media_curs.execute('''
-            CREATE TABLE IF NOT EXISTS media (
+#        self.media_curs.execute('''
+#            CREATE TABLE IF NOT EXISTS media (
+#                file_name    TEXT ,
+#                track    UNSIGNED TINYINT(2),
+#                title   VARCHAR(50),
+#                artist  VARCHAR(50),
+#                album   VARCHAR(50),
+#                year    UNSIGNED SMALLINT(4),
+#                genre   VARCHAR(50),
+#                length  VARCHAR(5),
+#                bitrate UNSIGNED TINYINT(4),
+#                rating  UNSIGNED TINYINT(1),
+#                playcount   UNSIGNED SMALLINT,
+#                PRIMARY KEY (file_name) ON CONFLICT IGNORE
+#                )
+#                ''')
+#                
+#        # IDENTITY (1,1) auto-inc starts at 1 and inc by 1
+#        self.media_curs.execute('''
+#            CREATE TABLE IF NOT EXISTS playlist (
+#                id   INT NOT NULL IDENTITY (1, 1),
+#                name    VARCHAR(20),
+#                file_name    TEXT,
+#                track  SMALLINT(3),
+#                PRIMARY KEY (id)
+#                )
+#                ''')
+#                
+#        self.media_curs.execute('''
+#            CREATE TABLE IF NOT EXISTS settings (
+#                setting   TEXT,
+#                value   TEXT,
+#                PRIMARY KEY (setting) ON CONFLICT  REPLACE
+#                )
+#                ''')
+#        
+#        self.media_curs.execute('''
+#            CREATE TABLE local_list (
+#                id INT  NOT NULL IDENTITY (1,1),
+#                filename TEXT,
+#                list SMALLINT(3),
+#                PRIMARY KEY (id)
+#                )
+#                ''')
+        
+    def setup_tables(self):
+        tables = ['''CREATE TABLE IF NOT EXISTS media (
                 file_name    TEXT ,
                 track    UNSIGNED TINYINT(2),
                 title   VARCHAR(50),
@@ -37,27 +85,32 @@ class MEDIA:
                 rating  UNSIGNED TINYINT(1),
                 playcount   UNSIGNED SMALLINT,
                 PRIMARY KEY (file_name) ON CONFLICT IGNORE
-                )
-                ''')
-                
-        self.media_curs.execute('''
-            CREATE TABLE IF NOT EXISTS playlist (
-                id   SMALLINT UNSIGNED IDENTITY (1, 1),
+                )'''
+                , 
+                '''CREATE TABLE IF NOT EXISTS playlist (
+                id   INT IDENTITY (1, 1),
                 name    VARCHAR(20),
                 file_name    TEXT,
                 track  SMALLINT(3),
                 PRIMARY KEY (id)
-                )
-                ''')
-                
-        self.media_curs.execute('''
-            CREATE TABLE IF NOT EXISTS settings (
+                )'''
+                , 
+                '''CREATE TABLE IF NOT EXISTS settings (
                 setting   TEXT,
                 value   TEXT,
                 PRIMARY KEY (setting) ON CONFLICT  REPLACE
-                )
-                ''')
-                
+                )'''
+                , 
+                '''CREATE TABLE IF NOT EXISTS local_list (
+                id INT  IDENTITY (1,1),
+                filename TEXT,
+                list SMALLINT(3),
+                PRIMARY KEY (id)
+                )''']      
+        
+        for table in tables:
+            self.media_curs.execute(table)
+        
         
     def add_media(self, meta):
         """

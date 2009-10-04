@@ -132,6 +132,8 @@ class SETUPS(FINISHES):
         self.connect(self.actionPrevious_Track, SIGNAL("triggered()"), self.on_prevBttn_pressed)  
         self.connect(self.actionStop, SIGNAL("triggered()"), self.on_stopBttn_pressed)
     
+        self.connect(self.clrCollectBttn, SIGNAL("pressed()"), self.on_actionClear_triggered)
+        
         self.connect(self.media_object, SIGNAL('tick(qint64)'), self.tick)
         self.connect(self.media_object, SIGNAL('aboutToFinish()'), self.about_to_finish)
         self.connect(self.media_object, SIGNAL('finished()'), self.finished)
@@ -231,14 +233,6 @@ class MainWindow(QMainWindow, SETUPS):
         self.create_actions()        
         self.tray_icon.show()
         
-    @pyqtSignature("")
-    def on_clrCollectBttn_pressed(self):
-        """
-        Slot documentation goes here.
-        """
-        # TODO: not finished
-        self.srchCollectEdt.clear()
-    
     @pyqtSignature("")
     def on_srchCollectEdt_editingFinished(self):
         """
@@ -429,6 +423,10 @@ class MainWindow(QMainWindow, SETUPS):
         Clear current playlist and if no music playing
         clear self.media_object
         """
+        #TODO:incorporate playlists in to here.
+        # When cleared save the playlist first to be
+        # used with the playlist undo/redo buttons
+        # Has to incorporate database
         self.playlistTree.clearContents()
         rows = self.playlistTree.rowCount()
         

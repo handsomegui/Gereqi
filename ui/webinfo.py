@@ -78,6 +78,8 @@ class WEBINFO:
         """
         
         if thing == "info":
+            #TODO: embed a stylesheet
+            # Disable underlining and higlighting of links
             site = "wikipedia"
             result = self.fetch(site, *params)
             # Cuts out everything from References down
