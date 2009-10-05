@@ -239,7 +239,7 @@ class MainWindow(QMainWindow, SETUPS):
         self.media_dir = None
         self.meta = METADATA()
         self.setup_db_tree()
-        self.window_show = True
+        self.window_show = True #FIXME: use windowState
         self.old_pos = 0
         self.cover_thread = GETCOVER()
         self.html_thread = GETWIKI()
@@ -702,10 +702,9 @@ The old database format is no longer compatible with the new implementation.""")
         Things to perform on user-interaction of the tray icon
         other than bringing up it's menu
         """
-#        window_state = self.windowState()
-        # hex val is supposed to indicate minimised
-        # no idea how to extract it from windowState
-#        print window_state == 0x00000001 
+        window_state = self.windowState()
+        print window_state == Qt.WindowNoState # Useless. Always true
+
         if event == 3:
             if self.window_show:
                 self.minimise_to_tray(False)
