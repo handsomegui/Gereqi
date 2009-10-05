@@ -17,6 +17,8 @@ class Metadata:
         try:
             track = tags.tag().track
             track = str(track)
+            if len(track.strip()) < 1:
+                track = "Unknown"
         except:
             track = "0"
         
@@ -49,18 +51,24 @@ class Metadata:
         try: 
             genre = tags.tag().genre
             genre = genre.replace('''"''',"")
+            if len(genre.strip()) < 1:
+                genre = "Unknown"
         except:
             genre = "Unknown"
         
         try: 
             year = tags.tag().year
             year = str(year)
+            if len(year.strip()) < 1:
+                year = "0"
         except: 
             year = "0"
         
         try:
             bitrate = tags.audioProperties().bitrate
             bitrate = str(bitrate)
+            if len(bitrate.strip()) < 1:
+                bitrate = "Unknown"
         except:
             bitrate = "0"
             

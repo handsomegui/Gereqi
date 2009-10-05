@@ -24,7 +24,8 @@ class Finishes(Ui_MainWindow):
     
     def set_lyrics(self, lyr):
         self.tabWidget_2.setTabEnabled(1, True)
-    
+        print lyr
+        
     def set_cover(self, img):
         cover = QPixmap()
         cover = cover.fromImage(img)
@@ -45,7 +46,7 @@ class Finishes(Ui_MainWindow):
             self.collectTree.clear()
             self.setup_db_tree()
             
-    
+            
 class Setups(Finishes):
     def __init__(self):
         # I've no idea what an instance is
@@ -55,7 +56,6 @@ class Setups(Finishes):
         menu = QMenu(self)
         playlist_menu = QMenu(self)
         playlist_menu.setTitle(QString("Playlist"))
-        
         
         new = QAction(self.tr("New..."), self)
         existing = QAction(self.tr("Import Existing..."), self)
@@ -130,7 +130,9 @@ class Setups(Finishes):
         self.playlistTree.setHorizontalHeaderLabels(headers)
         
     def create_actions(self):
-
+        #TODO: get rid of this. Put actions and connects in own function
+        # to reduce the number of unneeded pointers
+        
         # These playing actions are from the toolbar.
         self.connect(self.actionPlay, SIGNAL("toggled(bool)"), self.on_playBttn_toggled)
         self.connect(self.actionNext_Track, SIGNAL("triggered()"), self.on_nxtBttn_pressed)
@@ -206,15 +208,12 @@ class Setups(Finishes):
             
             # When creating collection tree only allow certain 
             # artists based on the filter.
-            # The try is a bodge for an artist with no entry
-#            try:
+
             if filt:
                 filt = filt.lower()
                 art = str(artist.lower())
                 if filt not in art:
                     continue
-#            except:
-#                continue
                 
             try:
                 char = str(artist)[0]
