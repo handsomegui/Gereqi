@@ -1,5 +1,6 @@
 from pysqlite2 import dbapi2 as sqlite
 from os import mkdir, getenv, path
+from time import localtime
 
 #TODO: stats database
 
@@ -34,9 +35,10 @@ class MEDIA:
                 year    UNSIGNED SMALLINT(4),
                 genre   VARCHAR(50),
                 length  VARCHAR(5),
-                bitrate UNSIGNED TINYINT(4),
+                bitrate UNSIGNED SMALLNT(4),
                 rating  UNSIGNED TINYINT(1),
                 playcount   UNSIGNED SMALLINT,
+                added UNSIGNED MEDIUMINT(6),
                 PRIMARY KEY (file_name) ON CONFLICT IGNORE
                 )'''
                 , 

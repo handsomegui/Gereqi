@@ -582,6 +582,9 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
              </item>
              <item>
               <widget class="QComboBox" name="comboBox_3">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <item>
                 <property name="text">
                  <string>No Devices Available</string>
