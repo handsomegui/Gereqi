@@ -11,7 +11,7 @@ SLOT, QSize,  QStringList
 from PyQt4.phonon import Phonon
 from random import randrange
 
-from settings import SETTINGDLG
+from settings import Setting_Dialog
 from Ui_amaroq import Ui_MainWindow
 from database import Media
 from metadata import Metadata
@@ -256,7 +256,7 @@ class MainWindow(QMainWindow, Setups):
         self.cover_thread = Getcover()
         self.html_thread = Getwiki()
         self.build_db_thread = Builddb()     
-        self.locale = ".com" # needs to be editable in SETTINGDLG
+        self.locale = ".com" # needs to be editable in Setting_Dialog
 
         self.art = [None, None] # The current playing artist
         self.old_art = [None, None] # The last playing artist
@@ -400,7 +400,7 @@ class MainWindow(QMainWindow, Setups):
         """
         # TODO: not finished yet. Need to learn
         # more about modal dialogs
-        dialog = SETTINGDLG(self)
+        dialog = Setting_Dialog(self)
         
         if dialog.exec_():
             self.media_dir = dialog.dir_val()
@@ -576,6 +576,7 @@ The old database format is no longer compatible with the new implementation.""")
         Clears the collection search widget and in turn
         resets the collection tree
         """
+        #TODO: expand the artist chosen before reset
         self.srchCollectEdt.clear()
 
 
@@ -876,7 +877,6 @@ The old database format is no longer compatible with the new implementation.""")
             exec "%s = %s" % (name, func1)
             exec func2
             
-    
         current_row = self.playlistTree.rowCount()
         self.playlistTree.insertRow(current_row)
         
@@ -895,5 +895,3 @@ The old database format is no longer compatible with the new implementation.""")
         self.playlistTree.resizeColumnsToContents()
         if self.playlistTree.columnWidth(0) > 300:
             self.playlistTree.setColumnWidth(0, 300)
-    
-
