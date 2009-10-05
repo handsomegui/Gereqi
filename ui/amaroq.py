@@ -187,21 +187,34 @@ class SETUPS(FINISHES):
         self.connect(self.tray_icon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.tray_event)
         self.tray_icon.show()       
         
-    def setup_db_tree(self):
+    def setup_db_tree(self, filt=None):
         """
         The beginnings of viewing the media database in the QTreeView
         """
-         # This gives multiples of the same thing i.e albums
+        #Because we now call this to filter, we need to clear the collecttree
+        # before changing it
+        self.collectTree.clear()
+        
+        # This gives multiples of the same thing i.e albums
         artists = self.media_db.query_db("artist")
         artists = sorted(artists)
+        
         old_char = None
         char = None
         font = QFont()
         font.setBold(True)
         
-        #TODO: at the start of new letter in alphabet create a header/separator
         for cnt in range(len(artists)):
             artist = artists[cnt][0]
+            
+            # When creating collection tree only allow certain artists based
+            # on the filter
+            if filt:
+                filt = filt.lower()
+                art = str(artist.lower())
+                if filt not in art:
+                    continue
+
             try:
                 char = str(artist)[0]
             except:
@@ -261,7 +274,12 @@ class MainWindow(QMainWindow, SETUPS):
         Slot documentation goes here.
         """
         # TODO: not finished
-        print self.srchCollectEdt.text()
+        
+        srch= self.srchCollectEdt.text()
+        srch = str(srch)
+        print srch
+        self.setup_db_tree(filt=srch)
+        
     
     @pyqtSignature("QTreeWidgetItem*, int")
     def on_collectTree_itemDoubleClicked(self, item, column):
@@ -558,12 +576,13 @@ The old database format is no longer compatible with the new implementation.""")
                     item.insertChild(cnt, album)
 
     @pyqtSignature("")
-    def on_clrsrchBttn_clicked(self):
+    def on_clrCollectBttn_clicked(self):
         """
-        Reset the playlist after searching it
+        Slot documentation goes here.
         """
         # TODO: not implemented yet
-        self.srchplyEdit.clear()
+        self.setup_db_tree()
+        self.srchCollectEdt.clear()
 
 
 #######################################
