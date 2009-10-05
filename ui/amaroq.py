@@ -51,6 +51,31 @@ class SETUPS(FINISHES):
         # I've no idea what an instance is
         FINISHES.__init__(self) 
     
+    def playlist_add_menu(self):
+        menu = QMenu(self)
+        playlist_menu = QMenu(self)
+        playlist_menu.setTitle(QString("Playlist"))
+        
+        
+        new = QAction(self.tr("New..."), self)
+        existing = QAction(self.tr("Import Existing..."), self)
+        playlist_menu.addAction(new)
+        playlist_menu.addAction(existing)        
+        menu.addMenu(playlist_menu)
+        
+        smart = QAction(self.tr("Smart Playlist..."), self)
+        dynamic = QAction(self.tr("Dynamic Playlist..."), self)
+        radio = QAction(self.tr("Radio Stream..."), self)
+        podcast = QAction(self.tr("Podcast..."), self)
+
+        menu.addAction(smart)
+        menu.addAction(dynamic)
+        menu.addAction(radio)
+        menu.addAction(podcast)
+
+        self.addPlylstBttn.setMenu(menu)
+        #TODO: add functions for actions
+    
     def setup_shortcuts(self):
         delete = QShortcut(QKeySequence(self.tr("Del")), self)
         self.connect(delete, SIGNAL("activated()"), self.del_track) 
@@ -105,27 +130,7 @@ class SETUPS(FINISHES):
         self.playlistTree.setHorizontalHeaderLabels(headers)
         
     def create_actions(self):
-        self.quit_action = QAction(self.tr("&Quit"), self)
-        self.play_action = QAction(self.tr("&Play"), self)
-        self.next_action = QAction(self.tr("&Next"), self)
-        self.prev_action = QAction(self.tr("&Previous"), self)
-        self.stop_action = QAction(self.tr("&Stop"), self)
-        self.play_action.setCheckable(True)
-        self.view_action = QAction(self.tr("&Visible"), self)
-        self.view_action.setCheckable(True)
-        self.view_action.setChecked(True)
-        
-        self.create_tray_icon()
-        
-        self.connect(self.quit_action, SIGNAL("triggered()"), qApp, SLOT("quit()"))
-        
-        # These actions are from the traymenu
-        self.connect(self.play_action, SIGNAL("toggled(bool)"), self.on_playBttn_toggled)
-        self.connect(self.next_action, SIGNAL("triggered()"), self.on_nxtBttn_pressed)
-        self.connect(self.prev_action, SIGNAL("triggered()"), self.on_prevBttn_pressed)
-        self.connect(self.stop_action, SIGNAL("triggered()"), self.on_stopBttn_pressed)
-        self.connect(self.view_action, SIGNAL("toggled(bool)"), self.minimise_to_tray)
-  
+
         # These playing actions are from the toolbar.
         self.connect(self.actionPlay, SIGNAL("toggled(bool)"), self.on_playBttn_toggled)
         self.connect(self.actionNext_Track, SIGNAL("triggered()"), self.on_nxtBttn_pressed)
@@ -143,27 +148,44 @@ class SETUPS(FINISHES):
         self.connect(self.html_thread, SIGNAL("Activated ( QString ) "), self.set_wiki)
         self.connect(self.build_db_thread, SIGNAL("Activated ( int ) "), self.stat_prog.setValue)
         self.connect(self.build_db_thread, SIGNAL("Activated ( QString ) "), self.finish_build)
-        self.connect(self.tray_icon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.tray_event)
         self.connect(self.stat_bttn, SIGNAL("triggered()"), self.build_db_thread.exit)
         
-    def create_tray_icon(self):
-        self.tray_icon_menu = QMenu(self)
+    def create_tray_menu(self):
+        quit_action = QAction(self.tr("&Quit"), self)
+        self.play_action = QAction(self.tr("&Play"), self)
+        next_action = QAction(self.tr("&Next"), self)
+        prev_action = QAction(self.tr("&Previous"), self)
+        stop_action = QAction(self.tr("&Stop"), self)
+        self.play_action.setCheckable(True)
+        self.view_action = QAction(self.tr("&Visible"), self)
+        self.view_action.setCheckable(True)
+        self.view_action.setChecked(True)
+        tray_icon_menu = QMenu(self)
         icon = QIcon(QPixmap(":/Icons/drawing.png"))
         
-        self.tray_icon_menu.addAction(icon, QString("Amaroq"))
-        self.tray_icon_menu.addSeparator()
-        self.tray_icon_menu.addAction(self.prev_action)
-        self.tray_icon_menu.addAction(self.play_action)
-        self.tray_icon_menu.addAction(self.stop_action)
-        self.tray_icon_menu.addAction(self.next_action)
-        self.tray_icon_menu.addSeparator()
-        self.tray_icon_menu.addAction(self.view_action)
-        self.tray_icon_menu.addAction(self.quit_action)
+        tray_icon_menu.addAction(icon, QString("Amaroq"))
+        tray_icon_menu.addSeparator()
+        tray_icon_menu.addAction(prev_action)
+        tray_icon_menu.addAction(self.play_action)
+        tray_icon_menu.addAction(stop_action)
+        tray_icon_menu.addAction(next_action)
+        tray_icon_menu.addSeparator()
+        tray_icon_menu.addAction(self.view_action)
+        tray_icon_menu.addAction(quit_action)
         
         # No. This icon isn't final. Just filler.
         self.tray_icon = QSystemTrayIcon(self)
         self.tray_icon.setIcon(icon)
-        self.tray_icon.setContextMenu(self.tray_icon_menu)      
+        self.tray_icon.setContextMenu(tray_icon_menu)
+  
+        self.connect(self.play_action, SIGNAL("toggled(bool)"), self.on_playBttn_toggled)
+        self.connect(next_action, SIGNAL("triggered()"), self.on_nxtBttn_pressed)
+        self.connect(prev_action, SIGNAL("triggered()"), self.on_prevBttn_pressed)
+        self.connect(stop_action, SIGNAL("triggered()"), self.on_stopBttn_pressed)
+        self.connect(self.view_action, SIGNAL("toggled(bool)"), self.minimise_to_tray)  
+        self.connect(quit_action, SIGNAL("triggered()"), qApp, SLOT("quit()"))
+        self.connect(self.tray_icon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.tray_event)
+        self.tray_icon.show()       
         
     def setup_db_tree(self):
         """
@@ -222,7 +244,7 @@ class MainWindow(QMainWindow, SETUPS):
         self.cover_thread = GETCOVER()
         self.html_thread = GETWIKI()
         self.build_db_thread = BUILDDB()     
-        self.locale = ".co.uk" # needs to be editable in SETTINGDLG
+        self.locale = ".com" # needs to be editable in SETTINGDLG
 
         self.art = [None, None] # The current playing artist
         self.old_art = [None, None] # The last playing artist
@@ -231,7 +253,8 @@ class MainWindow(QMainWindow, SETUPS):
         self.setup_shortcuts()
         self.setup_extra()        
         self.create_actions()        
-        self.tray_icon.show()
+        self.playlist_add_menu()
+        self.create_tray_menu()
         
     @pyqtSignature("")
     def on_srchCollectEdt_editingFinished(self):

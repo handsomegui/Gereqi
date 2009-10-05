@@ -424,18 +424,19 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_5">
              <item>
-              <widget class="QComboBox" name="comboBox">
-               <property name="maxVisibleItems">
-                <number>5</number>
+              <widget class="QToolButton" name="addPlylstBttn">
+               <property name="minimumSize">
+                <size>
+                 <width>46</width>
+                 <height>32</height>
+                </size>
                </property>
-               <property name="maxCount">
-                <number>5</number>
+               <property name="text">
+                <string>Add</string>
                </property>
-               <item>
-                <property name="text">
-                 <string>Add</string>
-                </property>
-               </item>
+               <property name="popupMode">
+                <enum>QToolButton::InstantPopup</enum>
+               </property>
               </widget>
              </item>
              <item>
@@ -446,7 +447,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
               </widget>
              </item>
              <item>
-              <widget class="QToolButton" name="toolButton">
+              <widget class="QToolButton" name="rnmPlylstBtnn">
                <property name="text">
                 <string>_</string>
                </property>
@@ -466,7 +467,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
               </widget>
              </item>
              <item>
-              <widget class="QToolButton" name="toolButton_2">
+              <widget class="QToolButton" name="delPlylstBttn">
                <property name="text">
                 <string>x</string>
                </property>
@@ -501,7 +502,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
             </layout>
            </item>
            <item>
-            <widget class="QTreeWidget" name="treeWidget">
+            <widget class="QTreeWidget" name="playlstTree">
              <column>
               <property name="text">
                <string>Playlists</string>
