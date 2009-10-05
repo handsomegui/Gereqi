@@ -5,14 +5,14 @@ to make it easier to manage
 
 from PyQt4.QtCore import QThread, QString, SIGNAL
 from PyQt4.QtGui import QImage
-from webinfo import WEBINFO
-from database import MEDIA
-from metadata import METADATA
+from webinfo import Webinfo
+from database import Media
+from metadata import Metadata
 import os
 
 
 
-class GETCOVER(QThread):
+class Getcover(QThread):
     def __init__(self,parent=None):
         QThread.__init__(self,parent)
         
@@ -22,7 +22,7 @@ class GETCOVER(QThread):
         self.locale = loc
       
     def run(self):
-        info = WEBINFO()
+        info = Webinfo()
         result = info.get_info("cover", self.locale, self.artist, self.album)
         if result:
             img = QImage()
@@ -30,7 +30,7 @@ class GETCOVER(QThread):
             self.emit(SIGNAL("Activated( QImage )"), img) 
         
         
-class GETWIKI(QThread):
+class Getwiki(QThread):
     def __init__(self,parent=None):
         QThread.__init__(self,parent)
     
@@ -38,13 +38,13 @@ class GETWIKI(QThread):
         self.artist = art
         
     def run(self):
-        info = WEBINFO()
+        info = Webinfo()
         result = info.get_info("info",None,  self.artist)
         result = QString(result)        
         self.emit(SIGNAL("Activated( QString )"), result)
         
         
-class BUILDDB(QThread):
+class Builddb(QThread):
     def __init__(self,parent=None):
         QThread.__init__(self,parent)
         
@@ -55,8 +55,8 @@ class BUILDDB(QThread):
         formats = ["ogg", "mp3", "flac"]
         old_prog = 0
         tracks = []
-        meta = METADATA()
-        media_db = MEDIA()
+        meta = Metadata()
+        media_db = Media()
         
         for root, dirname, filenames in os.walk(str(self.mediaDir)):
             for name in filenames:

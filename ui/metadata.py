@@ -1,6 +1,6 @@
 import tagpy
 
-class METADATA:
+class Metadata:
     def __init__(self):
         return
         

@@ -5,9 +5,9 @@ from lxml.html import fromstring, tostring
 import socket
 
 TIMEOUT = 10
-socket.setdefaulttimeout(TIMEOUT )
+socket.setdefaulttimeout(TIMEOUT)
 
-class WEBINFO:
+class Webinfo:
     def __init__(self):
         return
         

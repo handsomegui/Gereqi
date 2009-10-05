@@ -13,12 +13,12 @@ from random import randrange
 
 from settings import SETTINGDLG
 from Ui_amaroq import Ui_MainWindow
-from database import MEDIA
-from metadata import METADATA
-from threads import GETCOVER, GETWIKI, BUILDDB
+from database import Media
+from metadata import Metadata
+from threads import Getcover, Getwiki, Builddb
 
 
-class FINISHES(Ui_MainWindow):
+class Finishes(Ui_MainWindow):
     def __init__(self):
         Ui_MainWindow.__init__(self) # A guess
     
@@ -46,10 +46,10 @@ class FINISHES(Ui_MainWindow):
             self.setup_db_tree()
             
     
-class SETUPS(FINISHES):
+class Setups(Finishes):
     def __init__(self):
         # I've no idea what an instance is
-        FINISHES.__init__(self) 
+        Finishes.__init__(self) 
     
     def playlist_add_menu(self):
         menu = QMenu(self)
@@ -235,7 +235,7 @@ class SETUPS(FINISHES):
             blank = QTreeWidgetItem()
             artist.addChild(blank)
 
-class MainWindow(QMainWindow, SETUPS):
+class MainWindow(QMainWindow, Setups):
     """
     The main class of the app
     """    
@@ -245,17 +245,17 @@ class MainWindow(QMainWindow, SETUPS):
         from other files as this file is getting messy
         """ 
         QMainWindow.__init__(self, parent)
-        SETUPS.__init__(self) # Guess what? A guess!
+        Setups.__init__(self) # Guess what? A guess!
         self.setupUi(self)
         
-        self.media_db = MEDIA()
+        self.media_db = Media()
         self.media_dir = None
-        self.meta = METADATA()
+        self.meta = Metadata()
         self.setup_db_tree()
         self.old_pos = 0
-        self.cover_thread = GETCOVER()
-        self.html_thread = GETWIKI()
-        self.build_db_thread = BUILDDB()     
+        self.cover_thread = Getcover()
+        self.html_thread = Getwiki()
+        self.build_db_thread = Builddb()     
         self.locale = ".com" # needs to be editable in SETTINGDLG
 
         self.art = [None, None] # The current playing artist

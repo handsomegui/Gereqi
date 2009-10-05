@@ -4,7 +4,7 @@ from time import localtime
 
 #TODO: stats database
 
-class MEDIA:
+class Media:
     def __init__(self):
         """
         The table creations perform every class instance(?)
