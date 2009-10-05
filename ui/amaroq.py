@@ -232,10 +232,9 @@ class Setups(Finishes):
                
             artist = QStringList(artist)
             artist = QTreeWidgetItem(artist)
+            artist.setChildIndicatorPolicy(0)
             self.collectTree.addTopLevelItem(artist)
-            
-            blank = QTreeWidgetItem()
-            artist.addChild(blank)
+
 
 class MainWindow(QMainWindow, Setups):
     """
@@ -285,15 +284,21 @@ class MainWindow(QMainWindow, Setups):
         add the album's tracks to the playlist.
         """
         album = item.text(column)
+        print album
         
         try:
+            # Although you can put unicode into the QString
+            # to create ths QTreeWidgetItem you can't get a
+            # a Qstring with unicode back out. Brilliant!
             artist = item.parent().text(0)
+            print artist
             
          # Should go here if artist item is double-clicked as it has no parent
         except:
             return
             
         tracks = self.media_db.file_names(artist, album)
+        
         for track in tracks:
             track = track[0]
             # Retrieves metadata from database
@@ -560,18 +565,14 @@ The old database format is no longer compatible with the new implementation.""")
         the collection tree when expanded. Only if empty.
         """
         #TODO: make this aware of collectTimeBox widget
-        if item.childCount() == 1:
-            test = item.child(0)
-            
-            if not test.text(0):
-                item.removeChild(test)
-                artist = item.text(0)
-                albums = self.media_db.searching("album", "artist", artist)
-                for cnt in range(len(albums)):
-                    album = albums[cnt][0]
-                    album = QStringList(album)                
-                    album = QTreeWidgetItem(album)
-                    item.insertChild(cnt, album)
+        if item.childCount() == 0:
+            artist = item.text(0)
+            albums = self.media_db.searching("album", "artist", artist)
+            for cnt in range(len(albums)):
+                album = albums[cnt][0]
+                album = QStringList(album)                
+                album = QTreeWidgetItem(album)
+                item.insertChild(cnt, album)
 
     @pyqtSignature("")
     def on_clrCollectBttn_clicked(self):
