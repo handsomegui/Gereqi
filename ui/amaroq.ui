@@ -843,6 +843,9 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
           <property name="selectionBehavior">
            <enum>QAbstractItemView::SelectRows</enum>
           </property>
+          <property name="horizontalScrollMode">
+           <enum>QAbstractItemView::ScrollPerPixel</enum>
+          </property>
           <property name="showGrid">
            <bool>false</bool>
           </property>
@@ -856,10 +859,13 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
            <bool>false</bool>
           </property>
           <property name="cornerButtonEnabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <attribute name="horizontalHeaderVisible">
            <bool>true</bool>
+          </attribute>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
           </attribute>
           <attribute name="verticalHeaderVisible">
            <bool>false</bool>

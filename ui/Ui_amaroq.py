@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
 #
-# Created: Mon Oct  5 13:58:44 2009
+# Created: Mon Oct  5 15:39:17 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -367,10 +367,11 @@ font: 75 10pt \"DejaVu Sans\";
         self.playlistTree.setAlternatingRowColors(True)
         self.playlistTree.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
         self.playlistTree.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.playlistTree.setHorizontalScrollMode(QtGui.QAbstractItemView.ScrollPerPixel)
         self.playlistTree.setShowGrid(False)
         self.playlistTree.setGridStyle(QtCore.Qt.DashLine)
         self.playlistTree.setWordWrap(False)
-        self.playlistTree.setCornerButtonEnabled(False)
+        self.playlistTree.setCornerButtonEnabled(True)
         self.playlistTree.setObjectName("playlistTree")
         self.playlistTree.setColumnCount(0)
         self.playlistTree.setRowCount(0)
