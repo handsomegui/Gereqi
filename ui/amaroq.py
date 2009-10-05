@@ -268,19 +268,16 @@ class MainWindow(QMainWindow, SETUPS):
         self.playlist_add_menu()
         self.create_tray_menu()
         
-    @pyqtSignature("")
-    def on_srchCollectEdt_editingFinished(self):
+    @pyqtSignature("QString")
+    def on_srchCollectEdt_textChanged(self, p0):
         """
         Slot documentation goes here.
         """
-        # TODO: not finished
+        # TODO: not implemented yet
+#        raise NotImplementedError
+        srch = str(p0)
+        self.setup_db_tree(filt=srch)       
         
-        srch= self.srchCollectEdt.text()
-        srch = str(srch)
-        print srch
-        self.setup_db_tree(filt=srch)
-        
-    
     @pyqtSignature("QTreeWidgetItem*, int")
     def on_collectTree_itemDoubleClicked(self, item, column):
         """
