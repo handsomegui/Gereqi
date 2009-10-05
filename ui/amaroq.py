@@ -271,10 +271,8 @@ class MainWindow(QMainWindow, SETUPS):
     @pyqtSignature("QString")
     def on_srchCollectEdt_textChanged(self, p0):
         """
-        Slot documentation goes here.
+        This allows the filtering of the collection tree
         """
-        # TODO: not implemented yet
-#        raise NotImplementedError
         srch = str(p0)
         self.setup_db_tree(filt=srch)       
         
@@ -575,10 +573,9 @@ The old database format is no longer compatible with the new implementation.""")
     @pyqtSignature("")
     def on_clrCollectBttn_clicked(self):
         """
-        Slot documentation goes here.
+        Clears the collection search widget and in turn
+        resets the collection tree
         """
-        # TODO: not implemented yet
-        self.setup_db_tree()
         self.srchCollectEdt.clear()
 
 
