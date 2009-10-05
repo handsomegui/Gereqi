@@ -46,7 +46,7 @@ class MEDIA:
                 id   INT IDENTITY (1, 1),
                 name    VARCHAR(20),
                 file_name    TEXT,
-                track  SMALLINT(3),
+                track  UNSIGNED SMALLINT(3),
                 PRIMARY KEY (id)
                 )'''
                 , 
@@ -59,7 +59,7 @@ class MEDIA:
                 '''CREATE TABLE IF NOT EXISTS local_list (
                 id INT  IDENTITY (1,1),
                 filename TEXT,
-                list SMALLINT(3),
+                list UNSIGNED SMALLINT(3),
                 PRIMARY KEY (id)
                 )''']      
         
