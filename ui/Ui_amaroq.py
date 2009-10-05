@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
 #
-# Created: Mon Oct  5 15:39:17 2009
+# Created: Mon Oct  5 20:03:37 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -60,15 +60,15 @@ class Ui_MainWindow(object):
         self.gridLayout_12 = QtGui.QGridLayout(self.tab_6)
         self.gridLayout_12.setMargin(2)
         self.gridLayout_12.setObjectName("gridLayout_12")
-        self.groupBox = QtGui.QGroupBox(self.tab_6)
-        self.groupBox.setStyleSheet("""text-decoration: underline;
+        self.trkNowBox = QtGui.QGroupBox(self.tab_6)
+        self.trkNowBox.setStyleSheet("""text-decoration: underline;
 font: 75 10pt \"DejaVu Sans\";
 """)
-        self.groupBox.setObjectName("groupBox")
-        self.gridLayout_8 = QtGui.QGridLayout(self.groupBox)
+        self.trkNowBox.setObjectName("trkNowBox")
+        self.gridLayout_8 = QtGui.QGridLayout(self.trkNowBox)
         self.gridLayout_8.setMargin(1)
         self.gridLayout_8.setObjectName("gridLayout_8")
-        self.coverView = QtGui.QLabel(self.groupBox)
+        self.coverView = QtGui.QLabel(self.trkNowBox)
         self.coverView.setMinimumSize(QtCore.QSize(215, 215))
         self.coverView.setMaximumSize(QtCore.QSize(215, 215))
         self.coverView.setFrameShape(QtGui.QFrame.StyledPanel)
@@ -78,7 +78,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.coverView.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.coverView.setObjectName("coverView")
         self.gridLayout_8.addWidget(self.coverView, 0, 0, 1, 1)
-        self.gridLayout_12.addWidget(self.groupBox, 0, 0, 1, 1)
+        self.gridLayout_12.addWidget(self.trkNowBox, 0, 0, 1, 1)
         self.groupBox_2 = QtGui.QGroupBox(self.tab_6)
         self.groupBox_2.setStyleSheet("""text-decoration: underline;
 font: 75 10pt \"DejaVu Sans\";
@@ -167,18 +167,18 @@ font: 75 10pt \"DejaVu Sans\";
         self.toolButton_4.setObjectName("toolButton_4")
         self.horizontalLayout.addWidget(self.toolButton_4)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
-        self.comboBox_4 = QtGui.QComboBox(self.tab_2)
-        self.comboBox_4.setMaxVisibleItems(6)
-        self.comboBox_4.setMaxCount(6)
-        self.comboBox_4.setFrame(True)
-        self.comboBox_4.setObjectName("comboBox_4")
-        self.comboBox_4.addItem(QtCore.QString())
-        self.comboBox_4.addItem(QtCore.QString())
-        self.comboBox_4.addItem(QtCore.QString())
-        self.comboBox_4.addItem(QtCore.QString())
-        self.comboBox_4.addItem(QtCore.QString())
-        self.comboBox_4.addItem(QtCore.QString())
-        self.verticalLayout_2.addWidget(self.comboBox_4)
+        self.collectTimeBox = QtGui.QComboBox(self.tab_2)
+        self.collectTimeBox.setMaxVisibleItems(6)
+        self.collectTimeBox.setMaxCount(6)
+        self.collectTimeBox.setFrame(True)
+        self.collectTimeBox.setObjectName("collectTimeBox")
+        self.collectTimeBox.addItem(QtCore.QString())
+        self.collectTimeBox.addItem(QtCore.QString())
+        self.collectTimeBox.addItem(QtCore.QString())
+        self.collectTimeBox.addItem(QtCore.QString())
+        self.collectTimeBox.addItem(QtCore.QString())
+        self.collectTimeBox.addItem(QtCore.QString())
+        self.verticalLayout_2.addWidget(self.collectTimeBox)
         self.collectTree = QtGui.QTreeWidget(self.tab_2)
         self.collectTree.setAlternatingRowColors(True)
         self.collectTree.setRootIsDecorated(True)
@@ -264,6 +264,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.horizontalLayout_6.addWidget(self.comboBox_2)
         self.verticalLayout_4.addLayout(self.horizontalLayout_6)
         self.comboBox_3 = QtGui.QComboBox(self.tab_4)
+        self.comboBox_3.setEnabled(False)
         self.comboBox_3.setObjectName("comboBox_3")
         self.comboBox_3.addItem(QtCore.QString())
         self.verticalLayout_4.addWidget(self.comboBox_3)
@@ -595,7 +596,7 @@ font: 75 10pt \"DejaVu Sans\";
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "amaroQ", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox.setTitle(QtGui.QApplication.translate("MainWindow", "No Track Playing", None, QtGui.QApplication.UnicodeUTF8))
+        self.trkNowBox.setTitle(QtGui.QApplication.translate("MainWindow", "No Track Playing", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_2.setTitle(QtGui.QApplication.translate("MainWindow", "Fresh Podcast Episodes", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("MainWindow", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_3.setTitle(QtGui.QApplication.translate("MainWindow", "Your Newest Albums", None, QtGui.QApplication.UnicodeUTF8))
@@ -611,12 +612,12 @@ font: 75 10pt \"DejaVu Sans\";
         self.srchCollectEdt.setToolTip(QtGui.QApplication.translate("MainWindow", "Enter search terms here", None, QtGui.QApplication.UnicodeUTF8))
         self.toolButton_4.setToolTip(QtGui.QApplication.translate("MainWindow", "Click to edit collection filter", None, QtGui.QApplication.UnicodeUTF8))
         self.toolButton_4.setText(QtGui.QApplication.translate("MainWindow", "...", None, QtGui.QApplication.UnicodeUTF8))
-        self.comboBox_4.setItemText(0, QtGui.QApplication.translate("MainWindow", "Entire Collection", None, QtGui.QApplication.UnicodeUTF8))
-        self.comboBox_4.setItemText(1, QtGui.QApplication.translate("MainWindow", "Added Today", None, QtGui.QApplication.UnicodeUTF8))
-        self.comboBox_4.setItemText(2, QtGui.QApplication.translate("MainWindow", "Added Within 1 Week", None, QtGui.QApplication.UnicodeUTF8))
-        self.comboBox_4.setItemText(3, QtGui.QApplication.translate("MainWindow", "Added Within 1 Month", None, QtGui.QApplication.UnicodeUTF8))
-        self.comboBox_4.setItemText(4, QtGui.QApplication.translate("MainWindow", "Added Within 3 Months", None, QtGui.QApplication.UnicodeUTF8))
-        self.comboBox_4.setItemText(5, QtGui.QApplication.translate("MainWindow", "Added Within 1 Year", None, QtGui.QApplication.UnicodeUTF8))
+        self.collectTimeBox.setItemText(0, QtGui.QApplication.translate("MainWindow", "Entire Collection", None, QtGui.QApplication.UnicodeUTF8))
+        self.collectTimeBox.setItemText(1, QtGui.QApplication.translate("MainWindow", "Added Today", None, QtGui.QApplication.UnicodeUTF8))
+        self.collectTimeBox.setItemText(2, QtGui.QApplication.translate("MainWindow", "Added Within 1 Week", None, QtGui.QApplication.UnicodeUTF8))
+        self.collectTimeBox.setItemText(3, QtGui.QApplication.translate("MainWindow", "Added Within 1 Month", None, QtGui.QApplication.UnicodeUTF8))
+        self.collectTimeBox.setItemText(4, QtGui.QApplication.translate("MainWindow", "Added Within 3 Months", None, QtGui.QApplication.UnicodeUTF8))
+        self.collectTimeBox.setItemText(5, QtGui.QApplication.translate("MainWindow", "Added Within 1 Year", None, QtGui.QApplication.UnicodeUTF8))
         self.collectTree.headerItem().setText(0, QtGui.QApplication.translate("MainWindow", "Artist/Album", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("MainWindow", "Collection", None, QtGui.QApplication.UnicodeUTF8))
         self.addPlylstBttn.setText(QtGui.QApplication.translate("MainWindow", "Add", None, QtGui.QApplication.UnicodeUTF8))

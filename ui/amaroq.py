@@ -46,7 +46,7 @@ class Finishes(Ui_MainWindow):
             self.collectTree.clear()
             self.setup_db_tree()
             
-            
+    
 class Setups(Finishes):
     def __init__(self):
         # I've no idea what an instance is
@@ -191,6 +191,8 @@ class Setups(Finishes):
         """
         The beginnings of viewing the media database in the QTreeView
         """
+        #TODO: make the creation aware of the collectTimeBox widget
+        
         #Because we now call this to filter, we need to clear the collecttree
         # before changing it
         self.collectTree.clear()
@@ -557,6 +559,7 @@ The old database format is no longer compatible with the new implementation.""")
         Generates the albums to go with the artists in
         the collection tree when expanded. Only if empty.
         """
+        #TODO: make this aware of collectTimeBox widget
         if item.childCount() == 1:
             test = item.child(0)
             
@@ -579,7 +582,25 @@ The old database format is no longer compatible with the new implementation.""")
         #TODO: expand the artist chosen before reset
         self.srchCollectEdt.clear()
 
+    @pyqtSignature("int")
+    def on_collectTimeBox_currentIndexChanged(self, index):
+        """
+        Slot documentation goes here.
+        """
+        # TODO: not implemented yet
+        print "Filter collectionTree WRT time."
+        
+    @pyqtSignature("")
+    def on_actionAbout_Amaroq_triggered(self):
+        """
+        Slot documentation goes here.
+        """
+        # TODO: not implemented yet
+        QMessageBox.aboutQt(None, 
+            self.trUtf8(""))
 
+        
+        
 #######################################
 #######################################
 
@@ -663,6 +684,8 @@ The old database format is no longer compatible with the new implementation.""")
         # clear things like wiki and reset cover art to default        
         self.wikiView.setHtml(QString(""))
         self.coverView.setPixmap(QPixmap(":/Icons/music.png"))
+        
+        self.trkNowBox.setTitle(QString("No Track Playing"))
         self.old_art = [None, None]
         
     def minimise_to_tray(self, state):
@@ -799,8 +822,11 @@ The old database format is no longer compatible with the new implementation.""")
         
         msg1 = QString("Now Playing")
         msg2 = QString("%s by %s" % (title, artist))
-        icon = QSystemTrayIcon.NoIcon
+        msg3 = QString("%s - %s\n%s" % (title, artist, album))
         
+        self.trkNowBox.setTitle(msg3)
+        
+        icon = QSystemTrayIcon.NoIcon        
         self.tray_icon.showMessage(msg1, msg2, icon, 3000)
         
         message = "Playing: %s by %s on %s" % (title, artist, album)
@@ -872,7 +898,8 @@ The old database format is no longer compatible with the new implementation.""")
                 
             name = "%sItem" % meta[cnt]
             func1 = "QTableWidgetItem(QString(str(%s)))" % val
-            func2 = "%s.setFlags(%s.flags() ^ Qt.ItemIsEditable)" % (name, name)
+            func2 = "%s.setFlags(%s.flags() ^ Qt.ItemIsEditable)" % (name,
+                                                                      name)
             
             exec "%s = %s" % (name, func1)
             exec func2
@@ -895,3 +922,5 @@ The old database format is no longer compatible with the new implementation.""")
         self.playlistTree.resizeColumnsToContents()
         if self.playlistTree.columnWidth(0) > 300:
             self.playlistTree.setColumnWidth(0, 300)
+    
+
