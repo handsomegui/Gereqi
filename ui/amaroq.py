@@ -137,8 +137,6 @@ class Setups(Finishes):
         self.connect(self.actionPrevious_Track, SIGNAL("triggered()"), self.on_prevBttn_pressed)  
         self.connect(self.actionStop, SIGNAL("triggered()"), self.on_stopBttn_pressed)
     
-        self.connect(self.clrCollectBttn, SIGNAL("pressed()"), self.on_actionClear_triggered)
-        
         self.connect(self.media_object, SIGNAL('tick(qint64)'), self.tick)
         self.connect(self.media_object, SIGNAL('aboutToFinish()'), self.about_to_finish)
         self.connect(self.media_object, SIGNAL('finished()'), self.finished)
@@ -209,14 +207,14 @@ class Setups(Finishes):
             # When creating collection tree only allow certain 
             # artists based on the filter.
             # The try is a bodge for an artist with no entry
-            try:
-                if filt:
-                    filt = filt.lower()
-                    art = str(artist.lower())
-                    if filt not in art:
-                        continue
-            except:
-                continue
+#            try:
+            if filt:
+                filt = filt.lower()
+                art = str(artist.lower())
+                if filt not in art:
+                    continue
+#            except:
+#                continue
                 
             try:
                 char = str(artist)[0]
@@ -276,7 +274,6 @@ class MainWindow(QMainWindow, Setups):
         """
         This allows the filtering of the collection tree
         """
-        print p0
         srch = str(p0)
         self.setup_db_tree(filt=srch)       
         

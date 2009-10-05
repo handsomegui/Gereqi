@@ -33,20 +33,24 @@ class Metadata:
         try:
             artist = tags.tag().artist
             artist = artist.replace('''"''',"")
+            if len(artist.strip()) < 1:
+                artist = "Unknown Artist"
         except:
-            artist = ""
+            artist = "Unknown Artist"
             
         try:
             album = tags.tag().album
             album = album.replace('''"''',"")
+            if len(album.strip()) < 1:
+                album = "Unknown Album"
         except:
-            album = ""
+            album = "Unknown Album"
 
         try: 
             genre = tags.tag().genre
             genre = genre.replace('''"''',"")
         except:
-            genre = ""
+            genre = "Unknown"
         
         try: 
             year = tags.tag().year
