@@ -198,7 +198,6 @@ class Setups(Finishes):
         # This gives multiples of the same thing i.e albums
         artists = self.media_db.query_db("artist")
         artists = sorted(artists)
-        
         old_char = None
         char = None
         font = QFont()
@@ -207,14 +206,18 @@ class Setups(Finishes):
         for cnt in range(len(artists)):
             artist = artists[cnt][0]
             
-            # When creating collection tree only allow certain artists based
-            # on the filter
-            if filt:
-                filt = filt.lower()
-                art = str(artist.lower())
-                if filt not in art:
-                    continue
-
+            # When creating collection tree only allow certain 
+            # artists based on the filter.
+            # The try is a bodge for an artist with no entry
+            try:
+                if filt:
+                    filt = filt.lower()
+                    art = str(artist.lower())
+                    if filt not in art:
+                        continue
+            except:
+                continue
+                
             try:
                 char = str(artist)[0]
             except:
@@ -273,6 +276,7 @@ class MainWindow(QMainWindow, Setups):
         """
         This allows the filtering of the collection tree
         """
+        print p0
         srch = str(p0)
         self.setup_db_tree(filt=srch)       
         
