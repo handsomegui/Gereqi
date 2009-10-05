@@ -283,27 +283,42 @@ class MainWindow(QMainWindow, Setups):
         When double click and abum in the collection browser
         add the album's tracks to the playlist.
         """
-        album = item.text(column)
-        print album
+        now = item.text(0)
+        par = item.parent()
         
-        try:
-            # Although you can put unicode into the QString
-            # to create ths QTreeWidgetItem you can't get a
-            # a Qstring with unicode back out. Brilliant!
-            artist = item.parent().text(0)
-            print artist
+        # When we haven't selected an artist
+        if par:
+            track = par.parent()
+            # When we select an individual track
+            if track:
+                album = par.text(0)
+                artist = now
+                track = track.text(0)
+                print artist, album, track
+            # When we've selected an album
+            else:
+                album = now
+                artist = par.text(0)
+                
+
+##        if par
+#        try:
+#            # Although you can put unicode into the QString
+#            # to create ths QTreeWidgetItem you can't get a
+#            # a Qstring with unicode back out. Brilliant!
+#            artist = item.parent().text(0)
+#            
+#         # Should go here if artist item is double-clicked as it has no parent
+#        except:
+#            return
+        if not track:
+            tracks = self.media_db.file_names(artist, album)
             
-         # Should go here if artist item is double-clicked as it has no parent
-        except:
-            return
-            
-        tracks = self.media_db.file_names(artist, album)
-        
-        for track in tracks:
-            track = track[0]
-            # Retrieves metadata from database
-            info = self.media_db.track_info(track)[0][1:] 
-            self.add2playlist(str(track), info)
+            for track in tracks:
+                track = track[0]
+                # Retrieves metadata from database
+                info = self.media_db.track_info(track)[0][1:] 
+                self.add2playlist(str(track), info)
     
     @pyqtSignature("")
     def on_prevBttn_pressed(self):
