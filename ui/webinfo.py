@@ -81,9 +81,17 @@ class Webinfo:
             #TODO: embed a stylesheet
             # Disable underlining and higlighting of links
             site = "wikipedia"
+            style = '''<style type="text/css">
+         A:link {text-decoration: none; color:black}
+         A:visited {text-decoration: none}
+         A:active {text-decoration: none}
+         A:hover {text-decoration: none}
+         </style>
+            '''
             result = self.fetch(site, *params)
             # Cuts out everything from References down
             result = result.split('''<div class="references''')[0] 
+            result = style + result
             return result
             
         elif thing == "cover":    
