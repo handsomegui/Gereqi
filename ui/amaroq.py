@@ -239,7 +239,6 @@ class MainWindow(QMainWindow, SETUPS):
         self.media_dir = None
         self.meta = METADATA()
         self.setup_db_tree()
-        self.window_show = True #FIXME: use windowState
         self.old_pos = 0
         self.cover_thread = GETCOVER()
         self.html_thread = GETWIKI()
@@ -659,7 +658,6 @@ The old database format is no longer compatible with the new implementation.""")
         else:
             self.hide()
             
-        self.window_show = state #FIXME:Try and replace with a PyQt4 function
         self.view_action.setChecked(state)
         self.actionMinimise_to_Tray.setChecked(state)
     
@@ -702,11 +700,9 @@ The old database format is no longer compatible with the new implementation.""")
         Things to perform on user-interaction of the tray icon
         other than bringing up it's menu
         """
-        window_state = self.windowState()
-        print window_state == Qt.WindowNoState # Useless. Always true
-
+        # Left click
         if event == 3:
-            if self.window_show:
+            if self.isVisible():
                 self.minimise_to_tray(False)
             else:
                 self.minimise_to_tray(True)            
