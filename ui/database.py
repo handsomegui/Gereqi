@@ -79,7 +79,7 @@ class Media:
         
         meta.append(date)
         values = self.gen_line(meta)
-        print values
+#        print values
             
         cols = "file_name,track,title,artist,album,year,genre,length,bitrate,added"
         query = "INSERT INTO media (%s) VALUES (%s)" % (cols, values)
@@ -88,7 +88,7 @@ class Media:
             self.media_curs.execute(query) 
             self.media_db.commit()    
         except:
-            print "Database Failure: %s" % values
+            print "Database Failure: %s" % query
         
         
     def gen_line(self, info):
@@ -100,10 +100,10 @@ class Media:
             meta = info[cnt]
 #            meta = unicode(meta, "utf-8")
 #            meta = '''"%s"''' % meta
-            print type,(meta), meta
+#            print type(meta), meta
             line += '''%r''' % meta
             if cnt < len(info) - 1:
-                line += ","
+                line += ", "
 
         return line
 

@@ -18,7 +18,7 @@ from metadata import Metadata
 from threads import Getcover, Getwiki, Builddb
 
 #import sys
-#sys.setdefaultencoding("latin-1")
+#sys.setdefaultencoding("utf-8")
 
 class Finishes(Ui_MainWindow):
     def __init__(self):
@@ -210,13 +210,14 @@ class Setups(Finishes):
         
         for cnt in range(len(artists)):
             artist = artists[cnt][0]
-#            artist = unicode(artist, "latin-1")
+            artist = artist.encode("utf-8")
+#            artist = unicode(artist, "utf-8")
             print type(artist), artist
             artist = QByteArray.fromRawData(artist) # Ahhh!!!
             artist = QString(artist)
             
             print artist
-#            artist = artist.decode("latin-1") # Ahhh!!!!!!
+#            artist = artist.decode("utf-8") # Ahhh!!!!!!
 
             # When creating collection tree only allow certain 
             # artists based on the filter.
