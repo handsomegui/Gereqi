@@ -106,11 +106,17 @@ class Media:
         return self.queryfetchall(query)
         
     def searching(self, look_for, look_in, thing):
-#        print look_for, look_in, thing
         query = '''SELECT DISTINCT %s FROM media
                             WHERE %s="%s"''' % (look_for, look_in, thing)
         return self.queryfetchall(query)
     
+    def album_tracks(self, artist, album):
+        print artist, album
+        query = '''SELECT DISTINCT title FROM media
+                            WHERE artist="%s" 
+                            AND album="%s"''' % (artist, album)
+        return self.queryfetchall(query)
+        
     def file_names(self, artist, album):
         query = '''SELECT DISTINCT file_name FROM media
                             WHERE artist="%s" AND album="%s"''' % (artist, album)

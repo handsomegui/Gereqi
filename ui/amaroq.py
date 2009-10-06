@@ -580,14 +580,43 @@ The old database format is no longer compatible with the new implementation.""")
         the collection tree when expanded. Only if empty.
         """
         #TODO: make this aware of collectTimeBox widget
-        if item.childCount() == 0:
+        #TODO: check whether album or artist is expanded
+        
+        par = item.parent()
+        
+        # If we've expanded an album
+        if par:
+            artist = par.text(0)
+            album = item.text(0)
+        else:
             artist = item.text(0)
-            albums = self.media_db.searching("album", "artist", artist)
-            for cnt in range(len(albums)):
-                album = albums[cnt][0]
-                album = QStringList(album)                
-                album = QTreeWidgetItem(album)
-                item.insertChild(cnt, album)
+            album = None
+
+        print artist, album
+        
+        if album:
+            # Adding tracks to album
+            if item.childCount() == 0:
+                
+                tracks = self.media_db.album_tracks(artist, album)
+                for cnt in range(len(tracks)):
+                    track = tracks[cnt][0]
+                    print track
+                    track = QStringList(track)                
+                    track = QTreeWidgetItem(track)
+                    item.insertChild(cnt, track)
+                
+            
+        else:
+            # Adding albums to the artist
+            if item.childCount() == 0:
+                albums = self.media_db.searching("album", "artist", artist)
+                for cnt in range(len(albums)):
+                    album = albums[cnt][0]
+                    album = QStringList(album)                
+                    album = QTreeWidgetItem(album)
+                    album.setChildIndicatorPolicy(0)
+                    item.insertChild(cnt, album)
 
     @pyqtSignature("")
     def on_clrCollectBttn_clicked(self):
