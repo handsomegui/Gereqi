@@ -66,7 +66,6 @@ class Media:
         for table in tables:
             self.media_curs.execute(table)
         
-        
     def add_media(self, meta):
         """
         Here we add data into the media database
@@ -117,7 +116,6 @@ class Media:
         return self.queryfetchall(query)
         
     def file_name(self, artist, album, title):
-#        print artist, album, title
         query = '''SELECT DISTINCT file_name FROM media
                     WHERE artist="%s"
                     AND album="%s"

@@ -285,33 +285,28 @@ class MainWindow(QMainWindow, Setups):
         """
         now = item.text(0)
         par = item.parent()
+        track = None
+        album = None
         
         # When we haven't selected an artist
         if par:
-            track = par.parent()
+            par_par = par.parent()
             # When we select an individual track
-            if track:
+            if par_par:
+                artist = par_par.text(0)
                 album = par.text(0)
-                artist = now
-                track = track.text(0)
-                print artist, album, track
+                track = now
             # When we've selected an album
             else:
                 album = now
                 artist = par.text(0)
-                
-
-##        if par
-#        try:
-#            # Although you can put unicode into the QString
-#            # to create ths QTreeWidgetItem you can't get a
-#            # a Qstring with unicode back out. Brilliant!
-#            artist = item.parent().text(0)
-#            
-#         # Should go here if artist item is double-clicked as it has no parent
-#        except:
-#            return
-        if not track:
+        
+        if track:
+            track = self.media_db.file_name(artist, album, track)[0][0]
+            info = self.media_db.track_info(track)[0][1:] 
+            self.add2playlist(str(track), info)
+            
+        elif album:
             tracks = self.media_db.file_names(artist, album)
             
             for track in tracks:
@@ -580,7 +575,6 @@ The old database format is no longer compatible with the new implementation.""")
         the collection tree when expanded. Only if empty.
         """
         #TODO: make this aware of collectTimeBox widget
-        #TODO: check whether album or artist is expanded
         
         par = item.parent()
         
@@ -591,21 +585,17 @@ The old database format is no longer compatible with the new implementation.""")
         else:
             artist = item.text(0)
             album = None
-
-        print artist, album
         
+        #TODO: add tracks in trackNum order
         if album:
             # Adding tracks to album
             if item.childCount() == 0:
-                
                 tracks = self.media_db.album_tracks(artist, album)
                 for cnt in range(len(tracks)):
                     track = tracks[cnt][0]
-                    print track
                     track = QStringList(track)                
                     track = QTreeWidgetItem(track)
                     item.insertChild(cnt, track)
-                
             
         else:
             # Adding albums to the artist
