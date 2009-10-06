@@ -69,7 +69,9 @@ class Builddb(QThread):
                     tracks.append(fileNow)
                     
         tracksTotal = len(tracks)
-
+        
+        #TODO:maybe put in a check to not bother getting tags for
+        # an existing file and skipping anyway
         for cnt in range(tracksTotal):
             prog = float(cnt ) /  float(tracksTotal)
             prog = round(100 * prog)

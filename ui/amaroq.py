@@ -192,6 +192,7 @@ class Setups(Finishes):
         The beginnings of viewing the media database in the QTreeView
         """
         #TODO: make the creation aware of the collectTimeBox widget
+        time_filter = self.collectTimeBox.currentIndex()
         
         #Because we now call this to filter, we need to clear the collecttree
         # before changing it
@@ -249,6 +250,7 @@ class MainWindow(QMainWindow, Setups):
         Setups.__init__(self) # Guess what? A guess!
         self.setupUi(self)
         
+        #TODO:put self.flag-Things into a single list
         self.media_db = Media()
         self.media_dir = None
         self.meta = Metadata()
@@ -623,6 +625,9 @@ The old database format is no longer compatible with the new implementation.""")
         Slot documentation goes here.
         """
         # TODO: not implemented yet
+        filt = self.srchCollectEdt.text()
+        filt = str(filt)
+        self.setup_db_tree(filt)
         print "Filter collectionTree WRT time."
         
     @pyqtSignature("")
@@ -634,8 +639,6 @@ The old database format is no longer compatible with the new implementation.""")
         QMessageBox.aboutQt(None, 
             self.trUtf8(""))
 
-        
-        
 #######################################
 #######################################
 
@@ -958,4 +961,10 @@ The old database format is no longer compatible with the new implementation.""")
         if self.playlistTree.columnWidth(0) > 300:
             self.playlistTree.setColumnWidth(0, 300)
     
+    def gen_date(self):
+        """
+        Here we generate the date in the format used in the database.
+        This is to replace the database's implementation
+        """
+        pass
 
