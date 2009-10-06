@@ -98,6 +98,9 @@ class Media:
         line = ''''''
         for cnt in range(len(info)):
             meta = info[cnt]
+#            meta = unicode(meta, "utf-8")
+#            meta = '''"%s"''' % meta
+            print type,(meta), meta
             line += '''%r''' % meta
             if cnt < len(info) - 1:
                 line += ","

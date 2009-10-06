@@ -6,7 +6,7 @@ qApp, QIcon, QPixmap, QLabel, QProgressBar, QToolButton, QTreeWidgetItem, \
 QFont, QPixmap, QShortcut, QMessageBox
 
 from PyQt4.QtCore import pyqtSignature, QString, Qt, SIGNAL, QTime, \
-SLOT, QSize,  QStringList
+SLOT, QSize,  QStringList, QByteArray
 
 from PyQt4.phonon import Phonon
 from random import randrange
@@ -18,7 +18,7 @@ from metadata import Metadata
 from threads import Getcover, Getwiki, Builddb
 
 #import sys
-#sys.setdefaultencoding("utf-8")
+#sys.setdefaultencoding("latin-1")
 
 class Finishes(Ui_MainWindow):
     def __init__(self):
@@ -210,8 +210,13 @@ class Setups(Finishes):
         
         for cnt in range(len(artists)):
             artist = artists[cnt][0]
-            artist = artist.decode("utf-8") # Ahhh!!!!!!
-            print type(artist)
+#            artist = unicode(artist, "latin-1")
+            print type(artist), artist
+            artist = QByteArray.fromRawData(artist) # Ahhh!!!
+            artist = QString(artist)
+            
+            print artist
+#            artist = artist.decode("latin-1") # Ahhh!!!!!!
 
             # When creating collection tree only allow certain 
             # artists based on the filter.
