@@ -71,20 +71,15 @@ class Media:
         Here we add data into the media database
         """
         # A debug
-        try:
-            #FIXME: This doesn't seem to like unicode
-            date = localtime()
-            year = str(date[0])[2:4]
-            month = "%02d" % date[1]
-            day = "%02d" % date[2]
-            date = "%s%s%s" % (day, month, year)
-            
-            meta.append(date)
-            values = '"%s"' % '", "'.join(meta)
-            
-        except:
-            print meta
-            return
+        date = localtime()
+        year = str(date[0])[2:4]
+        month = "%02d" % date[1]
+        day = "%02d" % date[2]
+        date = "%s%s%s" % (day, month, year)
+        
+        meta.append(date)
+        values = self.gen_line(meta)
+        print values
             
         cols = "file_name,track,title,artist,album,year,genre,length,bitrate,added"
         query = "INSERT INTO media (%s) VALUES (%s)" % (cols, values)
@@ -95,6 +90,19 @@ class Media:
         except:
             print "Database Failure: %s" % values
         
+        
+    def gen_line(self, info):
+        """
+        One masssive hack
+        """
+        line = ''''''
+        for cnt in range(len(info)):
+            meta = info[cnt]
+            line += '''%r''' % meta
+            if cnt < len(info) - 1:
+                line += ","
+
+        return line
 
     def query_db(self, column):    
         """

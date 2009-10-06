@@ -17,6 +17,8 @@ from database import Media
 from metadata import Metadata
 from threads import Getcover, Getwiki, Builddb
 
+#import sys
+#sys.setdefaultencoding("utf-8")
 
 class Finishes(Ui_MainWindow):
     def __init__(self):
@@ -208,7 +210,9 @@ class Setups(Finishes):
         
         for cnt in range(len(artists)):
             artist = artists[cnt][0]
-            
+            artist = artist.decode("utf-8") # Ahhh!!!!!!
+            print type(artist)
+
             # When creating collection tree only allow certain 
             # artists based on the filter.
 
@@ -289,6 +293,7 @@ class MainWindow(QMainWindow, Setups):
         par = item.parent()
         track = None
         album = None
+        artist = None
         
         # When we haven't selected an artist
         if par:
@@ -296,12 +301,24 @@ class MainWindow(QMainWindow, Setups):
             # When we select an individual track
             if par_par:
                 artist = par_par.text(0)
+                artist =  artist.toLatin1()
+#                artist =  str(artist)
+#                artist = unicode(artist)
+#                artist = artist.encode("latin1")
+                
                 album = par.text(0)
                 track = now
             # When we've selected an album
             else:
                 album = now
                 artist = par.text(0)
+#                artist =  str(artist)
+                artist =  artist.toLatin1()
+#                artist = unicode(artist)
+#                artist = artist.encode("latin1")
+                
+        
+        print artist, album, track
         
         if track:
             track = self.media_db.file_name(artist, album, track)[0][0]
@@ -459,6 +476,7 @@ class MainWindow(QMainWindow, Setups):
             formats = ["ogg", "mp3", "flac"]
             for item in mfiles:
                 ender = item.split(".")[-1]
+                ender = str(ender)
                 ender = ender.lower()
                 if ender in formats:
                     info = self.meta.extract(item) 
