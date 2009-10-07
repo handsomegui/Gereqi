@@ -18,7 +18,7 @@ class Webinfo:
         things = []
         
         for item in params:
-            item = ''.join([c for c in item if c not in exc])
+            item = ''.join([c for c in item if c not in exc]) #FIXME:I don't like unicode
             item = item.replace(" ", "+")
             things.append(item)
             
