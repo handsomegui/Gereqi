@@ -207,45 +207,20 @@ class Setups(Finishes):
         font = QFont()
         font.setBold(True)
         
-        #FIXME: FFFFFFFFFFFFFFFFUUUUUUUUUUUUUUUUUU!!!!!!!!!!!!!!
         for cnt in range(len(artists)):
             artist = artists[cnt][0]
-#            print repr(artists)
-#            print repr(artist), type(artist)
-#            artist = artist.decode("utf-8")
-#            print repr(artist)
-#            print artist
-            
-#            print art, type(art)
-#            art = str(art)
-#            artist = unicode(artist,"utf-8" )
-            
-#            print art
-#            artist = artist.decode("utf-8")
-#            print artist,type(artist)
-
-#            artist = unicode(artist, "utf-8")
-#            print type(artist), artist
-#            artist = QByteArray.fromRawData(artist) # Ahhh!!!
-#            artist = QString.fromAscii(art)
-#            artist= QString.fromLatin1(art)
-#            artist = QString.fromUtf8(artist)
-#            artist = QString.fromUnicode(artist)
-            
-            
-#            artist = artist.decode("utf-8") # Ahhh!!!!!!
 
             # When creating collection tree only allow certain 
             # artists based on the filter.
 
             if filt:
                 filt = filt.lower()
-                art = str(artist.lower())
+                art = artist.lower()
                 if filt not in art:
                     continue
                 
             try:
-                char = str(artist)[0]
+                char = artist[0]
             except:
                 char = ""            
             
@@ -962,74 +937,46 @@ The old database format is no longer compatible with the new implementation.""")
         the database and is passed into the function directly
         """
 #        #TODO: prevent creation of empty rows
-#        meta = ["track", "title", "artist", "album", "year", \
-#            "genre", "length", "bitrate", "file"]
-#        vals = len(meta)
-#        
-#        for cnt in range(vals):
-#            stn = meta[cnt]
-#            print info[cnt]
-#            if stn == "track":
-#                num = int(info[0])
-#                val = '''"%02u"''' % num
-#            elif stn == "file":
-#                val = '''"%s"''' % file_name
-#            else:
-#                val = "info[cnt]" 
-#            
-#            print val
-#            name = "%sItem" % stn
-#            cmd1 = "QTableWidgetItem(QString(%s))" % val
-#            cmd1 = "%s = %s" % (name, cmd1)
-#            cmd2 = "%s.setFlags(%s.flags() ^ Qt.ItemIsEditable)" % (name,
-#                                                                      name)
-#            
-#            print cmd1
-#            print cmd2
-#            exec cmd1
-#            exec cmd2
             
         track = "%02u" % info[0]
-        trackItem = QTableWidgetItem(QString(track))
-        trackItem.setFlags(trackItem.flags() ^ Qt.ItemIsEditable)
+        track_item = QTableWidgetItem(QString(track))
+        track_item.setFlags(track_item.flags() ^ Qt.ItemIsEditable)
         
-        titleItem = QTableWidgetItem(QString(info[1]))
-        titleItem.setFlags(titleItem.flags() ^ Qt.ItemIsEditable)
+        title_item = QTableWidgetItem(QString(info[1]))
+        title_item.setFlags(title_item.flags() ^ Qt.ItemIsEditable)
 
-        artistItem = QTableWidgetItem(QString(info[2]))
-        artistItem.setFlags(artistItem.flags() ^ Qt.ItemIsEditable)
+        artist_item = QTableWidgetItem(QString(info[2]))
+        artist_item.setFlags(artist_item.flags() ^ Qt.ItemIsEditable)
 
-        albumItem = QTableWidgetItem(QString(info[3]))
-        albumItem.setFlags(albumItem.flags() ^ Qt.ItemIsEditable)
+        album_item = QTableWidgetItem(QString(info[3]))
+        album_item.setFlags(album_item.flags() ^ Qt.ItemIsEditable)
         
-        yearItem = QTableWidgetItem(str(info[4]))
-        yearItem.setFlags(yearItem.flags() ^ Qt.ItemIsEditable)
+        year_item = QTableWidgetItem(str(info[4]))
+        year_item.setFlags(year_item.flags() ^ Qt.ItemIsEditable)
 
-        genreItem = QTableWidgetItem(QString(info[5]))
-        genreItem.setFlags(genreItem.flags() ^ Qt.ItemIsEditable)
+        genre_item = QTableWidgetItem(QString(info[5]))
+        genre_item.setFlags(genre_item.flags() ^ Qt.ItemIsEditable)
         
-        lengthItem = QTableWidgetItem(QString(info[6]))
-        lengthItem.setFlags(lengthItem.flags() ^ Qt.ItemIsEditable)
+        length_item = QTableWidgetItem(QString(info[6]))
         
-        bitrateItem = QTableWidgetItem(QString(str(info[7])))
-        bitrateItem.setFlags(bitrateItem.flags() ^ Qt.ItemIsEditable)
+        bitrate_item = QTableWidgetItem(QString(str(info[7])))
         
-        fileItem = QTableWidgetItem(QString(file_name))
+        file_item = QTableWidgetItem(QString(file_name))
             
         current_row = self.playlistTree.rowCount()
         self.playlistTree.insertRow(current_row)
         
         file_col = 8
         #TODO: These column assignments have to be dynamic at some point
-        self.playlistTree.setItem(current_row, 0, trackItem)
-        self.playlistTree.setItem(current_row, 1, titleItem)
-        self.playlistTree.setItem(current_row, 2, artistItem)
-        self.playlistTree.setItem(current_row, 3, albumItem)
-        self.playlistTree.setItem(current_row, 4, yearItem)
-        self.playlistTree.setItem(current_row, 5, genreItem)
-        self.playlistTree.setItem(current_row, 6, lengthItem)
-        self.playlistTree.setItem(current_row, 7, bitrateItem)
-        self.playlistTree.setItem(current_row, file_col , fileItem)
+        self.playlistTree.setItem(current_row, 0, track_item)
+        self.playlistTree.setItem(current_row, 1, title_item)
+        self.playlistTree.setItem(current_row, 2, artist_item)
+        self.playlistTree.setItem(current_row, 3, album_item)
+        self.playlistTree.setItem(current_row, 4, year_item)
+        self.playlistTree.setItem(current_row, 5, genre_item)
+        self.playlistTree.setItem(current_row, 6, length_item)
+        self.playlistTree.setItem(current_row, 7, bitrate_item)
+        self.playlistTree.setItem(current_row, file_col , file_item)
         
         self.playlistTree.resizeColumnsToContents()
         if self.playlistTree.columnWidth(0) > 300:

@@ -27,7 +27,6 @@ class Metadata:
         try:
             title = tags.tag().title
             title = title.replace('''"''',"")
-#            title = title.encode("utf-8")  
             
             if not title:
                 title = file_name.split("/")[-1]
@@ -39,9 +38,6 @@ class Metadata:
         try:
             artist = tags.tag().artist
             artist = artist.replace('''"''',"")
-            print repr(artist)
-#            artist = artist.encode("utf-8")
-            print repr(artist)
             if len(artist.strip()) < 1:
                 artist = "Unknown Artist"
                 
@@ -51,7 +47,6 @@ class Metadata:
         try:
             album = tags.tag().album
             album = album.replace('''"''',"")
-#            album = album.encode("utf-8")
             if len(album.strip()) < 1:
                 album = "Unknown Album"
         except:
@@ -60,7 +55,6 @@ class Metadata:
         try: 
             genre = tags.tag().genre
             genre = genre.replace('''"''',"")
-#            genre = genre.encode("utf-8")
             if len(genre.strip()) < 1:
                 genre = "Unknown"
         except:
@@ -86,7 +80,6 @@ class Metadata:
             seconds = tags.audioProperties().length
             minim = seconds // 60
             rem = seconds % 60
-
             length = "%02d:%02d" % (minim, rem)
         except:
             length = "00:00"

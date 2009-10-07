@@ -82,7 +82,7 @@ class Media:
         
         meta.append(date)
         values = self.gen_line(meta)
-#        print values
+        print values
             
         cols = "file_name,track,title,artist,album,year,genre,length,bitrate,added"
         query = "INSERT INTO media (%s) VALUES (%s)" % (cols, values)
@@ -96,21 +96,10 @@ class Media:
         
     def gen_line(self, p):
         """
-        One masssive hack
+        One masssive hack. At least it doesn't chuck in " u'_blah_' " everywhere
         """
         line = ''' "%s","%s","%s","%s", "%s","%s","%s","%s","%s","%s" ''' % (p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9])
         return line
-#        line = ''''''
-#        for cnt in range(len(info)):
-#            meta = info[cnt]
-##            meta = unicode(meta, "utf-8")
-##            meta = '''"%s"''' % meta
-##            print type(meta), meta
-#            line += '''%r''' % meta
-#            if cnt < len(info) - 1:
-#                line += ", "
-#
-#        return line
 
     def query_db(self, column):    
         """
