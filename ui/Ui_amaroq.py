@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
 #
-# Created: Mon Oct  5 20:03:37 2009
+# Created: Wed Oct  7 17:52:37 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -489,8 +489,8 @@ font: 75 10pt \"DejaVu Sans\";
         self.actionConfigure.setObjectName("actionConfigure")
         self.actionRescan_Collection = QtGui.QAction(MainWindow)
         self.actionRescan_Collection.setObjectName("actionRescan_Collection")
-        self.actionExit = QtGui.QAction(MainWindow)
-        self.actionExit.setObjectName("actionExit")
+        self.actionQuit = QtGui.QAction(MainWindow)
+        self.actionQuit.setObjectName("actionQuit")
         self.actionPlay_Media = QtGui.QAction(MainWindow)
         self.actionPlay_Media.setObjectName("actionPlay_Media")
         self.actionMinimise_to_Tray = QtGui.QAction(MainWindow)
@@ -560,7 +560,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.menuActions.addAction(self.actionStop)
         self.menuActions.addAction(self.actionNext_Track)
         self.menuActions.addSeparator()
-        self.menuActions.addAction(self.actionExit)
+        self.menuActions.addAction(self.actionQuit)
         self.menuCurrent.addAction(self.actionClear)
         self.menuCurrent.addAction(self.actionSave_2)
         self.menuCurrent.addAction(self.actionLoad)
@@ -672,7 +672,8 @@ font: 75 10pt \"DejaVu Sans\";
         self.menuRandom.setTitle(QtGui.QApplication.translate("MainWindow", "Random", None, QtGui.QApplication.UnicodeUTF8))
         self.actionConfigure.setText(QtGui.QApplication.translate("MainWindow", "Configure Amaroq", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRescan_Collection.setText(QtGui.QApplication.translate("MainWindow", "Rescan Collection", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionExit.setText(QtGui.QApplication.translate("MainWindow", "Exit", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionQuit.setText(QtGui.QApplication.translate("MainWindow", "Quit", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionQuit.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+Q", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPlay_Media.setText(QtGui.QApplication.translate("MainWindow", "Play Media", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPlay_Media.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+O", None, QtGui.QApplication.UnicodeUTF8))
         self.actionMinimise_to_Tray.setText(QtGui.QApplication.translate("MainWindow", "Visible", None, QtGui.QApplication.UnicodeUTF8))

@@ -255,6 +255,7 @@ class Setups(Finishes):
                 char.setFont(0, font)
                 self.collectTree.addTopLevelItem(char)
                
+            artist = QString(artist)
             artist = QStringList(artist)
             artist = QTreeWidgetItem(artist)
             artist.setChildIndicatorPolicy(0)
@@ -474,7 +475,7 @@ class MainWindow(QMainWindow, Setups):
         self.collection()
     
     @pyqtSignature("")
-    def on_actionExit_triggered(self):
+    def on_actionQuit_triggered(self):
         """
         Closing Down. Maybe some database interaction.
         """

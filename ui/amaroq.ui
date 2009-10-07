@@ -1107,7 +1107,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     <addaction name="actionStop"/>
     <addaction name="actionNext_Track"/>
     <addaction name="separator"/>
-    <addaction name="actionExit"/>
+    <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuPlaylist">
     <property name="title">
@@ -1188,9 +1188,12 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     <string>Rescan Collection</string>
    </property>
   </action>
-  <action name="actionExit">
+  <action name="actionQuit">
    <property name="text">
-    <string>Exit</string>
+    <string>Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="actionPlay_Media">
