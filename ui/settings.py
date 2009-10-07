@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """
 This class is just for showing the settings dialog. Currently
 all it does is show an empty linedit which text has to be manually

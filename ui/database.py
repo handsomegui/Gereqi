@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from pysqlite2 import dbapi2 as sqlite
 from os import mkdir, getenv, path
 from time import localtime

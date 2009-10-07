@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from urllib2 import URLError, build_opener
 from lxml.html import fromstring, tostring

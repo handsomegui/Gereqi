@@ -1,4 +1,5 @@
-# -*- coding: iso-8859-15 -*-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from PyQt4.QtGui import QMainWindow, QFileDialog,  QKeySequence,  \
 QTableWidgetItem, QDesktopServices, QAction, QMenu, QSystemTrayIcon, \
@@ -208,15 +209,19 @@ class Setups(Finishes):
         
         #FIXME: FFFFFFFFFFFFFFFFUUUUUUUUUUUUUUUUUU!!!!!!!!!!!!!!
         for cnt in range(len(artists)):
-            artist = str(artists[cnt][0])
+            artist = artists[cnt][0]
+            print artist, type(artist)
+            artist = artist.decode("utf-8")
             print artist
+            
 #            print art, type(art)
 #            art = str(art)
-#            artist = unicode(artist,"iso-8859-15" )
+#            artist = unicode(artist,"utf-8" )
+            
 #            print art
-#            artist = artist.decode("iso-8859-15")
-#            print artist, type(artist)
-            artist = artist.encode("iso-8859-15")
+#            artist = artist.decode("utf-8")
+#            print artist,type(artist)
+
 #            artist = unicode(artist, "utf-8")
 #            print type(artist), artist
 #            artist = QByteArray.fromRawData(artist) # Ahhh!!!
@@ -224,7 +229,7 @@ class Setups(Finishes):
 #            artist= QString.fromLatin1(art)
 #            artist = QString.fromUtf8(artist)
 #            artist = QString.fromUnicode(artist)
-            print artist
+            
             
 #            artist = artist.decode("utf-8") # Ahhh!!!!!!
 

@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """
 This file contains all the necessary threads for the app
 to make it easier to manage
