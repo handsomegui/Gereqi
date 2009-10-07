@@ -24,11 +24,11 @@ class Metadata:
                 track = "Unknown"
         except:
             track = "0"
+            
         try:
             title = tags.tag().title
             title = title.replace('''"''',"")
-            
-            if not title:
+            if not title or len(track.strip()) < 1:
                 title = file_name.split("/")[-1]
                 title = title.split(".")[0]
         except:
@@ -40,7 +40,6 @@ class Metadata:
             artist = artist.replace('''"''',"")
             if len(artist.strip()) < 1:
                 artist = "Unknown Artist"
-                
         except:
             artist = "Unknown Artist"
             

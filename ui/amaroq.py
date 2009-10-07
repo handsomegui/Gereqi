@@ -17,7 +17,7 @@ from Ui_amaroq import Ui_MainWindow
 from database import Media
 from metadata import Metadata
 from threads import Getcover, Getwiki, Builddb
-
+from timing import Timing
 
 class Finishes(Ui_MainWindow):
     def __init__(self):
@@ -239,7 +239,7 @@ class Setups(Finishes):
             self.collectTree.addTopLevelItem(artist)
 
 
-class MainWindow(QMainWindow, Setups):
+class MainWindow(QMainWindow, Setups, Timing):
     """
     The main class of the app
     """    
@@ -644,7 +644,9 @@ The old database format is no longer compatible with the new implementation.""")
         filt = self.srchCollectEdt.text()
         filt = str(filt)
         self.setup_db_tree(filt)
-        print "Filter collectionTree WRT time."
+        now = self.date_now()
+        
+        print "Filter collectionTree WRT time.", now
         
     @pyqtSignature("")
     def on_actionAbout_Amaroq_triggered(self):
@@ -888,7 +890,6 @@ The old database format is no longer compatible with the new implementation.""")
         self.playlistTree.selectRow(row) 
         self.art[0] = artist.toUtf8()
         self.art[1] = album.toUtf8()
-        print self.art
         if row and self.wikiView.isVisible():
             self.set_info()
 
@@ -982,11 +983,3 @@ The old database format is no longer compatible with the new implementation.""")
         self.playlistTree.resizeColumnsToContents()
         if self.playlistTree.columnWidth(0) > 300:
             self.playlistTree.setColumnWidth(0, 300)
-    
-    def gen_date(self):
-        """
-        Here we generate the date in the format used in the database.
-        This is to replace the database's implementation
-        """
-        pass
-

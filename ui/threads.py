@@ -8,10 +8,12 @@ to make it easier to manage
 
 from PyQt4.QtCore import QThread, QString, SIGNAL
 from PyQt4.QtGui import QImage
+import os
+
 from webinfo import Webinfo
 from database import Media
 from metadata import Metadata
-import os
+from timing import Timing
 
 
 
@@ -47,7 +49,7 @@ class Getwiki(QThread):
         self.emit(SIGNAL("Activated( QString )"), result)
         
         
-class Builddb(QThread):
+class Builddb(QThread, Timing):
     def __init__(self,parent=None):
         QThread.__init__(self,parent)
         
@@ -58,6 +60,7 @@ class Builddb(QThread):
         formats = ["ogg", "mp3", "flac"]
         old_prog = 0
         tracks = []
+        
         meta = Metadata()
         media_db = Media()
         
@@ -85,9 +88,12 @@ class Builddb(QThread):
             
             track = tracks[cnt ]
             tags = meta.extract(track)
+            date = self.date_now()
+            
             # prepends the fileName as the DB function expects
             # a certain order to the args passed
             tags.insert(0, track) 
+            tags.append(date)
             media_db.add_media(tags)
         
         status = QString("finished")

@@ -3,7 +3,6 @@
 
 from pysqlite2 import dbapi2 as sqlite
 from os import mkdir, getenv, path
-from time import localtime
 
 #TODO: stats database
 
@@ -73,18 +72,9 @@ class Media:
         """
         Here we add data into the media database
         """
-        # A debug
-        date = localtime()
-        year = str(date[0])[2:4]
-        month = "%02d" % date[1]
-        day = "%02d" % date[2]
-        date = "%s%s%s" % (day, month, year)
-        
-        meta.append(date)
         values = self.gen_line(meta)
-        print values
-            
-        cols = "file_name,track,title,artist,album,year,genre,length,bitrate,added"
+        cols = "file_name,track,title,artist,\
+        album,year,genre,length,bitrate,added"
         query = "INSERT INTO media (%s) VALUES (%s)" % (cols, values)
         
         try:
@@ -93,7 +83,7 @@ class Media:
         except:
             print "Database Failure: %s" % query
         
-        
+    #FIXME: just look at it
     def gen_line(self, p):
         """
         One masssive hack. At least it doesn't chuck in " u'_blah_' " everywhere
