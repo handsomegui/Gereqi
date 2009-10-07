@@ -27,7 +27,7 @@ class Metadata:
         try:
             title = tags.tag().title
             title = title.replace('''"''',"")
-            title = title.encode("utf-8")  
+#            title = title.encode("utf-8")  
             
             if not title:
                 title = file_name.split("/")[-1]
@@ -39,7 +39,9 @@ class Metadata:
         try:
             artist = tags.tag().artist
             artist = artist.replace('''"''',"")
-            artist = artist.encode("utf-8")
+            print repr(artist)
+#            artist = artist.encode("utf-8")
+            print repr(artist)
             if len(artist.strip()) < 1:
                 artist = "Unknown Artist"
                 
@@ -49,7 +51,7 @@ class Metadata:
         try:
             album = tags.tag().album
             album = album.replace('''"''',"")
-            album = album.encode("utf-8")
+#            album = album.encode("utf-8")
             if len(album.strip()) < 1:
                 album = "Unknown Album"
         except:
@@ -58,7 +60,7 @@ class Metadata:
         try: 
             genre = tags.tag().genre
             genre = genre.replace('''"''',"")
-            genre = genre.encode("utf-8")
+#            genre = genre.encode("utf-8")
             if len(genre.strip()) < 1:
                 genre = "Unknown"
         except:

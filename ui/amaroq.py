@@ -210,9 +210,11 @@ class Setups(Finishes):
         #FIXME: FFFFFFFFFFFFFFFFUUUUUUUUUUUUUUUUUU!!!!!!!!!!!!!!
         for cnt in range(len(artists)):
             artist = artists[cnt][0]
-            print artist, type(artist)
-            artist = artist.decode("utf-8")
-            print artist
+#            print repr(artists)
+#            print repr(artist), type(artist)
+#            artist = artist.decode("utf-8")
+#            print repr(artist)
+#            print artist
             
 #            print art, type(art)
 #            art = str(art)
@@ -322,7 +324,7 @@ class MainWindow(QMainWindow, Setups):
             # When we select an individual track
             if par_par:
                 artist = par_par.text(0)
-                artist =  artist.toLatin1()
+#                artist =  artist.toLatin1()
 #                artist =  str(artist)
 #                artist = unicode(artist)
 #                artist = artist.encode("latin1")
@@ -334,12 +336,12 @@ class MainWindow(QMainWindow, Setups):
                 album = now
                 artist = par.text(0)
 #                artist =  str(artist)
-                artist =  artist.toLatin1()
+#                artist =  artist.toLatin1()
 #                artist = unicode(artist)
 #                artist = artist.encode("latin1")
                 
         
-        print artist, album, track
+#        print artist, album, track
         
         if track:
             track = self.media_db.file_name(artist, album, track)[0][0]
@@ -959,27 +961,60 @@ The old database format is no longer compatible with the new implementation.""")
         or from the database. Does not pull metadata from 
         the database and is passed into the function directly
         """
-        #TODO: prevent creation of empty rows
-        meta = ["track", "title", "artist", "album", "year", \
-            "genre", "length", "bitrate", "file"]
-        vals = len(meta)
-        
-        for cnt in range(vals):
-            if meta[cnt] == "track":
-                num = int(info[0])
-                val = '''"%02u"''' % num
-            elif meta[cnt] == "file":
-                val = '''"%s"''' % file_name
-            else:
-                val = "info[%d]" % cnt
-                
-            name = "%sItem" % meta[cnt]
-            func1 = "QTableWidgetItem(QString(str(%s)))" % val
-            func2 = "%s.setFlags(%s.flags() ^ Qt.ItemIsEditable)" % (name,
-                                                                      name)
+#        #TODO: prevent creation of empty rows
+#        meta = ["track", "title", "artist", "album", "year", \
+#            "genre", "length", "bitrate", "file"]
+#        vals = len(meta)
+#        
+#        for cnt in range(vals):
+#            stn = meta[cnt]
+#            print info[cnt]
+#            if stn == "track":
+#                num = int(info[0])
+#                val = '''"%02u"''' % num
+#            elif stn == "file":
+#                val = '''"%s"''' % file_name
+#            else:
+#                val = "info[cnt]" 
+#            
+#            print val
+#            name = "%sItem" % stn
+#            cmd1 = "QTableWidgetItem(QString(%s))" % val
+#            cmd1 = "%s = %s" % (name, cmd1)
+#            cmd2 = "%s.setFlags(%s.flags() ^ Qt.ItemIsEditable)" % (name,
+#                                                                      name)
+#            
+#            print cmd1
+#            print cmd2
+#            exec cmd1
+#            exec cmd2
             
-            exec "%s = %s" % (name, func1)
-            exec func2
+        track = "%02u" % info[0]
+        trackItem = QTableWidgetItem(QString(track))
+        trackItem.setFlags(trackItem.flags() ^ Qt.ItemIsEditable)
+        
+        titleItem = QTableWidgetItem(QString(info[1]))
+        titleItem.setFlags(titleItem.flags() ^ Qt.ItemIsEditable)
+
+        artistItem = QTableWidgetItem(QString(info[2]))
+        artistItem.setFlags(artistItem.flags() ^ Qt.ItemIsEditable)
+
+        albumItem = QTableWidgetItem(QString(info[3]))
+        albumItem.setFlags(albumItem.flags() ^ Qt.ItemIsEditable)
+        
+        yearItem = QTableWidgetItem(str(info[4]))
+        yearItem.setFlags(yearItem.flags() ^ Qt.ItemIsEditable)
+
+        genreItem = QTableWidgetItem(QString(info[5]))
+        genreItem.setFlags(genreItem.flags() ^ Qt.ItemIsEditable)
+        
+        lengthItem = QTableWidgetItem(QString(info[6]))
+        lengthItem.setFlags(lengthItem.flags() ^ Qt.ItemIsEditable)
+        
+        bitrateItem = QTableWidgetItem(QString(str(info[7])))
+        bitrateItem.setFlags(bitrateItem.flags() ^ Qt.ItemIsEditable)
+        
+        fileItem = QTableWidgetItem(QString(file_name))
             
         current_row = self.playlistTree.rowCount()
         self.playlistTree.insertRow(current_row)

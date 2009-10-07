@@ -94,21 +94,23 @@ class Media:
             print "Database Failure: %s" % query
         
         
-    def gen_line(self, info):
+    def gen_line(self, p):
         """
         One masssive hack
         """
-        line = ''''''
-        for cnt in range(len(info)):
-            meta = info[cnt]
-#            meta = unicode(meta, "utf-8")
-#            meta = '''"%s"''' % meta
-#            print type(meta), meta
-            line += '''%r''' % meta
-            if cnt < len(info) - 1:
-                line += ", "
-
+        line = ''' "%s","%s","%s","%s", "%s","%s","%s","%s","%s","%s" ''' % (p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9])
         return line
+#        line = ''''''
+#        for cnt in range(len(info)):
+#            meta = info[cnt]
+##            meta = unicode(meta, "utf-8")
+##            meta = '''"%s"''' % meta
+##            print type(meta), meta
+#            line += '''%r''' % meta
+#            if cnt < len(info) - 1:
+#                line += ", "
+#
+#        return line
 
     def query_db(self, column):    
         """
