@@ -7,7 +7,7 @@ qApp, QIcon, QPixmap, QLabel, QProgressBar, QToolButton, QTreeWidgetItem, \
 QFont, QPixmap, QShortcut, QMessageBox
 
 from PyQt4.QtCore import pyqtSignature, QString, Qt, SIGNAL, QTime, \
-SLOT, QSize,  QStringList, QByteArray
+SLOT, QSize,  QStringList
 
 from PyQt4.phonon import Phonon
 from random import randrange

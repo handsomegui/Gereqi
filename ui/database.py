@@ -66,7 +66,8 @@ class Media:
                 )''']      
         
         for table in tables:
-            self.media_curs.execute(table)
+            self.query_execute(table)
+#            self.media_curs.execute(table)
         
     def add_media(self, meta):
         """
@@ -78,8 +79,9 @@ class Media:
         query = "INSERT INTO media (%s) VALUES (%s)" % (cols, values)
         
         try:
-            self.media_curs.execute(query) 
-            self.media_db.commit()    
+            self.query_execute(query)
+#            self.media_curs.execute(query) 
+#            self.media_db.commit()    
         except:
             print "Database Failure: %s" % query
         
@@ -88,9 +90,12 @@ class Media:
         """
         One masssive hack. At least it doesn't chuck in " u'_blah_' " everywhere
         """
-        line = ''' "%s","%s","%s","%s", "%s","%s","%s","%s","%s","%s" ''' % (p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9])
-        return line
-
+        try:
+            line = ''' "%s","%s","%s","%s", "%s","%s","%s","%s","%s","%s" ''' % (p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9])
+            return line
+        except UnicodeDecodeError:
+            print p
+            
     def query_db(self, column):    
         """
         Ermm. Not sure what to put here yet.
@@ -128,5 +133,10 @@ class Media:
         return self.queryfetchall(query)
         
     def queryfetchall(self, query):
-        self.media_curs.execute(query)
+        self.query_execute(query)
         return self.media_curs.fetchall()
+        
+    def query_execute(self, query):
+        self.media_curs.execute(query)
+        # Not sure to use this on reads   
+        self.media_db.commit() 
