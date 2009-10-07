@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: iso-8859-15 -*-
+
 import tagpy
 
 class Metadata:
@@ -21,11 +24,10 @@ class Metadata:
                 track = "Unknown"
         except:
             track = "0"
-        
         try:
             title = tags.tag().title
             title = title.replace('''"''',"")
-            title = title.encode("utf-8")  
+            title = title.encode("iso-8859-15")  
             
             if not title:
                 title = file_name.split("/")[-1]
@@ -37,8 +39,7 @@ class Metadata:
         try:
             artist = tags.tag().artist
             artist = artist.replace('''"''',"")
-            artist = artist.encode("utf-8")
-            
+            artist = artist.encode("iso-8859-15")
             if len(artist.strip()) < 1:
                 artist = "Unknown Artist"
                 
@@ -48,7 +49,7 @@ class Metadata:
         try:
             album = tags.tag().album
             album = album.replace('''"''',"")
-            album = album.encode("utf-8")
+            album = album.encode("iso-8859-15")
             if len(album.strip()) < 1:
                 album = "Unknown Album"
         except:
@@ -57,7 +58,7 @@ class Metadata:
         try: 
             genre = tags.tag().genre
             genre = genre.replace('''"''',"")
-            genre = genre.encode("utf-8")
+            genre = genre.encode("iso-8859-15")
             if len(genre.strip()) < 1:
                 genre = "Unknown"
         except:

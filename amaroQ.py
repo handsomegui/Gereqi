@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: iso-8859-15 -*-
 """
 The main script to run the application
 More things could be done in here but i've 
