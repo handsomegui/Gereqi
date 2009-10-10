@@ -15,8 +15,6 @@ from database import Media
 from metadata import Metadata
 from timing import Timing
 
-
-
 class Getcover(QThread):
     def __init__(self,parent=None):
         QThread.__init__(self,parent)
@@ -67,7 +65,13 @@ class Builddb(QThread, Timing):
         for root, dirname, filenames in os.walk(str(self.media_dir)):
             for name in filenames:
                 file_now = os.path.join(root, name)
-                file_now = file_now.decode("utf-8")
+                
+                try:
+                    file_now = file_now.decode("utf-8")
+                except UnicodeDecodeError:
+                    print "Warning!: latin1 encoded filename. Ignoring", repr(file_now)
+                    continue
+                    
                 ender = file_now.split(".")[-1]
                 ender = ender.lower()
                 # We only want to get tags for certain file formats as

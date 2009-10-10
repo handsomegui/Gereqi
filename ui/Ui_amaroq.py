@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
 #
-# Created: Wed Oct  7 17:52:37 2009
+# Created: Sat Oct 10 19:51:58 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -401,6 +401,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.playBttn.setObjectName("playBttn")
         self.horizontalLayout_3.addWidget(self.playBttn)
         self.stopBttn = QtGui.QToolButton(self.layoutWidget)
+        self.stopBttn.setEnabled(False)
         icon10 = QtGui.QIcon()
         icon10.addPixmap(QtGui.QPixmap(":/Icons/media-playback-stop.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.stopBttn.setIcon(icon10)

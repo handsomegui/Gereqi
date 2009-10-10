@@ -927,6 +927,9 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
             </item>
             <item>
              <widget class="QToolButton" name="stopBttn">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="toolTip">
                <string>Stop</string>
               </property>
