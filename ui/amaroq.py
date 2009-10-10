@@ -200,7 +200,7 @@ class Setups(Finishes):
         self.collectTree.clear()
         
         # This gives multiples of the same thing i.e albums
-        artists = self.media_db.query_db("artist")
+        artists = self.media_db.get_artists()
         artists = sorted(artists)
         old_char = None
         char = None
@@ -299,37 +299,41 @@ class MainWindow(QMainWindow, Setups, Timing):
             # When we select an individual track
             if par_par:
                 artist = par_par.text(0)
-#                artist =  artist.toLatin1()
-#                artist =  str(artist)
-#                artist = unicode(artist)
-#                artist = artist.encode("latin1")
-                
                 album = par.text(0)
                 track = now
+                
             # When we've selected an album
             else:
                 album = now
                 artist = par.text(0)
-#                artist =  str(artist)
-#                artist =  artist.toLatin1()
-#                artist = unicode(artist)
-#                artist = artist.encode("latin1")
-                
         
-#        print artist, album, track
+        # In any case we'll have an artist
+        artist = artist.toLocal8Bit()
+        artist = str(artist)
+        artist = artist.decode("utf-8")
         
         if track:
-            track = self.media_db.file_name(artist, album, track)[0][0]
-            info = self.media_db.track_info(track)[0][1:] 
+            album = album.toLocal8Bit()
+            album = str(album)
+            album = album.decode("utf-8")      
+            track = track.toLocal8Bit()
+            track = str(track)
+            track = track.decode("utf-8")
+            
+            track = self.media_db.get_file(artist, album, track)[0][0]
+            info = self.media_db.get_info(track)[0][1:] 
             self.add2playlist(str(track), info)
             
         elif album:
-            tracks = self.media_db.file_names(artist, album)
+            album = album.toLocal8Bit()
+            album = str(album)
+            album = album.decode("utf-8")
+            tracks = self.media_db.get_files(artist, album)
             
             for track in tracks:
                 track = track[0]
                 # Retrieves metadata from database
-                info = self.media_db.track_info(track)[0][1:] 
+                info = self.media_db.get_info(track)[0][1:] 
                 self.add2playlist(str(track), info)
     
     @pyqtSignature("")
@@ -604,11 +608,18 @@ The old database format is no longer compatible with the new implementation.""")
             artist = item.text(0)
             album = None
         
+        artist = artist.toLocal8Bit()
+        artist = str(artist)
+        artist = artist.decode("utf-8")
         #TODO: add tracks in trackNum order
         if album:
             # Adding tracks to album
             if item.childCount() == 0:
-                tracks = self.media_db.album_tracks(artist, album)
+                album = album.toLocal8Bit()
+                album = str(album)
+                album = album.decode("utf-8")
+                
+                tracks = self.media_db.get_titles(artist, album)
                 for cnt in range(len(tracks)):
                     track = tracks[cnt][0]
                     track = QStringList(track)                
@@ -618,7 +629,7 @@ The old database format is no longer compatible with the new implementation.""")
         else:
             # Adding albums to the artist
             if item.childCount() == 0:
-                albums = self.media_db.searching("album", "artist", artist)
+                albums = self.media_db.get_albums(artist)
                 for cnt in range(len(albums)):
                     album = albums[cnt][0]
                     album = QStringList(album)                
@@ -760,7 +771,16 @@ The old database format is no longer compatible with the new implementation.""")
         Not finished
         """
         if not self.media_dir:
-            self.on_actionConfigure_triggered()
+            self.media_dir = QFileDialog.getExistingDirectory(\
+                None,
+                self.trUtf8("Select Media Directory"),
+                self.trUtf8("/home"),
+                QFileDialog.Options(QFileDialog.ShowDirsOnly))
+
+#            if dialog.exec_():
+#                self.media_dir = dialog.dir_val()
+#            print self.media_dir
+#            self.on_actionConfigure_triggered()
    
         # If the dialog is cancelled in last if statement the below is ignored
         if self.media_dir:
@@ -942,9 +962,8 @@ The old database format is no longer compatible with the new implementation.""")
         or from the database. Does not pull metadata from 
         the database and is passed into the function directly
         """
-#        #TODO: prevent creation of empty rows
+        #TODO: prevent creation of empty rows
         
-        print type(info[0])
         track = "%02u" % info[0]
         track_item = QTableWidgetItem(QString(track))
         track_item.setFlags(track_item.flags() ^ Qt.ItemIsEditable)

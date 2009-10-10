@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from pysqlite2 import dbapi2 as sqlite
+#from pysqlite2 import dbapi2 as sqlite
+from sqlite3 import dbapi2 as sqlite
 from os import mkdir, getenv, path
 
 #TODO: stats database
@@ -37,9 +38,7 @@ class Media:
                 year    UNSIGNED SMALLINT(4),
                 genre   VARCHAR(50),
                 length  VARCHAR(5),
-                bitrate UNSIGNED SMALLNT(4),
-                rating  UNSIGNED TINYINT(1),
-                playcount   UNSIGNED SMALLINT,
+                bitrate UNSIGNED SMALLINT(4),
                 added UNSIGNED MEDIUMINT(6),
                 PRIMARY KEY (file_name) ON CONFLICT IGNORE
                 )'''
@@ -67,74 +66,67 @@ class Media:
         
         for table in tables:
             self.query_execute(table)
-#            self.media_curs.execute(table)
         
     def add_media(self, meta):
         """
         Here we add data into the media database
         """
-        values = self.gen_line(meta)
-        cols = "file_name,track,title,artist,\
-        album,year,genre,length,bitrate,added"
-        query = "INSERT INTO media (%s) VALUES (%s)" % (cols, values)
-        
         try:
-            self.query_execute(query)
-#            self.media_curs.execute(query) 
-#            self.media_db.commit()    
+            self.media_curs.execute("INSERT INTO media VALUES (?,?,?,?,?,?,?,?,?,?)", meta)
+            self.media_db.commit()
         except:
-            print "Database Failure: %s" % query
+            print meta
         
-    #FIXME: just look at it
-    def gen_line(self, p):
-        """
-        One masssive hack. At least it doesn't chuck in " u'_blah_' " everywhere
-        """
-        try:
-            line = ''' "%s","%s","%s","%s", "%s","%s","%s","%s","%s","%s" ''' % (p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9])
-            return line
-        except UnicodeDecodeError:
-            print p
-            
-    def query_db(self, column):    
-        """
-        Ermm. Not sure what to put here yet.
-        Maybe a testing thing
-        """
-        query = "SELECT DISTINCT %s FROM media" % column
-        return self.queryfetchall(query)
         
-    def searching(self, look_for, look_in, thing):
-        query = '''SELECT DISTINCT %s FROM media
-                            WHERE %s="%s"''' % (look_for, look_in, thing)
-        return self.queryfetchall(query)
-    
-    def album_tracks(self, artist, album):
-        query = '''SELECT DISTINCT title FROM media
-                            WHERE artist="%s" 
-                            AND album="%s"''' % (artist, album)
-        return self.queryfetchall(query)
-        
-    def file_name(self, artist, album, title):
-        query = '''SELECT DISTINCT file_name FROM media
-                    WHERE artist="%s"
-                    AND album="%s"
-                    AND title="%s"''' % (artist, album, title)
-        return self.queryfetchall(query)
-                    
-    def file_names(self, artist, album):
-        query = '''SELECT DISTINCT file_name FROM media
-                            WHERE artist="%s" AND album="%s"''' % (artist, album)
-        return self.queryfetchall(query)
-        
-    def track_info(self, file_name):
-        query = '''SELECT * FROM media
-                            WHERE file_name="%s"''' % file_name
-        return self.queryfetchall(query)
-        
-    def queryfetchall(self, query):
-        self.query_execute(query)
+    def get_artists(self):
+        self.media_curs.execute("SELECT DISTINCT artist FROM media")
         return self.media_curs.fetchall()
+    
+    def get_albums(self, artist):
+        artist = (artist, )
+        self.media_curs.execute("SELECT DISTINCT album FROM media WHERE artist=?", artist)
+        return self.media_curs.fetchall()
+        
+    def get_files(self, artist, album):
+        args = (artist, album)
+        print args
+        query = '''SELECT DISTINCT file_name FROM media 
+        WHERE artist=?
+        AND album=?'''
+        self.media_curs.execute(query, args)
+        return self.media_curs.fetchall()
+        
+    def get_file(self, artist, album, title):
+        args = (artist, album, title)
+        print args
+        query = '''SELECT DISTINCT file_name FROM media 
+        WHERE artist=?
+        AND album=?
+        AND title=?'''
+        self.media_curs.execute(query, args)
+        # Should really be fetchOne()
+        return self.media_curs.fetchall()
+        
+    def get_titles(self, artist, album):
+        args = (artist, album)
+        print args
+        query = '''SELECT DISTINCT title FROM media 
+        WHERE artist=?
+        AND album=?'''
+        self.media_curs.execute(query, args)
+        return self.media_curs.fetchall()
+        
+    def get_info(self, file_name):
+        args = (file_name, )
+        query = '''SELECT * FROM media 
+        WHERE file_name=?'''
+        self.media_curs.execute(query, args)
+        return self.media_curs.fetchall()
+        
+        
+#    def queryfetchall(self, query):
+#        self.query_execute(query)
+#        return self.media_curs.fetchall()
         
     def query_execute(self, query):
         self.media_curs.execute(query)

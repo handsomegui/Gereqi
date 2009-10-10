@@ -27,7 +27,7 @@ class Metadata:
         try:
             title = tags.tag().title
             title = title.replace('''"''',"")
-            if not title or len(track.strip()) < 1:
+            if not title:
                 title = file_name.split("/")[-1]
                 title = title.split(".")[0]
         except:
@@ -60,19 +60,21 @@ class Metadata:
         
         try: 
             year = tags.tag().year
-            year = str(year)
-            if len(year.strip()) < 1:
-                year = "0"
+#            year = str(year)
+#            if len(year.strip()) < 1:
+            if not year:
+                year = 0
         except: 
-            year = "0"
+            year = 0
         
         try:
             bitrate = tags.audioProperties().bitrate
-            bitrate = str(bitrate)
-            if len(bitrate.strip()) < 1:
-                bitrate = "Unknown"
+#            bitrate = str(bitrate)
+#            if len(bitrate.strip()) < 1:
+            if not bitrate:
+                bitrate = 0
         except:
-            bitrate = "0"
+            bitrate = 0
             
         try:
             seconds = tags.audioProperties().length
