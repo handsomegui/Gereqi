@@ -14,8 +14,11 @@ class Metadata:
         safe 'empty' values so i'ev had to bodge 
         it a little with a load of try and excepts
         """
+#        print repr(file_name)
+        file_name = file_name.encode("utf-8")
         
-        tags = tagpy.FileRef(str(file_name))
+        # Won't handle unicode
+        tags = tagpy.FileRef(file_name)
         
         try:
             track = tags.tag().track

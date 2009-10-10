@@ -54,7 +54,7 @@ class Builddb(QThread, Timing):
         QThread.__init__(self,parent)
         
     def set_values(self, dir):
-        self.mediaDir = dir
+        self.media_dir = dir
         
     def run(self):
         formats = ["ogg", "mp3", "flac"]
@@ -64,22 +64,23 @@ class Builddb(QThread, Timing):
         meta = Metadata()
         media_db = Media()
         
-        for root, dirname, filenames in os.walk(str(self.mediaDir)):
+        for root, dirname, filenames in os.walk(str(self.media_dir)):
             for name in filenames:
-                fileNow = os.path.join(root, name)
-                ender = fileNow.split(".")[-1]
+                file_now = os.path.join(root, name)
+                file_now = file_now.decode("utf-8")
+                ender = file_now.split(".")[-1]
                 ender = ender.lower()
                 # We only want to get tags for certain file formats as
                 # tagpy can only work with certain types
                 if ender in formats:
-                    tracks.append(fileNow)
+                    tracks.append(file_now)
                     
-        tracksTotal = len(tracks)
+        tracks_total = len(tracks)
         
         #TODO:maybe put in a check to not bother getting tags for
         # an existing file and skipping anyway
-        for cnt in range(tracksTotal):
-            prog = float(cnt ) /  float(tracksTotal)
+        for cnt in range(tracks_total):
+            prog = float(cnt ) /  float(tracks_total)
             prog = round(100 * prog)
             prog = int(prog)
             if prog > old_prog:

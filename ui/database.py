@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#from pysqlite2 import dbapi2 as sqlite
 from sqlite3 import dbapi2 as sqlite
 from os import mkdir, getenv, path
 
@@ -29,6 +28,7 @@ class Media:
         self.setup_tables()
         
     def setup_tables(self):
+        # Only the media table is actually used right now
         tables = ['''CREATE TABLE IF NOT EXISTS media (
                 file_name    TEXT ,
                 track    UNSIGNED TINYINT(2),
@@ -65,8 +65,9 @@ class Media:
                 )''']      
         
         for table in tables:
-            self.query_execute(table)
-        
+            self.media_curs.execute(table)
+            self.media_db.commit() 
+
     def add_media(self, meta):
         """
         Here we add data into the media database
@@ -124,11 +125,12 @@ class Media:
         return self.media_curs.fetchall()
         
         
-#    def queryfetchall(self, query):
-#        self.query_execute(query)
-#        return self.media_curs.fetchall()
+    def queryfetchall(self, query, args):
+        self.media_curs.execute(query, args)
+        return self.media_curs.fetchall()
         
-    def query_execute(self, query):
-        self.media_curs.execute(query)
+    def query_execute(self, query, args=None):
+        self.media_curs.execute(query, args)
         # Not sure to use this on reads   
         self.media_db.commit() 
+        
