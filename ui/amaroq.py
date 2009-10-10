@@ -916,6 +916,10 @@ The old database format is no longer compatible with the new implementation.""")
             return True        
 
     def gen_file_list(self):
+        """
+        Creates a list of files in the playlist at its
+        current sorting top to bottom
+        """
         column = 8
         rows = self.playlistTree.rowCount() 
         file_list = []
@@ -939,7 +943,8 @@ The old database format is no longer compatible with the new implementation.""")
         the database and is passed into the function directly
         """
 #        #TODO: prevent creation of empty rows
-            
+        
+        print type(info[0])
         track = "%02u" % info[0]
         track_item = QTableWidgetItem(QString(track))
         track_item.setFlags(track_item.flags() ^ Qt.ItemIsEditable)

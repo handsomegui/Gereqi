@@ -19,11 +19,10 @@ class Metadata:
         
         try:
             track = tags.tag().track
-            track = str(track)
-            if len(track.strip()) < 1:
-                track = "Unknown"
+            if not track:
+                track = 0
         except:
-            track = "0"
+            track = 0
             
         try:
             title = tags.tag().title
