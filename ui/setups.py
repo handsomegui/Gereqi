@@ -11,35 +11,42 @@ from Ui_amaroq import Ui_MainWindow
 
 
 class Setups(Ui_MainWindow):
+    """
+    This deals with the initialisation of the Ui
+    and various dynamic widgets.
+    """
     def __init__(self):
         # I've no idea what an instance is
         Ui_MainWindow.__init__(self) 
     
     def playlist_add_menu(self):
+        """
+        In the 'playlist' tab a menu is required for
+        the 'add' button
+        """
         menu = QMenu(self)
         playlist_menu = QMenu(self)
         playlist_menu.setTitle(QString("Playlist"))
-        
         new = QAction(self.tr("New..."), self)
         existing = QAction(self.tr("Import Existing..."), self)
         playlist_menu.addAction(new)
         playlist_menu.addAction(existing)        
         menu.addMenu(playlist_menu)
-        
         smart = QAction(self.tr("Smart Playlist..."), self)
         dynamic = QAction(self.tr("Dynamic Playlist..."), self)
         radio = QAction(self.tr("Radio Stream..."), self)
         podcast = QAction(self.tr("Podcast..."), self)
-
         menu.addAction(smart)
         menu.addAction(dynamic)
         menu.addAction(radio)
         menu.addAction(podcast)
-
         self.addPlylstBttn.setMenu(menu)
         #TODO: add functions for actions
     
     def setup_shortcuts(self):
+        """
+        Keyboard shortcuts setup
+        """
         delete = QShortcut(QKeySequence(self.tr("Del")), self)
         self.connect(delete, SIGNAL("activated()"), self.del_track) 
         
@@ -66,28 +73,24 @@ class Setups(Ui_MainWindow):
         self.stat_bttn = QToolButton()
         self.play_type_bttn = QToolButton()
         icon = QIcon(QPixmap(":/Icons/application-exit.png"))
-        
         self.stat_prog.setRange(0, 100)
         self.stat_prog.setValue(100)
         self.stat_prog.setMaximumSize(QSize(100, 18))
-        
         self.stat_bttn.setIcon(icon)
         self.stat_bttn.setAutoRaise(True)
         self.stat_bttn.setEnabled(False)
-        
         self.play_type_bttn.setText("N")
         self.play_type_bttn.setCheckable(True)
         self.play_type_bttn.setAutoRaise(True)
-
         self.statusBar.addPermanentWidget(self.stat_lbl)
         self.statusBar.addPermanentWidget(self.stat_prog)
         self.statusBar.addPermanentWidget(self.stat_bttn)
         self.statusBar.addPermanentWidget(self.play_type_bttn)
-
+        # Headers for the Playlist widget
+        # TODO: dynamic columns at some point
         headers = [self.tr("Track"), self.tr("Title"), self.tr("Artist"), \
                    self.tr("Album"), self.tr("Year"), self.tr("Genre"),   \
                    self.tr("Length"), self.tr("Bitrate"), self.tr("FileName")]
-        
         for val in range(len(headers)):
             self.playlistTree.insertColumn(val)
         self.playlistTree.setHorizontalHeaderLabels(headers)
@@ -101,7 +104,6 @@ class Setups(Ui_MainWindow):
         self.connect(self.actionNext_Track, SIGNAL("triggered()"), self.on_nxtBttn_pressed)
         self.connect(self.actionPrevious_Track, SIGNAL("triggered()"), self.on_prevBttn_pressed)  
         self.connect(self.actionStop, SIGNAL("triggered()"), self.on_stopBttn_pressed)
-    
         self.connect(self.media_object, SIGNAL('tick(qint64)'), self.tick)
         self.connect(self.media_object, SIGNAL('aboutToFinish()'), self.about_to_finish)
         self.connect(self.media_object, SIGNAL('finished()'), self.finished)
@@ -114,6 +116,10 @@ class Setups(Ui_MainWindow):
         self.connect(self.stat_bttn, SIGNAL("triggered()"), self.build_db_thread.exit)
         
     def create_tray_menu(self):
+        """
+        The tray menu contains shortcuts to features
+        in the main UI
+        """
         quit_action = QAction(self.tr("&Quit"), self)
         self.play_action = QAction(self.tr("&Play"), self)
         next_action = QAction(self.tr("&Next"), self)
@@ -125,7 +131,6 @@ class Setups(Ui_MainWindow):
         self.view_action.setChecked(True)
         tray_icon_menu = QMenu(self)
         icon = QIcon(QPixmap(":/Icons/drawing.png"))
-        
         tray_icon_menu.addAction(icon, QString("Amaroq"))
         tray_icon_menu.addSeparator()
         tray_icon_menu.addAction(prev_action)
@@ -135,12 +140,10 @@ class Setups(Ui_MainWindow):
         tray_icon_menu.addSeparator()
         tray_icon_menu.addAction(self.view_action)
         tray_icon_menu.addAction(quit_action)
-        
         # No. This icon isn't final. Just filler.
         self.tray_icon = QSystemTrayIcon(self)
         self.tray_icon.setIcon(icon)
         self.tray_icon.setContextMenu(tray_icon_menu)
-  
         self.connect(self.play_action, SIGNAL("toggled(bool)"), self.on_playBttn_toggled)
         self.connect(next_action, SIGNAL("triggered()"), self.on_nxtBttn_pressed)
         self.connect(prev_action, SIGNAL("triggered()"), self.on_prevBttn_pressed)
@@ -152,15 +155,13 @@ class Setups(Ui_MainWindow):
         
     def setup_db_tree(self, filt=None):
         """
-        The beginnings of viewing the media database in the QTreeView
+        viewing the media database in the QTreeView
         """
         #TODO: make the creation aware of the collectTimeBox widget
         time_filter = self.collectTimeBox.currentIndex()
-        
         #Because we now call this to filter, we need to clear the collecttree
         # before changing it
         self.collectTree.clear()
-        
         # This gives multiples of the same thing i.e albums
         artists = self.media_db.get_artists()
         artists = sorted(artists)
@@ -168,24 +169,19 @@ class Setups(Ui_MainWindow):
         char = None
         font = QFont()
         font.setBold(True)
-        
         for cnt in range(len(artists)):
             artist = artists[cnt][0]
-
             # When creating collection tree only allow certain 
             # artists based on the filter.
-
             if filt:
                 filt = filt.lower()
                 art = artist.lower()
                 if filt not in art:
                     continue
-                
             try:
                 char = artist[0]
             except:
                 char = ""            
-            
             if char != old_char:
                 old_char = char  
                 char = "== %s ==" % char
@@ -193,7 +189,6 @@ class Setups(Ui_MainWindow):
                 char = QTreeWidgetItem(char)
                 char.setFont(0, font)
                 self.collectTree.addTopLevelItem(char)
-               
             artist = QString(artist)
             artist = QStringList(artist)
             artist = QTreeWidgetItem(artist)

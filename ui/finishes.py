@@ -6,6 +6,10 @@ from PyQt4.QtCore import Qt
 
 
 class Finishes:
+    """
+    This deals with the signals coming
+    from the threads.
+    """
     def __init__(self):
         return
     

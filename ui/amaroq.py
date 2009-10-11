@@ -4,10 +4,8 @@
 from PyQt4.QtGui import QMainWindow, QFileDialog,   \
 QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
 QIcon, QPixmap, QTreeWidgetItem, QPixmap, QMessageBox
-
 from PyQt4.QtCore import pyqtSignature, QString, Qt,  \
 QTime, QStringList
-
 from PyQt4.phonon import Phonon
 from random import randrange
 
@@ -18,6 +16,7 @@ from threads import Getcover, Getwiki, Builddb
 from timing import Timing
 from setups import Setups
 from finishes import Finishes
+
 
 # I don't  like this multiple class inheritance
 class MainWindow(QMainWindow, Setups, Timing, Finishes):
@@ -33,8 +32,6 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
         Setups.__init__(self) # Guess what? A guess!
         Finishes.__init__(self)
         self.setupUi(self)
-        
-        #TODO:put self.flag-Things into a single list
         self.media_db = Media()
         self.media_dir = None
         self.meta = Metadata()
@@ -44,17 +41,14 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
         self.html_thread = Getwiki()
         self.build_db_thread = Builddb()     
         self.locale = ".com" # needs to be editable in Setting_Dialog
-
-        self.art = [None, None] # The current playing artist
-        self.old_art = [None, None] # The last playing artist
-        
+        # artist,album info. [0:1] is old. [2:3] is now
+        self.art = [None, None, None, None] 
         self.setup_audio()
         self.setup_shortcuts()
         self.setup_extra()        
         self.create_actions()        
         self.playlist_add_menu()
         self.create_tray_menu()
-        
         
     @pyqtSignature("QString")
     def on_srchCollectEdt_textChanged(self, p0):
@@ -89,12 +83,10 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
             else:
                 album = now
                 artist = par.text(0)
-        
         # In any case we'll have an artist
         artist = artist.toLocal8Bit()
         artist = str(artist)
         artist = artist.decode("utf-8")
-        
         if track:
             album = album.toLocal8Bit()
             album = str(album)
@@ -102,17 +94,14 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
             track = track.toLocal8Bit()
             track = str(track)
             track = track.decode("utf-8")
-            
             track = self.media_db.get_file(artist, album, track)[0][0]
             info = self.media_db.get_info(track)[0][1:] 
             self.add2playlist(str(track), info)
-            
         elif album:
             album = album.toLocal8Bit()
             album = str(album)
             album = album.decode("utf-8")
             tracks = self.media_db.get_files(artist, album)
-            
             for track in tracks:
                 track = track[0]
                 # Retrieves metadata from database
@@ -130,7 +119,6 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
             self.media_object.stop()
             self.media_object.clear()    
             self.media_object.setCurrentSource(track)
-            
             if self.is_playing():
                 self.media_object.play()            
             else:
@@ -149,7 +137,6 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
         if checked:
             # Need a check to see currentsource  matches higlighted track
             queued = self.media_object.currentSource().fileName()
-            
             # Nothing already loaded into phonon
             if not queued:
                 selected = self.playlistTree.currentRow()
@@ -161,20 +148,17 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
                 else:
                     self.playBttn.setChecked(False)
                     return
-                    
             self.media_object.play()
             self.stopBttn.setEnabled(True)
             icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
             self.playBttn.setIcon(icon)
             if not self.is_playing():
                 self.generate_info()
-                
         else:
             self.media_object.pause()
             icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
             self.playBttn.setIcon(icon)
             self.stat_lbl.setText("Paused")
-            
         self.playBttn.setChecked(checked)    
         self.play_action.setChecked(checked)
         self.actionPlay.setChecked(checked)
@@ -188,7 +172,6 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
         self.tabWidget_2.setTabEnabled(2, False)
         self.media_object.stop()
         self.playBttn.setChecked(False)
-        
         self.stopBttn.setEnabled(False)
         self.finished()
         
@@ -222,7 +205,6 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
         # TODO: not finished yet. Need to learn
         # more about modal dialogs
         dialog = Setting_Dialog(self)
-        
         if dialog.exec_():
             self.media_dir = dialog.dir_val()
             print self.media_dir
@@ -257,13 +239,11 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
                         QDesktopServices.storageLocation(QDesktopServices.MusicLocation), 
                         self.trUtf8("*.flac;*.mp3;*.ogg"), 
                         None)       
-           
         if mfiles:
             formats = ["ogg", "mp3", "flac"]
             for item in mfiles:
                 item = str(item.toLocal8Bit())
                 item = item.encode("utf-8")
-                
                 ender = item.split(".")[-1]
                 ender = str(ender)
                 ender = ender.lower()
@@ -290,11 +270,9 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
         # Has to incorporate database
         self.playlistTree.clearContents()
         rows = self.playlistTree.rowCount()
-        
         # For some reason can only remove from bot to top
         for cnt in range(rows, -1, -1):
             self.playlistTree.removeRow(cnt)
-        
         self.media_object.clearQueue()
     
     @pyqtSignature("")
@@ -317,7 +295,6 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
             row = search.row()
             if not row in rows:
                 rows.append(row)
-                
         print rows
     
     @pyqtSignature("bool")
@@ -359,7 +336,6 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
         When item is doubleclicked. Play its row.
         """
         self.media_object.stop()
-
         track = self.generate_track("now", row)
         self.media_object.setCurrentSource(track)
         self.media_object.play()
@@ -384,9 +360,7 @@ The old database format is no longer compatible with the new implementation.""")
         the collection tree when expanded. Only if empty.
         """
         #TODO: make this aware of collectTimeBox widget
-        
         par = item.parent()
-        
         # If we've expanded an album
         if par:
             artist = par.text(0)
@@ -394,7 +368,7 @@ The old database format is no longer compatible with the new implementation.""")
         else:
             artist = item.text(0)
             album = None
-        
+        # An artist in any case
         artist = artist.toLocal8Bit()
         artist = str(artist)
         artist = artist.decode("utf-8")
@@ -405,14 +379,12 @@ The old database format is no longer compatible with the new implementation.""")
                 album = album.toLocal8Bit()
                 album = str(album)
                 album = album.decode("utf-8")
-                
                 tracks = self.media_db.get_titles(artist, album)
                 for cnt in range(len(tracks)):
                     track = tracks[cnt][0]
                     track = QStringList(track)                
                     track = QTreeWidgetItem(track)
                     item.insertChild(cnt, track)
-            
         else:
             # Adding albums to the artist
             if item.childCount() == 0:
@@ -468,25 +440,31 @@ The old database format is no longer compatible with the new implementation.""")
             # to next queued track 2,3 is the same sig as when next/prev
             # buttons are used
             self.state_changed(2, 3) 
-        
         now = t_now.toString('mm:ss')
         maxtime = self.t_length.toString('mm:ss')
         msg = "%s | %s" % (now, maxtime)
         self.progLbl.setText(msg)            
-            
         # This only goes(?) if  the user has not grabbed the slider
         # The 'or' stops issue where the slider doesn't move after track finishes
         if pos == self.old_pos or pos < 1: 
             self.progSldr.setValue(time)
         self.old_pos = time
             
-    def about_to_finish(self):    
+    def about_to_finish(self):
+        """
+        Generates a track to go into queue
+        before playback stops
+        """
         track = self.generate_track("next")
         if track:
             self.media_object.clearQueue()
             self.media_object.enqueue(track)
 
     def set_prog_sldr(self):
+        """
+        Linked to the current time of
+        track being played
+        """
         length = self.media_object.totalTime()
         self.progSldr.setValue(0)
         self.progSldr.setRange(0, length)
@@ -503,7 +481,6 @@ The old database format is no longer compatible with the new implementation.""")
         if self.is_playing():
             if not ((new == 2) and ( old == 4)):
                 self.set_prog_sldr()
-         
         # Track change state
         # This is really iffy as phonon.state appears
         # to be 'misfiring'. Perhaps use the functions in here
@@ -513,7 +490,6 @@ The old database format is no longer compatible with the new implementation.""")
             self.generate_info()
             self.set_info()
             self.media_object.clearQueue()
-            
         # Stopped playing and at end of playlist
         elif new == 1 and old == 2 and self.is_last():
             print "debug: stopped\n"
@@ -525,21 +501,18 @@ The old database format is no longer compatible with the new implementation.""")
         """
         self.tabWidget_2.setTabEnabled(1, False)
         self.tabWidget_2.setTabEnabled(2, False)
-        
         self.playBttn.setChecked(False)
         self.stopBttn.setEnabled(False)
-        
         self.progSldr.setValue(0)
         self.old_pos = 0
         self.stat_lbl.setText("Stopped")
         self.progLbl.setText("00:00 | 00:00")
-        
         # clear things like wiki and reset cover art to default        
         self.wikiView.setHtml(QString(""))
         self.coverView.setPixmap(QPixmap(":/Icons/music.png"))
-        
         self.trkNowBox.setTitle(QString("No Track Playing"))
-        self.old_art = [None, None]
+        self.art[0] = None
+        self.art[1] = None
         
     def minimise_to_tray(self, state):
         if state:
@@ -547,7 +520,6 @@ The old database format is no longer compatible with the new implementation.""")
             self.setWindowState(Qt.WindowActive)
         else:
             self.hide()
-            
         self.view_action.setChecked(state)
         self.actionMinimise_to_Tray.setChecked(state)
     
@@ -562,12 +534,6 @@ The old database format is no longer compatible with the new implementation.""")
                 self.trUtf8("Select Media Directory"),
                 self.trUtf8("/home"),
                 QFileDialog.Options(QFileDialog.ShowDirsOnly))
-
-#            if dialog.exec_():
-#                self.media_dir = dialog.dir_val()
-#            print self.media_dir
-#            self.on_actionConfigure_triggered()
-   
         # If the dialog is cancelled in last if statement the below is ignored
         if self.media_dir:
             self.stat_bttn.setEnabled(True)
@@ -581,18 +547,17 @@ The old database format is no longer compatible with the new implementation.""")
         The wikipedia page + album art to current artist playing
         """        
         # Wikipedia info
-        if self.art[0] != self.old_art[0] and self.art[0]: 
+        if self.art[2] != self.art[0] and self.art[2]: 
             # passes the artist to the thread
-            self.html_thread.set_values(self.art[0]) 
+            self.html_thread.set_values(self.art[2]) 
             # starts the thread
             self.html_thread.start() 
-            self.old_art[0] = self.art[0]  
-            
+            self.art[0] = self.art[2]  
         # Album art
-        if self.art[1] != self.old_art[1] and self.art[1]:
-            self.cover_thread.set_values(self.art[0], self.art[1], self.locale)
+        if self.art[3] != self.art[1] and self.art[3]:
+            self.cover_thread.set_values(self.art[3], self.art[2], self.locale)
             self.cover_thread.start()
-            self.old_art[1] = self.art[1]
+            self.art[1] = self.art[3]
 
     def tray_event(self, event):
         """
@@ -605,7 +570,6 @@ The old database format is no longer compatible with the new implementation.""")
                 self.minimise_to_tray(False)
             else:
                 self.minimise_to_tray(True)            
-            
         # Middle-click to pause/play
         elif event == 4:
             if self.is_playing():
@@ -636,26 +600,21 @@ The old database format is no longer compatible with the new implementation.""")
         # So that it can be dynamic later on when columns can be moved
         column = 8 
         track = None
-        
         if mode == "now":
             track = self.playlistTree.item(row, column).text()
-            
         else:
             current = self.media_object.currentSource().fileName()
             # If 0 then the playlist is empty
             rows = self.playlistTree.rowCount() 
-            
             if rows > 0:
                 for row in range(rows):
                     file_name = self.playlistTree.item(row, column).text()
-                    
                     # Track, track, track.
                     if file_name == current:
                         if mode == "back":
                             if (row - 1) >= 0:
                                 track = self.playlistTree.item(row - 1 , column)
                                 track = track.text()
-
                         elif mode == "next":
                             if self.play_type_bttn.isChecked():
                                 # Here we need to randomly choose the next track
@@ -666,7 +625,6 @@ The old database format is no longer compatible with the new implementation.""")
                                 if (row + 1) < rows:
                                     track = self.playlistTree.item(row + 1, column)
                                     track = track.text()
-
         if track:
             track = Phonon.MediaSource(track)     
             return track
@@ -677,29 +635,27 @@ The old database format is no longer compatible with the new implementation.""")
         file_list = self.gen_file_list()
         file_name = self.media_object.currentSource().fileName()
         row = file_list.index(file_name)
-        
         title = self.playlistTree.item(row, 1).text()
         artist = self.playlistTree.item(row, 2).text()
         album = self.playlistTree.item(row, 3).text()
-        
         msg1 = QString("Now Playing")
         msg2 = QString("%s by %s" % (title, artist))
         msg3 = QString("%s - %s\n%s" % (title, artist, album))
-        
         self.trkNowBox.setTitle(msg3)
-        
         icon = QSystemTrayIcon.NoIcon        
         self.tray_icon.showMessage(msg1, msg2, icon, 3000)
-        
         message = "Playing: %s by %s on %s" % (title, artist, album)
         self.stat_lbl.setText(message)
         self.playlistTree.selectRow(row) 
-        self.art[0] = artist.toUtf8()
-        self.art[1] = album.toUtf8()
+        self.art[3] = artist.toUtf8()
+        self.art[2] = album.toUtf8()
         if row and self.wikiView.isVisible():
             self.set_info()
 
     def is_playing(self):
+        """
+        To find out if a file is being played
+        """
         state = self.media_object.state()
         if state == 2:
             return True
@@ -729,11 +685,9 @@ The old database format is no longer compatible with the new implementation.""")
         column = 8
         rows = self.playlistTree.rowCount() 
         file_list = []
-        
         for row in range(rows):
             item = self.playlistTree.item(row, column).text()
             file_list.append(item)  
-        
         return file_list   
         
     def play_type(self, checked):
@@ -749,36 +703,26 @@ The old database format is no longer compatible with the new implementation.""")
         the database and is passed into the function directly
         """
         #TODO: prevent creation of empty rows
-        
+        file_col = 8
+        current_row = self.playlistTree.rowCount()
         track = "%02u" % info[0]
+        # Creates each cell for a track based on info
         track_item = QTableWidgetItem(QString(track))
         track_item.setFlags(track_item.flags() ^ Qt.ItemIsEditable)
-        
         title_item = QTableWidgetItem(QString(info[1]))
         title_item.setFlags(title_item.flags() ^ Qt.ItemIsEditable)
-
         artist_item = QTableWidgetItem(QString(info[2]))
         artist_item.setFlags(artist_item.flags() ^ Qt.ItemIsEditable)
-
         album_item = QTableWidgetItem(QString(info[3]))
         album_item.setFlags(album_item.flags() ^ Qt.ItemIsEditable)
-        
         year_item = QTableWidgetItem(str(info[4]))
         year_item.setFlags(year_item.flags() ^ Qt.ItemIsEditable)
-
         genre_item = QTableWidgetItem(QString(info[5]))
         genre_item.setFlags(genre_item.flags() ^ Qt.ItemIsEditable)
-        
         length_item = QTableWidgetItem(QString(info[6]))
-        
         bitrate_item = QTableWidgetItem(QString(str(info[7])))
-        
         file_item = QTableWidgetItem(QString(file_name))
-            
-        current_row = self.playlistTree.rowCount()
         self.playlistTree.insertRow(current_row)
-        
-        file_col = 8
         #TODO: These column assignments have to be dynamic at some point
         self.playlistTree.setItem(current_row, 0, track_item)
         self.playlistTree.setItem(current_row, 1, title_item)
@@ -789,7 +733,6 @@ The old database format is no longer compatible with the new implementation.""")
         self.playlistTree.setItem(current_row, 6, length_item)
         self.playlistTree.setItem(current_row, 7, bitrate_item)
         self.playlistTree.setItem(current_row, file_col , file_item)
-        
         self.playlistTree.resizeColumnsToContents()
         if self.playlistTree.columnWidth(0) > 300:
             self.playlistTree.setColumnWidth(0, 300)
