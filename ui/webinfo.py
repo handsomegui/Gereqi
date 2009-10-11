@@ -82,17 +82,28 @@ class Webinfo:
             #TODO: embed a stylesheet
             # Disable underlining and higlighting of links
             site = "wikipedia"
-            style = '''<style type="text/css">
-         A:link {text-decoration: none; color:black}
-         A:visited {text-decoration: none}
-         A:active {text-decoration: none}
-         A:hover {text-decoration: none}
-         </style>
+            
+            style = '''
+            <html>
+            <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+            <style type="text/css">
+            A:link {text-decoration: none; color:black}
+            A:visited {text-decoration: none}
+            A:active {text-decoration: none}
+            A:hover {text-decoration: none}
+            </style>
+            <body>
+            %s
+            </body>
+            </html>
             '''
+            
             result = self.fetch(site, *params)
             # Cuts out everything from References down
             result = result.split('''<div class="references''')[0] 
-            result = style + result
+            # result is in a weird encoding "ö" is "&#195;&#182;"  or "%C3%B6"
+            result = style % result
             return result
             
         elif thing == "cover":    

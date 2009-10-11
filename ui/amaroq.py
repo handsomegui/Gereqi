@@ -477,6 +477,9 @@ class MainWindow(QMainWindow, Setups, Timing):
         if mfiles:
             formats = ["ogg", "mp3", "flac"]
             for item in mfiles:
+                item = str(item.toLocal8Bit())
+                item = item.encode("utf-8")
+                
                 ender = item.split(".")[-1]
                 ender = str(ender)
                 ender = ender.lower()
@@ -656,7 +659,6 @@ The old database format is no longer compatible with the new implementation.""")
         filt = str(filt)
         self.setup_db_tree(filt)
         now = self.date_now()
-        
         print "Filter collectionTree WRT time.", now
         
     @pyqtSignature("")
