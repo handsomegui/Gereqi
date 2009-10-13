@@ -3,7 +3,8 @@
 
 from PyQt4.QtGui import QMainWindow, QFileDialog,   \
 QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
-QIcon, QPixmap, QTreeWidgetItem, QPixmap, QMessageBox
+QIcon, QPixmap, QTreeWidgetItem, QPixmap, QMessageBox, \
+QColor
 from PyQt4.QtCore import pyqtSignature, QString, Qt,  \
 QTime, QStringList
 from PyQt4.phonon import Phonon
@@ -647,7 +648,8 @@ The old database format is no longer compatible with the new implementation.""")
         self.tray_icon.showMessage(msg1, msg2, icon, 3000)
         message = "Playing: %s by %s on %s" % (title, artist, album)
         self.stat_lbl.setText(message)
-        self.playlistTree.selectRow(row) 
+#        self.playlistTree.selectRow(row) 
+        self.tracknow_colourise(row)
         self.art[2] = artist.toUtf8()
         self.art[3] = album.toUtf8()
         if row and self.wikiView.isVisible():
@@ -737,3 +739,28 @@ The old database format is no longer compatible with the new implementation.""")
         self.playlistTree.resizeColumnsToContents()
         if self.playlistTree.columnWidth(0) > 300:
             self.playlistTree.setColumnWidth(0, 300)
+
+    def tracknow_colourise(self, now):
+        """
+        Instead of using QTableWidget's selectRow function, 
+        set the background colour of each item in a row
+        until track changes.
+        """
+        columns = self.playlistTree.columnCount()
+        rows = self.playlistTree.rowCount()
+        now_colour =  QColor(128, 184, 255, 128)
+        odd_colour = QColor(220, 220, 220, 128)
+        even_colour = QColor(255, 255, 255)
+        
+        for row in range(rows):
+            for col in range(columns):
+                item = self.playlistTree.item(row, col)
+                if row != now:
+                    if row % 2:
+                        item.setBackgroundColor(even_colour)
+                    else:
+                        item.setBackgroundColor(odd_colour)
+                else:
+                    item.setBackgroundColor(now_colour)
+        
+        
