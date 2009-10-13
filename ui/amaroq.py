@@ -283,21 +283,29 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
         """
         self.on_actionClear_triggered()
     
-    @pyqtSignature("")
-    def on_srchplyEdit_returnPressed(self):
+    @pyqtSignature("QString")
+    def on_srchplyEdit_textChanged(self, p0):
         """
         Filters current playlist based on input.
         Not sure whether to highlight row or item
         """
-        srch_txt = self.srchplyEdit.text()
-        rows = []
-        searched = self.playlistTree.findItems(srch_txt, Qt.MatchContains)
-        for search in searched:
-            row = search.row()
-            if not row in rows:
-                rows.append(row)
-        print rows
-    
+        # Resets before searching again
+        self.tracknow_colourise(self.current_track)
+        test = len(str(p0).strip())
+        # Checks if the search edit isn't empty
+        if test > 0:
+            rows = []
+            columns = self.playlistTree.columnCount()
+            colour = QColor(255, 128, 128, 128)
+            searched = self.playlistTree.findItems(p0, Qt.MatchContains)
+            for search in searched:
+                row = search.row()
+                if not row in rows:
+                    rows.append(row)
+                    for col in range(columns):
+                        item = self.playlistTree.item(row, col)
+                        item.setBackgroundColor(colour)
+                
     @pyqtSignature("bool")
     def on_muteBttn_toggled(self, checked):
         """
@@ -426,10 +434,28 @@ The old database format is no longer compatible with the new implementation.""")
         # TODO: not implemented yet
         QMessageBox.aboutQt(None, 
             self.trUtf8(""))
+            
+    @pyqtSignature("")
+    def on_clrsrchBttn_clicked(self):
+        """
+        Slot documentation goes here.
+        """
+        # TODO: not implemented yet
+        self.srchplyEdit.clear()
+        self.tracknow_colourise(self.current_track)
 
 #######################################
 #######################################
-
+    def current_track(self):
+        """
+        Finds the row of the currently
+        playing track
+        """
+        file_list = self.gen_file_list()
+        file_name = self.media_object.currentSource().fileName()
+        row = file_list.index(file_name)
+        return row
+        
     def tick(self, time):
         """
         Every second update time labels and progress slider
@@ -634,9 +660,10 @@ The old database format is no longer compatible with the new implementation.""")
     def generate_info(self):
         # This retrieves data from the playlist table, not the database. 
         # This is because the playlist may contain tracks added locally.
-        file_list = self.gen_file_list()
-        file_name = self.media_object.currentSource().fileName()
-        row = file_list.index(file_name)
+#        file_list = self.gen_file_list()
+#        file_name = self.media_object.currentSource().fileName()
+#        row = file_list.index(file_name)
+        row = self.current_track()
         title = self.playlistTree.item(row, 1).text()
         artist = self.playlistTree.item(row, 2).text()
         album = self.playlistTree.item(row, 3).text()
@@ -648,8 +675,8 @@ The old database format is no longer compatible with the new implementation.""")
         self.tray_icon.showMessage(msg1, msg2, icon, 3000)
         message = "Playing: %s by %s on %s" % (title, artist, album)
         self.stat_lbl.setText(message)
-#        self.playlistTree.selectRow(row) 
         self.tracknow_colourise(row)
+#        self.playlistTree.setCurrentRow(row)
         self.art[2] = artist.toUtf8()
         self.art[3] = album.toUtf8()
         if row and self.wikiView.isVisible():
@@ -751,16 +778,15 @@ The old database format is no longer compatible with the new implementation.""")
         now_colour =  QColor(128, 184, 255, 128)
         odd_colour = QColor(220, 220, 220, 128)
         even_colour = QColor(255, 255, 255)
-        
         for row in range(rows):
             for col in range(columns):
                 item = self.playlistTree.item(row, col)
                 if row != now:
                     if row % 2:
-                        item.setBackgroundColor(even_colour)
-                    else:
                         item.setBackgroundColor(odd_colour)
+                    else:
+                        item.setBackgroundColor(even_colour)
                 else:
                     item.setBackgroundColor(now_colour)
-        
-        
+    
+
