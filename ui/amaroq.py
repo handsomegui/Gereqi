@@ -626,6 +626,7 @@ The old database format is no longer compatible with the new implementation.""")
                                     track = self.playlistTree.item(row + 1, column)
                                     track = track.text()
         if track:
+            print repr(track)
             track = Phonon.MediaSource(track)     
             return track
 
@@ -647,8 +648,8 @@ The old database format is no longer compatible with the new implementation.""")
         message = "Playing: %s by %s on %s" % (title, artist, album)
         self.stat_lbl.setText(message)
         self.playlistTree.selectRow(row) 
-        self.art[3] = artist.toUtf8()
-        self.art[2] = album.toUtf8()
+        self.art[2] = artist.toUtf8()
+        self.art[3] = album.toUtf8()
         if row and self.wikiView.isVisible():
             self.set_info()
 

@@ -98,7 +98,6 @@ class Webinfo:
             </body>
             </html>
             '''
-            
             result = self.fetch(site, *params)
             # Cuts out everything from References down
             result = result.split('''<div class="references''')[0] 
