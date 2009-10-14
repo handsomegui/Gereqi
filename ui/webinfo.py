@@ -79,8 +79,6 @@ class Webinfo:
         """
         
         if thing == "info":
-            #TODO: embed a stylesheet
-            # Disable underlining and higlighting of links
             site = "wikipedia"
             
             style = '''
@@ -88,10 +86,15 @@ class Webinfo:
             <head>
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
             <style type="text/css">
-            A:link {text-decoration: none; color:black}
+            A:link {text-decoration: none; color:black;font-size 10px}
             A:visited {text-decoration: none}
             A:active {text-decoration: none}
             A:hover {text-decoration: none}
+            body{font-size 10px}
+            h1 {font-size:12px}
+            h2 {font-size:11px}
+            h3 {font-size:10px}
+            p {font-size:10px}
             </style>
             <body>
             %s

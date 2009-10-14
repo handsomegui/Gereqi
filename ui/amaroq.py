@@ -614,7 +614,6 @@ The old database format is no longer compatible with the new implementation.""")
                 row = item.row()
                 self.playlistTree.removeRow(row)
             except:
-                #FIXME:tidy up
                 # likely deleted already i.e selected same row but multiple columns
                 return  
       
@@ -658,11 +657,10 @@ The old database format is no longer compatible with the new implementation.""")
             return track
 
     def generate_info(self):
-        # This retrieves data from the playlist table, not the database. 
-        # This is because the playlist may contain tracks added locally.
-#        file_list = self.gen_file_list()
-#        file_name = self.media_object.currentSource().fileName()
-#        row = file_list.index(file_name)
+        """
+         This retrieves data from the playlist table, not the database. 
+        This is because the playlist may contain tracks added locally.        
+        """
         row = self.current_track()
         title = self.playlistTree.item(row, 1).text()
         artist = self.playlistTree.item(row, 2).text()
@@ -789,4 +787,3 @@ The old database format is no longer compatible with the new implementation.""")
                 else:
                     item.setBackgroundColor(now_colour)
     
-
