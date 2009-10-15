@@ -118,12 +118,16 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
         track = self.generate_track("back")
         if track:
             self.media_object.stop()
-            self.media_object.clear()    
+            self.media_object.clear()   # Not sure if clear() is needed now 
             self.media_object.setCurrentSource(track)
-            if self.is_playing():
-                self.media_object.play()            
-            else:
+            # Checks to see if the playbutton is in play state
+            if self.playBttn.isChecked():
+                self.media_object.play()
                 self.generate_info()
+                self.set_info()
+            # Just highlight the track we would play
+            else:
+                self.tracknow_colourise(self.current_track())
 
     # Because of the 2 signals that can trigger this, it's possible
     # this method is called twice when one or the other is called.
@@ -186,8 +190,16 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
             self.media_object.stop() 
             self.media_object.clear()      
             self.media_object.setCurrentSource(track)
-            if self.is_playing():
+            
+            # I'm surprised this does anything.
+            # We've just told it to stop. Should check
+            # the playbutton instead.
+            if self.playBttn.isChecked():
                 self.media_object.play()
+                self.generate_info()
+                self.set_info()
+            else:
+                self.tracknow_colourise(self.current_track())
         
     @pyqtSignature("int")
     def on_volSldr_valueChanged(self, value):
@@ -465,7 +477,7 @@ The old database format is no longer compatible with the new implementation.""")
         if t_now == QTime(0, 0, 0):
             # Used because no Phonon.state when the mediaobject goes 
             # to next queued track 2,3 is the same sig as when next/prev
-            # buttons are used
+            # buttons are used.
             self.state_changed(2, 3) 
         now = t_now.toString('mm:ss')
         maxtime = self.t_length.toString('mm:ss')
@@ -503,20 +515,20 @@ The old database format is no longer compatible with the new implementation.""")
         This is linked to phonon.State. A very unreliable feature.
         """
         print "debug: %s -> %s" % (new, old)
+
         # Prevents the slider being reset if playback is paused
         # or unpaused
         if self.is_playing():
             if not ((new == 2) and ( old == 4)):
                 self.set_prog_sldr()
-        # Track change state
-        # This is really iffy as phonon.state appears
-        # to be 'misfiring'. Perhaps use the functions in here
-        # directly from the buttons
+        # Track change state.
+        #TODO: Put in a check to figure out if change is due
+        # to continuous playback or from prev/nxt buttons.
         if new == 2 and old == 3: 
             print "debug: track change\n"
             self.generate_info()
             self.set_info()
-            self.media_object.clearQueue()
+#            self.media_object.clearQueue()
         # Stopped playing and at end of playlist
         elif new == 1 and old == 2 and self.is_last():
             print "debug: stopped\n"
@@ -572,7 +584,9 @@ The old database format is no longer compatible with the new implementation.""")
     def set_info(self):
         """
         The wikipedia page + album art to current artist playing
-        """        
+        """
+        caller = self.sender().objectName()
+        print "Sender was: %s"% caller
         # Wikipedia info
         if self.art[2] != self.art[0] and self.art[2]: 
             # passes the artist to the thread
@@ -661,6 +675,8 @@ The old database format is no longer compatible with the new implementation.""")
          This retrieves data from the playlist table, not the database. 
         This is because the playlist may contain tracks added locally.        
         """
+        caller = self.sender().objectName()
+        print "Sender was: %s"% caller
         row = self.current_track()
         title = self.playlistTree.item(row, 1).text()
         artist = self.playlistTree.item(row, 2).text()
@@ -674,7 +690,6 @@ The old database format is no longer compatible with the new implementation.""")
         message = "Playing: %s by %s on %s" % (title, artist, album)
         self.stat_lbl.setText(message)
         self.tracknow_colourise(row)
-        self.playlistTree.selectRow(row)
         self.art[2] = artist.toUtf8()
         self.art[3] = album.toUtf8()
         if row and self.wikiView.isVisible():
@@ -771,6 +786,7 @@ The old database format is no longer compatible with the new implementation.""")
         set the background colour of each item in a row
         until track changes.
         """
+        self.playlistTree.selectRow(now)
         columns = self.playlistTree.columnCount()
         rows = self.playlistTree.rowCount()
         now_colour =  QColor(128, 184, 255, 128)
