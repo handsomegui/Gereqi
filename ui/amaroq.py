@@ -151,6 +151,7 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
                     self.media_object.setCurrentSource(selected)
                 # Just reset the play button and stop here
                 else:
+                    # This will call this function
                     self.playBttn.setChecked(False)
                     return
             self.media_object.play()
@@ -163,7 +164,10 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
             self.media_object.pause()
             icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
             self.playBttn.setIcon(icon)
-            self.stat_lbl.setText("Paused")
+            if self.playlistTree.currentRow() >= 0:
+                self.stat_lbl.setText("Paused")
+            else:
+                self.stat_lbl.setText("Finished")
         self.playBttn.setChecked(checked)    
         self.play_action.setChecked(checked)
         self.actionPlay.setChecked(checked)
