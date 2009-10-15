@@ -674,7 +674,7 @@ The old database format is no longer compatible with the new implementation.""")
         message = "Playing: %s by %s on %s" % (title, artist, album)
         self.stat_lbl.setText(message)
         self.tracknow_colourise(row)
-#        self.playlistTree.setCurrentRow(row)
+        self.playlistTree.selectRow(row)
         self.art[2] = artist.toUtf8()
         self.art[3] = album.toUtf8()
         if row and self.wikiView.isVisible():
