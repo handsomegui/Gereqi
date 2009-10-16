@@ -7,6 +7,8 @@ class Metadata:
     def __init__(self):
         return
         
+    #TODO: handle exceptions better i.e. look for
+    # certain exceptions
     def extract(self, file_name):
         """
         Gets the file's metadata and outputs to
@@ -14,9 +16,7 @@ class Metadata:
         safe 'empty' values so i'ev had to bodge 
         it a little with a load of try and excepts
         """
-#        print repr(file_name)
         file_name = file_name.encode("utf-8")
-        
         # Won't handle unicode
         tags = tagpy.FileRef(file_name)
         
@@ -63,8 +63,6 @@ class Metadata:
         
         try: 
             year = tags.tag().year
-#            year = str(year)
-#            if len(year.strip()) < 1:
             if not year:
                 year = 0
         except: 
@@ -72,8 +70,6 @@ class Metadata:
         
         try:
             bitrate = tags.audioProperties().bitrate
-#            bitrate = str(bitrate)
-#            if len(bitrate.strip()) < 1:
             if not bitrate:
                 bitrate = 0
         except:
@@ -89,7 +85,6 @@ class Metadata:
         
         return [track, title, artist, album, year, genre, length, bitrate]
         
-        
     def write_meta(self, file_name, *meta):
         """
         Here, using editing tools in the main ui, the file's metadata 
@@ -97,5 +92,3 @@ class Metadata:
         """
         print file_name, " ".join(meta)
         return
-        
-

@@ -24,6 +24,17 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
     """
     The main class of the app
     """    
+    media_dir = None
+    media_db = Media()
+    meta = Metadata()
+    cover_thread = Getcover()        
+    html_thread = Getwiki()
+    build_db_thread = Builddb()
+    old_pos = 0
+    locale =".com"
+    # artist,album info. [0:1] is old. [2:3] is now
+    art = [None, None, None, None] 
+    
     def __init__(self, parent = None):
         """
         Initialisation of key items. Some may be pulled
@@ -33,17 +44,7 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
         Setups.__init__(self) # Guess what? A guess!
         Finishes.__init__(self)
         self.setupUi(self)
-        self.media_db = Media()
-        self.media_dir = None
-        self.meta = Metadata()
         self.setup_db_tree()
-        self.old_pos = 0
-        self.cover_thread = Getcover()
-        self.html_thread = Getwiki()
-        self.build_db_thread = Builddb()     
-        self.locale = ".com" # needs to be editable in Setting_Dialog
-        # artist,album info. [0:1] is old. [2:3] is now
-        self.art = [None, None, None, None] 
         self.setup_audio()
         self.setup_shortcuts()
         self.setup_extra()        
@@ -85,6 +86,8 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
                 album = now
                 artist = par.text(0)
         # In any case we'll have an artist
+        if not artist:
+            artist = now
         artist = artist.toLocal8Bit()
         artist = str(artist)
         artist = artist.decode("utf-8")

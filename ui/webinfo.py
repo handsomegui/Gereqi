@@ -12,13 +12,13 @@ class Webinfo:
     def __init__(self):
         return
         
-    def create_url(self, site, *params):
+    def __create_url(self, site, *params):
         # Cleans up the string
         exc = '''!,.%%$&(){}[]'''
         things = []
         
         for item in params:
-            item = ''.join([c for c in item if c not in exc]) #FIXME:I don't like unicode
+            item = ''.join([c for c in item if c not in exc])
             item = item.replace(" ", "+")
             things.append(item)
             
@@ -30,12 +30,12 @@ class Webinfo:
         url = url % (site, things)
         return url
         
-    def fetch(self, site, *params):
+    def __fetch(self, site, *params):
         """
         Using urllib2 the html is retrieved via an url
         generated via create_url.
         """
-        url = self.create_url(site, *params)
+        url = self.__create_url(site, *params)
 
         # Here we need a check to see if the loaded link is from amazon
         # Some localisations don't seem to have the entire amazon.com 
@@ -49,11 +49,11 @@ class Webinfo:
             print err
             html = "about:blank"
 
-        content = self.treat(site, html)             
+        content = self.__treat(site, html)             
         return content
 
 
-    def treat(self, site, html):
+    def __treat(self, site, html):
         """
         Goes through, hopefully, a wikipedia page looking for data
         between div tags with id 'bodyContent'
@@ -101,7 +101,7 @@ class Webinfo:
             </body>
             </html>
             '''
-            result = self.fetch(site, *params)
+            result = self.__fetch(site, *params)
             # Cuts out everything from References down
             result = result.split('''<div class="references''')[0] 
             # result is in a weird encoding "ö" is "&#195;&#182;"  or "%C3%B6"
@@ -110,7 +110,7 @@ class Webinfo:
             
         elif thing == "cover":    
             site = "amazon%s" % locale
-            result = self.fetch(site, *params)
+            result = self.__fetch(site, *params)
             html = None
             
             # Here we need some check that if we haven't found the cover

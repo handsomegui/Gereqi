@@ -53,7 +53,8 @@ class Builddb(QThread, Timing):
         
     def set_values(self, dir):
         self.media_dir = dir
-        
+     
+    #TODO: add another function
     def run(self):
         formats = ["ogg", "mp3", "flac"]
         old_prog = 0
