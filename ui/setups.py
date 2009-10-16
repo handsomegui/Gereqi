@@ -7,17 +7,14 @@ QAction, QSystemTrayIcon, qApp
 from PyQt4.QtCore import QStringList, QString, SIGNAL, QSize, SLOT
 from PyQt4.phonon import Phonon
 
-from Ui_amaroq import Ui_MainWindow
 
-
-class Setups(Ui_MainWindow):
+class Setups:
     """
     This deals with the initialisation of the Ui
     and various dynamic widgets.
     """
     def __init__(self):
-        # I've no idea what an instance is
-        Ui_MainWindow.__init__(self) 
+        return
     
     def playlist_add_menu(self):
         """

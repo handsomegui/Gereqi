@@ -17,12 +17,13 @@ from threads import Getcover, Getwiki, Builddb
 from timing import Timing
 from setups import Setups
 from finishes import Finishes
+from Ui_amaroq import Ui_MainWindow
 
-
-# I don't  like this multiple class inheritance
-class MainWindow(QMainWindow, Setups, Finishes):
+class MainWindow(Ui_MainWindow, Setups, Finishes, QMainWindow):
     """
-    The main class of the app
+    The main class of the app. There's loads of
+    inherited Classes that may or may not have
+    identical object/method names
     """    
     media_dir = None
     media_db = Media()
@@ -42,6 +43,7 @@ class MainWindow(QMainWindow, Setups, Finishes):
         from other files as this file is getting messy
         """ 
         QMainWindow.__init__(self, parent)
+        Ui_MainWindow.__init__(self)
         # Do I really need these
         Setups.__init__(self) 
         Finishes.__init__(self)
@@ -82,7 +84,6 @@ class MainWindow(QMainWindow, Setups, Finishes):
                 artist = par_par.text(0)
                 album = par.text(0)
                 track = now
-                
             # When we've selected an album
             else:
                 album = now
