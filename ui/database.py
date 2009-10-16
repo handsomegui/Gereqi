@@ -66,16 +66,9 @@ class Media:
         
         for table in tables:
             self.__query_execute(table)
-#            self.media_curs.execute(table)
-#            self.media_db.commit() 
             
     def __query_fetchall(self, query, args=None):
         self.__query_execute(query, args)
-#        if args:
-#            self.media_curs.execute(query, args)
-#        else:
-#            # The execute() doesn't accept NoneTypes
-#            self.media_curs.execute(query) 
         return self.media_curs.fetchall()
         
     def __query_execute(self, query, args=None):
@@ -96,7 +89,6 @@ class Media:
             self.__query_execute(query, meta)
         except:
             print meta
-        
         
     def get_artists(self):
         query = "SELECT DISTINCT artist FROM media"
@@ -136,6 +128,3 @@ class Media:
         query = '''SELECT * FROM media 
         WHERE file_name=?'''
         return self.__query_fetchall(query, args)
-        
-
-        

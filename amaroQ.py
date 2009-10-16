@@ -16,6 +16,7 @@ def main():
     app = QApplication(sys.argv)
     app.setApplicationName(QString("Amaroq"))
     app.setApplicationVersion(QString(VERSION))
+    print "Base Classes:", MainWindow.__bases__
     wnd = MainWindow()
     wnd.show()
     sys.exit(app.exec_())

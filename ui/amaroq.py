@@ -20,7 +20,7 @@ from finishes import Finishes
 
 
 # I don't  like this multiple class inheritance
-class MainWindow(QMainWindow, Setups, Timing, Finishes):
+class MainWindow(QMainWindow, Setups, Finishes):
     """
     The main class of the app
     """    
@@ -31,7 +31,8 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
     html_thread = Getwiki()
     build_db_thread = Builddb()
     old_pos = 0
-    locale =".com"
+    locale = ".com"
+    dating = Timing()
     # artist,album info. [0:1] is old. [2:3] is now
     art = [None, None, None, None] 
     
@@ -41,7 +42,8 @@ class MainWindow(QMainWindow, Setups, Timing, Finishes):
         from other files as this file is getting messy
         """ 
         QMainWindow.__init__(self, parent)
-        Setups.__init__(self) # Guess what? A guess!
+        # Do I really need these
+        Setups.__init__(self) 
         Finishes.__init__(self)
         self.setupUi(self)
         self.setup_db_tree()
@@ -442,7 +444,7 @@ The old database format is no longer compatible with the new implementation.""")
         filt = self.srchCollectEdt.text()
         filt = str(filt)
         self.setup_db_tree(filt)
-        now = self.date_now()
+        now = self.dating.date_now()
         print "Filter collectionTree WRT time.", now
         
     @pyqtSignature("")
