@@ -55,13 +55,14 @@ class Getwiki(QThread):
         self.emit(SIGNAL("Activated( QString )"), result)
         
         
-class Builddb(QThread, Timing):
+class Builddb(QThread):
     """
     Gets files from a directory and build's a 
     media database from the filtered files
     """
     def __init__(self,parent=None):
-        super(Builddb, self).__init__()
+        QThread.__init__(self, parent)
+#        super(Builddb, self).__init__()
         
     def set_values(self, dir):
         """
@@ -94,6 +95,7 @@ class Builddb(QThread, Timing):
         old_prog = 0    
         meta = Metadata()
         media_db = Media()
+        dating = Timing()
         tracks = self.__track_list()
         tracks_total = len(tracks)
         
@@ -108,7 +110,7 @@ class Builddb(QThread, Timing):
                 old_prog = prog
                 self.emit(SIGNAL("Activated ( int )"), prog)
             tags = meta.extract(trk)
-            date = self.date_now()
+            date = dating.date_now()
             # prepends the fileName as the DB function expects
             # a certain order to the args passed
             tags.insert(0, trk) 
@@ -116,6 +118,6 @@ class Builddb(QThread, Timing):
             media_db.add_media(tags)
             cnt += 1
             
-        print("Completed in: %0.1f seconds" % (time() - strt))
+        print("%u tracks scanned in: %0.1f seconds" % (cnt, (time() - strt)))
         status = QString("finished")
         self.emit(SIGNAL("Activated ( QString )"), status)
