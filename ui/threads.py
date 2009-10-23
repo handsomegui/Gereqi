@@ -36,6 +36,7 @@ class Getcover(QThread):
             img = QImage()
             img.loadFromData(result, "JPG")
             self.emit(SIGNAL("Activated( QImage )"), img) 
+        self.exit()
         
         
 class Getwiki(QThread):
@@ -53,6 +54,7 @@ class Getwiki(QThread):
         result = info.get_info("info",None,  self.artist)
         result = QString(result)        
         self.emit(SIGNAL("Activated( QString )"), result)
+        self.exit()
         
         
 class Builddb(QThread):
@@ -62,7 +64,9 @@ class Builddb(QThread):
     """
     def __init__(self,parent=None):
         QThread.__init__(self, parent)
-#        super(Builddb, self).__init__()
+        
+    def stop_now(self):
+        self.exiting = True
         
     def set_values(self, dir):
         """
@@ -98,26 +102,35 @@ class Builddb(QThread):
         dating = Timing()
         tracks = self.__track_list()
         tracks_total = len(tracks)
+        self.exiting = False
         
         #TODO:maybe put in a check to not bother getting tags for
         # an existing file and skipping anyway
         strt = time()
         cnt = 0
         for trk in tracks:
-            prog = float(cnt ) /  float(tracks_total)
-            prog = int(round(100 * prog))
-            if prog > old_prog:
-                old_prog = prog
-                self.emit(SIGNAL("Activated ( int )"), prog)
-            tags = meta.extract(trk)
-            date = dating.date_now()
-            # prepends the fileName as the DB function expects
-            # a certain order to the args passed
-            tags.insert(0, trk) 
-            tags.append(date)
-            media_db.add_media(tags)
-            cnt += 1
+            if not self.exiting: # Can't tell if this us causing slowdown
+                prog = float(cnt ) /  float(tracks_total)
+                prog = int(round(100 * prog))
+                if prog > old_prog:
+                    old_prog = prog
+                    self.emit(SIGNAL("Activated ( int )"), prog)
+                tags = meta.extract(trk)
+                date = dating.date_now()
+                # prepends the fileName as the DB function expects
+                # a certain order to the args passed
+                tags.insert(0, trk) 
+                tags.append(date)
+                media_db.add_media(tags)
+                cnt += 1
+            else:
+                print "User terminated scan."
+                status = QString("cancelled")
+                self.emit(SIGNAL("Activated ( QString )"), status)
+                self.exit() # Brilliant. Does nothing so need a return
+                return
             
         print("%u tracks scanned in: %0.1f seconds" % (cnt, (time() - strt)))
         status = QString("finished")
         self.emit(SIGNAL("Activated ( QString )"), status)
+        self.exit()

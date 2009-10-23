@@ -464,9 +464,16 @@ The old database format is no longer compatible with the new implementation.""")
         # TODO: not implemented yet
         self.srchplyEdit.clear()
         self.tracknow_colourise(self.current_track)
+        
+#######################################
+#######################################
+        
+    def quit_build(self):
+        # ugly doesn't terminate cleanly
+        # causes poor performance and errors on a rescan
+        # locks up database
+        print self.build_db_thread.stop_now() 
 
-#######################################
-#######################################
     def current_track(self):
         """
         Finds the row of the currently

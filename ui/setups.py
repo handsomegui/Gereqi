@@ -110,7 +110,7 @@ class Setups(Ui_MainWindow):
         self.connect(self.html_thread, SIGNAL("Activated ( QString ) "), self.set_wiki)
         self.connect(self.build_db_thread, SIGNAL("Activated ( int ) "), self.stat_prog.setValue)
         self.connect(self.build_db_thread, SIGNAL("Activated ( QString ) "), self.finish_build)
-        self.connect(self.stat_bttn, SIGNAL("triggered()"), self.build_db_thread.exit)
+        self.connect(self.stat_bttn, SIGNAL("pressed()"), self.quit_build)
         
     def create_tray_menu(self):
         """

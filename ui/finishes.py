@@ -29,10 +29,14 @@ class Finishes:
         self.wikiView.setHtml(str(html))
         
     def finish_build(self, status):
-        if str(status) == "finished":
+        msg = str(status)
+        if (msg == "finished") or (msg == "cancelled"):
             print "Scanned directory."
             self.stat_bttn.setEnabled(False)
-            self.stat_prog.setToolTip("Finished")
+            if msg == "cancelled":
+                self.stat_prog.setToolTip("cancelled")
+            else:
+                self.stat_prog.setToolTip("Finished")
             self.stat_prog.setValue(100)
             self.collectTree.clear()
             self.setup_db_tree()
