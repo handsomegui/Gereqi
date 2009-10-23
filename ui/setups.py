@@ -6,15 +6,15 @@ QKeySequence, QLabel, QProgressBar, QToolButton, QIcon, QPixmap, \
 QAction, QSystemTrayIcon, qApp
 from PyQt4.QtCore import QStringList, QString, SIGNAL, QSize, SLOT
 from PyQt4.phonon import Phonon
+from Ui_amaroq import Ui_MainWindow
 
-
-class Setups:
+class Setups(Ui_MainWindow):
     """
     This deals with the initialisation of the Ui
     and various dynamic widgets.
     """
     def __init__(self):
-        return
+        super(Setups, self).__init__()
     
     def playlist_add_menu(self):
         """

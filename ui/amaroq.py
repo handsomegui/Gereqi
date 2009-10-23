@@ -17,9 +17,9 @@ from threads import Getcover, Getwiki, Builddb
 from timing import Timing
 from setups import Setups
 from finishes import Finishes
-from Ui_amaroq import Ui_MainWindow
 
-class MainWindow(Ui_MainWindow, Setups, Finishes, QMainWindow):
+
+class MainWindow(Setups, Finishes, QMainWindow):
     """
     The main class of the app. There's loads of
     inherited Classes that may or may not have
@@ -43,7 +43,6 @@ class MainWindow(Ui_MainWindow, Setups, Finishes, QMainWindow):
         from other files as this file is getting messy
         """ 
         QMainWindow.__init__(self, parent)
-        Ui_MainWindow.__init__(self)
         # Do I really need these
         Setups.__init__(self) 
         Finishes.__init__(self)
@@ -755,7 +754,8 @@ The old database format is no longer compatible with the new implementation.""")
         or from the database. Does not pull metadata from 
         the database and is passed into the function directly
         """
-        #TODO: prevent creation of empty rows
+        #TODO: prevent creation of empty rows.
+        print(info)
         file_col = 8
         current_row = self.playlistTree.rowCount()
         track = "%02u" % info[0]

@@ -9,6 +9,7 @@ to make it easier to manage
 from PyQt4.QtCore import QThread, QString, SIGNAL
 from PyQt4.QtGui import QImage
 import os
+from time import time
 
 from webinfo import Webinfo
 from database import Media
@@ -54,15 +55,13 @@ class Getwiki(QThread):
         self.emit(SIGNAL("Activated( QString )"), result)
         
         
-class Builddb(QThread):
+class Builddb(QThread, Timing):
     """
     Gets files from a directory and build's a 
     media database from the filtered files
     """
-    dating = Timing()
-    
     def __init__(self,parent=None):
-        QThread.__init__(self,parent)
+        super(Builddb, self).__init__()
         
     def set_values(self, dir):
         """
@@ -72,8 +71,9 @@ class Builddb(QThread):
         self.media_dir = dir
      
     def __track_list(self):
-        formats = ["ogg", "mp3", "flac"]
+        formats = [".ogg", ".mp3", ".flac"]
         tracks = []
+        # No point trying to speed this up. os.walk is a generator function
         for root, dirname, filenames in os.walk(str(self.media_dir)):
             for name in filenames:
                 file_now = os.path.join(root, name)
@@ -82,7 +82,7 @@ class Builddb(QThread):
                 except UnicodeDecodeError:
                     print "Warning!: latin1 encoded filename. Ignoring", repr(file_now)
                     continue
-                ender = file_now.split(".")[-1]
+                ender = os.path.splitext(file_now)[-1]
                 ender = ender.lower()
                 # We only want to get tags for certain file formats as
                 # tagpy can only work with certain types
@@ -99,24 +99,23 @@ class Builddb(QThread):
         
         #TODO:maybe put in a check to not bother getting tags for
         # an existing file and skipping anyway
-        # Apparently using range() is bad practice.
-        for cnt in range(tracks_total):
+        strt = time()
+        cnt = 0
+        for trk in tracks:
             prog = float(cnt ) /  float(tracks_total)
-            prog = round(100 * prog)
-            prog = int(prog)
+            prog = int(round(100 * prog))
             if prog > old_prog:
                 old_prog = prog
                 self.emit(SIGNAL("Activated ( int )"), prog)
-            
-            track = tracks[cnt ]
-            tags = meta.extract(track)
-            date = self.dating.date_now()
-            
+            tags = meta.extract(trk)
+            date = self.date_now()
             # prepends the fileName as the DB function expects
             # a certain order to the args passed
-            tags.insert(0, track) 
+            tags.insert(0, trk) 
             tags.append(date)
             media_db.add_media(tags)
-        
+            cnt += 1
+            
+        print("Completed in: %0.1f seconds" % (time() - strt))
         status = QString("finished")
         self.emit(SIGNAL("Activated ( QString )"), status)
