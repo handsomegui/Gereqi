@@ -92,6 +92,9 @@ class Builddb(QThread):
                 # We only want to get tags for certain file formats as
                 # tagpy can only work with certain types
                 if ender in formats:
+                    # No point doing DB interaction per item. We need to
+                    # know how many tracks being scanned for progress
+                    # update
                     tracks.append(file_now)
         return tracks
         
@@ -108,6 +111,7 @@ class Builddb(QThread):
         # an existing file and skipping anyway
         strt = time()
         cnt = 0
+        #TODO: performance tuning
         for trk in tracks:
             if not self.exiting: # Can't tell if this us causing slowdown
                 prog = float(cnt ) /  float(tracks_total)

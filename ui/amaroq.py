@@ -365,10 +365,15 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         When item is doubleclicked. Play its row.
         """
+        #FIXME: sometimes webInfo is not generated
+        # Possibly a Phonon.State issue
         self.media_object.stop()
         track = self.generate_track("now", row)
         self.media_object.setCurrentSource(track)
         self.media_object.play()
+        #FIXME:  A temp bodge
+        self.generate_info()
+        self.set_info()
         self.playBttn.setChecked(True) 
         self.play_action.setChecked(True)
         
@@ -540,11 +545,13 @@ The old database format is no longer compatible with the new implementation.""")
         # Track change state.
         #TODO: Put in a check to figure out if change is due
         # to continuous playback or from prev/nxt buttons.
+        #FIXME: this is becoming redundant. Only needed on
+        # gapless plaback between tracks, not the many
+        # calls it is actually being used for
         if new == 2 and old == 3: 
             print "debug: track change\n"
             self.generate_info()
             self.set_info()
-#            self.media_object.clearQueue()
         # Stopped playing and at end of playlist
         elif new == 1 and old == 2 and self.is_last():
             print "debug: stopped\n"
@@ -794,8 +801,6 @@ The old database format is no longer compatible with the new implementation.""")
         self.playlistTree.setItem(current_row, 7, bitrate_item)
         self.playlistTree.setItem(current_row, file_col , file_item)
         self.playlistTree.resizeColumnsToContents()
-        if self.playlistTree.columnWidth(0) > 300:
-            self.playlistTree.setColumnWidth(0, 300)
 
     def tracknow_colourise(self, now):
         """
