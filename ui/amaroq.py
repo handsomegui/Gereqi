@@ -138,10 +138,16 @@ class MainWindow(Setups, Finishes, QMainWindow):
         The play button either resumes or starts playback.
         Not possible to play a highlighted row.
         """
+        #TODO: messy. Clean up.
         if checked:
-            #TODO:Need a check to see currentsource  matches higlighted track
             queued = self.media_object.currentSource()
             not_stopped = self.stopBttn.isEnabled()
+            highlighted = self.highlighted_track()
+            
+            # Checks to see if highlighted track matches queued track
+            if queued.fileName() != highlighted:
+                queued = Phonon.MediaSource(highlighted)
+                
             # Not playing due to pressing stopBttn. Phonon.State()
             # kicks up hell of a stink about this. ~16 state changes!
             if queued and not not_stopped: #confusing
@@ -812,3 +818,10 @@ The old database format is no longer compatible with the new implementation.""")
                 self.generate_info()
             except ValueError:
                 print "A bug in Python/PyQt. An uneeded Exception. Something internal isn't in sync. No functionality is missed here."
+
+    def highlighted_track(self):
+        column = 8
+        row = self.playlistTree.currentRow()
+        track = self.playlistTree.item(row, column).text()
+        return track
+        

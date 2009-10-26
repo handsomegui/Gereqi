@@ -97,7 +97,7 @@ class Setups(Ui_MainWindow):
         # to reduce the number of unneeded pointers
         
         # These playing actions are from the toolbar.
-        self.connect(self.actionPlay, SIGNAL("toggled(bool)"), self.on_playBttn_toggled)
+        self.connect(self.actionPlay, SIGNAL("toggled(bool)"), self.playBttn.setChecked) 
         self.connect(self.actionNext_Track, SIGNAL("triggered()"), self.on_nxtBttn_pressed)
         self.connect(self.actionPrevious_Track, SIGNAL("triggered()"), self.on_prevBttn_pressed)  
         self.connect(self.actionStop, SIGNAL("triggered()"), self.on_stopBttn_pressed)
@@ -142,7 +142,7 @@ class Setups(Ui_MainWindow):
         self.tray_icon = QSystemTrayIcon(self)
         self.tray_icon.setIcon(icon)
         self.tray_icon.setContextMenu(tray_icon_menu)
-        self.connect(self.play_action, SIGNAL("toggled(bool)"), self.on_playBttn_toggled)
+        self.connect(self.play_action, SIGNAL("toggled(bool)"), self.playBttn.setChecked)
         self.connect(next_action, SIGNAL("triggered()"), self.on_nxtBttn_pressed)
         self.connect(prev_action, SIGNAL("triggered()"), self.on_prevBttn_pressed)
         self.connect(stop_action, SIGNAL("triggered()"), self.on_stopBttn_pressed)
