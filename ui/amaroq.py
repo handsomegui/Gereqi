@@ -123,7 +123,6 @@ class MainWindow(Setups, Finishes, QMainWindow):
         track = self.generate_track("back")
         if track:
             self.media_object.stop()
-            self.media_object.clear()   # Not sure if clear() is needed now 
             self.media_object.setCurrentSource(track)
             # Checks to see if the playbutton is in play state
             if self.playBttn.isChecked():
@@ -132,21 +131,24 @@ class MainWindow(Setups, Finishes, QMainWindow):
             else:
                 self.tracknow_colourise(self.current_track())
 
-    # Because of the 2 signals that can trigger this, it's possible
-    # this method is called twice when one or the other is called.
+    #TODO: this can be called from 2 other actions. Needs tidy up.
     @pyqtSignature("bool")
     def on_playBttn_toggled(self, checked):
         """
         The play button either resumes or starts playback.
         Not possible to play a highlighted row.
         """
-        # Strange bug where if the playback was stopped by stopBttn
-        # starting takes a while (varies). 
         if checked:
-            # Need a check to see currentsource  matches higlighted track
-            queued = self.media_object.currentSource().fileName()
+            #TODO:Need a check to see currentsource  matches higlighted track
+            queued = self.media_object.currentSource()
+            not_stopped = self.stopBttn.isEnabled()
+            # Not playing due to pressing stopBttn. Phonon.State()
+            # kicks up hell of a stink about this. ~16 state changes!
+            if queued and not not_stopped: #confusing
+                self.media_object.clear()
+                self.media_object.setCurrentSource(queued)
             # Nothing already loaded into phonon
-            if not queued:
+            elif not queued:
                 selected = self.playlistTree.currentRow()
                 # A row is selected
                 if selected >= 0:
@@ -193,12 +195,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         track = self.generate_track("next")
         if track:
             self.media_object.stop() 
-            self.media_object.clear()      
             self.media_object.setCurrentSource(track)
-            
-            # I'm surprised this does anything.
-            # We've just told it to stop. Should check
-            # the playbutton instead.
             if self.playBttn.isChecked():
                 self.media_object.play()
             else:
@@ -526,23 +523,15 @@ The old database format is no longer compatible with the new implementation.""")
         """
         This is linked to phonon.State. A very unreliable feature.
         """
-        print "debug: %s -> %s" % (new, old)
+        print "debug: Phonon.State: %s -> %s" % (new, old)
 
         # Prevents the slider being reset if playback is paused
         # or unpaused
         if self.is_playing():
             if not ((new == 2) and ( old == 4)):
                 self.set_prog_sldr()
-        # Track change state.
-        #TODO: Put in a check to figure out if change is due
-        # to continuous playback or from prev/nxt buttons.
-        #FIXME: this is becoming redundant. Only needed on
-        # gapless plaback between tracks, not the many
-        # calls it is actually being used for
-        if new == 2 and old == 3: 
-            print "debug: track change\n"
         # Stopped playing and at end of playlist
-        elif new == 1 and old == 2 and self.is_last():
+        if new == 1 and old == 2 and self.is_last():
             print "debug: stopped\n"
             self.finished()
             
@@ -684,6 +673,7 @@ The old database format is no longer compatible with the new implementation.""")
          This retrieves data from the playlist table, not the database. 
         This is because the playlist may contain tracks added locally.        
         """
+        #TODO: need to check messages aren't too long
         row = self.current_track()
         title = self.playlistTree.item(row, 1).text()
         artist = self.playlistTree.item(row, 2).text()
@@ -818,10 +808,7 @@ The old database format is no longer compatible with the new implementation.""")
             # However, __this__ function  and if clause would imply that there is
             # a currentSource, yet there isn't. Phonon hasn't sorted itself out so need a delay, uggg.
             # Saying all this, despite an error being printed to stdout, it works fine.
-            # Also, currentSourceChanged() seems to be a tad premature or the prog' slider/time
-            # is a bit behind
             try: 
                 self.generate_info()
-                
             except ValueError:
-                print "A bug in Python/PyQt. An uneeded Exception. Something internal isn't in sync"
+                print "A bug in Python/PyQt. An uneeded Exception. Something internal isn't in sync. No functionality is missed here."
