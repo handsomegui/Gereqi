@@ -105,6 +105,7 @@ class Setups(Ui_MainWindow):
         self.connect(self.media_object, SIGNAL('aboutToFinish()'), self.about_to_finish)
         self.connect(self.media_object, SIGNAL('finished()'), self.finished)
         self.connect(self.media_object, SIGNAL('stateChanged(Phonon::State, Phonon::State)'), self.state_changed)
+        self.connect(self.media_object, SIGNAL('currentSourceChanged(Phonon::MediaSource)'), self.go4info)
         self.connect(self.play_type_bttn, SIGNAL('toggled(bool)'), self.play_type)
         self.connect(self.cover_thread, SIGNAL("Activated ( QImage ) "), self.set_cover) # Linked to QThread
         self.connect(self.html_thread, SIGNAL("Activated ( QString ) "), self.set_wiki)

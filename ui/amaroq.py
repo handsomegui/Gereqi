@@ -128,8 +128,6 @@ class MainWindow(Setups, Finishes, QMainWindow):
             # Checks to see if the playbutton is in play state
             if self.playBttn.isChecked():
                 self.media_object.play()
-                self.generate_info()
-                self.set_info()
             # Just highlight the track we would play
             else:
                 self.tracknow_colourise(self.current_track())
@@ -163,8 +161,6 @@ class MainWindow(Setups, Finishes, QMainWindow):
             self.stopBttn.setEnabled(True)
             icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
             self.playBttn.setIcon(icon)
-            if not self.is_playing():
-                self.generate_info()
         else:
             self.media_object.pause()
             icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
@@ -205,8 +201,6 @@ class MainWindow(Setups, Finishes, QMainWindow):
             # the playbutton instead.
             if self.playBttn.isChecked():
                 self.media_object.play()
-                self.generate_info()
-                self.set_info()
             else:
                 self.tracknow_colourise(self.current_track())
         
@@ -371,9 +365,6 @@ class MainWindow(Setups, Finishes, QMainWindow):
         track = self.generate_track("now", row)
         self.media_object.setCurrentSource(track)
         self.media_object.play()
-        #FIXME:  A temp bodge
-        self.generate_info()
-        self.set_info()
         self.playBttn.setChecked(True) 
         self.play_action.setChecked(True)
         
@@ -486,6 +477,9 @@ The old database format is no longer compatible with the new implementation.""")
         """
         file_list = self.gen_file_list()
         file_name = self.media_object.currentSource().fileName()
+        # For some unkown reason, file_name can't be found in file_list. 
+        # It seems to be that although Phonon.currentSourceChanged()
+        # called this, there is no currentSource yet.
         row = file_list.index(file_name)
         return row
         
@@ -495,11 +489,6 @@ The old database format is no longer compatible with the new implementation.""")
         """
         pos = self.progSldr.sliderPosition()
         t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
-        if t_now == QTime(0, 0, 0):
-            # Used because no Phonon.state when the mediaobject goes 
-            # to next queued track 2,3 is the same sig as when next/prev
-            # buttons are used.
-            self.state_changed(2, 3) 
         now = t_now.toString('mm:ss')
         maxtime = self.t_length.toString('mm:ss')
         msg = "%s | %s" % (now, maxtime)
@@ -509,13 +498,15 @@ The old database format is no longer compatible with the new implementation.""")
         if pos == self.old_pos or pos < 1: 
             self.progSldr.setValue(time)
         self.old_pos = time
-            
+ 
+#TODO: increment the playcount in DB 
     def about_to_finish(self):
         """
         Generates a track to go into queue
         before playback stops
         """
         track = self.generate_track("next")
+        #Not at end of  playlist
         if track:
             self.media_object.clearQueue()
             self.media_object.enqueue(track)
@@ -550,8 +541,6 @@ The old database format is no longer compatible with the new implementation.""")
         # calls it is actually being used for
         if new == 2 and old == 3: 
             print "debug: track change\n"
-            self.generate_info()
-            self.set_info()
         # Stopped playing and at end of playlist
         elif new == 1 and old == 2 and self.is_last():
             print "debug: stopped\n"
@@ -608,8 +597,6 @@ The old database format is no longer compatible with the new implementation.""")
         """
         The wikipedia page + album art to current artist playing
         """
-        caller = self.sender().objectName()
-        print "Sender was: %s"% caller
         # Wikipedia info
         if self.art[2] != self.art[0] and self.art[2]: 
             # passes the artist to the thread
@@ -689,7 +676,6 @@ The old database format is no longer compatible with the new implementation.""")
                                     track = self.playlistTree.item(row + 1, column)
                                     track = track.text()
         if track:
-            print repr(track)
             track = Phonon.MediaSource(track)     
             return track
 
@@ -698,8 +684,6 @@ The old database format is no longer compatible with the new implementation.""")
          This retrieves data from the playlist table, not the database. 
         This is because the playlist may contain tracks added locally.        
         """
-        caller = self.sender().objectName()
-        print "Sender was: %s"% caller
         row = self.current_track()
         title = self.playlistTree.item(row, 1).text()
         artist = self.playlistTree.item(row, 2).text()
@@ -715,8 +699,7 @@ The old database format is no longer compatible with the new implementation.""")
         self.tracknow_colourise(row)
         self.art[2] = artist.toUtf8()
         self.art[3] = album.toUtf8()
-        if row and self.wikiView.isVisible():
-            self.set_info()
+        self.set_info()
 
     def is_playing(self):
         """
@@ -750,10 +733,7 @@ The old database format is no longer compatible with the new implementation.""")
         """
         column = 8
         rows = self.playlistTree.rowCount() 
-        file_list = []
-        for row in range(rows):
-            item = self.playlistTree.item(row, column).text()
-            file_list.append(item)  
+        file_list = [self.playlistTree.item(row, column).text() for row in range(rows)]
         return file_list   
         
     def play_type(self, checked):
@@ -825,3 +805,23 @@ The old database format is no longer compatible with the new implementation.""")
                 else:
                     item.setBackgroundColor(now_colour)
     
+    def go4info(self, track_now):
+        """
+        The call to this from Phonon.currentSourceChanged() is ~1sec
+        too early. The internal, to MainWindow, variable (self.art) is not 
+        updated yet so it would appear nothing has changed,
+        """
+        if track_now:
+            #If we call the generate_info() and set_info() now,
+            # Phonon, messes up. In current_track() it compares
+            # self.media_object.currentSource() with what's in gen_file_list()
+            # However, __this__ function  and if clause would imply that there is
+            # a currentSource, yet there isn't. Phonon hasn't sorted itself out so need a delay, uggg.
+            # Saying all this, despite an error being printed to stdout, it works fine.
+            # Also, currentSourceChanged() seems to be a tad premature or the prog' slider/time
+            # is a bit behind
+            try: 
+                self.generate_info()
+                
+            except ValueError:
+                print "A bug in Python/PyQt. An uneeded Exception. Something internal isn't in sync"
