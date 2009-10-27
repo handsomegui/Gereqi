@@ -490,6 +490,8 @@ The old database format is no longer compatible with the new implementation.""")
         """
         Every second update time labels and progress slider
         """
+        if time < 1000:
+            self.set_prog_sldr()
         pos = self.progSldr.sliderPosition()
         t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
         now = t_now.toString('mm:ss')
@@ -499,6 +501,8 @@ The old database format is no longer compatible with the new implementation.""")
         # This only goes(?) if  the user has not grabbed the slider
         # The 'or' stops issue where the slider doesn't move after track finishes
         if pos == self.old_pos or pos < 1: 
+            self.progSldr.setValue(time)
+        elif self.progSldr.value() == self.progSldr.maximum():
             self.progSldr.setValue(time)
         self.old_pos = time
  
@@ -519,10 +523,10 @@ The old database format is no longer compatible with the new implementation.""")
         Linked to the current time of
         track being played
         """
-        length = self.media_object.totalTime()
-        self.progSldr.setValue(0)
+        # Phonon strikes again. The source has actually changed, even according to Phonon's
+        # currentSourceChanged() yet totalTime() refers to the last track played.
+        length = self.media_object.totalTime() 
         self.progSldr.setRange(0, length)
-        self.old_pos = 0
         self.t_length = QTime(0, (length / 60000) % 60, (length / 1000) % 60)
             
     def state_changed(self, new, old):
@@ -671,7 +675,7 @@ The old database format is no longer compatible with the new implementation.""")
                                     track = self.playlistTree.item(row + 1, column)
                                     track = track.text()
         if track:
-            track = Phonon.MediaSource(track)     
+            track = Phonon.MediaSource(track)
             return track
 
     def generate_info(self):
