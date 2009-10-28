@@ -7,7 +7,6 @@ QIcon, QPixmap, QTreeWidgetItem, QPixmap, QMessageBox, \
 QColor
 from PyQt4.QtCore import pyqtSignature, QString, Qt,  \
 QTime, QStringList
-from PyQt4.phonon import Phonon
 from random import randrange
 
 from settings import Setting_Dialog
