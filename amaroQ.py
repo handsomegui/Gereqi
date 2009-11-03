@@ -9,7 +9,7 @@ from PyQt4.QtGui import QApplication
 from PyQt4.QtCore import QString
 from ui.amaroq import MainWindow
 
-VERSION = "0.2.3"  
+VERSION = "pygst"  
 
 def main():
     import sys

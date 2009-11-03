@@ -5,7 +5,6 @@ from PyQt4.QtGui import QFont, QMenu, QTreeWidgetItem, QShortcut, \
 QKeySequence, QLabel, QProgressBar, QToolButton, QIcon, QPixmap, \
 QAction, QSystemTrayIcon, qApp
 from PyQt4.QtCore import QStringList, QString, SIGNAL, QSize, SLOT
-from PyQt4.phonon import Phonon
 from Ui_amaroq import Ui_MainWindow
 
 class Setups(Ui_MainWindow):
@@ -51,11 +50,11 @@ class Setups(Ui_MainWindow):
         """
         Audio backend initialisation
         """
-        self.audio_output = Phonon.AudioOutput(Phonon.MusicCategory, self)
-        self.media_object = Phonon.MediaObject(self)
-        Phonon.createPath(self.media_object, self.audio_output)
-        self.media_object.setTickInterval(1000)
-        self.audio_output.setVolume(1)
+#        self.audio_output = Phonon.AudioOutput(Phonon.MusicCategory, self)
+#        self.media_object = Phonon.MediaObject(self)
+#        Phonon.createPath(self.media_object, self.audio_output)
+#        self.media_object.setTickInterval(1000)
+#        self.audio_output.setVolume(1)
         
     def setup_extra(self):
         """
