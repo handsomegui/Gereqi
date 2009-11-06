@@ -21,14 +21,14 @@ class Player:
         self.pipe_line.add(self.converter)
         
         self.vol = gst.element_factory_make("volume", "volume")
-        self.pipeline.add(self.vol)		
+        self.pipe_line.add(self.vol)		
         self.converter.link(self.vol)
         
         self.sink = gst.element_factory_make("alsasink", "sink")
         self.pipe_line.add(self.sink)
         self.vol.link(self.sink)
         
-        self.pipeline.get_by_name("volume").set_property('volume', 1)
+        self.pipe_line.get_by_name("volume").set_property('volume', 1)
         self.pipe_line.set_state(gst.STATE_READY)
         
         bus = self.pipe_line.get_bus()
@@ -59,5 +59,5 @@ class Player:
         
     def set_volume(self, val):
         if 0 <= val <= 1:
-            self.pipeline.get_by_name("volume").set_property('volume', val)
+            self.pipe_line.get_by_name("volume").set_property('volume', val)
 
