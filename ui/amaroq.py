@@ -749,6 +749,10 @@ The old database format is no longer compatible with the new implementation.""")
         the database and is passed into the function directly
         """
         #TODO: prevent creation of empty rows.
+        
+        # FIXME: func() does nothing
+        func = lambda x: "" if "Unknown" in x else x
+        modded = func(info)
         print(info)
         file_col = 8
         current_row = self.playlistTree.rowCount()
