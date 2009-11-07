@@ -141,7 +141,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         #TODO: messy. Clean up.
         if checked:
             queued = self.playbin.current_source()
-            
+            #FIXME: try and invert the result for less confusing varName
             not_stopped = self.stopBttn.isEnabled()
             highlighted = str(self.highlighted_track())
             
@@ -330,14 +330,17 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         Mutes audio output and changes button icon accordingly
         """
-        self.audio_output.setMuted(checked)
         if checked:
+            vol = 0.0
             icon = QIcon(QPixmap(":/Icons/audio-volume-muted.png"))
             self.muteBttn.setIcon(icon)
         else:
+            vol = (self.volSldr.value() / 100.0) ** 2
             icon = QIcon(QPixmap(":/Icons/audio-volume-high.png"))
             self.muteBttn.setIcon(icon)
-    
+        self.playbin.set_volume(vol)
+        
+        
     # A much cleaner solution. When you seek the volume is momentarily
     # set to 100% so it can really standout. 
     @pyqtSignature("")

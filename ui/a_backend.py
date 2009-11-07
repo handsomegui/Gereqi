@@ -74,6 +74,7 @@ class Player:
         seem to be necessary. CD and url sources
         may be tricky later on. I hope not.
         """
+        #FIXME:  Changing the `location' property on filesink when a file is open is not supported.
         if path.isfile(fname):            
             self.pipe_line.get_by_name("file-source").set_property(\
                 "location", fname)
