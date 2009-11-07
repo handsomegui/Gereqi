@@ -2,14 +2,15 @@
 import pygst
 pygst.require("0.10")
 
-import gst#, gobject
+import gst, thread
 from os import path
+from time import sleep
 
+#TODO: may need a queueBin for gapless playback
 class Player:
     pipe_source = None
     
     def __init__(self):
-        #gobject.threads_init()
         self.pipe_line = gst.Pipeline("mypipeline")
         
         # Negates the need for 'file://' May prove awkward later on
@@ -37,6 +38,8 @@ class Player:
         self.vol.link(self.sink)
         
         self.pipe_line.get_by_name("volume").set_property('volume', 1)
+
+        self.time_format = gst.Format(gst.FORMAT_TIME)
         
         bus = self.pipe_line.get_bus()
         bus.add_signal_watch()
@@ -60,10 +63,40 @@ class Player:
         """
         pad.link(self.converter.get_pad("sink"))
         
-    def get_state(self):
+    def whilst_playing(self):
+        """
+        Whilst a track is playing create a new thread to
+        emit the playing-file's position
+        """
+        play_thread_id = self.play_thread_id
+        
+        # Honestly no idea what this is for
+        while play_thread_id == self.play_thread_id:
+            try:
+                sleep(0.2)
+                dur_int = self.pipe_line.query_duration(self.time_format, None)[0]
+                #TODO: convert time
+                #TODO: emit time
+                break
+            except:
+                pass
+
+        sleep(0.2)
+        while play_thread_id == self.play_thread_id:
+            # In nanosecods for some reason
+            pos_int = self.pipe_line.query_position(self.time_format, None)[0]
+            #TODO: convert pos_int
+            # Honestly, why?
+#            if play_thread_id == self.play_thread_id:
+            #TODO: emit time
+            print pos_int
+            sleep(1)
+
+    def state(self):
         """
         To find out pipe_line's current state
         """
+        return
         
     def current_source(self):
         return self.pipe_source
@@ -86,12 +119,17 @@ class Player:
     def play(self):
         #TODO: check for state. i.e paused
         self.pipe_line.set_state(gst.STATE_PLAYING)
+        self.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
         
     def pause(self):
         self.pipe_line.set_state(gst.STATE_PAUSED)
         
     def stop(self):
+        self.play_thread_id = None
         self.pipe_line.set_state(gst.STATE_NULL)
+        
+    def seek(self, val):
+        print(val)
         
     def set_volume(self, val):
         if 0 <= val <= 1:
