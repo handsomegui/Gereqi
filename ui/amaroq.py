@@ -16,6 +16,7 @@ from threads import Getcover, Getwiki, Builddb
 from timing import Timing
 from setups import Setups
 from finishes import Finishes
+from a_backend import Player
 
 
 class MainWindow(Setups, Finishes, QMainWindow):
@@ -33,6 +34,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
     old_pos = 0
     locale = ".com"
     dating = Timing()
+    playbin = Player()
     # artist,album info. [0:1] is old. [2:3] is now
     art = [None, None, None, None] 
     
@@ -47,7 +49,6 @@ class MainWindow(Setups, Finishes, QMainWindow):
         Finishes.__init__(self)
         self.setupUi(self)
         self.setup_db_tree()
-        self.setup_audio()
         self.setup_shortcuts()
         self.setup_extra()        
         self.create_actions()        
@@ -139,7 +140,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         #TODO: messy. Clean up.
         if checked:
-            queued = self.media_object.currentSource()
+#            queued = self.media_object.currentSource()
             not_stopped = self.stopBttn.isEnabled()
             highlighted = self.highlighted_track()
             
@@ -149,27 +150,27 @@ class MainWindow(Setups, Finishes, QMainWindow):
                 
             # Not playing due to pressing stopBttn. Phonon.State()
             # kicks up hell of a stink about this. ~16 state changes!
-            if queued and not not_stopped: #confusing
-                self.media_object.clear()
-                self.media_object.setCurrentSource(queued)
+#            if queued and not not_stopped: #confusing
+#                self.media_object.clear()
+#                self.media_object.setCurrentSource(queued)
             # Nothing already loaded into phonon
             elif not queued:
                 selected = self.playlistTree.currentRow()
                 # A row is selected
                 if selected >= 0:
                     selected = self.generate_track("now", selected)                
-                    self.media_object.setCurrentSource(selected)
+#                    self.media_object.setCurrentSource(selected)
                 # Just reset the play button and stop here
                 else:
                     # This will call this function
                     self.playBttn.setChecked(False)
                     return
-            self.media_object.play()
+#            self.media_object.play()
             self.stopBttn.setEnabled(True)
             icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
             self.playBttn.setIcon(icon)
         else:
-            self.media_object.pause()
+#            self.media_object.pause()
             icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
             self.playBttn.setIcon(icon)
             if self.playlistTree.currentRow() >= 0:
@@ -213,7 +214,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """        
         self.volLbl.setText("%s" % value)
         value = (value / 100.0) ** 2
-        self.audio_output.setVolume(value)
+        self.playbin.set_volume(value)
     
     @pyqtSignature("")
     def on_actionConfigure_triggered(self):
@@ -361,12 +362,10 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         When item is doubleclicked. Play its row.
         """
-        #FIXME: sometimes webInfo is not generated
-        # Possibly a Phonon.State issue
-        self.media_object.stop()
+        self.playbin.stop()
         track = self.generate_track("now", row)
-        self.media_object.setCurrentSource(track)
-        self.media_object.play()
+        self.playbin.load(track)
+        self.playbin.play()
         self.playBttn.setChecked(True) 
         self.play_action.setChecked(True)
         
@@ -674,8 +673,7 @@ The old database format is no longer compatible with the new implementation.""")
                                     track = self.playlistTree.item(row + 1, column)
                                     track = track.text()
         if track:
-            track = Phonon.MediaSource(track)
-            return track
+            return str(track)
 
     def generate_info(self):
         """

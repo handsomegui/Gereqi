@@ -46,15 +46,6 @@ class Setups(Ui_MainWindow):
         delete = QShortcut(QKeySequence(self.tr("Del")), self)
         self.connect(delete, SIGNAL("activated()"), self.del_track) 
         
-    def setup_audio(self):
-        """
-        Audio backend initialisation
-        """
-#        self.audio_output = Phonon.AudioOutput(Phonon.MusicCategory, self)
-#        self.media_object = Phonon.MediaObject(self)
-#        Phonon.createPath(self.media_object, self.audio_output)
-#        self.media_object.setTickInterval(1000)
-#        self.audio_output.setVolume(1)
         
     def setup_extra(self):
         """
@@ -100,11 +91,11 @@ class Setups(Ui_MainWindow):
         self.connect(self.actionNext_Track, SIGNAL("triggered()"), self.on_nxtBttn_pressed)
         self.connect(self.actionPrevious_Track, SIGNAL("triggered()"), self.on_prevBttn_pressed)  
         self.connect(self.actionStop, SIGNAL("triggered()"), self.on_stopBttn_pressed)
-        self.connect(self.media_object, SIGNAL('tick(qint64)'), self.tick)
-        self.connect(self.media_object, SIGNAL('aboutToFinish()'), self.about_to_finish)
-        self.connect(self.media_object, SIGNAL('finished()'), self.finished)
-        self.connect(self.media_object, SIGNAL('stateChanged(Phonon::State, Phonon::State)'), self.state_changed)
-        self.connect(self.media_object, SIGNAL('currentSourceChanged(Phonon::MediaSource)'), self.go4info)
+#        self.connect(self.media_object, SIGNAL('tick(qint64)'), self.tick)
+#        self.connect(self.media_object, SIGNAL('aboutToFinish()'), self.about_to_finish)
+#        self.connect(self.media_object, SIGNAL('finished()'), self.finished)
+#        self.connect(self.media_object, SIGNAL('stateChanged(Phonon::State, Phonon::State)'), self.state_changed)
+#        self.connect(self.media_object, SIGNAL('currentSourceChanged(Phonon::MediaSource)'), self.go4info)
         self.connect(self.play_type_bttn, SIGNAL('toggled(bool)'), self.play_type)
         self.connect(self.cover_thread, SIGNAL("Activated ( QImage ) "), self.set_cover) # Linked to QThread
         self.connect(self.html_thread, SIGNAL("Activated ( QString ) "), self.set_wiki)
