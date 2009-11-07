@@ -56,6 +56,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.create_tray_menu()
 
         self.connect(self.playbin, SIGNAL("tick ( int )"), self.prog_tick)
+        self.connect(self.playbin, SIGNAL("aboutToFinish()"), self.about_to_finish)
         
     @pyqtSignature("QString")
     def on_srchCollectEdt_textChanged(self, p0):
@@ -147,34 +148,36 @@ class MainWindow(Setups, Finishes, QMainWindow):
             #FIXME: try and invert the result for less confusing varName
             not_stopped = self.stopBttn.isEnabled()
             highlighted = str(self.highlighted_track())
+            print(queued, highlighted)
             
-            # Checks to see if highlighted track matches queued track
-            if queued != highlighted:
-                queued = highlighted
-                
-            #FIXME:confusing as hell
-            if queued and not not_stopped: 
-                self.playbin.load(queued)
-                self.generate_info()
-                
-            # Nothing already loaded into playbin
-            elif not queued:
-                selected = self.playlistTree.currentRow()
-                # A row is selected
-                if selected >= 0:
-                    selected = self.generate_track("now", selected)           
-                    self.playbin.load(str(selected))
+            if highlighted:
+                # Checks to see if highlighted track matches queued track
+                if queued != highlighted:
+                    queued = highlighted
+                    
+                #FIXME:confusing as hell
+                if queued and not not_stopped: 
+                    self.playbin.load(queued)
                     self.generate_info()
                     
-                # Just reset the play button and stop here
-                else:
-                    # This will call this function
-                    self.playBttn.setChecked(False)
-                    return
-            self.playbin.play()
-            self.stopBttn.setEnabled(True)
-            icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
-            self.playBttn.setIcon(icon)
+                # Nothing already loaded into playbin
+                elif not queued:
+                    selected = self.playlistTree.currentRow()
+                    # A row is selected
+                    if selected >= 0:
+                        selected = self.generate_track("now", selected)           
+                        self.playbin.load(str(selected))
+                        self.generate_info()
+                        
+                    # Just reset the play button and stop here
+                    else:
+                        # This will call this function
+                        self.playBttn.setChecked(False)
+                        return
+                self.playbin.play()
+                self.stopBttn.setEnabled(True)
+                icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
+                self.playBttn.setIcon(icon)
         else:
             self.playbin.pause()
             icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
@@ -518,8 +521,7 @@ The old database format is no longer compatible with the new implementation.""")
         track = self.generate_track("next")
         #Not at end of  playlist
         if track:
-            self.media_object.clearQueue()
-            self.media_object.enqueue(track)
+            self.playbin.enqueue(track)
 
     def set_prog_sldr(self):
         """
@@ -815,6 +817,10 @@ The old database format is no longer compatible with the new implementation.""")
         """
         column = 8
         row = self.playlistTree.currentRow()
-        track = self.playlistTree.item(row, column).text()
+        # -1 is the value for None
+        if row > -1:
+            track = self.playlistTree.item(row, column).text()
+        else:
+            track = None
         return track
         

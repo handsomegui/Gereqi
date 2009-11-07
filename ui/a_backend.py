@@ -57,8 +57,13 @@ class Player(QObject):
         """
         Messages from pipe_line object
         """
-        msg_type = msg.type        
-        if msg_type == gst.MESSAGE_ERROR:
+        msg_type = msg.type
+        print(msg)
+        if msg_type == gst.MESSAGE_EOS:
+            self.play_thread_id = None
+            self.pipe_line.set_state(gst.STATE_NULL)
+        
+        elif msg_type == gst.MESSAGE_ERROR:
             self.pipe_line.set_state(gst.STATE_NULL)
             err, debug = msg.parse_error()
             print("Error: %s" % err, debug)
@@ -95,12 +100,10 @@ class Player(QObject):
             try:
                 pos_int = self.pipe_line.query_position(self.time_format)[0]
                 val = self.to_milli(pos_int)
-#                print(type(val), val)
                 self.emit(SIGNAL("tick ( int )"), val)
                 if dur - val < 2000:
                     print("SPAM!")
-                    self.emit(SIGNAL("aboutToFinish()"))
-                    
+                    self.emit(SIGNAL("aboutToFinish()"))                    
             except:
                 pass
             sleep(1)
@@ -132,14 +135,20 @@ class Player(QObject):
             self.pipe_line.get_by_name("file-source").set_property(\
                 "location", fname)
             self.pipe_source = fname
+            self.queue = fname
             self.pipe_line.set_state(gst.STATE_READY)
         else:
             print("Error: %s not loaded" % fname)
             
     def play(self):
         #TODO: check for state. i.e paused
-        self.pipe_line.set_state(gst.STATE_PLAYING)
-        self.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
+        if self.queue:
+            self.pipe_line.set_state(gst.STATE_PLAYING)
+            self.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
+            self.queue = None
+        else:
+            pass
+#            self.emit(SIGNAL, ("finished()"))
         
     def pause(self):
         self.pipe_line.set_state(gst.STATE_PAUSED)
