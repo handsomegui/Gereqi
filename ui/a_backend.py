@@ -96,7 +96,7 @@ class Player(QObject):
                 pos_int = self.pipe_line.query_position(self.time_format)[0]
                 val = self.to_milli(pos_int)
 #                print(type(val), val)
-                self.emit(SIGNAL("tick(int)"), val)
+                self.emit(SIGNAL("tick ( int )"), val)
                 if dur - val < 2000:
                     print("SPAM!")
                     self.emit(SIGNAL("aboutToFinish()"))
@@ -122,7 +122,6 @@ class Player(QObject):
         dur = self.pipe_line.query_duration(self.time_format)[0]
         return self.to_milli(dur)
         
-
     def load(self, fname):
         """
         This is for file-src so file:// doesn't seem to be necessary.
@@ -153,11 +152,8 @@ class Player(QObject):
         """
         Seek to a time-position(in nS) of playing file
         """
-        print(type(val), val)
-        pos = val * 1000000
-        
-        self.pipe_line.seek_simple(self.time_format, gst.SEEK_FLAG_FLUSH, pos)
-
+        pos = val * 1000000        
+        self.pipe_line.seek_simple(self.time_format, gst.SEEK_FLAG_SEGMENT, pos)
         
     def set_volume(self, val):
         if 0 <= val <= 1:

@@ -54,9 +54,8 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.create_actions()        
         self.playlist_add_menu()
         self.create_tray_menu()
-        
-        print self.playbin.signalsBlocked()
-        self.connect(self.playbin, SIGNAL("tick()"), self.prog_tick)
+
+        self.connect(self.playbin, SIGNAL("tick ( int )"), self.prog_tick)
         
     @pyqtSignature("QString")
     def on_srchCollectEdt_textChanged(self, p0):
@@ -471,9 +470,6 @@ The old database format is no longer compatible with the new implementation.""")
         self.srchplyEdit.clear()
         self.tracknow_colourise(self.current_track)
         
-    @pyqtSignature("int")
-    def on_playbin_tick(self, val):
-        print(val)
         
 #######################################
 #######################################
@@ -497,22 +493,21 @@ The old database format is no longer compatible with the new implementation.""")
         """
         Every second update time labels and progress slider
         """
-        print(time)
-#        if time < 1000:
-#            self.set_prog_sldr()
-#        pos = self.progSldr.sliderPosition()
-#        t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
-#        now = t_now.toString('mm:ss')
-#        maxtime = self.t_length.toString('mm:ss')
-#        msg = "%s | %s" % (now, maxtime)
-#        self.progLbl.setText(msg)            
-#        # This only goes(?) if  the user has not grabbed the slider
-#        # The 'or' stops issue where the slider doesn't move after track finishes
-#        if pos == self.old_pos or pos < 1: 
-#            self.progSldr.setValue(time)
-#        elif self.progSldr.value() == self.progSldr.maximum():
-#            self.progSldr.setValue(time)
-#        self.old_pos = time
+        if time < 1000:
+            self.set_prog_sldr()
+        pos = self.progSldr.sliderPosition()
+        t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
+        now = t_now.toString('mm:ss')
+        maxtime = self.t_length.toString('mm:ss')
+        msg = "%s | %s" % (now, maxtime)
+        self.progLbl.setText(msg)            
+        # This only goes(?) if  the user has not grabbed the slider
+        # The 'or' stops issue where the slider doesn't move after track finishes
+        if pos == self.old_pos or pos < 1: 
+            self.progSldr.setValue(time)
+        elif self.progSldr.value() == self.progSldr.maximum():
+            self.progSldr.setValue(time)
+        self.old_pos = time
  
 #TODO: increment the playcount in DB 
     def about_to_finish(self):
