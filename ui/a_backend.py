@@ -2,12 +2,14 @@
 import pygst
 pygst.require("0.10")
 
-import gst, gobject
+import gst#, gobject
 from os import path
 
 class Player:
+    pipe_source = None
+    
     def __init__(self):
-        gobject.threads_init()
+        #gobject.threads_init()
         self.pipe_line = gst.Pipeline("mypipeline")
         
         # Negates the need for 'file://' May prove awkward later on
@@ -56,7 +58,6 @@ class Player:
         File-src has manypads due to multiple formats.
         Have to be connected to the converter
         """
-        print("OnDynamicPad called!")
         pad.link(self.converter.get_pad("sink"))
         
     def get_state(self):
@@ -64,6 +65,8 @@ class Player:
         To find out pipe_line's current state
         """
         
+    def current_source(self):
+        return self.pipe_source
 
     def load(self, fname):
         """
@@ -74,12 +77,17 @@ class Player:
         if path.isfile(fname):            
             self.pipe_line.get_by_name("file-source").set_property(\
                 "location", fname)
+            self.pipe_source = fname
             self.pipe_line.set_state(gst.STATE_READY)
         else:
             print("Error: %s not loaded" % fname)
             
     def play(self):
+        #TODO: check for state. i.e paused
         self.pipe_line.set_state(gst.STATE_PLAYING)
+        
+    def pause(self):
+        self.pipe_line.set_state(gst.STATE_PAUSED)
         
     def stop(self):
         self.pipe_line.set_state(gst.STATE_NULL)

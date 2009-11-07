@@ -140,37 +140,38 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         #TODO: messy. Clean up.
         if checked:
-#            queued = self.media_object.currentSource()
+            queued = self.playbin.current_source()
+            
             not_stopped = self.stopBttn.isEnabled()
-            highlighted = self.highlighted_track()
+            highlighted = str(self.highlighted_track())
             
             # Checks to see if highlighted track matches queued track
-            if queued.fileName() != highlighted:
-                queued = Phonon.MediaSource(highlighted)
+            if queued != highlighted:
+                queued = highlighted
                 
-            # Not playing due to pressing stopBttn. Phonon.State()
-            # kicks up hell of a stink about this. ~16 state changes!
-#            if queued and not not_stopped: #confusing
-#                self.media_object.clear()
-#                self.media_object.setCurrentSource(queued)
-            # Nothing already loaded into phonon
+            #FIXME:confusing as hell
+            if queued and not not_stopped: 
+                self.playbin.load(queued)
+                
+            # Nothing already loaded into playbin
             elif not queued:
                 selected = self.playlistTree.currentRow()
                 # A row is selected
                 if selected >= 0:
-                    selected = self.generate_track("now", selected)                
-#                    self.media_object.setCurrentSource(selected)
+                    selected = self.generate_track("now", selected)           
+                    self.playbin.load(str(selected))
+                    
                 # Just reset the play button and stop here
                 else:
                     # This will call this function
                     self.playBttn.setChecked(False)
                     return
-#            self.media_object.play()
+            self.playbin.play()
             self.stopBttn.setEnabled(True)
             icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
             self.playBttn.setIcon(icon)
         else:
-#            self.media_object.pause()
+            self.playbin.pause()
             icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
             self.playBttn.setIcon(icon)
             if self.playlistTree.currentRow() >= 0:
@@ -188,7 +189,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         self.tabWidget_2.setTabEnabled(1, False)
         self.tabWidget_2.setTabEnabled(2, False)
-        self.media_object.stop()
+        self.playbin.stop()
         self.playBttn.setChecked(False)
         self.stopBttn.setEnabled(False)
         self.finished()

@@ -13,8 +13,8 @@ from ui.amaroq import MainWindow
 VERSION = "pygst"  
 
 def main():
-    import sys
-    
+    import sys,  gobject
+    gobject.threads_init()    
     app = QApplication(sys.argv)
     app.setApplicationName(QString("Amaroq"))
     app.setApplicationVersion(QString(VERSION))
