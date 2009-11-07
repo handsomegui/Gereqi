@@ -1,21 +1,23 @@
 #!/usr/bin/env python
+
 import pygst
 pygst.require("0.10")
-
 import gst, thread, gobject
 from os import path
 from time import sleep
-from PyQt4.QtCore import QObject
+from PyQt4.QtCore import QObject, SIGNAL
+
 
 #TODO: may need a queueBin for gapless playback
-class Player:
-    pipe_source = None
-    
+#FIXME: in order for this to me signal/slot compatible
+# this needs to be a QObject
+class Player(QObject):
     def __init__(self):
+        super(Player, self).__init__()
         gobject.threads_init() # V.Important
         
-        self.pipe_line = gst.Pipeline("mypipeline")
-        
+        # Where everything goes
+        self.pipe_line = gst.Pipeline("mypipeline")        
         # Negates the need for 'file://' May prove awkward later on
         self.filesrc = gst.element_factory_make("filesrc", "file-source")
         self.pipe_line.add(self.filesrc)
@@ -43,7 +45,10 @@ class Player:
         self.pipe_line.get_by_name("volume").set_property('volume', 1)
 
         self.time_format = gst.Format(gst.FORMAT_TIME)
+        self.pipe_source = None
+        self.queue = None
         
+        # get_clock()?
         bus = self.pipe_line.get_bus()
         bus.add_signal_watch()
         bus.connect("message", self.on_message)
@@ -52,8 +57,7 @@ class Player:
         """
         Messages from pipe_line object
         """
-        msg_type = msg.type
-        
+        msg_type = msg.type        
         if msg_type == gst.MESSAGE_ERROR:
             self.pipe_line.set_state(gst.STATE_NULL)
             err, debug = msg.parse_error()
@@ -76,13 +80,27 @@ class Player:
         emit the playing-file's position
         """
         play_thread_id = self.play_thread_id
+        dur = 0
+        
+        while dur == 0:
+            try:
+                dur = self.total_time()
+            except:
+                pass
+            sleep(0.1)
+
+        print dur
 
         while play_thread_id == self.play_thread_id:
             try:
-                #TODO: emit time
                 pos_int = self.pipe_line.query_position(self.time_format)[0]
-                print self.to_milli(pos_int)#, self.state()
-                
+                val = self.to_milli(pos_int)
+#                print(type(val), val)
+                self.emit(SIGNAL("tick(int)"), val)
+                if dur - val < 2000:
+                    print("SPAM!")
+                    self.emit(SIGNAL("aboutToFinish()"))
+                    
             except:
                 pass
             sleep(1)
@@ -97,15 +115,18 @@ class Player:
         return self.pipe_source
         
     def total_time(self):
+        """
+        Thiswon't do anything until the pipe_line
+        is in a PLAYING_STATE
+        """
         dur = self.pipe_line.query_duration(self.time_format)[0]
         return self.to_milli(dur)
         
 
     def load(self, fname):
         """
-        This is for file-src so file:// doesn't
-        seem to be necessary. CD and url sources
-        may be tricky later on. I hope not.
+        This is for file-src so file:// doesn't seem to be necessary.
+        CD and url sources   may be tricky later on. I hope not.
         """
         #FIXME:  Changing the `location' property on filesink when a file is open is not supported.
         if path.isfile(fname):            
@@ -129,9 +150,18 @@ class Player:
         self.pipe_line.set_state(gst.STATE_NULL)
         
     def seek(self, val):
-        print(val)
+        """
+        Seek to a time-position(in nS) of playing file
+        """
+        print(type(val), val)
+        pos = val * 1000000
+        
+        self.pipe_line.seek_simple(self.time_format, gst.SEEK_FLAG_FLUSH, pos)
+
         
     def set_volume(self, val):
         if 0 <= val <= 1:
             self.pipe_line.get_by_name("volume").set_property('volume', val)
 
+    def enqueue(self, fname):
+        self.queue = fname

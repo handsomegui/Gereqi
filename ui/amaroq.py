@@ -6,7 +6,7 @@ QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
 QIcon, QPixmap, QTreeWidgetItem, QPixmap, QMessageBox, \
 QColor
 from PyQt4.QtCore import pyqtSignature, QString, Qt,  \
-QTime, QStringList
+QTime, QStringList, SIGNAL
 from random import randrange
 
 from settings import Setting_Dialog
@@ -54,6 +54,9 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.create_actions()        
         self.playlist_add_menu()
         self.create_tray_menu()
+        
+        print self.playbin.signalsBlocked()
+        self.connect(self.playbin, SIGNAL("tick()"), self.prog_tick)
         
     @pyqtSignature("QString")
     def on_srchCollectEdt_textChanged(self, p0):
@@ -350,7 +353,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         Set's an internal seek value for tick() to use
         """
         val = self.progSldr.value()
-        self.media_object.seek(val)
+        self.playbin.seek(val)
         self.old_pos = val
     
     @pyqtSignature("")
@@ -468,6 +471,10 @@ The old database format is no longer compatible with the new implementation.""")
         self.srchplyEdit.clear()
         self.tracknow_colourise(self.current_track)
         
+    @pyqtSignature("int")
+    def on_playbin_tick(self, val):
+        print(val)
+        
 #######################################
 #######################################
         
@@ -486,25 +493,26 @@ The old database format is no longer compatible with the new implementation.""")
         file_name = self.playbin.current_source()
         return file_list.index(file_name)
         
-    def tick(self, time):
+    def prog_tick(self, time):
         """
         Every second update time labels and progress slider
         """
-        if time < 1000:
-            self.set_prog_sldr()
-        pos = self.progSldr.sliderPosition()
-        t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
-        now = t_now.toString('mm:ss')
-        maxtime = self.t_length.toString('mm:ss')
-        msg = "%s | %s" % (now, maxtime)
-        self.progLbl.setText(msg)            
-        # This only goes(?) if  the user has not grabbed the slider
-        # The 'or' stops issue where the slider doesn't move after track finishes
-        if pos == self.old_pos or pos < 1: 
-            self.progSldr.setValue(time)
-        elif self.progSldr.value() == self.progSldr.maximum():
-            self.progSldr.setValue(time)
-        self.old_pos = time
+        print(time)
+#        if time < 1000:
+#            self.set_prog_sldr()
+#        pos = self.progSldr.sliderPosition()
+#        t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
+#        now = t_now.toString('mm:ss')
+#        maxtime = self.t_length.toString('mm:ss')
+#        msg = "%s | %s" % (now, maxtime)
+#        self.progLbl.setText(msg)            
+#        # This only goes(?) if  the user has not grabbed the slider
+#        # The 'or' stops issue where the slider doesn't move after track finishes
+#        if pos == self.old_pos or pos < 1: 
+#            self.progSldr.setValue(time)
+#        elif self.progSldr.value() == self.progSldr.maximum():
+#            self.progSldr.setValue(time)
+#        self.old_pos = time
  
 #TODO: increment the playcount in DB 
     def about_to_finish(self):
@@ -523,11 +531,8 @@ The old database format is no longer compatible with the new implementation.""")
         Linked to the current time of
         track being played
         """
-        # Phonon strikes again. The source has actually changed, even according to Phonon's
-        # currentSourceChanged() yet totalTime() refers to the last track played.
-        length = self.media_object.totalTime() 
-        self.progSldr.setRange(0, length)
-        self.t_length = QTime(0, (length / 60000) % 60, (length / 1000) % 60)
+        self.progSldr.setRange(0, self.play_time)
+        self.t_length = QTime(0, (self.play_time / 60000) % 60, (self.play_time / 1000) % 60)
             
     def state_changed(self, new, old):
         """
@@ -687,6 +692,10 @@ The old database format is no longer compatible with the new implementation.""")
         title = self.playlistTree.item(row, 1).text()
         artist = self.playlistTree.item(row, 2).text()
         album = self.playlistTree.item(row, 3).text()
+        
+        min, sec = self.playlistTree.item(row, 6).text().split(":")
+        self.play_time = 1000 * ((int(min) * 60) + int(sec))
+        
         msg1 = QString("Now Playing")
         msg2 = QString("%s by %s" % (title, artist))
         msg3 = QString("%s - %s\n%s" % (title, artist, album))
@@ -699,6 +708,7 @@ The old database format is no longer compatible with the new implementation.""")
         self.art[2] = artist.toUtf8()
         self.art[3] = album.toUtf8()
         self.set_info()
+        self.set_prog_sldr()
 
     def is_playing(self):
         """
@@ -805,6 +815,9 @@ The old database format is no longer compatible with the new implementation.""")
                     item.setBackgroundColor(now_colour)
     
     def highlighted_track(self):
+        """
+        In the playlist
+        """
         column = 8
         row = self.playlistTree.currentRow()
         track = self.playlistTree.item(row, column).text()
