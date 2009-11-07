@@ -122,11 +122,11 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         track = self.generate_track("back")
         if track:
-            self.media_object.stop()
-            self.media_object.setCurrentSource(track)
+            self.playbin.stop()
+            self.playbin.load(track)
             # Checks to see if the playbutton is in play state
             if self.playBttn.isChecked():
-                self.media_object.play()
+                self.playbin.play()
             # Just highlight the track we would play
             else:
                 self.tracknow_colourise(self.current_track())
@@ -201,10 +201,10 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         track = self.generate_track("next")
         if track:
-            self.media_object.stop() 
-            self.media_object.setCurrentSource(track)
+            self.playbin.stop() 
+            self.playbin.load(track)
             if self.playBttn.isChecked():
-                self.media_object.play()
+                self.playbin.play()
             else:
                 self.tracknow_colourise(self.current_track())
         
@@ -340,13 +340,10 @@ class MainWindow(Setups, Finishes, QMainWindow):
             self.muteBttn.setIcon(icon)
         self.playbin.set_volume(vol)
         
-        
-    # A much cleaner solution. When you seek the volume is momentarily
-    # set to 100% so it can really standout. 
     @pyqtSignature("")
     def on_progSldr_sliderReleased(self):
         """
-        Slot documentation goes here.
+        Set's an internal seek value for tick() to use
         """
         val = self.progSldr.value()
         self.media_object.seek(val)
@@ -654,12 +651,12 @@ The old database format is no longer compatible with the new implementation.""")
         if mode == "now":
             track = self.playlistTree.item(row, column).text()
         else:
-            current = self.media_object.currentSource().fileName()
+            current = self.playbin.current_source()
             # If 0 then the playlist is empty
             rows = self.playlistTree.rowCount() 
             if rows > 0:
                 for row in range(rows):
-                    file_name = self.playlistTree.item(row, column).text()
+                    file_name = str(self.playlistTree.item(row, column).text())
                     # Track, track, track.
                     if file_name == current:
                         if mode == "back":
