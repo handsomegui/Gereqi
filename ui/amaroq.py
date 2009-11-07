@@ -124,6 +124,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         if track:
             self.playbin.stop()
             self.playbin.load(track)
+            self.generate_info()
             # Checks to see if the playbutton is in play state
             if self.playBttn.isChecked():
                 self.playbin.play()
@@ -152,6 +153,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
             #FIXME:confusing as hell
             if queued and not not_stopped: 
                 self.playbin.load(queued)
+                self.generate_info()
                 
             # Nothing already loaded into playbin
             elif not queued:
@@ -160,6 +162,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
                 if selected >= 0:
                     selected = self.generate_track("now", selected)           
                     self.playbin.load(str(selected))
+                    self.generate_info()
                     
                 # Just reset the play button and stop here
                 else:
@@ -203,6 +206,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         if track:
             self.playbin.stop() 
             self.playbin.load(track)
+            self.generate_info()
             if self.playBttn.isChecked():
                 self.playbin.play()
             else:
@@ -282,7 +286,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
     def on_actionClear_triggered(self):
         """
         Clear current playlist and if no music playing
-        clear self.media_object
+        clear self.playbin
         """
         #TODO:incorporate playlists in to here.
         # When cleared save the playlist first to be
@@ -293,7 +297,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         # For some reason can only remove from bot to top
         for cnt in range(rows, -1, -1):
             self.playlistTree.removeRow(cnt)
-        self.media_object.clearQueue()
+#        self.media_object.clearQueue()
     
     @pyqtSignature("")
     def on_clrplyBttn_clicked(self):
@@ -366,6 +370,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.playbin.stop()
         track = self.generate_track("now", row)
         self.playbin.load(track)
+        self.generate_info()
         self.playbin.play()
         self.playBttn.setChecked(True) 
         self.play_action.setChecked(True)
@@ -478,12 +483,8 @@ The old database format is no longer compatible with the new implementation.""")
         playing track
         """
         file_list = self.gen_file_list()
-        file_name = self.media_object.currentSource().fileName()
-        # For some unkown reason, file_name can't be found in file_list. 
-        # It seems to be that although Phonon.currentSourceChanged()
-        # called this, there is no currentSource yet.
-        row = file_list.index(file_name)
-        return row
+        file_name = self.playbin.current_source()
+        return file_list.index(file_name)
         
     def tick(self, time):
         """
@@ -803,24 +804,6 @@ The old database format is no longer compatible with the new implementation.""")
                 else:
                     item.setBackgroundColor(now_colour)
     
-    def go4info(self, track_now):
-        """
-        The call to this from Phonon.currentSourceChanged() is ~1sec
-        too early. The internal, to MainWindow, variable (self.art) is not 
-        updated yet so it would appear nothing has changed,
-        """
-        if track_now:
-            #If we call the generate_info() and set_info() now,
-            # Phonon, messes up. In current_track() it compares
-            # self.media_object.currentSource() with what's in gen_file_list()
-            # However, __this__ function  and if clause would imply that there is
-            # a currentSource, yet there isn't. Phonon hasn't sorted itself out so need a delay, uggg.
-            # Saying all this, despite an error being printed to stdout, it works fine.
-            try: 
-                self.generate_info()
-            except ValueError:
-                print "A bug in Python/PyQt. An uneeded Exception. Something internal isn't in sync. No functionality is missed here."
-
     def highlighted_track(self):
         column = 8
         row = self.playlistTree.currentRow()

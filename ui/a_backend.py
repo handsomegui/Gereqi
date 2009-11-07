@@ -2,15 +2,18 @@
 import pygst
 pygst.require("0.10")
 
-import gst, thread
+import gst, thread, gobject
 from os import path
 from time import sleep
+from PyQt4.QtCore import QObject
 
 #TODO: may need a queueBin for gapless playback
 class Player:
     pipe_source = None
     
     def __init__(self):
+        gobject.threads_init() # V.Important
+        
         self.pipe_line = gst.Pipeline("mypipeline")
         
         # Negates the need for 'file://' May prove awkward later on
@@ -63,43 +66,40 @@ class Player:
         """
         pad.link(self.converter.get_pad("sink"))
         
+    def to_milli(self, val):
+        milli = int(round(val / 1000000.0))
+        return milli
+        
     def whilst_playing(self):
         """
         Whilst a track is playing create a new thread to
         emit the playing-file's position
         """
         play_thread_id = self.play_thread_id
-        
-        # Honestly no idea what this is for
+
         while play_thread_id == self.play_thread_id:
             try:
-                sleep(0.2)
-                dur_int = self.pipe_line.query_duration(self.time_format, None)[0]
-                #TODO: convert time
                 #TODO: emit time
-                break
+                pos_int = self.pipe_line.query_position(self.time_format)[0]
+                print self.to_milli(pos_int)#, self.state()
+                
             except:
                 pass
-
-        sleep(0.2)
-        while play_thread_id == self.play_thread_id:
-            # In nanosecods for some reason
-            pos_int = self.pipe_line.query_position(self.time_format, None)[0]
-            #TODO: convert pos_int
-            # Honestly, why?
-#            if play_thread_id == self.play_thread_id:
-            #TODO: emit time
-            print pos_int
             sleep(1)
 
     def state(self):
         """
         To find out pipe_line's current state
         """
-        return
+        return self.pipe_line.get_state()
         
     def current_source(self):
         return self.pipe_source
+        
+    def total_time(self):
+        dur = self.pipe_line.query_duration(self.time_format)[0]
+        return self.to_milli(dur)
+        
 
     def load(self, fname):
         """
