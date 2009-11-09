@@ -43,6 +43,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         Initialisation of key items. Some may be pulled
         from other files as this file is getting messy
         """ 
+#        super(MainWindow, self).__init__()
         QMainWindow.__init__(self, parent)
         # Do I really need these
         Setups.__init__(self) 
@@ -539,7 +540,7 @@ The old database format is no longer compatible with the new implementation.""")
 
         # Prevents the slider being reset if playback is paused
         # or unpaused
-        if self.is_playing():
+        if self.playbin.is_playing():
             if not ((new == 2) and ( old == 4)):
                 self.set_prog_sldr()
         # Stopped playing and at end of playlist
@@ -624,7 +625,7 @@ The old database format is no longer compatible with the new implementation.""")
                 self.minimise_to_tray(True)            
         # Middle-click to pause/play
         elif event == 4:
-            if self.is_playing():
+            if self.playbin.is_playing():
                 self.on_playBttn_toggled(False)
             else:
                 self.on_playBttn_toggled(True)
@@ -707,29 +708,18 @@ The old database format is no longer compatible with the new implementation.""")
         self.set_info()
         self.set_prog_sldr()
 
-    def is_playing(self):
-        """
-        To find out if a file is being played
-        """
-        state = self.media_object.state()
-        if state == 2:
-            return True
-        else:
-            return False
-
     def is_last(self):
         """
-        Checks whether the current track in self.media_object
+        Checks whether the current track in self.playbin
         is the last in the viewable playlist
         """
-        now = self.media_object.currentSource().fileName()                
+        now = self.playbin.current_source()
         file_list = self.gen_file_list()
-        file_cnt = len(file_list)
         try:
-            pos = file_list.index(now)
+            pos = file_list.index(QString(now))
         except:
             pos = None
-        if  pos and  pos == file_cnt:
+        if  pos and  pos ==  len(file_list):
             return True        
 
     def gen_file_list(self):
@@ -748,6 +738,7 @@ The old database format is no longer compatible with the new implementation.""")
         else:
             self.play_type_bttn.setText("N")
 
+# TODO: de-uglify
     def add2playlist(self, file_name, info):
         """
         Called when adding tracks to the playlist either locally
@@ -788,6 +779,7 @@ The old database format is no longer compatible with the new implementation.""")
         self.playlistTree.setItem(current_row, file_col , file_item)
         self.playlistTree.resizeColumnsToContents()
 
+#TODO: use native/theme colours for odd/even colours
     def tracknow_colourise(self, now):
         """
         Instead of using QTableWidget's selectRow function, 

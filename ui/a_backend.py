@@ -7,17 +7,107 @@ from os import path
 from time import sleep
 from PyQt4.QtCore import QObject, SIGNAL
 
+class Queries:
+    """
+    All methods that query the playbin and
+    its elements
+    """
+#TODO: parsing of stat
+    def state(self):
+        """
+        To find out pipe_line's current state
+        """
+        return self.pipe_line.get_state()
+        
+    def current_source(self):
+        """
+        The pipe-line's current loaded track
+        """
+        return self.pipe_source
+        
+    def total_time(self):
+        """
+        This won't do anything until the pipe_line
+        is in a PLAYING_STATE
+        """
+        dur = self.pipe_line.query_duration(self.time_format)[0]
+        return self.to_milli(dur)
+        
+    def is_playing(self):
+        if self.play_thread_id:
+            return True
+        else:
+            return False
+
+class Actions:
+    """
+    All methods that require playbin or
+    its elements to do something
+    """
+    def load(self, fname):
+        """
+        This is for file-src so file:// doesn't seem to be necessary.
+        CD and url sources   may be tricky later on. I hope not.
+        """
+        #FIXME:  Changing the `location' property on filesink when a file is open is not supported.
+        if path.isfile(fname):            
+            self.pipe_line.get_by_name("file-source").set_property(\
+                "location", fname)
+            self.pipe_source = fname
+            self.queue = fname
+            self.pipe_line.set_state(gst.STATE_READY)
+        else:
+            print("Error: %s not loaded" % fname)
+            
+    def play(self):
+        """
+        If a file is loaded play  or unpause it
+        """
+        #TODO: check for state. i.e paused
+        if self.queue:
+            self.pipe_line.set_state(gst.STATE_PLAYING)
+            self.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
+            self.queue = None
+        else:
+            pass
+#            self.emit(SIGNAL, ("finished()"))
+        
+    def pause(self):
+        self.pipe_line.set_state(gst.STATE_PAUSED)
+        
+    def stop(self):
+        if self.play_thread_id:
+            self.play_thread_id = None
+            self.pipe_line.set_state(gst.STATE_NULL)
+   
+#TODO: Find a cleaner seek method. This has a nasty sounding 'blip'
+    def seek(self, val):
+        """
+        Seek to a time-position(in nS) of playing file
+        """
+        pos = val * 1000000        
+        self.pipe_line.seek_simple(self.time_format, gst.SEEK_FLAG_FLUSH, pos)
+        
+    def set_volume(self, val):
+        if 0 <= val <= 1:
+            self.pipe_line.get_by_name("volume").set_property('volume', val)
+
+#FIXME: do not do this
+    def enqueue(self, fname):
+        self.queue = fname
+
 
 #TODO: may need a queueBin for gapless playback
 #FIXME: in order for this to me signal/slot compatible
 # this needs to be a QObject
-class Player(QObject):
+class Player(Actions, Queries, QObject):
     def __init__(self):
         super(Player, self).__init__()
         gobject.threads_init() # V.Important
         
         # Where everything goes
-        self.pipe_line = gst.Pipeline("mypipeline")        
+        # filesrc ! decodebin ! audioconvert ! volume ! alsasink
+        self.pipe_line = gst.Pipeline("mypipeline")         
         # Negates the need for 'file://' May prove awkward later on
         self.filesrc = gst.element_factory_make("filesrc", "file-source")
         self.pipe_line.add(self.filesrc)
@@ -29,6 +119,7 @@ class Player(QObject):
         self.pipe_line.add(self.decoder)
         self.filesrc.link(self.decoder)
         
+        # Has to be dynamically linked to
         self.converter = gst.element_factory_make("audioconvert", "converter")
         self.pipe_line.add(self.converter)
         
@@ -44,15 +135,26 @@ class Player(QObject):
         
         self.pipe_line.get_by_name("volume").set_property('volume', 1)
 
+        # gst.FORMAT_TIME is in nanoSeconds
+        # TODO: try and find a millisecond time format
         self.time_format = gst.Format(gst.FORMAT_TIME)
+        
+        # A crude method if what is currently loaded
+        # into the pipeline. Could possibly use a Gstreamer
+        # implementation instead.
         self.pipe_source = None
+        
+        # A crude queue method that's currently not used.
+        # Should really be replaced with a queueBin
         self.queue = None
+        self.play_thread_id = None
         
         # get_clock()?
         bus = self.pipe_line.get_bus()
         bus.add_signal_watch()
         bus.connect("message", self.on_message)
 
+#FIXME: the message type output is not as expected
     def on_message(self, bus, msg):
         """
         Messages from pipe_line object
@@ -76,6 +178,9 @@ class Player(QObject):
         pad.link(self.converter.get_pad("sink"))
         
     def to_milli(self, val):
+        """
+        Pointless really
+        """
         milli = int(round(val / 1000000.0))
         return milli
         
@@ -85,9 +190,11 @@ class Player(QObject):
         emit the playing-file's position
         """
         play_thread_id = self.play_thread_id
-        dur = 0
+        dur = None
         
-        while dur == 0:
+        # Stay here until we have a current_source
+        # total_time duration
+        while not dur:
             try:
                 dur = self.total_time()
             except:
@@ -103,70 +210,9 @@ class Player(QObject):
                 self.emit(SIGNAL("tick ( int )"), val)
                 if dur - val < 2000:
                     print("SPAM!")
+                    #TODO: find if a similar message  is output via
+                    # pipe-line's bus
                     self.emit(SIGNAL("aboutToFinish()"))                    
             except:
                 pass
             sleep(1)
-
-    def state(self):
-        """
-        To find out pipe_line's current state
-        """
-        return self.pipe_line.get_state()
-        
-    def current_source(self):
-        return self.pipe_source
-        
-    def total_time(self):
-        """
-        Thiswon't do anything until the pipe_line
-        is in a PLAYING_STATE
-        """
-        dur = self.pipe_line.query_duration(self.time_format)[0]
-        return self.to_milli(dur)
-        
-    def load(self, fname):
-        """
-        This is for file-src so file:// doesn't seem to be necessary.
-        CD and url sources   may be tricky later on. I hope not.
-        """
-        #FIXME:  Changing the `location' property on filesink when a file is open is not supported.
-        if path.isfile(fname):            
-            self.pipe_line.get_by_name("file-source").set_property(\
-                "location", fname)
-            self.pipe_source = fname
-            self.queue = fname
-            self.pipe_line.set_state(gst.STATE_READY)
-        else:
-            print("Error: %s not loaded" % fname)
-            
-    def play(self):
-        #TODO: check for state. i.e paused
-        if self.queue:
-            self.pipe_line.set_state(gst.STATE_PLAYING)
-            self.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
-            self.queue = None
-        else:
-            pass
-#            self.emit(SIGNAL, ("finished()"))
-        
-    def pause(self):
-        self.pipe_line.set_state(gst.STATE_PAUSED)
-        
-    def stop(self):
-        self.play_thread_id = None
-        self.pipe_line.set_state(gst.STATE_NULL)
-        
-    def seek(self, val):
-        """
-        Seek to a time-position(in nS) of playing file
-        """
-        pos = val * 1000000        
-        self.pipe_line.seek_simple(self.time_format, gst.SEEK_FLAG_SEGMENT, pos)
-        
-    def set_volume(self, val):
-        if 0 <= val <= 1:
-            self.pipe_line.get_by_name("volume").set_property('volume', val)
-
-    def enqueue(self, fname):
-        self.queue = fname

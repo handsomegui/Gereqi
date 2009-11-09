@@ -1094,7 +1094,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
      <x>0</x>
      <y>0</y>
      <width>792</width>
-     <height>21</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuActions">
@@ -1155,18 +1155,18 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
      <property name="title">
       <string>Repeat</string>
      </property>
-     <addaction name="actionOff"/>
-     <addaction name="actionTrack"/>
-     <addaction name="actionAlbum"/>
-     <addaction name="actionPlaylist"/>
+     <addaction name="actionRptOff"/>
+     <addaction name="actionRptTrack"/>
+     <addaction name="actionRptAlbum"/>
+     <addaction name="actionRptPlaylist"/>
     </widget>
     <widget class="QMenu" name="menuRandom">
      <property name="title">
       <string>Random</string>
      </property>
-     <addaction name="actionOff_2"/>
-     <addaction name="actionTrack_2"/>
-     <addaction name="actionAlbum_2"/>
+     <addaction name="actionRndOff"/>
+     <addaction name="actionRndTrack"/>
+     <addaction name="actionRndAlbum"/>
      <addaction name="separator"/>
      <addaction name="actionFavor"/>
     </widget>
@@ -1272,7 +1272,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     <string>F1</string>
    </property>
   </action>
-  <action name="actionOff">
+  <action name="actionRptOff">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -1283,7 +1283,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     <string>Off</string>
    </property>
   </action>
-  <action name="actionTrack">
+  <action name="actionRptTrack">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -1291,7 +1291,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     <string>Track</string>
    </property>
   </action>
-  <action name="actionAlbum">
+  <action name="actionRptAlbum">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -1299,7 +1299,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     <string>Album</string>
    </property>
   </action>
-  <action name="actionPlaylist">
+  <action name="actionRptPlaylist">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -1307,7 +1307,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     <string>Playlist</string>
    </property>
   </action>
-  <action name="actionOff_2">
+  <action name="actionRndOff">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -1318,7 +1318,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     <string>Off</string>
    </property>
   </action>
-  <action name="actionTrack_2">
+  <action name="actionRndTrack">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -1326,7 +1326,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     <string>Track</string>
    </property>
   </action>
-  <action name="actionAlbum_2">
+  <action name="actionRndAlbum">
    <property name="checkable">
     <bool>true</bool>
    </property>
