@@ -31,8 +31,11 @@ class Queries:
         This won't do anything until the pipe_line
         is in a PLAYING_STATE
         """
-        dur = self.pipe_line.query_duration(self.time_format)[0]
-        return self.to_milli(dur)
+        try:
+            dur = self.pipe_line.query_duration(self.time_format)[0]
+        except:
+            dur = None
+        return dur
         
 # TODO: replace with GStreamer implementation
     def is_playing(self):
@@ -166,7 +169,7 @@ class Player(Actions, Queries, QObject):
         Messages from pipe_line object
         """
         msg_type = msg.type
-        print(msg)
+#        print(msg)
         if msg_type == gst.MESSAGE_EOS:
             self.play_thread_id = None
             self.pipe_line.set_state(gst.STATE_NULL)
@@ -183,7 +186,7 @@ class Player(Actions, Queries, QObject):
         """
         pad.link(self.converter.get_pad("sink"))
         
-    def __to_milli(self, val):
+    def to_milli(self, val):
         """
         Pointless really
         """
@@ -196,24 +199,22 @@ class Player(Actions, Queries, QObject):
         emit the playing-file's position
         """
         play_thread_id = self.play_thread_id
-        dur = None
+        dur = 0
         ab2finish = False
         
         # Stay here until we have a current_source
         # total_time duration
         while not dur:
-            try:
-                dur = self.total_time()
-            except:
-                pass
+            dur = self.total_time()            
             sleep(0.1)
-
+        
+        dur = self.to_milli(dur)
         print dur
 
         while play_thread_id == self.play_thread_id:
             try:
                 pos_int = self.pipe_line.query_position(self.time_format)[0]
-                val = self.__to_milli(pos_int)
+                val = self.to_milli(pos_int)
                 self.emit(SIGNAL("tick ( int )"), val)
                 if dur - val < 2000 and not ab2finish:
                     print("SPAM!")
