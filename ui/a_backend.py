@@ -18,7 +18,8 @@ class Queries:
         To find out pipe_line's current state
         """
         return self.pipe_line.get_state()
-        
+
+# TODO: replace with GSreamer implementation
     def current_source(self):
         """
         The pipe-line's current loaded track
@@ -33,17 +34,20 @@ class Queries:
         dur = self.pipe_line.query_duration(self.time_format)[0]
         return self.to_milli(dur)
         
+# TODO: replace with GStreamer implementation
     def is_playing(self):
         if self.play_thread_id:
             return True
         else:
             return False
 
+
 class Actions:
     """
     All methods that require playbin or
     its elements to do something
     """
+    
     def load(self, fname):
         """
         This is for file-src so file:// doesn't seem to be necessary.
@@ -91,6 +95,8 @@ class Actions:
     def set_volume(self, val):
         if 0 <= val <= 1:
             self.pipe_line.get_by_name("volume").set_property('volume', val)
+        else:
+            print("Incorrect volume value. 0 -> 1")
 
 #FIXME: do not do this
     def enqueue(self, fname):
@@ -115,7 +121,7 @@ class Player(Actions, Queries, QObject):
         # Automatic decoder. As it deals with many formats it has multiple
         # pads that have to be dynamically linked to the converter
         self.decoder = gst.element_factory_make("decodebin", "decoder")
-        self.decoder.connect("new-decoded-pad", self.on_dynamic_pad)
+        self.decoder.connect("new-decoded-pad", self.__on_dynamic_pad)
         self.pipe_line.add(self.decoder)
         self.filesrc.link(self.decoder)
         
@@ -152,10 +158,10 @@ class Player(Actions, Queries, QObject):
         # get_clock()?
         bus = self.pipe_line.get_bus()
         bus.add_signal_watch()
-        bus.connect("message", self.on_message)
+        bus.connect("message", self.__on_message)
 
 #FIXME: the message type output is not as expected
-    def on_message(self, bus, msg):
+    def __on_message(self, bus, msg):
         """
         Messages from pipe_line object
         """
@@ -170,14 +176,14 @@ class Player(Actions, Queries, QObject):
             err, debug = msg.parse_error()
             print("Error: %s" % err, debug)
 
-    def on_dynamic_pad(self, dbin, pad, islast):
+    def __on_dynamic_pad(self, dbin, pad, islast):
         """
         File-src has manypads due to multiple formats.
         Have to be connected to the converter
         """
         pad.link(self.converter.get_pad("sink"))
         
-    def to_milli(self, val):
+    def __to_milli(self, val):
         """
         Pointless really
         """
@@ -191,6 +197,7 @@ class Player(Actions, Queries, QObject):
         """
         play_thread_id = self.play_thread_id
         dur = None
+        ab2finish = False
         
         # Stay here until we have a current_source
         # total_time duration
@@ -206,10 +213,11 @@ class Player(Actions, Queries, QObject):
         while play_thread_id == self.play_thread_id:
             try:
                 pos_int = self.pipe_line.query_position(self.time_format)[0]
-                val = self.to_milli(pos_int)
+                val = self.__to_milli(pos_int)
                 self.emit(SIGNAL("tick ( int )"), val)
-                if dur - val < 2000:
+                if dur - val < 2000 and not ab2finish:
                     print("SPAM!")
+                    ab2finish = True
                     #TODO: find if a similar message  is output via
                     # pipe-line's bus
                     self.emit(SIGNAL("aboutToFinish()"))                    
