@@ -5,7 +5,7 @@ from PyQt4.QtGui import QFont, QMenu, QTreeWidgetItem, QShortcut, \
 QKeySequence, QLabel, QProgressBar, QToolButton, QIcon, QPixmap, \
 QAction, QSystemTrayIcon, qApp
 from PyQt4.QtCore import QStringList, QString, SIGNAL, QSize, SLOT
-from Ui_amaroq import Ui_MainWindow
+from Ui_interface import Ui_MainWindow
 
 class Setups(Ui_MainWindow):
     """
@@ -117,7 +117,7 @@ class Setups(Ui_MainWindow):
         self.view_action.setChecked(True)
         tray_icon_menu = QMenu(self)
         icon = QIcon(QPixmap(":/Icons/drawing.png"))
-        tray_icon_menu.addAction(icon, QString("Amaroq"))
+        tray_icon_menu.addAction(icon, QString("Gereqi"))
         tray_icon_menu.addSeparator()
         tray_icon_menu.addAction(prev_action)
         tray_icon_menu.addAction(self.play_action)

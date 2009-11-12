@@ -389,8 +389,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         # TODO: not implemented yet
         QMessageBox.information(None,
             self.trUtf8("Help"),
-            self.trUtf8("""Just a note. If you have used amaroq-0.1.* and are now trying the dev branch you need to delete "~/.amaroq/amaroq.db" \n
-The old database format is no longer compatible with the new implementation."""))
+            self.trUtf8("""Boo!"""))
 
     @pyqtSignature("QTreeWidgetItem*")
     def on_collectTree_itemExpanded(self, item):
@@ -457,7 +456,7 @@ The old database format is no longer compatible with the new implementation.""")
         print "Filter collectionTree WRT time.", now
         
     @pyqtSignature("")
-    def on_actionAbout_Amaroq_triggered(self):
+    def on_actionAbout_Gereqi_triggered(self):
         """
         Slot documentation goes here.
         """
