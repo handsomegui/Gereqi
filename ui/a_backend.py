@@ -199,7 +199,7 @@ class Player(Actions, Queries, QObject):
         emit the playing-file's position
         """
         play_thread_id = self.play_thread_id
-        dur = 0
+        dur = None
         ab2finish = False
         
         # Stay here until we have a current_source
