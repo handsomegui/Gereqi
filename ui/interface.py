@@ -57,7 +57,9 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.create_tray_menu()
 
         self.connect(self.playbin, SIGNAL("tick ( int )"), self.prog_tick)
-        self.connect(self.playbin, SIGNAL("aboutToFinish()"), self.about_to_finish)
+        self.connect(self.playbin, SIGNAL("about_to_finish()"), self.about_to_finish)
+        self.connect(self.playbin, SIGNAL("autoqueued()"), self.generate_info)
+        self.connect(self.playbin, SIGNAL("finished()"), self.finished_playing)
         
     @pyqtSignature("QString")
     def on_srchCollectEdt_textChanged(self, p0):
@@ -201,7 +203,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.playbin.stop()
         self.playBttn.setChecked(False)
         self.stopBttn.setEnabled(False)
-        self.finished()
+        self.finished_playing()
         
     @pyqtSignature("")
     def on_nxtBttn_pressed(self):
@@ -545,9 +547,9 @@ class MainWindow(Setups, Finishes, QMainWindow):
         # Stopped playing and at end of playlist
         if new == 1 and old == 2 and self.is_last():
             print "debug: stopped\n"
-            self.finished()
+            self.finished_playing()
             
-    def finished(self):
+    def finished_playing(self):
         """
         Things to be performed when the playlist finishes
         """

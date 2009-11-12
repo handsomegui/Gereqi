@@ -81,17 +81,18 @@ class Actions:
             else:
                 # This is not gapless
                 print("AUTOQUEUE")
+                
                 self.load(self.queue)
                 self.pipe_line.set_state(gst.STATE_PLAYING)
                 self.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
+                self.emit(SIGNAL("autoqueued()"))
                 self.queue = None
                 
         elif now == gst.STATE_PAUSED:
             print("UNPAUSE")
             self.pipe_line.set_state(gst.STATE_PLAYING)
         else:
-            pass
-#            self.emit(SIGNAL, ("finished()"))
+            self.emit(SIGNAL("finished()"))
         
     def pause(self):
         self.pipe_line.set_state(gst.STATE_PAUSED)
@@ -139,26 +140,26 @@ class Player(Actions, Queries, QObject):
         self.filesrc = gst.element_factory_make("filesrc", "file-source")
         self.pipe_line.add(self.filesrc)
         
-        
-        self.queuer = gst.element_factory_make("queue", "queuer")
-        self.pipe_line.add(self.queuer)
-        self.filesrc.link(self.queuer)
-
         # Automatic decoder. As it deals with many formats it has multiple
         # pads that have to be dynamically linked to the converter
         self.decoder = gst.element_factory_make("decodebin", "decoder")
         self.decoder.connect("new-decoded-pad", self.__on_dynamic_pad)
         self.pipe_line.add(self.decoder)
-        self.queuer.link(self.decoder)
+        self.filesrc.link(self.decoder)
         
         # Has to be dynamically linked to
         self.converter = gst.element_factory_make("audioconvert", "converter")
         self.pipe_line.add(self.converter)
         
+       # I've no idea how to use this 
+        self.queuer = gst.element_factory_make("queue", "queuer")
+        self.pipe_line.add(self.queuer)
+        self.converter.link(self.queuer)
+        
         # Range is long 0 -> 1
         self.vol = gst.element_factory_make("volume", "volume")
         self.pipe_line.add(self.vol)        
-        self.converter.link(self.vol)
+        self.queuer.link(self.vol)
         
         # Don't care for Pulseaudio
         self.sink = gst.element_factory_make("alsasink", "sink")
@@ -199,6 +200,7 @@ class Player(Actions, Queries, QObject):
             else:
                 self.play_thread_id = None            
                 self.pipe_line.set_state(gst.STATE_NULL)
+                self.emit(SIGNAL("finished()"))
         
         elif msg_type == gst.MESSAGE_ERROR:
             print("ERROR")
@@ -248,7 +250,7 @@ class Player(Actions, Queries, QObject):
                     ab2finish = True
                     #TODO: find if a similar message  is output via
                     # pipe-line's bus
-                    self.emit(SIGNAL("aboutToFinish()"))                    
+                    self.emit(SIGNAL("about_to_finish()"))    
             except:
                 pass
             sleep(1)
