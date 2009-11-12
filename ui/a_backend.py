@@ -51,7 +51,7 @@ class Actions:
     its elements to do something
     """
     
-    def load(self, fname):
+    def load(self, fname, how="now"):
         """
         This is for file-src so file:// doesn't seem to be necessary.
         CD and url sources   may be tricky later on. I hope not.
@@ -73,14 +73,22 @@ class Actions:
         """
         #TODO: check for state. i.e paused
         now = self.state()[1]
-        print now
-        if now == gst.STATE_READY:
-            self.pipe_line.set_state(gst.STATE_PLAYING)
-            self.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
-            self.queue = None
+        if self.queue:
+            if (now == gst.STATE_READY):
+                self.pipe_line.set_state(gst.STATE_PLAYING)
+                self.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
+                self.queue = None
+            else:
+                # This is not gapless
+                print("AUTOQUEUE")
+                self.load(self.queue)
+                self.pipe_line.set_state(gst.STATE_PLAYING)
+                self.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
+                self.queue = None
+                
         elif now == gst.STATE_PAUSED:
-            print("PAUSED")
-            self.pipe_line.set_state(gst.STATE_CHANGE_PAUSED_TO_PLAYING)
+            print("UNPAUSE")
+            self.pipe_line.set_state(gst.STATE_PLAYING)
         else:
             pass
 #            self.emit(SIGNAL, ("finished()"))
@@ -109,8 +117,12 @@ class Actions:
 
 #FIXME: do not do this
     def enqueue(self, fname):
+        print(fname)
+#        self.load(fname,"queue")
         self.queue = fname
 
+    def clear_queue(self):
+        pass
 
 #TODO: may need a queueBin for gapless playback
 #FIXME: in order for this to me signal/slot compatible
@@ -127,12 +139,17 @@ class Player(Actions, Queries, QObject):
         self.filesrc = gst.element_factory_make("filesrc", "file-source")
         self.pipe_line.add(self.filesrc)
         
+        
+        self.queuer = gst.element_factory_make("queue", "queuer")
+        self.pipe_line.add(self.queuer)
+        self.filesrc.link(self.queuer)
+
         # Automatic decoder. As it deals with many formats it has multiple
         # pads that have to be dynamically linked to the converter
         self.decoder = gst.element_factory_make("decodebin", "decoder")
         self.decoder.connect("new-decoded-pad", self.__on_dynamic_pad)
         self.pipe_line.add(self.decoder)
-        self.filesrc.link(self.decoder)
+        self.queuer.link(self.decoder)
         
         # Has to be dynamically linked to
         self.converter = gst.element_factory_make("audioconvert", "converter")
@@ -175,12 +192,16 @@ class Player(Actions, Queries, QObject):
         Messages from pipe_line object
         """
         msg_type = msg.type
-#        print(msg)
         if msg_type == gst.MESSAGE_EOS:
-            self.play_thread_id = None
-            self.pipe_line.set_state(gst.STATE_NULL)
+            print("EOS")
+            if self.queue:
+                self.play()
+            else:
+                self.play_thread_id = None            
+                self.pipe_line.set_state(gst.STATE_NULL)
         
         elif msg_type == gst.MESSAGE_ERROR:
+            print("ERROR")
             self.pipe_line.set_state(gst.STATE_NULL)
             err, debug = msg.parse_error()
             print("Error: %s" % err, debug)
