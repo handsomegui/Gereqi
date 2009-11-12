@@ -17,7 +17,7 @@ class Queries:
         """
         To find out pipe_line's current state
         """
-        return self.pipe_line.get_state()
+        return self.pipe_line.get_state(1)
 
 # TODO: replace with GSreamer implementation
     def current_source(self):
@@ -57,7 +57,8 @@ class Actions:
         CD and url sources   may be tricky later on. I hope not.
         """
         #FIXME:  Changing the `location' property on filesink when a file is open is not supported.
-        if path.isfile(fname):            
+        if path.isfile(fname):  
+            self.pipe_line.set_state(gst.STATE_NULL)
             self.pipe_line.get_by_name("file-source").set_property(\
                 "location", fname)
             self.pipe_source = fname
@@ -71,10 +72,15 @@ class Actions:
         If a file is loaded play  or unpause it
         """
         #TODO: check for state. i.e paused
-        if self.queue:
+        now = self.state()[1]
+        print now
+        if now == gst.STATE_READY:
             self.pipe_line.set_state(gst.STATE_PLAYING)
             self.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
             self.queue = None
+        elif now == gst.STATE_PAUSED:
+            print("PAUSED")
+            self.pipe_line.set_state(gst.STATE_CHANGE_PAUSED_TO_PLAYING)
         else:
             pass
 #            self.emit(SIGNAL, ("finished()"))
