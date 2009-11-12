@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>amaroQ</string>
+   <string>Gereqi</string>
   </property>
   <property name="windowIcon">
    <iconset resource="resource.qrc">
@@ -1094,7 +1094,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
      <x>0</x>
      <y>0</y>
      <width>792</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuActions">
@@ -1145,7 +1145,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     </property>
     <addaction name="actionHelp"/>
     <addaction name="separator"/>
-    <addaction name="actionAbout_Amaroq"/>
+    <addaction name="actionAbout_Gereqi"/>
    </widget>
    <widget class="QMenu" name="menuMode">
     <property name="title">
@@ -1183,7 +1183,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionConfigure">
    <property name="text">
-    <string>Configure Amaroq</string>
+    <string>Configure Gereqi</string>
    </property>
   </action>
   <action name="actionRescan_Collection">
@@ -1259,9 +1259,9 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     <string>Update Collection</string>
    </property>
   </action>
-  <action name="actionAbout_Amaroq">
+  <action name="actionAbout_Gereqi">
    <property name="text">
-    <string>About  Amaroq</string>
+    <string>About  Gereqi</string>
    </property>
   </action>
   <action name="actionHelp">

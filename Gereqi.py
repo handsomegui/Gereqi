@@ -7,14 +7,14 @@ no idea what yet.
 """
 from PyQt4.QtGui import QApplication
 from PyQt4.QtCore import QString
-from ui.amaroq import MainWindow
+from ui.interface import MainWindow
 
 VERSION = "0.2.3"  
 
 def main():
     import sys
     app = QApplication(sys.argv)
-    app.setApplicationName(QString("Amaroq"))
+    app.setApplicationName(QString("Qereqi"))
     app.setApplicationVersion(QString(VERSION))
     wnd = MainWindow()
     wnd.show()

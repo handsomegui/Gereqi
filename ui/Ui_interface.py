@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/jon/Documents/Projects/amaroq/ui/amaroq.ui'
+# Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/ui/interface.ui'
 #
-# Created: Sat Oct 10 19:51:58 2009
+# Created: Thu Nov 12 14:00:34 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -462,7 +462,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 792, 21))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 792, 26))
         self.menuBar.setObjectName("menuBar")
         self.menuActions = QtGui.QMenu(self.menuBar)
         self.menuActions.setObjectName("menuActions")
@@ -512,8 +512,8 @@ font: 75 10pt \"DejaVu Sans\";
         self.actionLoad.setObjectName("actionLoad")
         self.actionUpdate_Collection = QtGui.QAction(MainWindow)
         self.actionUpdate_Collection.setObjectName("actionUpdate_Collection")
-        self.actionAbout_Amaroq = QtGui.QAction(MainWindow)
-        self.actionAbout_Amaroq.setObjectName("actionAbout_Amaroq")
+        self.actionAbout_Gereqi = QtGui.QAction(MainWindow)
+        self.actionAbout_Gereqi.setObjectName("actionAbout_Gereqi")
         self.actionHelp = QtGui.QAction(MainWindow)
         self.actionHelp.setObjectName("actionHelp")
         self.actionOff = QtGui.QAction(MainWindow)
@@ -571,7 +571,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.menuSettings.addAction(self.actionConfigure)
         self.menuHelp.addAction(self.actionHelp)
         self.menuHelp.addSeparator()
-        self.menuHelp.addAction(self.actionAbout_Amaroq)
+        self.menuHelp.addAction(self.actionAbout_Gereqi)
         self.menuRepeat.addAction(self.actionOff)
         self.menuRepeat.addAction(self.actionTrack)
         self.menuRepeat.addAction(self.actionAlbum)
@@ -596,7 +596,7 @@ font: 75 10pt \"DejaVu Sans\";
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "amaroQ", None, QtGui.QApplication.UnicodeUTF8))
+        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Gereqi", None, QtGui.QApplication.UnicodeUTF8))
         self.trkNowBox.setTitle(QtGui.QApplication.translate("MainWindow", "No Track Playing", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_2.setTitle(QtGui.QApplication.translate("MainWindow", "Fresh Podcast Episodes", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("MainWindow", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
@@ -671,7 +671,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.menuMode.setTitle(QtGui.QApplication.translate("MainWindow", "Mode", None, QtGui.QApplication.UnicodeUTF8))
         self.menuRepeat.setTitle(QtGui.QApplication.translate("MainWindow", "Repeat", None, QtGui.QApplication.UnicodeUTF8))
         self.menuRandom.setTitle(QtGui.QApplication.translate("MainWindow", "Random", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionConfigure.setText(QtGui.QApplication.translate("MainWindow", "Configure Amaroq", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionConfigure.setText(QtGui.QApplication.translate("MainWindow", "Configure Gereqi", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRescan_Collection.setText(QtGui.QApplication.translate("MainWindow", "Rescan Collection", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setText(QtGui.QApplication.translate("MainWindow", "Quit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+Q", None, QtGui.QApplication.UnicodeUTF8))
@@ -685,7 +685,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.actionSave_2.setText(QtGui.QApplication.translate("MainWindow", "Save", None, QtGui.QApplication.UnicodeUTF8))
         self.actionLoad.setText(QtGui.QApplication.translate("MainWindow", "Load", None, QtGui.QApplication.UnicodeUTF8))
         self.actionUpdate_Collection.setText(QtGui.QApplication.translate("MainWindow", "Update Collection", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionAbout_Amaroq.setText(QtGui.QApplication.translate("MainWindow", "About  Amaroq", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAbout_Gereqi.setText(QtGui.QApplication.translate("MainWindow", "About  Gereqi", None, QtGui.QApplication.UnicodeUTF8))
         self.actionHelp.setText(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
         self.actionHelp.setShortcut(QtGui.QApplication.translate("MainWindow", "F1", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOff.setText(QtGui.QApplication.translate("MainWindow", "Off", None, QtGui.QApplication.UnicodeUTF8))
