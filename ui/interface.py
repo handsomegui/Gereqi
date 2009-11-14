@@ -151,7 +151,6 @@ class MainWindow(Setups, Finishes, QMainWindow):
             #FIXME: try and invert the result for less confusing varName
             not_stopped = self.stopBttn.isEnabled()
             highlighted = str(self.highlighted_track())
-            print(queued, highlighted)
             
             if highlighted:
                 # Checks to see if highlighted track matches queued track
@@ -370,6 +369,8 @@ class MainWindow(Setups, Finishes, QMainWindow):
         print "Rebuild: Ensure the db is ON CONFLICT IGNORE"
         self.collection()
 
+#FIXME: this causes a double-trigger of playbin.play() on app's
+# first play.
     @pyqtSignature("int, int")
     def on_playlistTree_cellDoubleClicked(self, row, column):
         """
@@ -627,9 +628,11 @@ class MainWindow(Setups, Finishes, QMainWindow):
         # Middle-click to pause/play
         elif event == 4:
             if self.playbin.is_playing():
-                self.on_playBttn_toggled(False)
+                self.playBttn.setChecked(False)
+#                self.on_playBttn_toggled(False)
             else:
-                self.on_playBttn_toggled(True)
+                self.playBttn.setChecked(True)
+#                self.on_playBttn_toggled(True)
                 
     def del_track(self):
         """

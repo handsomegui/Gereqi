@@ -17,7 +17,7 @@ class Queries:
         """
         To find out pipe_line's current state
         """
-        return self.pipe_line.get_state(1)
+        return self.pipe_line.get_state(1)[1]
 
 # TODO: replace with GSreamer implementation
     def current_source(self):
@@ -39,7 +39,7 @@ class Queries:
         
 # TODO: replace with GStreamer implementation
     def is_playing(self):
-        if self.play_thread_id:
+        if self.state() == gst.STATE_PLAYING:
             return True
         else:
             return False
@@ -72,9 +72,10 @@ class Actions:
         If a file is loaded play  or unpause it
         """
         #TODO: check for state. i.e paused
-        now = self.state()[1]
+        now = self.state()
         if self.queue:
             if (now == gst.STATE_READY):
+                print("PLAY")
                 self.pipe_line.set_state(gst.STATE_PLAYING)
                 self.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
                 self.queue = None
