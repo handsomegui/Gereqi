@@ -16,7 +16,8 @@ from threads import Getcover, Getwiki, Builddb
 from timing import Timing
 from setups import Setups
 from finishes import Finishes
-from a_backend import Player
+#from a_backend import Player
+from gstbe import Player
 
 
 class MainWindow(Setups, Finishes, QMainWindow):
@@ -381,9 +382,9 @@ class MainWindow(Setups, Finishes, QMainWindow):
         track = self.generate_track("now", row)
         self.playbin.load(track)
         self.generate_info()
-        self.playbin.play()
-        self.playBttn.setChecked(True) 
-        self.play_action.setChecked(True)
+#        self.playbin.play()
+#        self.playBttn.setChecked(True) 
+#        self.play_action.setChecked(True)
         
     @pyqtSignature("")
     def on_actionHelp_activated(self):
