@@ -74,20 +74,19 @@ class Actions:
         #TODO: check for state. i.e paused
         now = self.state()
         if self.queue:
-            if (now == gst.STATE_READY):
+            if now == gst.STATE_READY:
                 print("PLAY")
                 self.pipe_line.set_state(gst.STATE_PLAYING)
                 self.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
                 self.queue = None
             else:
                 # This is not gapless
-                print("AUTOQUEUE")
-                
                 self.load(self.queue)
                 self.pipe_line.set_state(gst.STATE_PLAYING)
                 self.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
                 self.emit(SIGNAL("autoqueued()"))
                 self.queue = None
+                print("AUTOQUEUE")
                 
         elif now == gst.STATE_PAUSED:
             print("UNPAUSE")
@@ -112,6 +111,9 @@ class Actions:
         """
         pos = val * 1000000        
         self.pipe_line.seek_simple(self.time_format, gst.SEEK_FLAG_FLUSH, pos)
+#        event = gst.event_new_seek(1.0, gst.FORMAT_TIME, gst.SEEK_FLAG_FLUSH,
+#                gst.SEEK_TYPE_SET, pos, gst.SEEK_TYPE_NONE, 0)
+#        self.pipe_line.send_event(event)
         
     def set_volume(self, val):
         if 0 <= val <= 1:
@@ -122,7 +124,6 @@ class Actions:
 #FIXME: do not do this
     def enqueue(self, fname):
         print(fname)
-#        self.load(fname,"queue")
         self.queue = fname
 
     def clear_queue(self):
@@ -189,6 +190,7 @@ class Player(Actions, Queries, QObject):
         bus = self.pipe_line.get_bus()
         bus.add_signal_watch()
         bus.connect("message", self.__on_message)
+
 
 #FIXME: the message type output is not as expected
     def __on_message(self, bus, msg):
