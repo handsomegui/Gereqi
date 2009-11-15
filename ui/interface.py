@@ -711,6 +711,8 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.art[3] = album.toUtf8()
         self.set_info()
         self.set_prog_sldr()
+        self.old_pos = 0
+        self.progSldr.setValue(0)
 
     def is_last(self):
         """

@@ -96,9 +96,11 @@ class Actions:
             self.emit(SIGNAL("finished()"))
         
     def pause(self):
+        print("PAUSE")
         self.pipe_line.set_state(gst.STATE_PAUSED)
         
     def stop(self):
+        print("STOP")
         if self.play_thread_id:
             self.play_thread_id = None
             self.pipe_line.set_state(gst.STATE_NULL)
