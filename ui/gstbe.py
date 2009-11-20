@@ -51,15 +51,17 @@ class Actions:
     its elements to do something
     """
     
-    def load(self, fname, how="now"):
+    def load(self, fname, type="file"):
         """
         This is for file-src so file:// doesn't seem to be necessary.
         CD and url sources   may be tricky later on. I hope not.
         """
-        #FIXME:  Changing the `location' property on filesink when a file is open is not supported.
         if path.isfile(fname): 
+            if type == "file":
+                fnow = "file://%s" % fname
+                
             self.pipe_line.set_state(gst.STATE_NULL)
-            self.pipe_line.set_property('uri', fname)
+            self.pipe_line.set_property("uri", fnow)
             self.pipe_line.set_state(gst.STATE_PAUSED) 
             self.pipe_source = fname
         else:
@@ -189,6 +191,10 @@ class Player(Actions, Queries, QObject):
             print("Error: Unable to create audio output")
             
     def __about_to_finish(self, pipeline):
+        """
+        Emit a signal implying a track is needed 
+        for gapless playback
+        """
         self.emit(SIGNAL("about_to_finish()"))  
 
 #FIXME: the message type output is not as expected
