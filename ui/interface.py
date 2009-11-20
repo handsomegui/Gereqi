@@ -346,15 +346,15 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         Mutes audio output and changes button icon accordingly
         """
+        self.playbin.mute(checked)
         if checked:
-            vol = 0.0
             icon = QIcon(QPixmap(":/Icons/audio-volume-muted.png"))
             self.muteBttn.setIcon(icon)
         else:
             vol = (self.volSldr.value() / 100.0) ** 2
             icon = QIcon(QPixmap(":/Icons/audio-volume-high.png"))
             self.muteBttn.setIcon(icon)
-        self.playbin.set_volume(vol)
+            self.playbin.set_volume(vol)
         
     @pyqtSignature("")
     def on_progSldr_sliderReleased(self):

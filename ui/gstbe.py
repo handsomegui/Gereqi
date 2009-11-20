@@ -119,6 +119,8 @@ class Actions:
 #        self.pipe_line.set_property('uri', fname)
 #        self.pipe_source = fname
 
+    def mute(self, set):
+        self.pipe_line.set_property("mute", set)
 
 #TODO: may need a queueBin for gapless playback
 #FIXME: in order for this to me signal/slot compatible
