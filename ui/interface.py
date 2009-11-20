@@ -16,7 +16,6 @@ from threads import Getcover, Getwiki, Builddb
 from timing import Timing
 from setups import Setups
 from finishes import Finishes
-#from a_backend import Player
 from gstbe import Player
 
 
@@ -26,7 +25,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
     inherited Classes that may or may not have
     identical object/method names
     """    
-    show_messages = True
+    show_messages = False
     media_dir = None
     media_db = Media()
     meta = Metadata()

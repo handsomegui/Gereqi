@@ -19,11 +19,13 @@ class Queries:
         """
         return self.pipe_line.get_state(1)[1]
 
-# TODO: replace with GSreamer implementation
+
     def current_source(self):
         """
         The pipe-line's current loaded track
         """
+        # TODO: replace with GSreamer implementation
+#        print self.pipe_line.get_property("uri")
         return self.pipe_source
         
     def total_time(self):
@@ -33,17 +35,15 @@ class Queries:
         """
         try:
             dur = self.pipe_line.query_duration(gst.FORMAT_TIME)[0]
-            print dur
         except:
             dur = None
         return dur
         
-# TODO: replace with GStreamer implementation
     def is_playing(self):
-        if self.state() == gst.STATE_PLAYING:
-            return True
-        else:
-            return False
+        return self.state() == gst.STATE_PLAYING
+            
+    def can_play_source(self, source):
+        return gst.element_make_from_uri(gst.URI_SRC, source, "") is not None
 
 
 class Actions:
@@ -51,7 +51,6 @@ class Actions:
     All methods that require playbin or
     its elements to do something
     """
-    
     def load(self, fname, type="file"):
         """
         A dynamic way of loading of media. Files, urls, cds 
@@ -62,18 +61,22 @@ class Actions:
         if path.isfile(fname): 
             if type == "file":
                 fnow = "file://%s" % fname
-                print(fnow)
-            self.pipe_line.set_property("uri", fnow)            
-            self.pipe_source = fname
+                
+            if self.can_play_source(fnow):
+                self.pipe_line.set_property("uri", fnow)  
+                print(fnow)          
+                self.pipe_source = fname
+            else:
+                print("ERROR: Could not play %s" % fnow)
+                
         else:
-            print("Error: %s not loaded" % fname)
+            print("ERROR: %s not loaded" % fname)
             
     def play(self):
         """
         If a file is loaded play  or unpause it
         """
         now = self.state()
-        print(now)
         if (now == gst.STATE_READY) or (now == gst.STATE_NULL):
             print("PLAY")
             self.pipe_line.set_state(gst.STATE_PLAYING)
@@ -105,7 +108,10 @@ class Actions:
                 gst.SEEK_TYPE_SET, pos, gst.SEEK_TYPE_NONE, 0)
         self.pipe_line.send_event(event)
         
-    def set_volume(self, val):
+# TODO: convert the range into decibels
+# interface.py is sort of doing this already with
+# a sqrt function
+    def set_volume(self, val):        
         if 0 <= val <= 1:
             self.pipe_line.set_property('volume', val)
         else:
@@ -120,27 +126,19 @@ class Actions:
     def mute(self, set):
         self.pipe_line.set_property("mute", set)
 
-#TODO: may need a queueBin for gapless playback
-#FIXME: in order for this to me signal/slot compatible
-# this needs to be a QObject
+
 class Player(Actions, Queries, QObject):
     def __init__(self):
         super(Player, self).__init__()
         gobject.threads_init() # V.Important
         
-        device, sinkname = self.gstreamer_sink("gconfaudiosink")
-        self.pipe_line = gst.element_factory_make('playbin2')
-        self.pipe_line.connect('about-to-finish',  self.__about_to_finish)
-        bufbin = gst.Bin()
-        queue = gst.element_factory_make('queue')
-        queue.set_property('max-size-time', 1000 * gst.MSECOND)
-        bufbin.add(queue, device)
-        queue.link(device)
-        gpad = gst.GhostPad('sink', queue.get_pad('sink'))
-        bufbin.add_pad(gpad)
-        
-        self.pipe_line.set_property('audio-sink', bufbin)
+
+        self.pipe_line = gst.element_factory_make("playbin2", "player")
+        self.pipe_line.connect("about-to-finish",  self.__about_to_finish)
+        self.pipe_line.connect("audio-changed",  self.__audio_changed)
+
         self.pipe_line.set_property('video-sink', None)
+        self.set_volume(1)
         
         bus = self.pipe_line.get_bus()
         bus.add_signal_watch()
@@ -149,64 +147,40 @@ class Player(Actions, Queries, QObject):
         # A crude method if what is currently loaded
         # into the pipeline. Could possibly use a Gstreamer
         # implementation instead.
-        self.pipe_source = None
-        
-        # A crude queue method that's currently not used.
-        # Should really be replaced with a queueBin
-        self.queue = None
+        self.pipe_source = None        
         self.play_thread_id = None
-        
-    def gstreamer_sink(self, pipeline):
-        """
-        Try to create a GStreamer pipeline:
-        * Try making the pipeline (defaulting to gconfaudiosink).
-        * If it fails, fall back to autoaudiosink.
-        * If that fails, complain loudly.
-        Savagely copied from quod-libet
-        """
-        if pipeline == "gconf": 
-            pipeline = "gconfaudiosink"
-        try: 
-            pipe = gst.parse_launch(pipeline)
-        except gobject.GError, err:
-            if pipeline != "autoaudiosink":
-                try: 
-                    pipe = gst.parse_launch("autoaudiosink")
-                except gobject.GError: 
-                    pipe = None
-                else: 
-                    pipeline = "autoaudiosink"
-            else: 
-                pipe = None
-        if pipe: 
-            return pipe, pipeline
-        else:
-            print("Error: Unable to create audio output")
             
     def __about_to_finish(self, pipeline):
         """
         Emit a signal implying a track is needed 
         for gapless playback
         """
-        print("ABOUT2FINISH")
+        print("ABOUT TO FINISH", pipeline)
         self.emit(SIGNAL("about_to_finish()"))  
+    
+    def __audio_changed(self, pipeline):
+        print("AUDIO CHANGED", pipeline)
 
 #FIXME: the message type output is not as expected
     def __on_message(self, bus, msg):
         """
         Messages from pipe_line object
         """
-        if msg.type == gst.MESSAGE_EOS:
+        mtype = msg.type
+        if mtype == gst.MESSAGE_EOS:
             print("EOS")
             self.play_thread_id = None            
             self.pipe_line.set_state(gst.STATE_NULL)
             self.emit(SIGNAL("finished()"))
         
-        elif msg.type == gst.MESSAGE_ERROR:
+        elif mtype == gst.MESSAGE_ERROR:
             print("ERROR")
             self.pipe_line.set_state(gst.STATE_NULL)
             err, debug = msg.parse_error()
             print("Error: %s" % err, debug)
+            
+        elif mtype == gst.MESSAGE_BUFFERING:
+            print(msg)            
         
         
     def to_milli(self, val):
@@ -241,3 +215,5 @@ class Player(Actions, Queries, QObject):
             except:
                 pass
             sleep(1)
+
+
