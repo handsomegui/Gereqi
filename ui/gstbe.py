@@ -133,12 +133,9 @@ class Player(Actions, Queries, QObject):
         super(Player, self).__init__()
         gobject.threads_init() # V.Important
         
-#        device = gst.parse_launch("gconfaudiosink")
-#        device, sinkname = self.GStreamerSink("gconfaudiosink")
-        device = gst.parse_launch("autoaudiosink")
-        
+        device, sinkname = self.gstreamer_sink("gconfaudiosink")
         self.pipe_line = gst.element_factory_make('playbin2')
-        self.pipe_line.connect('about-to-finish', self.__about_to_finish)
+        self.pipe_line.connect('about-to-finish',  self.__about_to_finish)
         bufbin = gst.Bin()
         queue = gst.element_factory_make('queue')
         queue.set_property('max-size-time', 1000 * gst.MSECOND)
@@ -164,35 +161,35 @@ class Player(Actions, Queries, QObject):
         self.queue = None
         self.play_thread_id = None
         
-#    def GStreamerSink(self, pipeline):
-#        """
-#        Try to create a GStreamer pipeline:
-#        * Try making the pipeline (defaulting to gconfaudiosink).
-#        * If it fails, fall back to autoaudiosink.
-#        * If that fails, complain loudly.
-#        Savagely copied from quod-libet
-#        """
-#        if pipeline == "gconf": 
-#            pipeline = "gconfaudiosink"
-#        try: 
-#            pipe = gst.parse_launch(pipeline)
-#        except gobject.GError, err:
-#            if pipeline != "autoaudiosink":
-#                try: 
-#                    pipe = gst.parse_launch("autoaudiosink")
-#                except gobject.GError: 
-#                    pipe = None
-#                else: 
-#                    pipeline = "autoaudiosink"
-#            else: 
-#                pipe = None
-#        if pipe: 
-#            return pipe, pipeline
-#        else:
-#            print("Error: Unable to create audio output")
+    def gstreamer_sink(self, pipeline):
+        """
+        Try to create a GStreamer pipeline:
+        * Try making the pipeline (defaulting to gconfaudiosink).
+        * If it fails, fall back to autoaudiosink.
+        * If that fails, complain loudly.
+        Savagely copied from quod-libet
+        """
+        if pipeline == "gconf": 
+            pipeline = "gconfaudiosink"
+        try: 
+            pipe = gst.parse_launch(pipeline)
+        except gobject.GError, err:
+            if pipeline != "autoaudiosink":
+                try: 
+                    pipe = gst.parse_launch("autoaudiosink")
+                except gobject.GError: 
+                    pipe = None
+                else: 
+                    pipeline = "autoaudiosink"
+            else: 
+                pipe = None
+        if pipe: 
+            return pipe, pipeline
+        else:
+            print("Error: Unable to create audio output")
             
-        def __about_to_finish(self, pipeline):
-            self.emit(SIGNAL("about_to_finish()"))  
+    def __about_to_finish(self, pipeline):
+        self.emit(SIGNAL("about_to_finish()"))  
 
 #FIXME: the message type output is not as expected
     def __on_message(self, bus, msg):
