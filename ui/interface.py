@@ -547,8 +547,8 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         print "debug: Phonon.State: %s -> %s" % (new, old)
 
-        # Prevents the slider being reset if playback is paused
-        # or unpaused
+        # Prevents the slider being reset if playback is 
+        # paused or unpaused
         if self.playbin.is_playing():
             if not ((new == 2) and ( old == 4)):
                 self.set_prog_sldr()
@@ -577,6 +577,9 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.art[1] = None
         
     def minimise_to_tray(self, state):
+        """
+        Does what it says.
+        """
         if state:
             self.show()
             self.setWindowState(Qt.WindowActive)
@@ -636,10 +639,8 @@ class MainWindow(Setups, Finishes, QMainWindow):
         elif event == 4:
             if self.playbin.is_playing():
                 self.playBttn.setChecked(False)
-#                self.on_playBttn_toggled(False)
             else:
                 self.playBttn.setChecked(True)
-#                self.on_playBttn_toggled(True)
                 
     def del_track(self):
         """
@@ -752,7 +753,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         else:
             self.play_type_bttn.setText("N")
 
-# TODO: de-uglify
+# FIXME: de-uglify
     def add2playlist(self, file_name, info):
         """
         Called when adding tracks to the playlist either locally

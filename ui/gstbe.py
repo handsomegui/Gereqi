@@ -62,10 +62,8 @@ class Actions:
         if path.isfile(fname): 
             if type == "file":
                 fnow = "file://%s" % fname
-                
-            self.pipe_line.set_state(gst.STATE_NULL)
-            self.pipe_line.set_property("uri", fnow)
-            self.pipe_line.set_state(gst.STATE_PAUSED) 
+                print(fnow)
+            self.pipe_line.set_property("uri", fnow)            
             self.pipe_source = fname
         else:
             print("Error: %s not loaded" % fname)
@@ -75,7 +73,8 @@ class Actions:
         If a file is loaded play  or unpause it
         """
         now = self.state()
-        if now == gst.STATE_READY:
+        print(now)
+        if (now == gst.STATE_READY) or (now == gst.STATE_NULL):
             print("PLAY")
             self.pipe_line.set_state(gst.STATE_PLAYING)
             self.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
@@ -112,12 +111,11 @@ class Actions:
         else:
             print("Incorrect volume value. 0 -> 1")
 
-#FIXME: do not do this
+# FIXME: technically this should work much like in quod-libet.
+# It doesn't. Get this error:
+# CRITICAL **: deactivate_group: assertion `group->active' failed
     def enqueue(self, fname):
-        print(fname)
         self.load(fname)
-#        self.pipe_line.set_property('uri', fname)
-#        self.pipe_source = fname
 
     def mute(self, set):
         self.pipe_line.set_property("mute", set)
