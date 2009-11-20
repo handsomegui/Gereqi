@@ -220,6 +220,9 @@ class MainWindow(Setups, Finishes, QMainWindow):
                 self.playbin.play()
             else:
                 self.tracknow_colourise(self.current_track())
+        else:
+            # TODO: some tidy up thing could go here
+            return
         
     @pyqtSignature("int")
     def on_volSldr_valueChanged(self, value):
@@ -382,9 +385,11 @@ class MainWindow(Setups, Finishes, QMainWindow):
         track = self.generate_track("now", row)
         self.playbin.load(track)
         self.generate_info()
-#        self.playbin.play()
-#        self.playBttn.setChecked(True) 
-#        self.play_action.setChecked(True)
+        
+        # Checking the button is the same
+        #  as self.playbin.play()
+        self.playBttn.setChecked(True) 
+        self.play_action.setChecked(True)
         
     @pyqtSignature("")
     def on_actionHelp_activated(self):

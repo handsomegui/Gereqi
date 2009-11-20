@@ -32,7 +32,8 @@ class Queries:
         is in a PLAYING_STATE
         """
         try:
-            dur = self.pipe_line.query_duration(self.time_format)[0]
+            dur = self.pipe_line.query_duration(gst.FORMAT_TIME)[0]
+            print dur
         except:
             dur = None
         return dur
@@ -53,9 +54,11 @@ class Actions:
     
     def load(self, fname, type="file"):
         """
-        This is for file-src so file:// doesn't seem to be necessary.
-        CD and url sources   may be tricky later on. I hope not.
+        A dynamic way of loading of media. Files, urls, cds 
+        (last 2 are TODO) can be used. As we are using playbin2 
+        we are actually queuing a track if one is already playing
         """
+        # cdda://4   <-- cd track#4
         if path.isfile(fname): 
             if type == "file":
                 fnow = "file://%s" % fname
@@ -71,27 +74,16 @@ class Actions:
         """
         If a file is loaded play  or unpause it
         """
-        #TODO: check for state. i.e paused
         now = self.state()
-        if self.queue:
-            if now == gst.STATE_READY:
-                print("PLAY")
-                self.pipe_line.set_state(gst.STATE_PLAYING)
-                self.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
-                self.queue = None
-            else:
-                # This is not gapless
-                self.load(self.queue)
-                self.pipe_line.set_state(gst.STATE_PLAYING)
-                self.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
-                self.emit(SIGNAL("autoqueued()"))
-                self.queue = None
-                print("AUTOQUEUE")
-                
+        if now == gst.STATE_READY:
+            print("PLAY")
+            self.pipe_line.set_state(gst.STATE_PLAYING)
+            self.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
         elif now == gst.STATE_PAUSED:
             print("UNPAUSE")
             self.pipe_line.set_state(gst.STATE_PLAYING)
         else:
+            print("FINISHED")
             self.emit(SIGNAL("finished()"))
         
     def pause(self):
@@ -123,8 +115,9 @@ class Actions:
 #FIXME: do not do this
     def enqueue(self, fname):
         print(fname)
-        self.pipe_line.set_property('uri', fname)
-        self.pipe_source = fname
+        self.load(fname)
+#        self.pipe_line.set_property('uri', fname)
+#        self.pipe_source = fname
 
 
 #TODO: may need a queueBin for gapless playback
@@ -195,6 +188,7 @@ class Player(Actions, Queries, QObject):
         Emit a signal implying a track is needed 
         for gapless playback
         """
+        print("ABOUT2FINISH")
         self.emit(SIGNAL("about_to_finish()"))  
 
 #FIXME: the message type output is not as expected
@@ -232,7 +226,9 @@ class Player(Actions, Queries, QObject):
         # Stay here until we have a current_source
         # total_time duration
         while not dur:
+            
             dur = self.total_time()            
+            
             sleep(0.1)
         
         dur = self.to_milli(dur)
