@@ -501,8 +501,6 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         Every second update time labels and progress slider
         """
-#        if time < 1000:
-#            self.set_prog_sldr()
         pos = self.progSldr.sliderPosition()
         t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
         now = t_now.toString('mm:ss')

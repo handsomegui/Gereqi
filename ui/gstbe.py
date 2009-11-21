@@ -70,11 +70,11 @@ class Actions:
         # cdda://4   <-- cd track#4
         fnow = self.source_checks(fname, type)
         if fnow:
-                self.pipe_line.set_state(gst.STATE_NULL)
-                self.pipe_line.set_property("uri", fnow)  
-                self.pipe_line.set_state(gst.STATE_READY)
-                print(fnow)          
-                self.pipe_source = fname                
+            self.pipe_line.set_state(gst.STATE_NULL)
+            self.pipe_line.set_property("uri", fnow)  
+            self.pipe_line.set_state(gst.STATE_READY)
+            print(fnow)          
+            self.pipe_source = fname                
         else:
             print("ERROR: %s not loaded" % fname)
             
