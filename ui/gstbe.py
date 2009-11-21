@@ -44,6 +44,16 @@ class Queries:
             
     def can_play_source(self, source):
         return gst.element_make_from_uri(gst.URI_SRC, source, "") is not None
+        
+    def source_checks(self, source, type):
+        if type == "file":
+            if path.isfile(source): 
+                fnow = "file://%s" % source
+        elif type == "cd":
+            fnow = "cdda://%s" % source
+            
+        if self.can_play_source(fnow):
+            return fnow
 
 
 class Actions:
@@ -58,17 +68,13 @@ class Actions:
         we are actually queuing a track if one is already playing
         """
         # cdda://4   <-- cd track#4
-        if path.isfile(fname): 
-            if type == "file":
-                fnow = "file://%s" % fname
-                
-            if self.can_play_source(fnow):
+        fnow = self.source_checks(fname, type)
+        if fnow:
+                self.pipe_line.set_state(gst.STATE_NULL)
                 self.pipe_line.set_property("uri", fnow)  
+                self.pipe_line.set_state(gst.STATE_READY)
                 print(fnow)          
-                self.pipe_source = fname
-            else:
-                print("ERROR: Could not play %s" % fnow)
-                
+                self.pipe_source = fname                
         else:
             print("ERROR: %s not loaded" % fname)
             
@@ -120,8 +126,11 @@ class Actions:
 # FIXME: technically this should work much like in quod-libet.
 # It doesn't. Get this error:
 # CRITICAL **: deactivate_group: assertion `group->active' failed
-    def enqueue(self, fname):
-        self.load(fname)
+    def enqueue(self, fname, type="file"):
+        fnow  = self.source_checks(fname, type)
+        if fnow:
+            print("ENQUEUE")
+            self.pipe_line.set_property("uri", fnow)
 
     def mute(self, set):
         self.pipe_line.set_property("mute", set)
@@ -131,7 +140,6 @@ class Player(Actions, Queries, QObject):
     def __init__(self):
         super(Player, self).__init__()
         gobject.threads_init() # V.Important
-        
 
         self.pipe_line = gst.element_factory_make("playbin2", "player")
         self.pipe_line.connect("about-to-finish",  self.__about_to_finish)
@@ -160,6 +168,7 @@ class Player(Actions, Queries, QObject):
     
     def __audio_changed(self, pipeline):
         print("AUDIO CHANGED", pipeline)
+        self.emit(SIGNAL("track_changed()"))
 
 #FIXME: the message type output is not as expected
     def __on_message(self, bus, msg):

@@ -25,7 +25,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
     inherited Classes that may or may not have
     identical object/method names
     """    
-    show_messages = False
+    show_messages = True
     media_dir = None
     media_db = Media()
     meta = Metadata()
@@ -59,8 +59,9 @@ class MainWindow(Setups, Finishes, QMainWindow):
 
         self.connect(self.playbin, SIGNAL("tick ( int )"), self.prog_tick)
         self.connect(self.playbin, SIGNAL("about_to_finish()"), self.about_to_finish)
-        self.connect(self.playbin, SIGNAL("autoqueued()"), self.generate_info)
-        self.connect(self.playbin, SIGNAL("finished()"), self.finished_playing)
+        self.connect(self.playbin, SIGNAL("track_changed()"), self.__track_changed)
+        self.connect(self.playbin, SIGNAL("finished()"), self.__finished_playing)
+        
         
     @pyqtSignature("QString")
     def on_srchCollectEdt_textChanged(self, p0):
@@ -131,7 +132,6 @@ class MainWindow(Setups, Finishes, QMainWindow):
         if track:
             self.playbin.stop()
             self.playbin.load(track)
-            self.generate_info()
             # Checks to see if the playbutton is in play state
             if self.playBttn.isChecked():
                 self.playbin.play()
@@ -150,7 +150,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         if checked:
             queued = self.playbin.current_source()
             #FIXME: try and invert the result for less confusing varName
-            not_stopped = self.stopBttn.isEnabled()
+            stopped = self.stopBttn.isEnabled() is False
             highlighted = str(self.highlighted_track())
             
             if highlighted:
@@ -159,9 +159,8 @@ class MainWindow(Setups, Finishes, QMainWindow):
                     queued = highlighted
                     
                 #FIXME:confusing as hell
-                if queued and not not_stopped: 
+                if queued and stopped: 
                     self.playbin.load(queued)
-                    self.generate_info()
                     
                 # Nothing already loaded into playbin
                 elif not queued:
@@ -170,7 +169,6 @@ class MainWindow(Setups, Finishes, QMainWindow):
                     if selected >= 0:
                         selected = self.generate_track("now", selected)           
                         self.playbin.load(str(selected))
-                        self.generate_info()
                         
                     # Just reset the play button and stop here
                     else:
@@ -203,7 +201,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.playbin.stop()
         self.playBttn.setChecked(False)
         self.stopBttn.setEnabled(False)
-        self.finished_playing()
+        self.__finished_playing()
         
     @pyqtSignature("")
     def on_nxtBttn_pressed(self):
@@ -214,7 +212,6 @@ class MainWindow(Setups, Finishes, QMainWindow):
         if track:
             self.playbin.stop() 
             self.playbin.load(track)
-            self.generate_info()
             if self.playBttn.isChecked():
                 self.playbin.play()
             else:
@@ -383,7 +380,6 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.playbin.stop()
         track = self.generate_track("now", row)
         self.playbin.load(track)
-        self.generate_info()
         
         # Checking the button is the same
         #  as self.playbin.play()
@@ -505,8 +501,8 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         Every second update time labels and progress slider
         """
-        if time < 1000:
-            self.set_prog_sldr()
+#        if time < 1000:
+#            self.set_prog_sldr()
         pos = self.progSldr.sliderPosition()
         t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
         now = t_now.toString('mm:ss')
@@ -554,9 +550,9 @@ class MainWindow(Setups, Finishes, QMainWindow):
         # Stopped playing and at end of playlist
         if new == 1 and old == 2 and self.is_last():
             print "debug: stopped\n"
-            self.finished_playing()
+            self.__finished_playing()
             
-    def finished_playing(self):
+    def __finished_playing(self):
         """
         Things to be performed when the playlist finishes
         """
@@ -717,10 +713,6 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.tracknow_colourise(row)
         self.art[2] = artist.toUtf8()
         self.art[3] = album.toUtf8()
-        self.set_info()
-        self.set_prog_sldr()
-        self.old_pos = 0
-        self.progSldr.setValue(0)
 
     def is_last(self):
         """
@@ -830,3 +822,10 @@ class MainWindow(Setups, Finishes, QMainWindow):
             track = None
         return track
         
+    def __track_changed(self):
+        print("TRACK CHANGED")
+        self.generate_info()
+        self.set_info()
+        self.set_prog_sldr()
+        self.old_pos = 0
+        self.progSldr.setValue(0)
