@@ -131,6 +131,7 @@ class Actions:
         if fnow:
             print("ENQUEUE")
             self.pipe_line.set_property("uri", fnow)
+            self.pipe_source = fname
 
     def mute(self, set):
         self.pipe_line.set_property("mute", set)
