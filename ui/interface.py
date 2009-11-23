@@ -706,7 +706,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         msg3 = QString("%s - %s\n%s" % (title, artist, album))
         self.trkNowBox.setTitle(msg3)
         icon = QSystemTrayIcon.NoIcon
-        if self.show_messages:
+        if self.show_messages and self.playBttn.isChecked():
             self.tray_icon.showMessage(msg1, msg2, icon, 3000)
         message = "Playing: %s by %s on %s" % (title, artist, album)
         self.stat_lbl.setText(message)
