@@ -143,7 +143,6 @@ class Player(Actions, Queries, QObject):
         gobject.threads_init() # V.Important
 
         self.pipe_line = gst.element_factory_make("playbin2", "player")
-        self.pipe_line.connect("about-to-finish",  self.__about_to_finish)
         self.pipe_line.connect("audio-changed",  self.__audio_changed)
 
         self.pipe_line.set_property('video-sink', None)
@@ -158,14 +157,6 @@ class Player(Actions, Queries, QObject):
         # implementation instead.
         self.pipe_source = None        
         self.play_thread_id = None
-            
-    def __about_to_finish(self, pipeline):
-        """
-        Emit a signal implying a track is needed 
-        for gapless playback
-        """
-        print("ABOUT TO FINISH", pipeline)
-        self.emit(SIGNAL("about_to_finish()"))  
     
     def __audio_changed(self, pipeline):
         print("AUDIO CHANGED", pipeline)

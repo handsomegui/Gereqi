@@ -58,7 +58,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.create_tray_menu()
 
         self.connect(self.playbin, SIGNAL("tick ( int )"), self.prog_tick)
-        self.connect(self.playbin, SIGNAL("about_to_finish()"), self.about_to_finish)
+        self.playbin.pipe_line.connect("about-to-finish",  self.about_to_finish)
         self.connect(self.playbin, SIGNAL("track_changed()"), self.__track_changed)
         self.connect(self.playbin, SIGNAL("finished()"), self.__finished_playing)
         
@@ -516,11 +516,12 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.old_pos = time
  
 #TODO: increment the playcount in DB 
-    def about_to_finish(self):
+    def about_to_finish(self, pipeline):
         """
         Generates a track to go into queue
         before playback stops
         """
+        print("ABOUT TO FINISH", pipeline)
         track = self.generate_track("next")
         #Not at end of  playlist
         if track:
