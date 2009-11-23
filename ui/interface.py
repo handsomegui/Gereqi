@@ -378,7 +378,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         When item is doubleclicked. Play its row.
         """
-        self.playbin.stop()
+        self.playBttn.setChecked(False) 
         track = self.generate_track("now", row)
         self.playbin.load(track)
         
