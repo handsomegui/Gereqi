@@ -372,8 +372,8 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
             queued = self.playbin.current_source()
             #FIXME: try and invert the result for less confusing varName
             stopped = self.stopBttn.isEnabled() is False
-            highlighted = str(self.highlighted_track())
-            if highlighted:                    
+            highlighted = self.highlighted_track()
+            if highlighted:      
                 # Checks to see if highlighted track matches queued track
                 # prevents loading whilst playing
                 if (queued != highlighted) and stopped: 
@@ -394,7 +394,9 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
                 self.stopBttn.setEnabled(True)
                 icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
                 self.playBttn.setIcon(icon)
-                
+            else:
+                self.playBttn.setChecked(False)
+                return
         else:
             if self.playbin.is_playing():
                 self.playbin.pause()
@@ -404,7 +406,6 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
                 self.stat_lbl.setText("Paused")
             else:
                 self.stat_lbl.setText("Finished")
-        self.playBttn.setChecked(checked)    
         self.play_action.setChecked(checked)
         self.actionPlay.setChecked(checked)
         
