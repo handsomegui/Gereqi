@@ -162,6 +162,8 @@ class Tracking:
         self.playlistTree.selectRow(now)
         columns = self.playlistTree.columnCount()
         rows = self.playlistTree.rowCount()
+        
+        # TODO: find out how to get colour-scheme
         now_colour =  QColor(128, 184, 255, 128)
         odd_colour = QColor(220, 220, 220, 128)
         even_colour = QColor(255, 255, 255)
@@ -176,7 +178,6 @@ class Tracking:
                 else:
                     item.setBackgroundColor(now_colour)
                     
-# TODO: these could be pushed into their own class
     def generate_track(self, mode, row=None):
         """
         As the playlist changes on sorting, the playlist (the immediately next/previous 
@@ -218,7 +219,6 @@ class Tracking:
          This retrieves data from the playlist table, not the database. 
         This is because the playlist may contain tracks added locally.        
         """
-        #TODO: need to check messages aren't too long
         row = self.current_track()
         title = self.playlistTree.item(row, 1).text()
         artist = self.playlistTree.item(row, 2).text()
@@ -230,6 +230,8 @@ class Tracking:
         msg1 = QString("Now Playing")
         msg2 = QString("%s by %s" % (title, artist))
         msg3 = QString("%s - %s\n%s" % (title, artist, album))
+        # FIXME: Frankly this is crap. You cannot put any '\n' in the Qstring
+        # which the title will understand. It's a single line only.
         self.trkNowBox.setTitle(msg3)
         icon = QSystemTrayIcon.NoIcon
         if self.show_messages and self.playBttn.isChecked():
@@ -740,8 +742,6 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         self.progSldr.setRange(0, self.play_time)
         self.t_length = QTime(0, (self.play_time / 60000) % 60, (self.play_time / 1000) % 60)
             
-
-        
     def minimise_to_tray(self, state):
         """
         Does what it says.
@@ -795,17 +795,11 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         Things to perform on user-interaction of the tray icon
         other than bringing up it's menu
         """
-        # Left click
+        # Left click to hide/show program
         if event == 3:
-            if self.isVisible():
-                self.minimise_to_tray(False)
-            else:
-                self.minimise_to_tray(True)            
+            hidden = self.isVisible() is False
+            self.minimise_to_tray(hidden)
         # Middle-click to pause/play
         elif event == 4:
-            if self.playbin.is_playing():
-                self.playBttn.setChecked(False)
-            else:
-                self.playBttn.setChecked(True)
-                
-
+            stopped = self.playbin.is_playing() is False
+            self.playBttn.setChecked(stopped)
