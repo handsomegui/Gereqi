@@ -54,8 +54,15 @@ class Queries:
             fnow = "cdda://%s" % source
             
         if fnow and self.can_play_source(fnow): 
-#            if :
-                return fnow
+            return fnow
+            
+    def supported_formats(self):
+        """
+        Returns a list of the supported file-formats
+        that the System's Gstreamer can support
+        """
+        return
+        
 
 class Actions:
     """

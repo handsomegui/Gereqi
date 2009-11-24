@@ -453,7 +453,7 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         take a while.
         """
         print "Rebuild: Ensure the db is ON CONFLICT REPLACE"
-        self.collection()
+        self.create_collection()
     
     @pyqtSignature("")
     def on_actionQuit_triggered(self):
@@ -570,9 +570,9 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         """
         Updates collection for new files. Ignore files already in database
         """
-        # TODO: not completed yet. See self.collection
+        # TODO: not completed yet. See self.create_collection
         print "Rebuild: Ensure the db is ON CONFLICT IGNORE"
-        self.collection()
+        self.create_collection()
 
 #FIXME: this causes a double-trigger of playbin.play() on app's
 # first play.
@@ -754,7 +754,7 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         self.view_action.setChecked(state)
         self.actionMinimise_to_Tray.setChecked(state)
     
-    def collection(self):
+    def create_collection(self):
         """
         Either generates a new DB or adds new files to it
         Not finished
@@ -778,14 +778,14 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         The wikipedia page + album art to current artist playing
         """
         # Wikipedia info
-        if self.art[2] != self.art[0] and self.art[2]: 
+        if (self.art[2] != self.art[0]) and self.art[2]: 
             # passes the artist to the thread
             self.html_thread.set_values(self.art[2]) 
             # starts the thread
             self.html_thread.start() 
             self.art[0] = self.art[2]  
         # Album art
-        if self.art[3] != self.art[1] and self.art[3]:
+        if (self.art[3] != self.art[1]) and self.art[3]:
             self.cover_thread.set_values(self.art[3], self.art[2], self.locale)
             self.cover_thread.start()
             self.art[1] = self.art[3]
