@@ -53,9 +53,9 @@ class Queries:
         elif type == "cd":
             fnow = "cdda://%s" % source
             
-        if self.can_play_source(fnow):
-            return fnow
-
+        if fnow and self.can_play_source(fnow): 
+#            if :
+                return fnow
 
 class Actions:
     """

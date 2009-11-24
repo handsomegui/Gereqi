@@ -152,16 +152,12 @@ class MainWindow(Setups, Finishes, QMainWindow):
             #FIXME: try and invert the result for less confusing varName
             stopped = self.stopBttn.isEnabled() is False
             highlighted = str(self.highlighted_track())
-            
-            if highlighted:
+            if highlighted:                    
                 # Checks to see if highlighted track matches queued track
-                if queued != highlighted:
+                # prevents loading whilst playing
+                if (queued != highlighted) and stopped: 
                     queued = highlighted
-                    
-                #FIXME:confusing as hell
-                if queued and stopped: 
                     self.playbin.load(queued)
-                    
                 # Nothing already loaded into playbin
                 elif not queued:
                     selected = self.playlistTree.currentRow()
@@ -169,12 +165,10 @@ class MainWindow(Setups, Finishes, QMainWindow):
                     if selected >= 0:
                         selected = self.generate_track("now", selected)           
                         self.playbin.load(str(selected))
-                        
                     # Just reset the play button and stop here
                     else:
                         # This will call this function
                         self.playBttn.setChecked(False)
-                        return
                 self.playbin.play()
                 self.stopBttn.setEnabled(True)
                 icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
