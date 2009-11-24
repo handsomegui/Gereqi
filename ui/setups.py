@@ -4,7 +4,7 @@
 from PyQt4.QtGui import QFont, QMenu, QTreeWidgetItem, QShortcut, \
 QKeySequence, QLabel, QProgressBar, QToolButton, QIcon, QPixmap, \
 QAction, QSystemTrayIcon, qApp, QTreeView, QDirModel, QHBoxLayout
-from PyQt4.QtCore import QStringList, QString, SIGNAL, QSize, SLOT
+from PyQt4.QtCore import QStringList, QString, SIGNAL, QSize, SLOT, QDir
 from Ui_interface import Ui_MainWindow
 
 
@@ -97,6 +97,9 @@ class Setups(Ui_MainWindow):
         added to the playlist
         """
         model = QDirModel()
+        filters = QDir.Files | QDir.Dirs | QDir.Readable | QDir.NoDotAndDotDot
+        model.setFilter(filters)
+        model.setReadOnly(True)
         self.fileView.setModel(model)
         
     def create_actions(self):
