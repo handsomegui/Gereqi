@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jono/Gereqi/ui/interface.ui'
 #
-# Created: Thu Nov 12 18:15:28 2009
+# Created: Tue Nov 24 11:25:59 2009
 #      by: PyQt4 UI code generator 4.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -291,6 +291,11 @@ font: 75 10pt \"DejaVu Sans\";
         self.tabWidget.addTab(self.tab_4, "")
         self.tab_5 = QtGui.QWidget()
         self.tab_5.setObjectName("tab_5")
+        self.gridLayout_13 = QtGui.QGridLayout(self.tab_5)
+        self.gridLayout_13.setObjectName("gridLayout_13")
+        self.fileView = QtGui.QTreeView(self.tab_5)
+        self.fileView.setObjectName("fileView")
+        self.gridLayout_13.addWidget(self.fileView, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab_5, "")
         self.layoutWidget = QtGui.QWidget(self.splitter)
         self.layoutWidget.setObjectName("layoutWidget")
@@ -462,7 +467,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 792, 26))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 792, 28))
         self.menuBar.setObjectName("menuBar")
         self.menuActions = QtGui.QMenu(self.menuBar)
         self.menuActions.setObjectName("menuActions")

@@ -7,7 +7,6 @@ QIcon, QPixmap, QTreeWidgetItem, QPixmap, QMessageBox, \
 QColor
 from PyQt4.QtCore import pyqtSignature, QString, Qt,  \
 QTime, QStringList, SIGNAL
-from PyQt4 import uic
 from random import randrange
 
 from settings import Setting_Dialog
@@ -36,7 +35,6 @@ class MainWindow(Setups, Finishes, QMainWindow):
     old_pos = 0
     locale = ".com"
     dating = Timing()
-    playbin = Player()
     # artist,album info. [0:1] is old. [2:3] is now
     art = [None, None, None, None] 
     
@@ -45,24 +43,12 @@ class MainWindow(Setups, Finishes, QMainWindow):
         Initialisation of key items. Some may be pulled
         from other files as this file is getting messy
         """ 
-#        super(MainWindow, self).__init__()
         QMainWindow.__init__(self, parent)
-        # Do I really need these
         Setups.__init__(self) 
         Finishes.__init__(self)
         self.setupUi(self)
-        self.setup_db_tree()
-        self.setup_shortcuts()
-        self.setup_extra()        
-        self.create_actions()        
-        self.playlist_add_menu()
-        self.create_tray_menu()
-
-        self.connect(self.playbin, SIGNAL("tick ( int )"), self.prog_tick)
-        self.playbin.pipe_line.connect("about-to-finish",  self.about_to_finish)
-        self.connect(self.playbin, SIGNAL("track_changed()"), self.__track_changed)
-        self.connect(self.playbin, SIGNAL("finished()"), self.__finished_playing)
-        
+        self.init_setups()
+        self.__create_pipeline()        
         
     @pyqtSignature("QString")
     def on_srchCollectEdt_textChanged(self, p0):
@@ -832,3 +818,10 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.set_prog_sldr()
         self.old_pos = 0
         self.progSldr.setValue(0)
+        
+    def __create_pipeline(self):
+        self.playbin = Player()
+        self.connect(self.playbin, SIGNAL("tick ( int )"), self.prog_tick)
+        self.playbin.pipe_line.connect("about-to-finish",  self.about_to_finish)
+        self.connect(self.playbin, SIGNAL("track_changed()"), self.__track_changed)
+        self.connect(self.playbin, SIGNAL("finished()"), self.__finished_playing)
