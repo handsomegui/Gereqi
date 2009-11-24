@@ -572,15 +572,6 @@ font: 75 10pt \"DejaVu Sans\";
         self.menuHelp.addAction(self.actionHelp)
         self.menuHelp.addSeparator()
         self.menuHelp.addAction(self.actionAbout_Gereqi)
-<<<<<<< HEAD:ui/Ui_interface.py
-        self.menuRepeat.addAction(self.actionOff)
-        self.menuRepeat.addAction(self.actionTrack)
-        self.menuRepeat.addAction(self.actionAlbum)
-        self.menuRepeat.addAction(self.actionPlaylist)
-        self.menuRandom.addAction(self.actionOff_2)
-        self.menuRandom.addAction(self.actionTrack_2)
-        self.menuRandom.addAction(self.actionAlbum_2)
-=======
         self.menuRepeat.addAction(self.actionRptOff)
         self.menuRepeat.addAction(self.actionRptTrack)
         self.menuRepeat.addAction(self.actionRptAlbum)
@@ -588,7 +579,6 @@ font: 75 10pt \"DejaVu Sans\";
         self.menuRandom.addAction(self.actionRndOff)
         self.menuRandom.addAction(self.actionRndTrack)
         self.menuRandom.addAction(self.actionRndAlbum)
->>>>>>> origin/pygst:ui/Ui_interface.py
         self.menuRandom.addSeparator()
         self.menuRandom.addAction(self.actionFavor)
         self.menuMode.addAction(self.menuRepeat.menuAction())
