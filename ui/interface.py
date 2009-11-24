@@ -383,7 +383,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.playbin.load(track)
         
         # Checking the button is the same
-        #  as self.playbin.play()
+        #  as self.playbin.play(), just cleaner overall
         self.playBttn.setChecked(True) 
         self.play_action.setChecked(True)
         

@@ -46,6 +46,7 @@ class Queries:
         return gst.element_make_from_uri(gst.URI_SRC, source, "") is not None
         
     def source_checks(self, source, type):
+        fnow= None
         if type == "file":
             if path.isfile(source): 
                 fnow = "file://%s" % source
