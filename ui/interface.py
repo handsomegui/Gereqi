@@ -6,8 +6,7 @@ QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
 QIcon, QPixmap, QTreeWidgetItem, QPixmap, QMessageBox, \
 QColor
 from PyQt4.QtCore import pyqtSignature, QString, Qt,  \
-QTime, QStringList
-from PyQt4.phonon import Phonon
+QTime, QStringList, SIGNAL
 from random import randrange
 
 from settings import Setting_Dialog
@@ -17,6 +16,7 @@ from threads import Getcover, Getwiki, Builddb
 from timing import Timing
 from setups import Setups
 from finishes import Finishes
+from gstbe import Player
 
 
 class MainWindow(Setups, Finishes, QMainWindow):
@@ -25,6 +25,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
     inherited Classes that may or may not have
     identical object/method names
     """    
+    show_messages = True
     media_dir = None
     media_db = Media()
     meta = Metadata()
@@ -34,6 +35,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
     old_pos = 0
     locale = ".com"
     dating = Timing()
+    playbin = Player()
     # artist,album info. [0:1] is old. [2:3] is now
     art = [None, None, None, None] 
     
@@ -42,18 +44,24 @@ class MainWindow(Setups, Finishes, QMainWindow):
         Initialisation of key items. Some may be pulled
         from other files as this file is getting messy
         """ 
+#        super(MainWindow, self).__init__()
         QMainWindow.__init__(self, parent)
         # Do I really need these
         Setups.__init__(self) 
         Finishes.__init__(self)
         self.setupUi(self)
         self.setup_db_tree()
-        self.setup_audio()
         self.setup_shortcuts()
         self.setup_extra()        
         self.create_actions()        
         self.playlist_add_menu()
         self.create_tray_menu()
+
+        self.connect(self.playbin, SIGNAL("tick ( int )"), self.prog_tick)
+        self.playbin.pipe_line.connect("about-to-finish",  self.about_to_finish)
+        self.connect(self.playbin, SIGNAL("track_changed()"), self.__track_changed)
+        self.connect(self.playbin, SIGNAL("finished()"), self.__finished_playing)
+        
         
     @pyqtSignature("QString")
     def on_srchCollectEdt_textChanged(self, p0):
@@ -122,11 +130,11 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         track = self.generate_track("back")
         if track:
-            self.media_object.stop()
-            self.media_object.setCurrentSource(track)
+            self.playbin.stop()
+            self.playbin.load(track)
             # Checks to see if the playbutton is in play state
             if self.playBttn.isChecked():
-                self.media_object.play()
+                self.playbin.play()
             # Just highlight the track we would play
             else:
                 self.tracknow_colourise(self.current_track())
@@ -140,37 +148,34 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         #TODO: messy. Clean up.
         if checked:
-            queued = self.media_object.currentSource()
-            not_stopped = self.stopBttn.isEnabled()
-            highlighted = self.highlighted_track()
-            
-            # Checks to see if highlighted track matches queued track
-            if queued.fileName() != highlighted:
-                queued = Phonon.MediaSource(highlighted)
+            queued = self.playbin.current_source()
+            #FIXME: try and invert the result for less confusing varName
+            stopped = self.stopBttn.isEnabled() is False
+            highlighted = str(self.highlighted_track())
+            if highlighted:                    
+                # Checks to see if highlighted track matches queued track
+                # prevents loading whilst playing
+                if (queued != highlighted) and stopped: 
+                    queued = highlighted
+                    self.playbin.load(queued)
+                # Nothing already loaded into playbin
+                elif not queued:
+                    selected = self.playlistTree.currentRow()
+                    # A row is selected
+                    if selected >= 0:
+                        selected = self.generate_track("now", selected)           
+                        self.playbin.load(str(selected))
+                    # Just reset the play button and stop here
+                    else:
+                        # This will call this function
+                        self.playBttn.setChecked(False)
+                self.playbin.play()
+                self.stopBttn.setEnabled(True)
+                icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
+                self.playBttn.setIcon(icon)
                 
-            # Not playing due to pressing stopBttn. Phonon.State()
-            # kicks up hell of a stink about this. ~16 state changes!
-            if queued and not not_stopped: #confusing
-                self.media_object.clear()
-                self.media_object.setCurrentSource(queued)
-            # Nothing already loaded into phonon
-            elif not queued:
-                selected = self.playlistTree.currentRow()
-                # A row is selected
-                if selected >= 0:
-                    selected = self.generate_track("now", selected)                
-                    self.media_object.setCurrentSource(selected)
-                # Just reset the play button and stop here
-                else:
-                    # This will call this function
-                    self.playBttn.setChecked(False)
-                    return
-            self.media_object.play()
-            self.stopBttn.setEnabled(True)
-            icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
-            self.playBttn.setIcon(icon)
         else:
-            self.media_object.pause()
+            self.playbin.pause()
             icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
             self.playBttn.setIcon(icon)
             if self.playlistTree.currentRow() >= 0:
@@ -188,10 +193,10 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         self.tabWidget_2.setTabEnabled(1, False)
         self.tabWidget_2.setTabEnabled(2, False)
-        self.media_object.stop()
+        self.playbin.stop()
         self.playBttn.setChecked(False)
         self.stopBttn.setEnabled(False)
-        self.finished()
+        self.__finished_playing()
         
     @pyqtSignature("")
     def on_nxtBttn_pressed(self):
@@ -200,12 +205,15 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         track = self.generate_track("next")
         if track:
-            self.media_object.stop() 
-            self.media_object.setCurrentSource(track)
+            self.playbin.stop() 
+            self.playbin.load(track)
             if self.playBttn.isChecked():
-                self.media_object.play()
+                self.playbin.play()
             else:
                 self.tracknow_colourise(self.current_track())
+        else:
+            # TODO: some tidy up thing could go here
+            return
         
     @pyqtSignature("int")
     def on_volSldr_valueChanged(self, value):
@@ -214,7 +222,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """        
         self.volLbl.setText("%s" % value)
         value = (value / 100.0) ** 2
-        self.audio_output.setVolume(value)
+        self.playbin.set_volume(value)
     
     @pyqtSignature("")
     def on_actionConfigure_triggered(self):
@@ -256,8 +264,9 @@ class MainWindow(Setups, Finishes, QMainWindow):
                         None, 
                         self.trUtf8("Select Music Files"),
                         QDesktopServices.storageLocation(QDesktopServices.MusicLocation), 
-                        self.trUtf8("*.flac;*.mp3;*.ogg"), 
+                        self.trUtf8("*.flac *.mp3 *.ogg"), 
                         None)       
+                        
         if mfiles:
             formats = ["ogg", "mp3", "flac"]
             for item in mfiles:
@@ -281,7 +290,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
     def on_actionClear_triggered(self):
         """
         Clear current playlist and if no music playing
-        clear self.media_object
+        clear self.playbin
         """
         #TODO:incorporate playlists in to here.
         # When cleared save the playlist first to be
@@ -292,7 +301,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         # For some reason can only remove from bot to top
         for cnt in range(rows, -1, -1):
             self.playlistTree.removeRow(cnt)
-        self.media_object.clearQueue()
+#        self.media_object.clearQueue()
     
     @pyqtSignature("")
     def on_clrplyBttn_clicked(self):
@@ -329,23 +338,23 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         Mutes audio output and changes button icon accordingly
         """
-        self.audio_output.setMuted(checked)
+        self.playbin.mute(checked)
         if checked:
             icon = QIcon(QPixmap(":/Icons/audio-volume-muted.png"))
             self.muteBttn.setIcon(icon)
         else:
+            vol = (self.volSldr.value() / 100.0) ** 2
             icon = QIcon(QPixmap(":/Icons/audio-volume-high.png"))
             self.muteBttn.setIcon(icon)
-    
-    # A much cleaner solution. When you seek the volume is momentarily
-    # set to 100% so it can really standout. 
+            self.playbin.set_volume(vol)
+        
     @pyqtSignature("")
     def on_progSldr_sliderReleased(self):
         """
-        Slot documentation goes here.
+        Set's an internal seek value for tick() to use
         """
         val = self.progSldr.value()
-        self.media_object.seek(val)
+        self.playbin.seek(val)
         self.old_pos = val
     
     @pyqtSignature("")
@@ -357,17 +366,22 @@ class MainWindow(Setups, Finishes, QMainWindow):
         print "Rebuild: Ensure the db is ON CONFLICT IGNORE"
         self.collection()
 
+#FIXME: this causes a double-trigger of playbin.play() on app's
+# first play.
     @pyqtSignature("int, int")
     def on_playlistTree_cellDoubleClicked(self, row, column):
         """
         When item is doubleclicked. Play its row.
         """
-        #FIXME: sometimes webInfo is not generated
-        # Possibly a Phonon.State issue
-        self.media_object.stop()
+        #This won't actualy stop. It'll pause instead.
+        self.playBttn.setChecked(False)
+        
+        self.playbin.stop()
         track = self.generate_track("now", row)
-        self.media_object.setCurrentSource(track)
-        self.media_object.play()
+        self.playbin.load(track)
+        
+        # Checking the button is the same
+        #  as self.playbin.play(), just cleaner overall
         self.playBttn.setChecked(True) 
         self.play_action.setChecked(True)
         
@@ -463,6 +477,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.srchplyEdit.clear()
         self.tracknow_colourise(self.current_track)
         
+        
 #######################################
 #######################################
         
@@ -478,19 +493,13 @@ class MainWindow(Setups, Finishes, QMainWindow):
         playing track
         """
         file_list = self.gen_file_list()
-        file_name = self.media_object.currentSource().fileName()
-        # For some unkown reason, file_name can't be found in file_list. 
-        # It seems to be that although Phonon.currentSourceChanged()
-        # called this, there is no currentSource yet.
-        row = file_list.index(file_name)
-        return row
+        file_name = self.playbin.current_source()
+        return file_list.index(file_name)
         
-    def tick(self, time):
+    def prog_tick(self, time):
         """
         Every second update time labels and progress slider
         """
-        if time < 1000:
-            self.set_prog_sldr()
         pos = self.progSldr.sliderPosition()
         t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
         now = t_now.toString('mm:ss')
@@ -506,27 +515,24 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.old_pos = time
  
 #TODO: increment the playcount in DB 
-    def about_to_finish(self):
+    def about_to_finish(self, pipeline):
         """
         Generates a track to go into queue
         before playback stops
         """
+        print("ABOUT TO FINISH", pipeline)
         track = self.generate_track("next")
         #Not at end of  playlist
         if track:
-            self.media_object.clearQueue()
-            self.media_object.enqueue(track)
+            self.playbin.enqueue(track)
 
     def set_prog_sldr(self):
         """
         Linked to the current time of
         track being played
         """
-        # Phonon strikes again. The source has actually changed, even according to Phonon's
-        # currentSourceChanged() yet totalTime() refers to the last track played.
-        length = self.media_object.totalTime() 
-        self.progSldr.setRange(0, length)
-        self.t_length = QTime(0, (length / 60000) % 60, (length / 1000) % 60)
+        self.progSldr.setRange(0, self.play_time)
+        self.t_length = QTime(0, (self.play_time / 60000) % 60, (self.play_time / 1000) % 60)
             
     def state_changed(self, new, old):
         """
@@ -534,17 +540,17 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         print "debug: Phonon.State: %s -> %s" % (new, old)
 
-        # Prevents the slider being reset if playback is paused
-        # or unpaused
-        if self.is_playing():
+        # Prevents the slider being reset if playback is 
+        # paused or unpaused
+        if self.playbin.is_playing():
             if not ((new == 2) and ( old == 4)):
                 self.set_prog_sldr()
         # Stopped playing and at end of playlist
         if new == 1 and old == 2 and self.is_last():
             print "debug: stopped\n"
-            self.finished()
+            self.__finished_playing()
             
-    def finished(self):
+    def __finished_playing(self):
         """
         Things to be performed when the playlist finishes
         """
@@ -564,6 +570,9 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.art[1] = None
         
     def minimise_to_tray(self, state):
+        """
+        Does what it says.
+        """
         if state:
             self.show()
             self.setWindowState(Qt.WindowActive)
@@ -621,10 +630,10 @@ class MainWindow(Setups, Finishes, QMainWindow):
                 self.minimise_to_tray(True)            
         # Middle-click to pause/play
         elif event == 4:
-            if self.is_playing():
-                self.on_playBttn_toggled(False)
+            if self.playbin.is_playing():
+                self.playBttn.setChecked(False)
             else:
-                self.on_playBttn_toggled(True)
+                self.playBttn.setChecked(True)
                 
     def del_track(self):
         """
@@ -651,12 +660,12 @@ class MainWindow(Setups, Finishes, QMainWindow):
         if mode == "now":
             track = self.playlistTree.item(row, column).text()
         else:
-            current = self.media_object.currentSource().fileName()
+            current = self.playbin.current_source()
             # If 0 then the playlist is empty
             rows = self.playlistTree.rowCount() 
             if rows > 0:
                 for row in range(rows):
-                    file_name = self.playlistTree.item(row, column).text()
+                    file_name = str(self.playlistTree.item(row, column).text())
                     # Track, track, track.
                     if file_name == current:
                         if mode == "back":
@@ -674,8 +683,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
                                     track = self.playlistTree.item(row + 1, column)
                                     track = track.text()
         if track:
-            track = Phonon.MediaSource(track)
-            return track
+            return str(track)
 
     def generate_info(self):
         """
@@ -687,42 +695,35 @@ class MainWindow(Setups, Finishes, QMainWindow):
         title = self.playlistTree.item(row, 1).text()
         artist = self.playlistTree.item(row, 2).text()
         album = self.playlistTree.item(row, 3).text()
+        
+        min, sec = self.playlistTree.item(row, 6).text().split(":")
+        self.play_time = 1000 * ((int(min) * 60) + int(sec))
+        
         msg1 = QString("Now Playing")
         msg2 = QString("%s by %s" % (title, artist))
         msg3 = QString("%s - %s\n%s" % (title, artist, album))
         self.trkNowBox.setTitle(msg3)
-        icon = QSystemTrayIcon.NoIcon        
-        self.tray_icon.showMessage(msg1, msg2, icon, 3000)
+        icon = QSystemTrayIcon.NoIcon
+        if self.show_messages and self.playBttn.isChecked():
+            self.tray_icon.showMessage(msg1, msg2, icon, 3000)
         message = "Playing: %s by %s on %s" % (title, artist, album)
         self.stat_lbl.setText(message)
         self.tracknow_colourise(row)
         self.art[2] = artist.toUtf8()
         self.art[3] = album.toUtf8()
-        self.set_info()
-
-    def is_playing(self):
-        """
-        To find out if a file is being played
-        """
-        state = self.media_object.state()
-        if state == 2:
-            return True
-        else:
-            return False
 
     def is_last(self):
         """
-        Checks whether the current track in self.media_object
+        Checks whether the current track in self.playbin
         is the last in the viewable playlist
         """
-        now = self.media_object.currentSource().fileName()                
+        now = self.playbin.current_source()
         file_list = self.gen_file_list()
-        file_cnt = len(file_list)
         try:
-            pos = file_list.index(now)
+            pos = file_list.index(QString(now))
         except:
             pos = None
-        if  pos and  pos == file_cnt:
+        if  pos and  pos ==  len(file_list):
             return True        
 
     def gen_file_list(self):
@@ -741,6 +742,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         else:
             self.play_type_bttn.setText("N")
 
+# FIXME: de-uglify
     def add2playlist(self, file_name, info):
         """
         Called when adding tracks to the playlist either locally
@@ -785,6 +787,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.playlistTree.setItem(current_row, file_col , file_item)
         self.playlistTree.resizeColumnsToContents()
 
+#TODO: use native/theme colours for odd/even colours
     def tracknow_colourise(self, now):
         """
         Instead of using QTableWidget's selectRow function, 
@@ -808,27 +811,23 @@ class MainWindow(Setups, Finishes, QMainWindow):
                 else:
                     item.setBackgroundColor(now_colour)
     
-    def go4info(self, track_now):
-        """
-        The call to this from Phonon.currentSourceChanged() is ~1sec
-        too early. The internal, to MainWindow, variable (self.art) is not 
-        updated yet so it would appear nothing has changed,
-        """
-        if track_now:
-            #If we call the generate_info() and set_info() now,
-            # Phonon, messes up. In current_track() it compares
-            # self.media_object.currentSource() with what's in gen_file_list()
-            # However, __this__ function  and if clause would imply that there is
-            # a currentSource, yet there isn't. Phonon hasn't sorted itself out so need a delay, uggg.
-            # Saying all this, despite an error being printed to stdout, it works fine.
-            try: 
-                self.generate_info()
-            except ValueError:
-                print "A bug in Python/PyQt. An uneeded Exception. Something internal isn't in sync. No functionality is missed here."
-
     def highlighted_track(self):
+        """
+        In the playlist
+        """
         column = 8
         row = self.playlistTree.currentRow()
-        track = self.playlistTree.item(row, column).text()
+        # -1 is the value for None
+        if row > -1:
+            track = self.playlistTree.item(row, column).text()
+        else:
+            track = None
         return track
         
+    def __track_changed(self):
+        print("TRACK CHANGED")
+        self.generate_info()
+        self.set_info()
+        self.set_prog_sldr()
+        self.old_pos = 0
+        self.progSldr.setValue(0)

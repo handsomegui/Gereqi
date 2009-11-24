@@ -9,7 +9,7 @@ from PyQt4.QtGui import QApplication
 from PyQt4.QtCore import QString
 from ui.interface import MainWindow
 
-VERSION = "0.2.3"  
+VERSION = "master"  
 
 def main():
     import sys
