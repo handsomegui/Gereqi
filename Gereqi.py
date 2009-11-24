@@ -14,7 +14,7 @@ VERSION = "0.2.3"
 def main():
     import sys
     app = QApplication(sys.argv)
-    app.setApplicationName(QString("Qereqi"))
+    app.setApplicationName(QString("Gereqi"))
     app.setApplicationVersion(QString(VERSION))
     wnd = MainWindow()
     wnd.show()
