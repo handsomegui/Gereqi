@@ -1071,6 +1071,9 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
              <widget class="QSlider" name="progSldr">
+              <property name="maximum">
+               <number>0</number>
+              </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>

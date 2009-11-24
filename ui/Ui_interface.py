@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jono/Gereqi/ui/interface.ui'
 #
-# Created: Tue Nov 24 11:25:59 2009
+# Created: Tue Nov 24 19:05:08 2009
 #      by: PyQt4 UI code generator 4.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -456,6 +456,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.progSldr = QtGui.QSlider(self.layoutWidget)
+        self.progSldr.setMaximum(0)
         self.progSldr.setOrientation(QtCore.Qt.Horizontal)
         self.progSldr.setObjectName("progSldr")
         self.horizontalLayout_2.addWidget(self.progSldr)

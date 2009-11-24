@@ -70,6 +70,17 @@ class Audio:
         self.art[0] = None
         self.art[1] = None
 
+#TODO: increment the playcount in DB 
+    def about_to_finish(self, pipeline):
+        """
+        Generates a track to go into queue
+        before playback stops
+        """
+        print("ABOUT TO FINISH", pipeline)
+        track = self.generate_track("next")
+        #Not at end of  playlist
+        if track:
+            self.playbin.enqueue(track)
 
 class Playlisting:
  # FIXME: de-uglify
@@ -708,7 +719,7 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         """
         Every second update time labels and progress slider
         """
-        pos = self.progSldr.sliderPosition()
+        pos = self.progSldr.value()
         t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
         now = t_now.toString('mm:ss')
         maxtime = self.t_length.toString('mm:ss')
@@ -716,24 +727,12 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         self.progLbl.setText(msg)            
         # This only goes(?) if  the user has not grabbed the slider
         # The 'or' stops issue where the slider doesn't move after track finishes
-        if pos == self.old_pos or pos < 1: 
+        if (pos == self.old_pos) or pos < 1: 
             self.progSldr.setValue(time)
         elif self.progSldr.value() == self.progSldr.maximum():
             self.progSldr.setValue(time)
         self.old_pos = time
  
-#TODO: increment the playcount in DB 
-    def about_to_finish(self, pipeline):
-        """
-        Generates a track to go into queue
-        before playback stops
-        """
-        print("ABOUT TO FINISH", pipeline)
-        track = self.generate_track("next")
-        #Not at end of  playlist
-        if track:
-            self.playbin.enqueue(track)
-
     def set_prog_sldr(self):
         """
         Linked to the current time of
