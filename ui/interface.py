@@ -173,6 +173,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
                 self.stopBttn.setEnabled(True)
                 icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
                 self.playBttn.setIcon(icon)
+                
         else:
             self.playbin.pause()
             icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
@@ -372,7 +373,10 @@ class MainWindow(Setups, Finishes, QMainWindow):
         """
         When item is doubleclicked. Play its row.
         """
-        self.playBttn.setChecked(False) 
+        #This won't actualy stop. It'll pause instead.
+        self.playBttn.setChecked(False)
+        
+        self.playbin.stop()
         track = self.generate_track("now", row)
         self.playbin.load(track)
         
