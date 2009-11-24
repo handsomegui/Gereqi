@@ -16,10 +16,104 @@ from threads import Getcover, Getwiki, Builddb
 from timing import Timing
 from setups import Setups
 from finishes import Finishes
-from gstbe import Player
 
 
-class MainWindow(Setups, Finishes, QMainWindow):
+class Playlisting:
+ # FIXME: de-uglify
+    def add2playlist(self, file_name, info):
+        """
+        Called when adding tracks to the playlist either locally
+        or from the database. Does not pull metadata from 
+        the database and is passed into the function directly
+        """
+        #TODO: prevent creation of empty rows.
+        
+        # FIXME: func() does nothing
+        func = lambda x: "" if "Unknown" in x else x
+        modded = func(info)
+        print(info)
+        file_col = 8
+        current_row = self.playlistTree.rowCount()
+        track = "%02u" % info[0]
+        # Creates each cell for a track based on info
+        track_item = QTableWidgetItem(QString(track))
+        track_item.setFlags(track_item.flags() ^ Qt.ItemIsEditable)
+        title_item = QTableWidgetItem(QString(info[1]))
+        title_item.setFlags(title_item.flags() ^ Qt.ItemIsEditable)
+        artist_item = QTableWidgetItem(QString(info[2]))
+        artist_item.setFlags(artist_item.flags() ^ Qt.ItemIsEditable)
+        album_item = QTableWidgetItem(QString(info[3]))
+        album_item.setFlags(album_item.flags() ^ Qt.ItemIsEditable)
+        year_item = QTableWidgetItem(str(info[4]))
+        year_item.setFlags(year_item.flags() ^ Qt.ItemIsEditable)
+        genre_item = QTableWidgetItem(QString(info[5]))
+        genre_item.setFlags(genre_item.flags() ^ Qt.ItemIsEditable)
+        length_item = QTableWidgetItem(QString(info[6]))
+        bitrate_item = QTableWidgetItem(QString(str(info[7])))
+        file_item = QTableWidgetItem(QString(file_name))
+        self.playlistTree.insertRow(current_row)
+        #TODO: These column assignments have to be dynamic at some point
+        self.playlistTree.setItem(current_row, 0, track_item)
+        self.playlistTree.setItem(current_row, 1, title_item)
+        self.playlistTree.setItem(current_row, 2, artist_item)
+        self.playlistTree.setItem(current_row, 3, album_item)
+        self.playlistTree.setItem(current_row, 4, year_item)
+        self.playlistTree.setItem(current_row, 5, genre_item)
+        self.playlistTree.setItem(current_row, 6, length_item)
+        self.playlistTree.setItem(current_row, 7, bitrate_item)
+        self.playlistTree.setItem(current_row, file_col , file_item)
+        self.playlistTree.resizeColumnsToContents()   
+        
+    def gen_file_list(self):
+        """
+        Creates a list of files in the playlist at its
+        current sorting top to bottom
+        """
+        column = 8
+        rows = self.playlistTree.rowCount() 
+        file_list = [self.playlistTree.item(row, column).text() for row in range(rows)]
+        return file_list   
+
+
+class Tracking:
+    def highlighted_track(self):
+        """
+        In the playlist
+        """
+        column = 8
+        row = self.playlistTree.currentRow()
+        # -1 is the value for None
+        if row > -1:
+            track = self.playlistTree.item(row, column).text()
+        else:
+            track = None
+        return track
+            
+    #TODO: use native/theme colours for odd/even colours
+    def tracknow_colourise(self, now):
+        """
+        Instead of using QTableWidget's selectRow function, 
+        set the background colour of each item in a row
+        until track changes.
+        """
+        self.playlistTree.selectRow(now)
+        columns = self.playlistTree.columnCount()
+        rows = self.playlistTree.rowCount()
+        now_colour =  QColor(128, 184, 255, 128)
+        odd_colour = QColor(220, 220, 220, 128)
+        even_colour = QColor(255, 255, 255)
+        for row in range(rows):
+            for col in range(columns):
+                item = self.playlistTree.item(row, col)
+                if row != now:
+                    if row % 2:
+                        item.setBackgroundColor(odd_colour)
+                    else:
+                        item.setBackgroundColor(even_colour)
+                else:
+                    item.setBackgroundColor(now_colour)
+                    
+class MainWindow(Tracking, Playlisting, Setups, Finishes, QMainWindow):
     """
     The main class of the app. There's loads of
     inherited Classes that may or may not have
@@ -44,11 +138,11 @@ class MainWindow(Setups, Finishes, QMainWindow):
         from other files as this file is getting messy
         """ 
         QMainWindow.__init__(self, parent)
-        Setups.__init__(self) 
-        Finishes.__init__(self)
+        super(MainWindow, self).__init__()
+#        Setups.__init__(self) 
+#        Finishes.__init__(self)
         self.setupUi(self)
         self.init_setups()
-        self.__create_pipeline()        
         
     @pyqtSignature("QString")
     def on_srchCollectEdt_textChanged(self, p0):
@@ -183,7 +277,7 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.playbin.stop()
         self.playBttn.setChecked(False)
         self.stopBttn.setEnabled(False)
-        self.__finished_playing()
+        self.finished_playing()
         
     @pyqtSignature("")
     def on_nxtBttn_pressed(self):
@@ -535,9 +629,9 @@ class MainWindow(Setups, Finishes, QMainWindow):
         # Stopped playing and at end of playlist
         if new == 1 and old == 2 and self.is_last():
             print "debug: stopped\n"
-            self.__finished_playing()
+            self.finished_playing()
             
-    def __finished_playing(self):
+    def finished_playing(self):
         """
         Things to be performed when the playlist finishes
         """
@@ -713,105 +807,13 @@ class MainWindow(Setups, Finishes, QMainWindow):
         if  pos and  pos ==  len(file_list):
             return True        
 
-    def gen_file_list(self):
-        """
-        Creates a list of files in the playlist at its
-        current sorting top to bottom
-        """
-        column = 8
-        rows = self.playlistTree.rowCount() 
-        file_list = [self.playlistTree.item(row, column).text() for row in range(rows)]
-        return file_list   
-        
     def play_type(self, checked):
         if checked:
             self.play_type_bttn.setText("R")
         else:
             self.play_type_bttn.setText("N")
 
-# FIXME: de-uglify
-    def add2playlist(self, file_name, info):
-        """
-        Called when adding tracks to the playlist either locally
-        or from the database. Does not pull metadata from 
-        the database and is passed into the function directly
-        """
-        #TODO: prevent creation of empty rows.
-        
-        # FIXME: func() does nothing
-        func = lambda x: "" if "Unknown" in x else x
-        modded = func(info)
-        print(info)
-        file_col = 8
-        current_row = self.playlistTree.rowCount()
-        track = "%02u" % info[0]
-        # Creates each cell for a track based on info
-        track_item = QTableWidgetItem(QString(track))
-        track_item.setFlags(track_item.flags() ^ Qt.ItemIsEditable)
-        title_item = QTableWidgetItem(QString(info[1]))
-        title_item.setFlags(title_item.flags() ^ Qt.ItemIsEditable)
-        artist_item = QTableWidgetItem(QString(info[2]))
-        artist_item.setFlags(artist_item.flags() ^ Qt.ItemIsEditable)
-        album_item = QTableWidgetItem(QString(info[3]))
-        album_item.setFlags(album_item.flags() ^ Qt.ItemIsEditable)
-        year_item = QTableWidgetItem(str(info[4]))
-        year_item.setFlags(year_item.flags() ^ Qt.ItemIsEditable)
-        genre_item = QTableWidgetItem(QString(info[5]))
-        genre_item.setFlags(genre_item.flags() ^ Qt.ItemIsEditable)
-        length_item = QTableWidgetItem(QString(info[6]))
-        bitrate_item = QTableWidgetItem(QString(str(info[7])))
-        file_item = QTableWidgetItem(QString(file_name))
-        self.playlistTree.insertRow(current_row)
-        #TODO: These column assignments have to be dynamic at some point
-        self.playlistTree.setItem(current_row, 0, track_item)
-        self.playlistTree.setItem(current_row, 1, title_item)
-        self.playlistTree.setItem(current_row, 2, artist_item)
-        self.playlistTree.setItem(current_row, 3, album_item)
-        self.playlistTree.setItem(current_row, 4, year_item)
-        self.playlistTree.setItem(current_row, 5, genre_item)
-        self.playlistTree.setItem(current_row, 6, length_item)
-        self.playlistTree.setItem(current_row, 7, bitrate_item)
-        self.playlistTree.setItem(current_row, file_col , file_item)
-        self.playlistTree.resizeColumnsToContents()
-
-#TODO: use native/theme colours for odd/even colours
-    def tracknow_colourise(self, now):
-        """
-        Instead of using QTableWidget's selectRow function, 
-        set the background colour of each item in a row
-        until track changes.
-        """
-        self.playlistTree.selectRow(now)
-        columns = self.playlistTree.columnCount()
-        rows = self.playlistTree.rowCount()
-        now_colour =  QColor(128, 184, 255, 128)
-        odd_colour = QColor(220, 220, 220, 128)
-        even_colour = QColor(255, 255, 255)
-        for row in range(rows):
-            for col in range(columns):
-                item = self.playlistTree.item(row, col)
-                if row != now:
-                    if row % 2:
-                        item.setBackgroundColor(odd_colour)
-                    else:
-                        item.setBackgroundColor(even_colour)
-                else:
-                    item.setBackgroundColor(now_colour)
-    
-    def highlighted_track(self):
-        """
-        In the playlist
-        """
-        column = 8
-        row = self.playlistTree.currentRow()
-        # -1 is the value for None
-        if row > -1:
-            track = self.playlistTree.item(row, column).text()
-        else:
-            track = None
-        return track
-        
-    def __track_changed(self):
+    def track_changed(self):
         print("TRACK CHANGED")
         self.generate_info()
         self.set_info()
@@ -819,9 +821,3 @@ class MainWindow(Setups, Finishes, QMainWindow):
         self.old_pos = 0
         self.progSldr.setValue(0)
         
-    def __create_pipeline(self):
-        self.playbin = Player()
-        self.connect(self.playbin, SIGNAL("tick ( int )"), self.prog_tick)
-        self.playbin.pipe_line.connect("about-to-finish",  self.about_to_finish)
-        self.connect(self.playbin, SIGNAL("track_changed()"), self.__track_changed)
-        self.connect(self.playbin, SIGNAL("finished()"), self.__finished_playing)

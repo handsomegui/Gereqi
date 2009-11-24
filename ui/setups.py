@@ -6,6 +6,7 @@ QKeySequence, QLabel, QProgressBar, QToolButton, QIcon, QPixmap, \
 QAction, QSystemTrayIcon, qApp, QTreeView, QDirModel, QHBoxLayout
 from PyQt4.QtCore import QStringList, QString, SIGNAL, QSize, SLOT, QDir
 from Ui_interface import Ui_MainWindow
+from gstbe import Player
 
 
 class Setups(Ui_MainWindow):
@@ -24,6 +25,14 @@ class Setups(Ui_MainWindow):
         self.playlist_add_menu()
         self.create_tray_menu()
         self.setup_fileview()
+        self.setup_pipeline()
+        
+    def setup_pipeline(self):
+        self.playbin = Player()
+        self.connect(self.playbin, SIGNAL("tick ( int )"), self.prog_tick)
+        self.playbin.pipe_line.connect("about-to-finish",  self.about_to_finish)
+        self.connect(self.playbin, SIGNAL("track_changed()"), self.track_changed)
+        self.connect(self.playbin, SIGNAL("finished()"), self.finished_playing)
     
     def playlist_add_menu(self):
         """
