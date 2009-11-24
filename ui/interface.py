@@ -24,20 +24,6 @@ class Audio:
             self.play_type_bttn.setText("R")
         else:
             self.play_type_bttn.setText("N")
-    
-    def is_last(self):
-        """
-        Checks whether the current track in self.playbin
-        is the last in the viewable playlist
-        """
-        now = self.playbin.current_source()
-        file_list = self.gen_file_list()
-        try:
-            pos = file_list.index(QString(now))
-        except:
-            pos = None
-        if  pos and  pos ==  len(file_list):
-            return True    
             
     def track_changed(self):
         """
@@ -84,7 +70,7 @@ class Audio:
             self.playbin.enqueue(track)
 
 class Playlisting:
- # FIXME: de-uglify
+ # FIXME: For the love of god, de-uglify
     def add2playlist(self, file_name, info):
         """
         Called when adding tracks to the playlist either locally
@@ -157,11 +143,10 @@ class Tracking:
         """
         column = 8
         row = self.playlistTree.currentRow()
+        track = None
         # -1 is the value for None
         if row > -1:
             track = self.playlistTree.item(row, column).text()
-        else:
-            track = None
         return track
             
     #TODO: use native/theme colours for odd/even colours
@@ -201,28 +186,24 @@ class Tracking:
         if mode == "now":
             track = self.playlistTree.item(row, column).text()
         else:
-            current = self.playbin.current_source()
             # If 0 then the playlist is empty
             rows = self.playlistTree.rowCount() 
             if rows > 0:
-                for row in range(rows):
-                    file_name = str(self.playlistTree.item(row, column).text())
-                    # Track, track, track.
-                    if file_name == current:
-                        if mode == "back":
-                            if (row - 1) >= 0:
-                                track = self.playlistTree.item(row - 1 , column)
-                                track = track.text()
-                        elif mode == "next":
-                            if self.play_type_bttn.isChecked():
-                                # Here we need to randomly choose the next track
-                                row = randrange(0, rows)
-                                track = self.playlistTree.item(row, column)
-                                track = track.text()
-                            else:
-                                if (row + 1) < rows:
-                                    track = self.playlistTree.item(row + 1, column)
-                                    track = track.text()
+                row_now = self.current_row()
+                if mode == "back":
+                    if (row_now - 1) >= 0:
+                        track = self.playlistTree.item(row_now - 1 , column)
+                        track = track.text()
+                elif mode == "next":
+                    if self.play_type_bttn.isChecked():
+                        # Here we need to randomly choose the next track
+                        row = randrange(0, rows)
+                        track = self.playlistTree.item(row, column)
+                        track = track.text()
+                    else:
+                        if (row_now + 1) < rows:
+                            track = self.playlistTree.item(row_now + 1, column)
+                            track = track.text()
         if track:
             return str(track)
             
@@ -231,7 +212,7 @@ class Tracking:
          This retrieves data from the playlist table, not the database. 
         This is because the playlist may contain tracks added locally.        
         """
-        row = self.current_track()
+        row = self.current_row()
         title = self.playlistTree.item(row, 1).text()
         artist = self.playlistTree.item(row, 2).text()
         album = self.playlistTree.item(row, 3).text()
@@ -272,6 +253,7 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
     old_pos = 0
     locale = ".com"
     dating = Timing()
+    art_alb = {"oldart":None, "oldalb":None, "nowart":None, "nowalb":None}
     # TODO: change _art _ for something more readable
     # artist,album info. [0:1] is old. [2:3] is now
     art = [None, None, None, None] 
@@ -358,7 +340,7 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
                 self.playbin.play()
             # Just highlight the track we would play
             else:
-                self.tracknow_colourise(self.current_track())
+                self.tracknow_colourise(self.current_row())
 
     #TODO: this can be called from 2 other actions. Needs tidy up.
     @pyqtSignature("bool")
@@ -433,7 +415,7 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
             if self.playBttn.isChecked():
                 self.playbin.play()
             else:
-                self.tracknow_colourise(self.current_track())
+                self.tracknow_colourise(self.current_row())
         else:
             # TODO: some tidy up thing could go here
             return
@@ -540,7 +522,7 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         Not sure whether to highlight row or item
         """
         # Resets before searching again
-        self.tracknow_colourise(self.current_track)
+        self.tracknow_colourise(self.current_row)
         test = len(str(p0).strip())
         # Checks if the search edit isn't empty
         if test > 0:
@@ -698,7 +680,7 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         """
         # TODO: not implemented yet
         self.srchplyEdit.clear()
-        self.tracknow_colourise(self.current_track)
+        self.tracknow_colourise(self.current_row)
         #FIXME: need playbin.clearqueue()
         
         
@@ -712,7 +694,9 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         # locks up database
         print self.build_db_thread.stop_now() 
 
-    def current_track(self):
+# This is needed as the higlighted row can be different
+# than the currentRow method of Qtableview.
+    def current_row(self):
         """
         Finds the playlist row of the
         currently playing track
