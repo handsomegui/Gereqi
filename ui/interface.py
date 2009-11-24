@@ -55,6 +55,7 @@ class Audio:
         """
         Things to be performed when the playback finishes
         """
+        print("FINISHED")
         self.tabWidget_2.setTabEnabled(1, False)
         self.tabWidget_2.setTabEnabled(2, False)
         self.playBttn.setChecked(False)
@@ -235,6 +236,7 @@ class Tracking:
         artist = self.playlistTree.item(row, 2).text()
         album = self.playlistTree.item(row, 3).text()
         
+        # FIXME: Track total-time from playlist entry not playbin
         min, sec = self.playlistTree.item(row, 6).text().split(":")
         self.play_time = 1000 * ((int(min) * 60) + int(sec))
         
@@ -394,7 +396,8 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
                 self.playBttn.setIcon(icon)
                 
         else:
-            self.playbin.pause()
+            if self.playbin.is_playing():
+                self.playbin.pause()
             icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
             self.playBttn.setIcon(icon)
             if self.playlistTree.currentRow() >= 0:
@@ -695,12 +698,14 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         # TODO: not implemented yet
         self.srchplyEdit.clear()
         self.tracknow_colourise(self.current_track)
+        #FIXME: need playbin.clearqueue()
         
         
 #######################################
 #######################################
         
     def quit_build(self):
+        #TODO: confirm the below. May be old news.
         # ugly doesn't terminate cleanly
         # causes poor performance and errors on a rescan
         # locks up database
@@ -708,8 +713,8 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
 
     def current_track(self):
         """
-        Finds the row of the currently
-        playing track
+        Finds the playlist row of the
+        currently playing track
         """
         file_list = self.gen_file_list()
         file_name = self.playbin.current_source()
@@ -727,9 +732,7 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         self.progLbl.setText(msg)            
         # This only goes(?) if  the user has not grabbed the slider
         # The 'or' stops issue where the slider doesn't move after track finishes
-        if (pos == self.old_pos) or pos < 1: 
-            self.progSldr.setValue(time)
-        elif self.progSldr.value() == self.progSldr.maximum():
+        if pos == self.old_pos: 
             self.progSldr.setValue(time)
         self.old_pos = time
  

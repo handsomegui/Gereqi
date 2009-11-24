@@ -143,6 +143,11 @@ class Actions:
 
     def mute(self, set):
         self.pipe_line.set_property("mute", set)
+        
+    def clear_queue(self):
+        """
+        Clears pipe_line of all source
+        """
 
 
 class Player(Actions, Queries, QObject):
