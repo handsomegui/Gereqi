@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jono/Gereqi/ui/setting_dialog.ui'
 #
-# Created: Sun Nov 15 11:13:11 2009
+# Created: Wed Nov 25 11:39:06 2009
 #      by: PyQt4 UI code generator 4.6
 #
 # WARNING! All changes made in this file will be lost!

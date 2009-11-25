@@ -54,9 +54,8 @@ class Audio:
         self.wikiView.setHtml(QString(""))
         self.coverView.setPixmap(QPixmap(":/Icons/music.png"))
         self.trkNowBox.setTitle(QString("No Track Playing"))
-        self.art[0] = None
-        self.art[1] = None
-
+        self.art_alb["oldart"] = self.art_alb["oldalb"] = None
+        
 #TODO: increment the playcount in DB 
     def about_to_finish(self, pipeline):
         """
@@ -234,8 +233,8 @@ class Tracking:
         message = "Playing: %s by %s on %s" % (title, artist, album)
         self.stat_lbl.setText(message)
         self.tracknow_colourise(row)
-        self.art[2] = artist.toUtf8()
-        self.art[3] = album.toUtf8()
+        self.art_alb["nowart"] = artist.toUtf8()
+        self.art_alb["nowalb"] = album.toUtf8()
 
 
 class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
@@ -244,20 +243,7 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
     inherited Classes that may or may not have
     identical object/method names
     """    
-    show_messages = True
-    media_dir = None
-    media_db = Media()
-    meta = Metadata()
-    cover_thread = Getcover()        
-    html_thread = Getwiki()
-    build_db_thread = Builddb()
-    old_pos = 0
-    locale = ".com"
-    dating = Timing()
-    art_alb = {"oldart":None, "oldalb":None, "nowart":None, "nowalb":None}
-    # TODO: change _art _ for something more readable
-    # artist,album info. [0:1] is old. [2:3] is now
-    art = [None, None, None, None] 
+
     
     def __init__(self, parent = None):
         """
@@ -267,6 +253,18 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         QMainWindow.__init__(self, parent)
         super(MainWindow, self).__init__()
         self.setupUi(self)
+        
+        self.show_messages = True
+        self.media_dir = None
+        self.media_db = Media()
+        self.meta = Metadata()
+        self.cover_thread = Getcover()        
+        self.html_thread = Getwiki()
+        self.build_db_thread = Builddb()
+        self.old_pos = 0
+        self.locale = ".com"
+        self.dating = Timing()
+        self.art_alb = {"oldart":None, "oldalb":None, "nowart":None, "nowalb":None}        
         self.init_setups()
         
     @pyqtSignature("QString")
@@ -766,17 +764,17 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         The wikipedia page + album art to current artist playing
         """
         # Wikipedia info
-        if (self.art[2] != self.art[0]) and self.art[2]: 
+        if (self.art_alb["nowart"] != self.art_alb["oldart"] ) and self.art_alb["nowart"]:
             # passes the artist to the thread
-            self.html_thread.set_values(self.art[2]) 
+            self.html_thread.set_values(self.art_alb["nowart"]) 
             # starts the thread
             self.html_thread.start() 
-            self.art[0] = self.art[2]  
+            self.art_alb["oldart"] = self.art_alb["nowart"]
         # Album art
-        if (self.art[3] != self.art[1]) and self.art[3]:
-            self.cover_thread.set_values(self.art[3], self.art[2], self.locale)
+        if (self.art_alb["nowalb"] != self.art_alb["oldalb"]) and self.art_alb["nowalb"]:
+            self.cover_thread.set_values(self.art_alb["nowalb"], self.art_alb["nowart"], self.locale)
             self.cover_thread.start()
-            self.art[1] = self.art[3]
+            self.art_alb["oldalb"] = self.art_alb["nowalb"]
 
     def tray_event(self, event):
         """
