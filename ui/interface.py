@@ -34,7 +34,7 @@ class Audio:
         self.generate_info()
         self.set_info()
         self.set_prog_sldr()
-        self.old_pos = 0
+        MainWindow.old_pos = 0
         self.progSldr.setValue(0)
         
     def finished_playing(self):
@@ -47,7 +47,7 @@ class Audio:
         self.playBttn.setChecked(False)
         self.stopBttn.setEnabled(False)
         self.progSldr.setValue(0)
-        self.old_pos = 0
+        MainWindow.old_pos = 0
         self.stat_lbl.setText("Stopped")
         self.progLbl.setText("00:00 | 00:00")
         # clear things like wiki and reset cover art to default        
@@ -228,13 +228,13 @@ class Tracking:
         # which the title will understand. It's a single line only.
         self.trkNowBox.setTitle(msg3)
         icon = QSystemTrayIcon.NoIcon
-        if self.show_messages and self.playBttn.isChecked():
+        if MainWindow.show_messages and self.playBttn.isChecked():
             self.tray_icon.showMessage(msg1, msg2, icon, 3000)
         message = "Playing: %s by %s on %s" % (title, artist, album)
         self.stat_lbl.setText(message)
         self.tracknow_colourise(row)
-        self.art_alb["nowart"] = artist.toUtf8()
-        self.art_alb["nowalb"] = album.toUtf8()
+        MainWindow.art_alb["nowart"] = artist.toUtf8()
+        MainWindow.art_alb["nowalb"] = album.toUtf8()
 
 
 class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
@@ -243,7 +243,10 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
     inherited Classes that may or may not have
     identical object/method names
     """    
-
+    show_messages = True
+    art_alb = {"oldart":None, "oldalb":None, "nowart":None, "nowalb":None} 
+    old_pos = 0
+    locale = ".com"
     
     def __init__(self, parent = None):
         """
@@ -254,17 +257,13 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         super(MainWindow, self).__init__()
         self.setupUi(self)
         
-        self.show_messages = True
         self.media_dir = None
         self.media_db = Media()
         self.meta = Metadata()
         self.cover_thread = Getcover()        
         self.html_thread = Getwiki()
         self.build_db_thread = Builddb()
-        self.old_pos = 0
-        self.locale = ".com"
-        self.dating = Timing()
-        self.art_alb = {"oldart":None, "oldalb":None, "nowart":None, "nowalb":None}        
+        self.dating = Timing()               
         self.init_setups()
         
     @pyqtSignature("QString")
@@ -559,7 +558,7 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         """
         val = self.progSldr.value()
         self.playbin.seek(val)
-        self.old_pos = val
+        MainWindow.old_pos = val
     
     @pyqtSignature("")
     def on_actionUpdate_Collection_triggered(self):
@@ -716,9 +715,9 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         self.progLbl.setText(msg)            
         # This only goes(?) if  the user has not grabbed the slider
         # The 'or' stops issue where the slider doesn't move after track finishes
-        if pos == self.old_pos: 
+        if pos == MainWindow.old_pos: 
             self.progSldr.setValue(time)
-        self.old_pos = time
+        MainWindow.old_pos = time
  
     def set_prog_sldr(self):
         """
@@ -772,7 +771,7 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
             self.art_alb["oldart"] = self.art_alb["nowart"]
         # Album art
         if (self.art_alb["nowalb"] != self.art_alb["oldalb"]) and self.art_alb["nowalb"]:
-            self.cover_thread.set_values(self.art_alb["nowalb"], self.art_alb["nowart"], self.locale)
+            self.cover_thread.set_values(self.art_alb["nowalb"], self.art_alb["nowart"], MainWindow.locale)
             self.cover_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
 
