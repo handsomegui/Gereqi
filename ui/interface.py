@@ -69,6 +69,7 @@ class Audio:
         if track:
             self.playbin.enqueue(track)
 
+
 class Playlisting:
  # FIXME: For the love of god, de-uglify
     def add2playlist(self, file_name, info):

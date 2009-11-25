@@ -3,7 +3,8 @@
 
 from PyQt4.QtGui import QFont, QMenu, QTreeWidgetItem, QShortcut, \
 QKeySequence, QLabel, QProgressBar, QToolButton, QIcon, QPixmap, \
-QAction, QSystemTrayIcon, qApp, QTreeView, QDirModel, QHBoxLayout
+QAction, QSystemTrayIcon, qApp, QTreeView, QDirModel, QHBoxLayout, \
+QHeaderView
 from PyQt4.QtCore import QStringList, QString, SIGNAL, QSize, SLOT, QDir
 from Ui_interface import Ui_MainWindow
 from gstbe import Player
@@ -110,7 +111,10 @@ class Setups(Ui_MainWindow):
         model.setFilter(filters)
         model.setReadOnly(True)
         self.fileView.setModel(model)
-        
+        self.fileView.setColumnHidden(1, True)
+        self.fileView.setColumnHidden(2, True)
+        self.fileView.setColumnHidden(3, True)
+
     def create_actions(self):
         #TODO: get rid of this. Put actions and connects in own function
         # to reduce the number of unneeded pointers
