@@ -19,7 +19,7 @@ class Webinfo:
         rex = re.compile(r'\W')
         
         for item in params:
-            result = rex.sub(' ', str(item)).strip()
+            result = rex.sub(' ', unicode(item)).strip()
             fin = result.replace(" ", "+")
             things.append(fin)
             
@@ -38,7 +38,6 @@ class Webinfo:
         generated via create_url.
         """
         url = self.__create_url(site, *params)
-
         # Here we need a check to see if the loaded link is from amazon
         try:
             opener = build_opener()
