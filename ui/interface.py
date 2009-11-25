@@ -233,8 +233,8 @@ class Tracking:
         message = "Playing: %s by %s on %s" % (title, artist, album)
         self.stat_lbl.setText(message)
         self.tracknow_colourise(row)
-        MainWindow.art_alb["nowart"] = artist.toUtf8()
-        MainWindow.art_alb["nowalb"] = album.toUtf8()
+        MainWindow.art_alb["nowart"] = artist
+        MainWindow.art_alb["nowalb"] = album
 
 
 class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
