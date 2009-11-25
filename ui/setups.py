@@ -128,16 +128,17 @@ class Setups(Ui_MainWindow):
         #TODO: get rid of this. Put actions and connects in own function
         # to reduce the number of unneeded pointers
         
+        #FIXME: the linking to non-existing methods has to be bad
         # These playing actions are from the toolbar.
-        self.connect(self.actionPlay, SIGNAL("toggled(bool)"), self.playBttn.setChecked) 
+        self.connect(self.actionPlay, SIGNAL("toggled ( bool )"), self.playBttn.setChecked) 
         self.connect(self.actionNext_Track, SIGNAL("triggered()"), self.on_nxtBttn_pressed)
         self.connect(self.actionPrevious_Track, SIGNAL("triggered()"), self.on_prevBttn_pressed)  
         self.connect(self.actionStop, SIGNAL("triggered()"), self.on_stopBttn_pressed)
-        self.connect(self.play_type_bttn, SIGNAL('toggled(bool)'), self.play_type)
-        self.connect(self.cover_thread, SIGNAL("Activated ( QImage ) "), self.set_cover) # Linked to QThread
-        self.connect(self.html_thread, SIGNAL("Activated ( QString ) "), self.set_wiki)
-        self.connect(self.build_db_thread, SIGNAL("Activated ( int ) "), self.stat_prog.setValue)
-        self.connect(self.build_db_thread, SIGNAL("Activated ( QString ) "), self.finish_build)
+        self.connect(self.play_type_bttn, SIGNAL('toggled ( bool )'), self.play_type)
+        self.connect(self.cover_thread, SIGNAL("got-image ( QImage ) "), self.set_cover) # Linked to QThread
+        self.connect(self.html_thread, SIGNAL("got-wiki ( QString ) "), self.set_wiki)
+        self.connect(self.build_db_thread, SIGNAL("progress ( int ) "), self.stat_prog.setValue)
+        self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.finish_build)
         self.connect(self.stat_bttn, SIGNAL("pressed()"), self.quit_build)
         
     def create_tray_menu(self):

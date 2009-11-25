@@ -35,7 +35,7 @@ class Getcover(QThread):
         if result:
             img = QImage()
             img.loadFromData(result, "JPG")
-            self.emit(SIGNAL("Activated( QImage )"), img) 
+            self.emit(SIGNAL("got-image ( QImage )"), img) 
         self.exit()
         
         
@@ -53,7 +53,7 @@ class Getwiki(QThread):
         info = Webinfo()
         result = info.get_info("info",None,  self.artist)
         result = QString(result)        
-        self.emit(SIGNAL("Activated( QString )"), result)
+        self.emit(SIGNAL("got-wiki ( QString )"), result)
         self.exit()
         
         
@@ -85,7 +85,7 @@ class Builddb(QThread):
                 try:
                     file_now = file_now.decode("utf-8")
                 except UnicodeDecodeError:
-                    print "Warning!: latin1 encoded filename. Ignoring", repr(file_now)
+                    print "WARNING!: latin1 encoded filename. Ignoring", repr(file_now)
                     continue
                 ender = os.path.splitext(file_now)[-1]
                 ender = ender.lower()
@@ -113,12 +113,12 @@ class Builddb(QThread):
         cnt = 0
         #TODO: performance tuning
         for trk in tracks:
-            if not self.exiting: # Can't tell if this us causing slowdown
-                prog = float(cnt ) /  float(tracks_total)
-                prog = int(round(100 * prog))
+            if not self.exiting: # Can't tell if this is causing slowdown
+                ratio = float(cnt ) /  float(tracks_total)
+                prog = int(round(100 * ratio))
                 if prog > old_prog:
                     old_prog = prog
-                    self.emit(SIGNAL("Activated ( int )"), prog)
+                    self.emit(SIGNAL("progress ( int )"), prog)
                 tags = meta.extract(trk)
                 date = dating.date_now()
                 # prepends the fileName as the DB function expects
@@ -128,13 +128,11 @@ class Builddb(QThread):
                 media_db.add_media(tags)
                 cnt += 1
             else:
-                print "User terminated scan."
-                status = QString("cancelled")
-                self.emit(SIGNAL("Activated ( QString )"), status)
-                self.exit() # Brilliant. Does nothing so need a return
+                print("User terminated scan.")
+                self.emit(SIGNAL("finished( QString )"), QString("cancelled"))
+                self.exit()
                 return
             
         print("%u tracks scanned in: %0.1f seconds" % (cnt, (time() - strt)))
-        status = QString("finished")
-        self.emit(SIGNAL("Activated ( QString )"), status)
+        self.emit(SIGNAL("finished ( QString )"), QString("complete"))
         self.exit()

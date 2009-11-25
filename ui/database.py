@@ -7,6 +7,7 @@ from os import mkdir, getenv, path
 #TODO: stats database
 
 class Media:
+    
     def __init__(self):
         """
         The table creations perform every class instance(?)
@@ -14,17 +15,14 @@ class Media:
         to add extra columns to an existing table te database file amaroq.db
         has to be deleted.
         """
-        app_dir = getenv("HOME")
-        app_dir = "%s/.amaroq/" % app_dir
-        self.media_db = "%samaroq.db" % app_dir
+        app_dir = "%s/.amaroq/" % getenv("HOME")
+        db_loc = "%samaroq.db" % app_dir
         
         if not path.exists(app_dir):
             print "need to make a folder"
             mkdir(app_dir)
-
-        self.media_db = sqlite.connect(self.media_db)
-        self.media_curs = self.media_db.cursor()
-        
+        self.media_db = sqlite.connect(db_loc)
+        self.media_curs = self.media_db.cursor()        
         self.__setup_tables()
         
     def __setup_tables(self):
@@ -84,11 +82,8 @@ class Media:
         """
         Here we add data into the media database
         """
-        try:
-            query = "INSERT INTO media VALUES (?,?,?,?,?,?,?,?,?,?)"
-            self.__query_execute(query, meta)
-        except:
-            print meta
+        query = "INSERT INTO media VALUES (?,?,?,?,?,?,?,?,?,?)"
+        self.__query_execute(query, meta)
         
     def get_artists(self):
         query = "SELECT DISTINCT artist FROM media"
@@ -117,7 +112,6 @@ class Media:
         
     def get_titles(self, artist, album):
         args = (artist, album)
-        print args
         query = '''SELECT DISTINCT title FROM media 
         WHERE artist=?
         AND album=?'''
