@@ -114,7 +114,16 @@ class Setups(Ui_MainWindow):
         self.fileView.setColumnHidden(1, True)
         self.fileView.setColumnHidden(2, True)
         self.fileView.setColumnHidden(3, True)
-
+        self.connect(self.fileView, SIGNAL("expanded (const QModelIndex&)"), \
+                                                      self.resize_fileview) 
+        
+    def resize_fileview(self):
+        """
+        Resizes the fileView to it's contents.
+        Because of the '0' this seperate method is needed
+        """
+        self.fileView.resizeColumnToContents(0)
+        
     def create_actions(self):
         #TODO: get rid of this. Put actions and connects in own function
         # to reduce the number of unneeded pointers
