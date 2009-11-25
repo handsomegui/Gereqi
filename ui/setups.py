@@ -116,6 +116,7 @@ class Setups(Ui_MainWindow):
         self.fileView.setColumnHidden(3, True)
         self.connect(self.fileView, SIGNAL("expanded (const QModelIndex&)"), \
                                                       self.resize_fileview) 
+        self.connect(self.fileView, SIGNAL("doubleClicked (const QModelIndex&)"), self.fileview_item)
         
     def resize_fileview(self):
         """
@@ -123,6 +124,9 @@ class Setups(Ui_MainWindow):
         Because of the '0' this seperate method is needed
         """
         self.fileView.resizeColumnToContents(0)
+        
+    def fileview_item(self, thing):
+        print(thing)
         
     def create_actions(self):
         #TODO: get rid of this. Put actions and connects in own function
@@ -197,17 +201,12 @@ class Setups(Ui_MainWindow):
         font.setBold(True)
         for cnt in range(len(artists)):
             artist = artists[cnt][0]
-            # When creating collection tree only allow certain 
-            # artists based on the filter.
+            # When creating collection tree only 
+            #  allow certain artists based on the filter.
             if filt:
-                filt = filt.lower()
-                art = artist.lower()
-                if filt not in art:
+                if filt.lower() not in artist.lower():
                     continue
-            try:
-                char = artist[0]
-            except:
-                char = ""            
+            char = artist[0]   
             if char != old_char:
                 old_char = char  
                 char = "== %s ==" % char
