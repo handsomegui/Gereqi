@@ -16,6 +16,7 @@ from threads import Getcover, Getwiki, Builddb
 from timing import Timing
 from setups import Setups
 from finishes import Finishes
+from Ui_interface import Ui_MainWindow
 
 
 class Audio:
@@ -237,7 +238,7 @@ class Tracking:
         MainWindow.art_alb["nowalb"] = album.toUtf8()
 
 
-class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
+class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, Ui_MainWindow, QMainWindow): 
     """
     The main class of the app. There's loads of
     inherited Classes that may or may not have
@@ -788,3 +789,12 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, QMainWindow):
         elif event == 4:
             stopped = self.playbin.is_playing() is False
             self.playBttn.setChecked(stopped)
+
+    def closeEvent(self, event):
+        """
+        When the 'X' button or alt-f4 is triggered
+        """
+        if self.tray_icon.isVisible():
+            self.hide()
+            event.ignore()
+        
