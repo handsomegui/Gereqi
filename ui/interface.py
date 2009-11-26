@@ -20,11 +20,7 @@ from Ui_interface import Ui_MainWindow
 
 
 class Audio:
-    def play_type(self, checked):
-        if checked:
-            self.play_type_bttn.setText("R")
-        else:
-            self.play_type_bttn.setText("N")
+
             
     def track_changed(self):
         """
@@ -70,7 +66,14 @@ class Audio:
             self.playbin.enqueue(track)
 
 
-class Playlisting:
+class Playlist:
+    fname_col = 8
+    # TODO: find out how to get colour-scheme
+    colours = {
+               "odd": QColor(220, 220, 220, 128), 
+               "even": QColor(255, 255, 255), 
+               "now": QColor(128, 184, 255, 128)}
+               
  # FIXME: For the love of god, de-uglify
     def add2playlist(self, file_name, info):
         """
@@ -81,7 +84,6 @@ class Playlisting:
         #TODO: prevent creation of empty rows.
         
         print(info)
-        file_col = 8
         current_row = self.playlistTree.rowCount()
         track = "%02u" % info[0]
         # Creates each cell for a track based on info
@@ -110,7 +112,7 @@ class Playlisting:
         self.playlistTree.setItem(current_row, 5, genre_item)
         self.playlistTree.setItem(current_row, 6, length_item)
         self.playlistTree.setItem(current_row, 7, bitrate_item)
-        self.playlistTree.setItem(current_row, file_col , file_item)
+        self.playlistTree.setItem(current_row, Playlist.fname_col , file_item)
         self.playlistTree.resizeColumnsToContents()   
         
     def gen_file_list(self):
@@ -118,9 +120,8 @@ class Playlisting:
         Creates a list of files in the playlist at its
         current sorting top to bottom
         """
-        column = 8
         rows = self.playlistTree.rowCount() 
-        file_list = [self.playlistTree.item(row, column).text() for row in range(rows)]
+        file_list = [self.playlistTree.item(row, Playlist.fname_col).text() for row in range(rows)]
         return file_list   
 
     def del_track(self):
@@ -135,22 +136,8 @@ class Playlisting:
             except RuntimeError:
                 # likely deleted already i.e selected same row but multiple columns
                 return  
-
-
-class Tracking:
-    def highlighted_track(self):
-        """
-        In the playlist
-        """
-        column = 8
-        row = self.playlistTree.currentRow()
-        track = None
-        # -1 is the value for None
-        if row > -1:
-            track = self.playlistTree.item(row, column).text()
-        return track
-            
-    #TODO: use native/theme colours for odd/even colours
+                
+        #TODO: use native/theme colours for odd/even colours
     def tracknow_colourise(self, now):
         """
         Instead of using QTableWidget's selectRow function, 
@@ -161,20 +148,32 @@ class Tracking:
         columns = self.playlistTree.columnCount()
         rows = self.playlistTree.rowCount()
         
-        # TODO: find out how to get colour-scheme
-        now_colour =  QColor(128, 184, 255, 128)
-        odd_colour = QColor(220, 220, 220, 128)
-        even_colour = QColor(255, 255, 255)
+        
         for row in range(rows):
             for col in range(columns):
                 item = self.playlistTree.item(row, col)
                 if row != now:
                     if row % 2:
-                        item.setBackgroundColor(odd_colour)
+                        item.setBackgroundColor(Playlist.colours["odd"])
                     else:
-                        item.setBackgroundColor(even_colour)
+                        item.setBackgroundColor(Playlist.colours["even"])
                 else:
-                    item.setBackgroundColor(now_colour)
+                    item.setBackgroundColor(Playlist.colours["now"])
+
+
+class Track:
+    def highlighted_track(self):
+        """
+        In the playlist
+        """
+        row = self.playlistTree.currentRow()
+        track = None
+        # -1 is the value for None
+        if row > -1:
+            track = self.playlistTree.item(row, Playlist.fname_col).text()
+        return track
+            
+
                     
     def generate_track(self, mode, row=None):
         """
@@ -182,7 +181,7 @@ class Tracking:
         tracks) has to be regenerated before the queing of the next track
         """
         # So that it can be dynamic later on when columns can be moved
-        column = 8 
+        column = Playlist.fname_col
         track = None
         if mode == "now":
             track = self.playlistTree.item(row, column).text()
@@ -238,7 +237,7 @@ class Tracking:
         MainWindow.art_alb["nowalb"] = album.toUtf8()
 
 
-class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, Ui_MainWindow, QMainWindow): 
+class MainWindow(Track, Playlist, Audio,  Setups, Finishes, Ui_MainWindow, QMainWindow): 
     """
     The main class of the app. There's loads of
     inherited Classes that may or may not have
@@ -797,4 +796,10 @@ class MainWindow(Tracking, Playlisting, Audio,  Setups, Finishes, Ui_MainWindow,
         if self.tray_icon.isVisible():
             self.hide()
             event.ignore()
+            
+    def play_type(self, checked):
+        if checked:
+            self.play_type_bttn.setText("R")
+        else:
+            self.play_type_bttn.setText("N")
         
