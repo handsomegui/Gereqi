@@ -124,15 +124,11 @@ class Setups:
         
         #FIXME: the linking to non-existing methods has to be bad
         # These playing actions are from the toolbar.
-        self.connect(self.actionPlay, SIGNAL("toggled ( bool )"), self.playBttn.setChecked) 
-        self.connect(self.actionNext_Track, SIGNAL("triggered()"), self.on_nxtBttn_pressed)
-        self.connect(self.actionPrevious_Track, SIGNAL("triggered()"), self.on_prevBttn_pressed)  
-        self.connect(self.actionStop, SIGNAL("triggered()"), self.on_stopBttn_pressed)
-        self.connect(self.play_type_bttn, SIGNAL('toggled ( bool )'), self.play_type)
-        self.connect(self.cover_thread, SIGNAL("got-image ( QImage ) "), self.set_cover) # Linked to QThread
-        self.connect(self.html_thread, SIGNAL("got-wiki ( QString ) "), self.set_wiki)
-        self.connect(self.build_db_thread, SIGNAL("progress ( int ) "), self.stat_prog.setValue)
-        self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.finish_build)
+        self.connect(self.actionPlay, SIGNAL("toggled ( bool )"), self.playBttn, SLOT("setChecked(bool)"))
+        self.connect(self.actionNext_Track, SIGNAL("triggered()"), self.nxtBttn, SLOT("click()"))
+        self.connect(self.actionPrevious_Track, SIGNAL("triggered()"), self.prevBttn, SLOT("click()"))  
+        self.connect(self.actionStop, SIGNAL("triggered()"), self.stopBttn, SLOT("click()"))
+        self.connect(self.play_type_bttn, SIGNAL('toggled ( bool )'), self.__play_type)
         self.connect(self.stat_bttn, SIGNAL("pressed()"), self.quit_build)
         
     def create_tray_menu(self):
@@ -160,14 +156,13 @@ class Setups:
         tray_icon_menu.addSeparator()
         tray_icon_menu.addAction(self.view_action)
         tray_icon_menu.addAction(quit_action)
-        # No. This icon isn't final. Just filler.
         self.tray_icon = QSystemTrayIcon(self)
         self.tray_icon.setIcon(icon)
         self.tray_icon.setContextMenu(tray_icon_menu)
-        self.connect(self.play_action, SIGNAL("toggled(bool)"), self.playBttn.setChecked)
-        self.connect(next_action, SIGNAL("triggered()"), self.on_nxtBttn_pressed)
-        self.connect(prev_action, SIGNAL("triggered()"), self.on_prevBttn_pressed)
-        self.connect(stop_action, SIGNAL("triggered()"), self.on_stopBttn_pressed)
+        self.connect(self.play_action, SIGNAL("toggled(bool)"), self.playBttn, SLOT("setChecked(bool)"))
+        self.connect(next_action, SIGNAL("triggered()"), self.nxtBttn, SLOT("click()"))
+        self.connect(prev_action, SIGNAL("triggered()"), self.prevBttn, SLOT("click()"))
+        self.connect(stop_action, SIGNAL("triggered()"), self.stopBttn, SLOT("click()"))
         self.connect(self.view_action, SIGNAL("toggled(bool)"), self.minimise_to_tray)  
         self.connect(quit_action, SIGNAL("triggered()"), qApp, SLOT("quit()"))
         self.connect(self.tray_icon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.tray_event)
@@ -179,8 +174,6 @@ class Setups:
         """
         #TODO: make the creation aware of the collectTimeBox widget
         time_filter = self.collectTimeBox.currentIndex()
-        #Because we now call this to filter, we need to clear the collecttree
-        # before changing it
         self.collectTree.clear()
         # This gives multiples of the same thing i.e albums
         artists = self.media_db.get_artists()
@@ -209,3 +202,9 @@ class Setups:
             artist = QTreeWidgetItem(artist)
             artist.setChildIndicatorPolicy(0)
             self.collectTree.addTopLevelItem(artist)
+            
+    def __play_type(self, checked):
+        if checked:
+            self.play_type_bttn.setText("R")
+        else:
+            self.play_type_bttn.setText("N")

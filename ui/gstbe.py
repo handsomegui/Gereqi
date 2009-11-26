@@ -19,7 +19,6 @@ class Queries:
         """
         return self.pipe_line.get_state(1)[1]
 
-
     def current_source(self):
         """
         The pipe-line's current loaded track
@@ -111,7 +110,6 @@ class Actions:
             Gstbe.play_thread_id = None
             self.pipe_line.set_state(gst.STATE_NULL)
    
-#TODO: Find a cleaner seek method. This has a nasty sounding 'blip'
     def seek(self, val):
         """
         Seek to a time-position(in nS) of playing file
@@ -121,18 +119,12 @@ class Actions:
                 gst.SEEK_TYPE_SET, pos, gst.SEEK_TYPE_NONE, 0)
         self.pipe_line.send_event(event)
         
-# TODO: convert the range into decibels
-# interface.py is sort of doing this already with
-# a sqrt function
     def set_volume(self, val):        
         if 0 <= val <= 1:
             self.pipe_line.set_property('volume', val)
         else:
             print("Incorrect volume value. 0 -> 1")
 
-# FIXME: technically this should work much like in quod-libet.
-# It doesn't. Get this error:
-# CRITICAL **: deactivate_group: assertion `group->active' failed
     def enqueue(self, fname, type="file"):
         fnow  = self.source_checks(fname, type)
         if fnow:
@@ -165,12 +157,10 @@ class Gstbe(Actions, Queries, QObject):
         bus.add_signal_watch()
         bus.connect("message", self.__on_message)
 
-    
     def __audio_changed(self, pipeline):
         print("AUDIO CHANGED", pipeline)
         self.emit(SIGNAL("track_changed()"))
 
-#FIXME: the message type output is not as expected
     def __on_message(self, bus, msg):
         """
         Messages from pipe_line object
@@ -221,5 +211,4 @@ class Gstbe(Actions, Queries, QObject):
             except:
                 pass
             sleep(1)
-
 

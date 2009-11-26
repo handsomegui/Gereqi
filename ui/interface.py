@@ -5,7 +5,7 @@ from PyQt4.QtGui import QMainWindow, QFileDialog,   \
 QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
 QIcon, QTreeWidgetItem, QPixmap, QMessageBox, QColor
 from PyQt4.QtCore import pyqtSignature, QString, Qt,  \
-QTime, QStringList, SIGNAL
+QTime, QStringList, SIGNAL, SLOT
 from random import randrange
 
 from settings import Setting_Dialog
@@ -14,10 +14,8 @@ from metadata import Metadata
 from threads import Getcover, Getwiki, Builddb
 from timing import Timing
 from setups import Setups
-from finishes import Finishes
 from Ui_interface import Ui_MainWindow
 from gstbe import Gstbe
-
 
 class AudioBackend:
     def __init__(self, backend="gstreamer"):
@@ -189,7 +187,7 @@ class Track:
         """
         In the playlist
         """
-        row = self.playlistTree.currentRow()
+        row = self.playlistTree.currentRow() # It's things like this I have no idea how to sort out
         column = self.header_search("FileName")
         track = None
         # -1 is the row value for None
@@ -257,9 +255,9 @@ class Track:
         self.tracknow_colourise(row)
         MainWindow.art_alb["nowart"] = artist.toUtf8()
         MainWindow.art_alb["nowalb"] = album.toUtf8()
+        
 
-
-class MainWindow(Track, Playlist, AudioBackend,  Setups, Finishes, Ui_MainWindow, QMainWindow): 
+class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWindow): 
     """
     The main class of the app. There's loads of
     inherited Classes that may or may not have
@@ -287,6 +285,11 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Finishes, Ui_MainWindow
         self.build_db_thread = Builddb()
         self.dating = Timing()               
         self.init_setups()
+        
+        self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.__finish_build)
+        self.connect(self.cover_thread, SIGNAL("got-image ( QImage ) "), self.__set_cover) 
+        self.connect(self.html_thread, SIGNAL("got-wiki ( QString ) "), self.__set_wiki)
+        self.connect(self.build_db_thread, SIGNAL("progress ( int ) "), self.stat_prog, SLOT("setValue(int)"))
         
     @pyqtSignature("QString")
     def on_srchCollectEdt_textChanged(self, p0):
@@ -817,9 +820,30 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Finishes, Ui_MainWindow
             self.hide()
             event.ignore()
             
-    def play_type(self, checked):
-        if checked:
-            self.play_type_bttn.setText("R")
-        else:
-            self.play_type_bttn.setText("N")
+    # I honestly could not figure out how to deal with Finishes.
+    # Inheritance, attributes, etc is turning my brain to mush
+            
+    def __set_cover(self, img):
+        cover = QPixmap()
+        cover = cover.fromImage(img)
+        cover = cover.fromImage(img)
+        cover = cover.scaledToWidth(200, Qt.SmoothTransformation)
+        self.coverView.setPixmap(cover)        
         
+    def __set_wiki(self, html):
+        self.tabWidget_2.setTabEnabled(2, True)
+        self.wikiView.setHtml(html)
+        
+    def __finish_build(self, status):
+        """
+        Things to perform when the media library
+        has been built/cancelled
+        """
+        self.stat_bttn.setEnabled(False)
+        if status == "cancelled":
+            self.stat_prog.setToolTip("cancelled")
+        else:
+            self.stat_prog.setToolTip("Finished")
+        self.stat_prog.setValue(100)
+        self.collectTree.clear()
+        self.setup_db_tree()
