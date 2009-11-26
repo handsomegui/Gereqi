@@ -67,7 +67,6 @@ class Audio:
 
 
 class Playlist:
-    fname_col = 8
     # TODO: find out how to get colour-scheme
     colours = {
                "odd": QColor(220, 220, 220, 128), 
@@ -86,6 +85,7 @@ class Playlist:
         print(info)
         current_row = self.playlistTree.rowCount()
         track = "%02u" % info[0]
+        hdr = self.header_search
         # Creates each cell for a track based on info
         track_item = QTableWidgetItem(QString(track))
         track_item.setFlags(track_item.flags() ^ Qt.ItemIsEditable)
@@ -104,15 +104,15 @@ class Playlist:
         file_item = QTableWidgetItem(QString(file_name))
         self.playlistTree.insertRow(current_row)
         #TODO: These column assignments have to be dynamic at some point
-        self.playlistTree.setItem(current_row, 0, track_item)
-        self.playlistTree.setItem(current_row, 1, title_item)
-        self.playlistTree.setItem(current_row, 2, artist_item)
-        self.playlistTree.setItem(current_row, 3, album_item)
-        self.playlistTree.setItem(current_row, 4, year_item)
-        self.playlistTree.setItem(current_row, 5, genre_item)
-        self.playlistTree.setItem(current_row, 6, length_item)
-        self.playlistTree.setItem(current_row, 7, bitrate_item)
-        self.playlistTree.setItem(current_row, Playlist.fname_col , file_item)
+        self.playlistTree.setItem(current_row, hdr("Track"), track_item)
+        self.playlistTree.setItem(current_row, hdr("Title"), title_item)
+        self.playlistTree.setItem(current_row, hdr("Artist"), artist_item)
+        self.playlistTree.setItem(current_row, hdr("Album"), album_item)
+        self.playlistTree.setItem(current_row, hdr("Year"), year_item)
+        self.playlistTree.setItem(current_row, hdr("Genre"), genre_item)
+        self.playlistTree.setItem(current_row, hdr("Length"), length_item)
+        self.playlistTree.setItem(current_row, hdr("Bitrate"), bitrate_item)
+        self.playlistTree.setItem(current_row, hdr("FileName") , file_item)
         self.playlistTree.resizeColumnsToContents()   
         
     def gen_file_list(self):
@@ -121,7 +121,8 @@ class Playlist:
         current sorting top to bottom
         """
         rows = self.playlistTree.rowCount() 
-        file_list = [self.playlistTree.item(row, Playlist.fname_col).text() for row in range(rows)]
+        column = self.header_search("FileName")
+        file_list = [self.playlistTree.item(row, column).text() for row in range(rows)]
         return file_list   
 
     def del_track(self):
@@ -147,8 +148,6 @@ class Playlist:
         self.playlistTree.selectRow(now)
         columns = self.playlistTree.columnCount()
         rows = self.playlistTree.rowCount()
-        
-        
         for row in range(rows):
             for col in range(columns):
                 item = self.playlistTree.item(row, col)
@@ -159,6 +158,16 @@ class Playlist:
                         item.setBackgroundColor(Playlist.colours["even"])
                 else:
                     item.setBackgroundColor(Playlist.colours["now"])
+                    
+                    
+    def header_search(self, val):
+        """
+        This will eventually allows the column order of the 
+        playlist view to be changed         
+        """
+        cols = self.playlistTree.columnCount()
+        headers = [self.playlistTree.horizontalHeaderItem(col).text() for col in range(cols)]
+        return headers.index(val)
 
 
 class Track:
@@ -167,21 +176,20 @@ class Track:
         In the playlist
         """
         row = self.playlistTree.currentRow()
+        column = self.header_search("FileName")
         track = None
-        # -1 is the value for None
+        # -1 is the row value for None
         if row > -1:
-            track = self.playlistTree.item(row, Playlist.fname_col).text()
+            track = self.playlistTree.item(row, column).text()
         return track
             
-
-                    
     def generate_track(self, mode, row=None):
         """
         As the playlist changes on sorting, the playlist (the immediately next/previous 
         tracks) has to be regenerated before the queing of the next track
         """
         # So that it can be dynamic later on when columns can be moved
-        column = Playlist.fname_col
+        column = self.header_search("FileName")
         track = None
         if mode == "now":
             track = self.playlistTree.item(row, column).text()
