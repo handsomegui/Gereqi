@@ -4,7 +4,6 @@
 from urllib2 import URLError, build_opener
 from lxml.html import fromstring, tostring
 import socket
-import re
 
 TIMEOUT = 10
 socket.setdefaulttimeout(TIMEOUT)
@@ -16,10 +15,9 @@ class Webinfo:
     def __create_url(self, site, *params):
         # Cleans up the string
         things = []
-        rex = re.compile(r'\W')
-        
+        exc = '''!,.%%$&(){}[]'''
         for item in params:
-            result = rex.sub(' ', unicode(item)).strip()
+            result = ''.join([c for c in item if c not in exc])
             fin = result.replace(" ", "+")
             things.append(fin)
             
