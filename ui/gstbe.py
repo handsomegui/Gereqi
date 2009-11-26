@@ -25,8 +25,7 @@ class Queries:
         The pipe-line's current loaded track
         """
         # TODO: replace with GSreamer implementation
-#        print self.pipe_line.get_property("uri")
-        return self.pipe_source
+        return Gstbe.pipe_source
         
     def total_time(self):
         """
@@ -82,7 +81,7 @@ class Actions:
             self.pipe_line.set_property("uri", fnow)  
             self.pipe_line.set_state(gst.STATE_READY)
             print(fnow)          
-            self.pipe_source = fname                
+            Gstbe.pipe_source = fname                
         else:
             print("ERROR: %s not loaded" % fname)
             
@@ -94,7 +93,7 @@ class Actions:
         if (now == gst.STATE_READY) or (now == gst.STATE_NULL):
             print("PLAY")
             self.pipe_line.set_state(gst.STATE_PLAYING)
-            self.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
+            Gstbe.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
         elif now == gst.STATE_PAUSED:
             print("UNPAUSE")
             self.pipe_line.set_state(gst.STATE_PLAYING)
@@ -108,8 +107,8 @@ class Actions:
         
     def stop(self):
         print("STOP")
-        if self.play_thread_id:
-            self.play_thread_id = None
+        if Gstbe.play_thread_id:
+            Gstbe.play_thread_id = None
             self.pipe_line.set_state(gst.STATE_NULL)
    
 #TODO: Find a cleaner seek method. This has a nasty sounding 'blip'
@@ -150,9 +149,10 @@ class Actions:
         """
 
 
-class Player(Actions, Queries, QObject):
+class Gstbe(Actions, Queries, QObject):
+    pipe_source = play_thread_id = None        
     def __init__(self):
-        super(Player, self).__init__()
+        super(Gstbe, self).__init__()
         gobject.threads_init() # V.Important
 
         self.pipe_line = gst.element_factory_make("playbin2", "player")
@@ -165,11 +165,6 @@ class Player(Actions, Queries, QObject):
         bus.add_signal_watch()
         bus.connect("message", self.__on_message)
 
-        # A crude method if what is currently loaded
-        # into the pipeline. Could possibly use a Gstreamer
-        # implementation instead.
-        self.pipe_source = None        
-        self.play_thread_id = None
     
     def __audio_changed(self, pipeline):
         print("AUDIO CHANGED", pipeline)
@@ -183,7 +178,7 @@ class Player(Actions, Queries, QObject):
         mtype = msg.type
         if mtype == gst.MESSAGE_EOS:
             print("EOS")
-            self.play_thread_id = None            
+            Gstbe.play_thread_id = None            
             self.pipe_line.set_state(gst.STATE_NULL)
             self.emit(SIGNAL("finished()"))
         
@@ -209,19 +204,16 @@ class Player(Actions, Queries, QObject):
         Whilst a track is playing create a new thread to
         emit the playing-file's position
         """
-        play_thread_id = self.play_thread_id
+        play_thread = Gstbe.play_thread_id
         dur = None
         # Stay here until we have a current_source
         # total_time duration
         while not dur:
-            
             dur = self.total_time()            
-            
             sleep(0.1)
         
         dur = self.to_milli(dur)
-
-        while play_thread_id == self.play_thread_id:
+        while play_thread== Gstbe.play_thread_id:
             try:
                 pos_int = self.pipe_line.query_position(gst.FORMAT_TIME)[0]
                 val = self.to_milli(pos_int)

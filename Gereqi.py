@@ -8,11 +8,14 @@ no idea what yet.
 from PyQt4.QtGui import QApplication
 from PyQt4.QtCore import QString
 from ui.interface import MainWindow
-
+import sys
 VERSION = "master"  
 
 def main():
-    import sys
+    """
+    dummy
+    """
+    
     app = QApplication(sys.argv)
     app.setApplicationName(QString("Gereqi"))
     app.setApplicationVersion(QString(VERSION))

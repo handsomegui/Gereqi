@@ -3,8 +3,7 @@
 
 from PyQt4.QtGui import QMainWindow, QFileDialog,   \
 QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
-QIcon, QPixmap, QTreeWidgetItem, QPixmap, QMessageBox, \
-QColor
+QIcon, QTreeWidgetItem, QPixmap, QMessageBox, QColor
 from PyQt4.QtCore import pyqtSignature, QString, Qt,  \
 QTime, QStringList, SIGNAL
 from random import randrange
@@ -17,11 +16,25 @@ from timing import Timing
 from setups import Setups
 from finishes import Finishes
 from Ui_interface import Ui_MainWindow
+from gstbe import Gstbe
 
 
-class Audio:
-
+class AudioBackend:
+    def __init__(self, backend="gstreamer"):
+        if backend == "gstreamer":
+            self.gstreamer_init()
             
+    def gstreamer_init(self):
+        self.audio_object = Gstbe()
+        self.connect(self.audio_object, SIGNAL("tick ( int )"), self.prog_tick)
+        self.audio_object.pipe_line.connect("about-to-finish",  
+                                            self.about_to_finish)
+        self.connect(self.audio_object, SIGNAL("track_changed()"), 
+                                               self.track_changed)
+        self.connect(self.audio_object, SIGNAL("finished()"), 
+                                               self.finished_playing)
+        
+# Not sure this is the correct place for this method
     def track_changed(self):
         """
         When the playing track changes certain
@@ -63,7 +76,7 @@ class Audio:
         track = self.generate_track("next")
         #Not at end of  playlist
         if track:
-            self.playbin.enqueue(track)
+            self.audio_object.enqueue(track)
 
 
 class Playlist:
@@ -71,7 +84,8 @@ class Playlist:
     colours = {
                "odd": QColor(220, 220, 220, 128), 
                "even": QColor(255, 255, 255), 
-               "now": QColor(128, 184, 255, 128)}
+               "now": QColor(128, 184, 255, 128), 
+               "search": QColor(255, 128, 128, 128)}
                
  # FIXME: For the love of god, de-uglify
     def add2playlist(self, file_name, info):
@@ -245,7 +259,7 @@ class Track:
         MainWindow.art_alb["nowalb"] = album.toUtf8()
 
 
-class MainWindow(Track, Playlist, Audio,  Setups, Finishes, Ui_MainWindow, QMainWindow): 
+class MainWindow(Track, Playlist, AudioBackend,  Setups, Finishes, Ui_MainWindow, QMainWindow): 
     """
     The main class of the app. There's loads of
     inherited Classes that may or may not have
@@ -339,11 +353,11 @@ class MainWindow(Track, Playlist, Audio,  Setups, Finishes, Ui_MainWindow, QMain
         """
         track = self.generate_track("back")
         if track:
-            self.playbin.stop()
-            self.playbin.load(track)
+            self.audio_object.stop()
+            self.audio_object.load(track)
             # Checks to see if the playbutton is in play state
             if self.playBttn.isChecked():
-                self.playbin.play()
+                self.audio_object.play()
             # Just highlight the track we would play
             else:
                 self.tracknow_colourise(self.current_row())
@@ -357,7 +371,7 @@ class MainWindow(Track, Playlist, Audio,  Setups, Finishes, Ui_MainWindow, QMain
         """
         #TODO: messy. Clean up.
         if checked:
-            queued = self.playbin.current_source()
+            queued = self.audio_object.current_source()
             #FIXME: try and invert the result for less confusing varName
             stopped = self.stopBttn.isEnabled() is False
             highlighted = self.highlighted_track()
@@ -366,19 +380,19 @@ class MainWindow(Track, Playlist, Audio,  Setups, Finishes, Ui_MainWindow, QMain
                 # prevents loading whilst playing
                 if (queued != highlighted) and stopped: 
                     queued = highlighted
-                    self.playbin.load(queued)
+                    self.audio_object.load(queued)
                 # Nothing already loaded into playbin
                 elif not queued:
                     selected = self.playlistTree.currentRow()
                     # A row is selected
                     if selected >= 0:
                         selected = self.generate_track("now", selected)           
-                        self.playbin.load(str(selected))
+                        self.audio_object.load(str(selected))
                     # Just reset the play button and stop here
                     else:
                         # This will call this function
                         self.playBttn.setChecked(False)
-                self.playbin.play()
+                self.audio_object.play()
                 self.stopBttn.setEnabled(True)
                 icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
                 self.playBttn.setIcon(icon)
@@ -386,8 +400,8 @@ class MainWindow(Track, Playlist, Audio,  Setups, Finishes, Ui_MainWindow, QMain
                 self.playBttn.setChecked(False)
                 return
         else:
-            if self.playbin.is_playing():
-                self.playbin.pause()
+            if self.audio_object.is_playing():
+                self.audio_object.pause()
             icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
             self.playBttn.setIcon(icon)
             if self.playlistTree.currentRow() >= 0:
@@ -404,7 +418,7 @@ class MainWindow(Track, Playlist, Audio,  Setups, Finishes, Ui_MainWindow, QMain
         """
         self.tabWidget_2.setTabEnabled(1, False)
         self.tabWidget_2.setTabEnabled(2, False)
-        self.playbin.stop()
+        self.audio_object.stop()
         self.playBttn.setChecked(False)
         self.stopBttn.setEnabled(False)
         self.finished_playing()
@@ -416,10 +430,10 @@ class MainWindow(Track, Playlist, Audio,  Setups, Finishes, Ui_MainWindow, QMain
         """
         track = self.generate_track("next")
         if track:
-            self.playbin.stop() 
-            self.playbin.load(track)
+            self.audio_object.stop() 
+            self.audio_object.load(track)
             if self.playBttn.isChecked():
-                self.playbin.play()
+                self.audio_object.play()
             else:
                 self.tracknow_colourise(self.current_row())
         else:
@@ -433,7 +447,7 @@ class MainWindow(Track, Playlist, Audio,  Setups, Finishes, Ui_MainWindow, QMain
         """        
         self.volLbl.setText("%s" % value)
         value = (value / 100.0) ** 2
-        self.playbin.set_volume(value)
+        self.audio_object.set_volume(value)
     
     @pyqtSignature("")
     def on_actionConfigure_triggered(self):
@@ -501,7 +515,7 @@ class MainWindow(Track, Playlist, Audio,  Setups, Finishes, Ui_MainWindow, QMain
     def on_actionClear_triggered(self):
         """
         Clear current playlist and if no music playing
-        clear self.playbin
+        clear self.audio_object
         """
         #TODO:incorporate playlists in to here.
         # When cleared save the playlist first to be
@@ -512,7 +526,6 @@ class MainWindow(Track, Playlist, Audio,  Setups, Finishes, Ui_MainWindow, QMain
         # For some reason can only remove from bot to top
         for cnt in range(rows, -1, -1):
             self.playlistTree.removeRow(cnt)
-#        self.media_object.clearQueue()
     
     @pyqtSignature("")
     def on_clrplyBttn_clicked(self):
@@ -534,7 +547,6 @@ class MainWindow(Track, Playlist, Audio,  Setups, Finishes, Ui_MainWindow, QMain
         if test > 0:
             rows = []
             columns = self.playlistTree.columnCount()
-            colour = QColor(255, 128, 128, 128)
             searched = self.playlistTree.findItems(p0, Qt.MatchContains)
             for search in searched:
                 row = search.row()
@@ -542,14 +554,14 @@ class MainWindow(Track, Playlist, Audio,  Setups, Finishes, Ui_MainWindow, QMain
                     rows.append(row)
                     for col in range(columns):
                         item = self.playlistTree.item(row, col)
-                        item.setBackgroundColor(colour)
+                        item.setBackgroundColor(Playlist.colours["search"])
                 
     @pyqtSignature("bool")
     def on_muteBttn_toggled(self, checked):
         """
         Mutes audio output and changes button icon accordingly
         """
-        self.playbin.mute(checked)
+        self.audio_object.mute(checked)
         if checked:
             icon = QIcon(QPixmap(":/Icons/audio-volume-muted.png"))
             self.muteBttn.setIcon(icon)
@@ -557,7 +569,7 @@ class MainWindow(Track, Playlist, Audio,  Setups, Finishes, Ui_MainWindow, QMain
             vol = (self.volSldr.value() / 100.0) ** 2
             icon = QIcon(QPixmap(":/Icons/audio-volume-high.png"))
             self.muteBttn.setIcon(icon)
-            self.playbin.set_volume(vol)
+            self.audio_object.set_volume(vol)
         
     @pyqtSignature("")
     def on_progSldr_sliderReleased(self):
@@ -565,7 +577,7 @@ class MainWindow(Track, Playlist, Audio,  Setups, Finishes, Ui_MainWindow, QMain
         Set's an internal seek value for tick() to use
         """
         val = self.progSldr.value()
-        self.playbin.seek(val)
+        self.audio_object.seek(val)
         MainWindow.old_pos = val
     
     @pyqtSignature("")
@@ -587,12 +599,12 @@ class MainWindow(Track, Playlist, Audio,  Setups, Finishes, Ui_MainWindow, QMain
         #This won't actualy stop. It'll pause instead.
         self.playBttn.setChecked(False)
         
-        self.playbin.stop()
+        self.audio_object.stop()
         track = self.generate_track("now", row)
-        self.playbin.load(track)
+        self.audio_object.load(track)
         
         # Checking the button is the same
-        #  as self.playbin.play(), just cleaner overall
+        #  as self.audio_object.play(), just cleaner overall
         self.playBttn.setChecked(True) 
         self.play_action.setChecked(True)
         
@@ -708,7 +720,7 @@ class MainWindow(Track, Playlist, Audio,  Setups, Finishes, Ui_MainWindow, QMain
         currently playing track
         """
         file_list = self.gen_file_list()
-        file_name = self.playbin.current_source()
+        file_name = self.audio_object.current_source()
         return file_list.index(file_name)
         
     def prog_tick(self, time):
@@ -794,7 +806,7 @@ class MainWindow(Track, Playlist, Audio,  Setups, Finishes, Ui_MainWindow, QMain
             self.minimise_to_tray(hidden)
         # Middle-click to pause/play
         elif event == 4:
-            stopped = self.playbin.is_playing() is False
+            stopped = self.audio_object.is_playing() is False
             self.playBttn.setChecked(stopped)
 
     def closeEvent(self, event):
