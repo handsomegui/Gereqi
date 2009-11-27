@@ -544,7 +544,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         Not sure whether to highlight row or item
         """
         # Resets before searching again
-        self.tracknow_colourise(self.current_row)
+        self.tracknow_colourise(self.current_row())
         test = len(str(p0).strip())
         # Checks if the search edit isn't empty
         if test > 0:
