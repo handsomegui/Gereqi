@@ -92,39 +92,35 @@ class Playlist:
         or from the database. Does not pull metadata from 
         the database and is passed into the function directly
         """
-        #TODO: prevent creation of empty rows.
-        
-        print(info)
-        current_row = self.playlistTree.rowCount()
-        track = "%02u" % info[0]
+        row = self.playlistTree.rowCount()
         hdr = self.header_search
         # Creates each cell for a track based on info
-        track_item = QTableWidgetItem(QString(track))
-        track_item.setFlags(track_item.flags() ^ Qt.ItemIsEditable)
-        title_item = QTableWidgetItem(QString(info[1]))
-        title_item.setFlags(title_item.flags() ^ Qt.ItemIsEditable)
-        artist_item = QTableWidgetItem(QString(info[2]))
-        artist_item.setFlags(artist_item.flags() ^ Qt.ItemIsEditable)
-        album_item = QTableWidgetItem(QString(info[3]))
-        album_item.setFlags(album_item.flags() ^ Qt.ItemIsEditable)
-        year_item = QTableWidgetItem(str(info[4]))
-        year_item.setFlags(year_item.flags() ^ Qt.ItemIsEditable)
-        genre_item = QTableWidgetItem(QString(info[5]))
-        genre_item.setFlags(genre_item.flags() ^ Qt.ItemIsEditable)
-        length_item = QTableWidgetItem(QString(info[6]))
-        bitrate_item = QTableWidgetItem(QString(str(info[7])))
-        file_item = QTableWidgetItem(QString(file_name))
-        self.playlistTree.insertRow(current_row)
+        track = QTableWidgetItem(QString("%02u" % info[0]))
+        track.setFlags(track.flags() ^ Qt.ItemIsEditable)
+        title = QTableWidgetItem(QString(info[1]))
+        title.setFlags(title.flags() ^ Qt.ItemIsEditable)
+        artist = QTableWidgetItem(QString(info[2]))
+        artist.setFlags(artist.flags() ^ Qt.ItemIsEditable)
+        album = QTableWidgetItem(QString(info[3]))
+        album.setFlags(album.flags() ^ Qt.ItemIsEditable)
+        year = QTableWidgetItem(str(info[4]))
+        year.setFlags(year.flags() ^ Qt.ItemIsEditable)
+        genre = QTableWidgetItem(QString(info[5]))
+        genre.setFlags(genre.flags() ^ Qt.ItemIsEditable)
+        length = QTableWidgetItem(QString(info[6]))
+        bitrate = QTableWidgetItem(QString(str(info[7])))
+        file = QTableWidgetItem(QString(file_name))
+        self.playlistTree.insertRow(row)
         #TODO: These column assignments have to be dynamic at some point
-        self.playlistTree.setItem(current_row, hdr("Track"), track_item)
-        self.playlistTree.setItem(current_row, hdr("Title"), title_item)
-        self.playlistTree.setItem(current_row, hdr("Artist"), artist_item)
-        self.playlistTree.setItem(current_row, hdr("Album"), album_item)
-        self.playlistTree.setItem(current_row, hdr("Year"), year_item)
-        self.playlistTree.setItem(current_row, hdr("Genre"), genre_item)
-        self.playlistTree.setItem(current_row, hdr("Length"), length_item)
-        self.playlistTree.setItem(current_row, hdr("Bitrate"), bitrate_item)
-        self.playlistTree.setItem(current_row, hdr("FileName") , file_item)
+        self.playlistTree.setItem(row, hdr("Track"), track)
+        self.playlistTree.setItem(row, hdr("Title"), title)
+        self.playlistTree.setItem(row, hdr("Artist"), artist)
+        self.playlistTree.setItem(row, hdr("Album"), album)
+        self.playlistTree.setItem(row, hdr("Year"), year)
+        self.playlistTree.setItem(row, hdr("Genre"), genre)
+        self.playlistTree.setItem(row, hdr("Length"), length)
+        self.playlistTree.setItem(row, hdr("Bitrate"), bitrate)
+        self.playlistTree.setItem(row, hdr("FileName") , file)
         self.playlistTree.resizeColumnsToContents()   
         
     def gen_file_list(self):
@@ -180,9 +176,7 @@ class Playlist:
         cols = self.playlistTree.columnCount()
         headers = [self.playlistTree.horizontalHeaderItem(col).text() for col in range(cols)]
         return headers.index(val)
-
-
-class Track:
+        
     def highlighted_track(self):
         """
         In the playlist
@@ -194,7 +188,10 @@ class Track:
         if row > -1:
             track = self.playlistTree.item(row, column).text()
         return track
-            
+
+# This needs to work with Ui_MainWindow somehow
+class Track:
+
     def generate_track(self, mode, row=None):
         """
         As the playlist changes on sorting, the playlist (the immediately next/previous 
