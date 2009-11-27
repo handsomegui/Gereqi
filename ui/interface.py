@@ -276,7 +276,6 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         
         self.media_dir = None
         self.media_db = Media()
-        self.meta = Metadata()
         self.cover_thread = Getcover()        
         self.html_thread = Getwiki()
         self.build_db_thread = Builddb()
@@ -484,7 +483,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         """
         Extract music files and shove into current playlist.
         """        
-        # kde4 dialogs are being used somehow so can't see if the filters work
+        meta = Metadata()
         mfiles = QFileDialog.getOpenFileNames(\
                         None, 
                         self.trUtf8("Select Music Files"),
@@ -501,7 +500,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
                 ender = str(ender)
                 ender = ender.lower()
                 if ender in formats:
-                    info = self.meta.extract(item) 
+                    info = meta.extract(item) 
                     self.add2playlist(item, info)
 
     @pyqtSignature("bool")
@@ -520,7 +519,6 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         #TODO:incorporate playlists in to here.
         # When cleared save the playlist first to be
         # used with the playlist undo/redo buttons
-        # Has to incorporate database
         self.playlistTree.clearContents()
         rows = self.playlistTree.rowCount()
         # For some reason can only remove from bot to top
