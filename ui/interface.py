@@ -153,19 +153,20 @@ class Playlist:
         set the background colour of each item in a row
         until track changes.
         """
-        self.playlistTree.selectRow(now)
-        columns = self.playlistTree.columnCount()
-        rows = self.playlistTree.rowCount()
-        for row in range(rows):
-            for col in range(columns):
-                item = self.playlistTree.item(row, col)
-                if row != now:
-                    if row % 2:
-                        item.setBackgroundColor(Playlist.colours["odd"])
+        if now:
+            self.playlistTree.selectRow(now)
+            columns = self.playlistTree.columnCount()
+            rows = self.playlistTree.rowCount()
+            for row in range(rows):
+                for col in range(columns):
+                    item = self.playlistTree.item(row, col)
+                    if row != now:
+                        if row % 2:
+                            item.setBackgroundColor(Playlist.colours["odd"])
+                        else:
+                            item.setBackgroundColor(Playlist.colours["even"])
                     else:
-                        item.setBackgroundColor(Playlist.colours["even"])
-                else:
-                    item.setBackgroundColor(Playlist.colours["now"])
+                        item.setBackgroundColor(Playlist.colours["now"])
                     
                     
     def header_search(self, val):
@@ -531,7 +532,10 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         Not sure whether to highlight row or item
         """
         # Resets before searching again
-        self.tracknow_colourise(self.current_row())
+        now = self.current_row()
+        print now
+        if now:
+            self.tracknow_colourise(now)
         test = len(str(p0).strip())
         # Checks if the search edit isn't empty
         if test > 0:
@@ -688,7 +692,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         """
         # TODO: not implemented yet
         self.srchplyEdit.clear()
-        self.tracknow_colourise(self.current_row)
+        self.tracknow_colourise(self.current_row())
         #FIXME: need playbin.clearqueue()
         
         
@@ -711,7 +715,8 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         """
         file_list = self.gen_file_list()
         file_name = self.audio_object.current_source()
-        return file_list.index(file_name)
+        if file_name:
+            return file_list.index(file_name)
         
     def prog_tick(self, time):
         """

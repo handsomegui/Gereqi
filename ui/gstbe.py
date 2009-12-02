@@ -7,155 +7,47 @@ from os import path
 from time import sleep
 from PyQt4.QtCore import QObject, SIGNAL
 
-class Queries:
-    """
-    All methods that query the playbin and
-    its elements
-    """
-#TODO: parsing of stat
-    def state(self):
+class Extraneous:
+    def to_milli(self, val):
         """
-        To find out pipe_line's current state
+        Pointless really
         """
-        return self.pipe_line.get_state(1)[1]
+        milli = int(round(val / 1000000.0))
+        return milli
 
-    def current_source(self):
-        """
-        The pipe-line's current loaded track
-        """
-        # TODO: replace with GSreamer implementation
-        return Gstbe.pipe_source
-        
-    def total_time(self):
-        """
-        This won't do anything until the pipe_line
-        is in a PLAYING_STATE
-        """
-        try:
-            dur = self.pipe_line.query_duration(gst.FORMAT_TIME)[0]
-        except:
-            dur = None
-        return dur
-        
-    def is_playing(self):
-        return self.state() == gst.STATE_PLAYING
-            
     def can_play_source(self, source):
+        """
+        Gstreamer finds out if it would be able 
+        to play the media source
+        """
         return gst.element_make_from_uri(gst.URI_SRC, source, "") is not None
         
     def source_checks(self, source, type):
         fnow= None
-        if type == "file":
-            if path.isfile(source): 
-                fnow = "file://%s" % source
+        if type == "file" and path.isfile(source):
+            fnow = "file://%s" % source
         elif type == "cd":
             fnow = "cdda://%s" % source
             
         if fnow and self.can_play_source(fnow): 
             return fnow
             
-    def supported_formats(self):
-        """
-        Returns a list of the supported file-formats
-        that the System's Gstreamer can support
-        """
-        return
-        
-
-class Actions:
-    """
-    All methods that require playbin or
-    its elements to do something
-    """
-    def load(self, fname, type="file"):
-        """
-        A dynamic way of loading of media. Files, urls, cds 
-        (last 2 are TODO) can be used. As we are using playbin2 
-        we are actually queuing a track if one is already playing
-        """
-        # cdda://4   <-- cd track#4
-        fnow = self.source_checks(fname, type)
-        if fnow:
-            self.pipe_line.set_state(gst.STATE_NULL)
-            self.pipe_line.set_property("uri", fnow)  
-            self.pipe_line.set_state(gst.STATE_READY)
-            print(fnow)          
-            Gstbe.pipe_source = fname                
-        else:
-            print("ERROR: %s not loaded" % fname)
             
-    def play(self):
-        """
-        If a file is loaded play  or unpause it
-        """
-        now = self.state()
-        if (now == gst.STATE_READY) or (now == gst.STATE_NULL):
-            print("PLAY")
-            self.pipe_line.set_state(gst.STATE_PLAYING)
-            Gstbe.play_thread_id = thread.start_new_thread(self.whilst_playing, ())
-        elif now == gst.STATE_PAUSED:
-            print("UNPAUSE")
-            self.pipe_line.set_state(gst.STATE_PLAYING)
-        else:
-            print("FINISHED")
-            self.emit(SIGNAL("finished()"))
-        
-    def pause(self):
-        print("PAUSE")
-        self.pipe_line.set_state(gst.STATE_PAUSED)
-        
-    def stop(self):
-        print("STOP")
-        if Gstbe.play_thread_id:
-            Gstbe.play_thread_id = None
-            self.pipe_line.set_state(gst.STATE_NULL)
-   
-    def seek(self, val):
-        """
-        Seek to a time-position(in nS) of playing file
-        """
-        pos = val * 1000000        
-        event = gst.event_new_seek(1.0, gst.FORMAT_TIME, gst.SEEK_FLAG_FLUSH,
-                gst.SEEK_TYPE_SET, pos, gst.SEEK_TYPE_NONE, 0)
-        self.pipe_line.send_event(event)
-        
-    def set_volume(self, val):        
-        if 0 <= val <= 1:
-            self.pipe_line.set_property('volume', val)
-        else:
-            print("Incorrect volume value. 0 -> 1")
-
-    def enqueue(self, fname, type="file"):
-        fnow  = self.source_checks(fname, type)
-        if fnow:
-            print("ENQUEUE")
-            self.pipe_line.set_property("uri", fnow)
-            Gstbe.pipe_source = fname
-
-    def mute(self, set):
-        self.pipe_line.set_property("mute", set)
-        
-    def clear_queue(self):
-        """
-        Clears pipe_line of all source
-        """
-
-
-class Gstbe(Actions, Queries, QObject):
-    pipe_source = play_thread_id = None        
+class Gstbe(QObject):
     def __init__(self):
-        super(Gstbe, self).__init__()
+        QObject.__init__(self)
         gobject.threads_init() # V.Important
+        self.extra = Extraneous()
 
         self.pipe_line = gst.element_factory_make("playbin2", "player")
         self.pipe_line.connect("audio-changed",  self.__audio_changed)
-
         self.pipe_line.set_property('video-sink', None)
         self.set_volume(1)
-        
         bus = self.pipe_line.get_bus()
         bus.add_signal_watch()
         bus.connect("message", self.__on_message)
+        
+        self.pipe_source = self.play_thread_id = None
 
     def __audio_changed(self, pipeline):
         print("AUDIO CHANGED", pipeline)
@@ -182,19 +74,12 @@ class Gstbe(Actions, Queries, QObject):
             print(msg)            
         
         
-    def to_milli(self, val):
-        """
-        Pointless really
-        """
-        milli = int(round(val / 1000000.0))
-        return milli
-        
-    def whilst_playing(self):
+    def __whilst_playing(self):
         """
         Whilst a track is playing create a new thread to
         emit the playing-file's position
         """
-        play_thread = Gstbe.play_thread_id
+        play_thread = self.play_thread_id
         dur = None
         # Stay here until we have a current_source
         # total_time duration
@@ -202,13 +87,108 @@ class Gstbe(Actions, Queries, QObject):
             dur = self.total_time()            
             sleep(0.1)
         
-        dur = self.to_milli(dur)
-        while play_thread== Gstbe.play_thread_id:
+        dur = self.extra.to_milli(dur)
+        while play_thread== self.play_thread_id:
             try:
                 pos_int = self.pipe_line.query_position(gst.FORMAT_TIME)[0]
-                val = self.to_milli(pos_int)
+                val = self.extra.to_milli(pos_int)
                 self.emit(SIGNAL("tick ( int )"), val)
             except:
                 pass
             sleep(1)
 
+    def load(self, fname, type="file"):
+        """
+        A dynamic way of loading of media. Files, urls, cds 
+        (last 2 are TODO) can be used. As we are using playbin2 
+        we are actually queuing a track if one is already playing
+        """
+        # cdda://4   <-- cd track#4
+        fnow = self.extra.source_checks(fname, type)
+        if fnow:
+            self.pipe_line.set_state(gst.STATE_NULL)
+            self.pipe_line.set_property("uri", fnow)  
+            self.pipe_line.set_state(gst.STATE_READY)
+            self.pipe_source = fname                
+        else:
+            print("ERROR: %s not loaded" % fname)
+            
+    def play(self):
+        """
+        If a file is loaded play  or unpause it
+        """
+        now = self.state()
+        if (now == gst.STATE_READY) or (now == gst.STATE_NULL):
+            print("PLAY")
+            self.pipe_line.set_state(gst.STATE_PLAYING)
+            Gstbe.play_thread_id = thread.start_new_thread(self.__whilst_playing, ())
+        elif now == gst.STATE_PAUSED:
+            print("UNPAUSE")
+            self.pipe_line.set_state(gst.STATE_PLAYING)
+        else:
+            print("FINISHED")
+            self.emit(SIGNAL("finished()"))
+        
+    def pause(self):
+        print("PAUSE")
+        self.pipe_line.set_state(gst.STATE_PAUSED)
+        
+    def stop(self):
+        print("STOP")
+        if self.play_thread_id:
+            self.play_thread_id = None
+            self.pipe_line.set_state(gst.STATE_NULL)
+   
+    def seek(self, val):
+        """
+        Seek to a time-position(in nS) of playing file
+        """
+        pos = val * 1000000        
+        event = gst.event_new_seek(1.0, gst.FORMAT_TIME, gst.SEEK_FLAG_FLUSH,
+                gst.SEEK_TYPE_SET, pos, gst.SEEK_TYPE_NONE, 0)
+        self.pipe_line.send_event(event)
+        
+    def set_volume(self, val):        
+        if 0 <= val <= 1:
+            self.pipe_line.set_property('volume', val)
+        else:
+            print("Incorrect volume value. 0 -> 1")
+
+    def enqueue(self, fname, type="file"):
+        fnow  = self.extra.source_checks(fname, type)
+        if fnow:
+            print("ENQUEUE")
+            self.pipe_line.set_property("uri", fnow)
+            self.pipe_source = fname
+
+    def mute(self, set):
+        self.pipe_line.set_property("mute", set)
+
+    def state(self):
+        """
+        To find out pipe_line's current state
+        """
+        return self.pipe_line.get_state(1)[1]
+
+    def current_source(self):
+        """
+        The pipe-line's current loaded track
+        """
+        # TODO: replace with GSreamer implementation
+        return self.pipe_source
+        
+    def total_time(self):
+        """
+        This won't do anything until the pipe_line
+        is in a PLAYING_STATE
+        """
+        try:
+            dur = self.pipe_line.query_duration(gst.FORMAT_TIME)[0]
+        #FIXME: need an exception type
+        except:
+            dur = None
+        return dur
+        
+    def is_playing(self):
+        return self.state() == gst.STATE_PLAYING
+            

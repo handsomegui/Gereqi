@@ -15,7 +15,6 @@ def main():
     """
     dummy
     """
-    
     app = QApplication(sys.argv)
     app.setApplicationName(QString("Gereqi"))
     app.setApplicationVersion(QString(VERSION))
