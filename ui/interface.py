@@ -320,23 +320,15 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         # In any case we'll have an artist
         if not artist:
             artist = now
-        artist = artist.toLocal8Bit()
-        artist = str(artist)
-        artist = artist.decode("utf-8")
+        artist = self.__qstring_to_unicode(artist)
         if track:
-            album = album.toLocal8Bit()
-            album = str(album)
-            album = album.decode("utf-8")      
-            track = track.toLocal8Bit()
-            track = str(track)
-            track = track.decode("utf-8")
+            album = self.__qstring_to_unicode(album)     
+            track = self.__qstring_to_unicode(track)
             track = self.media_db.get_file(artist, album, track)[0][0]
             info = self.media_db.get_info(track)[0][1:] 
             self.add2playlist(str(track), info)
         elif album:
-            album = album.toLocal8Bit()
-            album = str(album)
-            album = album.decode("utf-8")
+            album = self.__qstring_to_unicode(album)
             tracks = self.media_db.get_files(artist, album)
             for track in tracks:
                 track = track[0]
@@ -842,3 +834,11 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         self.stat_prog.setValue(100)
         self.collectTree.clear()
         self.setup_db_tree()
+
+    def __qstring_to_unicode(self, string):
+        """
+        This is needed as you can't convert cleanly from qstring
+        to unicode, which the database requires
+        """
+        now = str(string.toLocal8Bit())
+        return now.decode("utf-8")
