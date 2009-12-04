@@ -19,6 +19,7 @@
     <file>media-skip-forward.png</file>
     <file>application-exit.png</file>
     <file>music.png</file>
-    <file>drawing.png</file>
+    <file>app.png</file>
+    <file>app-paused.png</file>
   </qresource>
 </RCC>

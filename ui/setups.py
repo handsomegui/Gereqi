@@ -145,7 +145,7 @@ class Setups:
         self.view_action.setCheckable(True)
         self.view_action.setChecked(True)
         tray_icon_menu = QMenu(self)
-        icon = QIcon(QPixmap(":/Icons/drawing.png"))
+        icon = QIcon(QPixmap(":/Icons/app-paused.png"))
         tray_icon_menu.addAction(icon, QString("Gereqi"))
         tray_icon_menu.addSeparator()
         tray_icon_menu.addAction(prev_action)

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/jono/Gereqi/ui/interface.ui'
+# Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/ui/interface.ui'
 #
-# Created: Wed Nov 25 11:39:05 2009
-#      by: PyQt4 UI code generator 4.6
+# Created: Fri Dec  4 21:50:31 2009
+#      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -14,7 +14,7 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(792, 533)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/Icons/drawing.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/Icons/app.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         self.centralWidget = QtGui.QWidget(MainWindow)
         self.centralWidget.setObjectName("centralWidget")
@@ -172,12 +172,12 @@ font: 75 10pt \"DejaVu Sans\";
         self.collectTimeBox.setMaxCount(6)
         self.collectTimeBox.setFrame(True)
         self.collectTimeBox.setObjectName("collectTimeBox")
-        self.collectTimeBox.addItem("")
-        self.collectTimeBox.addItem("")
-        self.collectTimeBox.addItem("")
-        self.collectTimeBox.addItem("")
-        self.collectTimeBox.addItem("")
-        self.collectTimeBox.addItem("")
+        self.collectTimeBox.addItem(QtCore.QString())
+        self.collectTimeBox.addItem(QtCore.QString())
+        self.collectTimeBox.addItem(QtCore.QString())
+        self.collectTimeBox.addItem(QtCore.QString())
+        self.collectTimeBox.addItem(QtCore.QString())
+        self.collectTimeBox.addItem(QtCore.QString())
         self.verticalLayout_2.addWidget(self.collectTimeBox)
         self.collectTree = QtGui.QTreeWidget(self.tab_2)
         self.collectTree.setAlternatingRowColors(True)
@@ -260,13 +260,13 @@ font: 75 10pt \"DejaVu Sans\";
         self.comboBox_2 = QtGui.QComboBox(self.tab_4)
         self.comboBox_2.setMinimumSize(QtCore.QSize(80, 0))
         self.comboBox_2.setObjectName("comboBox_2")
-        self.comboBox_2.addItem("")
+        self.comboBox_2.addItem(QtCore.QString())
         self.horizontalLayout_6.addWidget(self.comboBox_2)
         self.verticalLayout_4.addLayout(self.horizontalLayout_6)
         self.comboBox_3 = QtGui.QComboBox(self.tab_4)
         self.comboBox_3.setEnabled(False)
         self.comboBox_3.setObjectName("comboBox_3")
-        self.comboBox_3.addItem("")
+        self.comboBox_3.addItem(QtCore.QString())
         self.verticalLayout_4.addWidget(self.comboBox_3)
         self.horizontalLayout_7 = QtGui.QHBoxLayout()
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
@@ -366,7 +366,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.playlistTree.setSizePolicy(sizePolicy)
         self.playlistTree.setMinimumSize(QtCore.QSize(400, 0))
         self.playlistTree.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        self.playlistTree.setProperty("showDropIndicator", False)
+        self.playlistTree.setProperty("showDropIndicator", QtCore.QVariant(False))
         self.playlistTree.setDragEnabled(True)
         self.playlistTree.setDragDropOverwriteMode(False)
         self.playlistTree.setDragDropMode(QtGui.QAbstractItemView.DragOnly)
@@ -436,7 +436,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.volSldr = QtGui.QSlider(self.layoutWidget)
         self.volSldr.setMaximumSize(QtCore.QSize(200, 200))
         self.volSldr.setMaximum(100)
-        self.volSldr.setProperty("value", 100)
+        self.volSldr.setProperty("value", QtCore.QVariant(100))
         self.volSldr.setOrientation(QtCore.Qt.Horizontal)
         self.volSldr.setInvertedAppearance(False)
         self.volSldr.setInvertedControls(False)
@@ -468,7 +468,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 792, 28))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 792, 26))
         self.menuBar.setObjectName("menuBar")
         self.menuActions = QtGui.QMenu(self.menuBar)
         self.menuActions.setObjectName("menuActions")

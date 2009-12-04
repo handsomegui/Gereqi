@@ -32,10 +32,12 @@ class Setting_Dialog(QDialog):
         self.connect(bttn_box, SIGNAL("accepted()"), self, SLOT("accept()"))
         self.connect(bttn_box, SIGNAL("rejected()"), self, SLOT("reject()"))
         #TODO: Figure out how to do custom slots, i think
-#        self.connect(dir_bttn, SIGNAL("clicked()"), self.dir_sel())
+        self.connect(dir_bttn, SIGNAL("clicked()"), self, SLOT("dir_sel()"))
         self.setWindowTitle("Settings")
-        
+     
+    # This is not a slot according to PyQt
     def dir_sel(self):
+        print("SPAM!")
         dir_select = QFileDialog.getExistingDirectory(\
             None,
             self.trUtf8("Select Music Directory"),
@@ -48,6 +50,9 @@ class Setting_Dialog(QDialog):
         if self.directory:
             QDialog.accept(self)
             
+    def reject(self):
+        QDialog.reject(self)
+        
     def dir_val(self):
         """
         Called externally to get the directory linedit

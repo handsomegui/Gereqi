@@ -384,7 +384,9 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
                 self.audio_object.play()
                 self.stopBttn.setEnabled(True)
                 icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
+                tray = QIcon(QPixmap(":/Icons/app.png"))
                 self.playBttn.setIcon(icon)
+                self.tray_icon.setIcon(tray)
             else:
                 self.playBttn.setChecked(False)
                 return
@@ -392,7 +394,9 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
             if self.audio_object.is_playing():
                 self.audio_object.pause()
             icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
+            tray = QIcon(QPixmap(":/Icons/app-paused.png"))
             self.playBttn.setIcon(icon)
+            self.tray_icon.setIcon(tray)
             if self.playlistTree.currentRow() >= 0:
                 self.stat_lbl.setText("Paused")
             else:
