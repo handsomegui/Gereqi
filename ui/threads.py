@@ -32,10 +32,10 @@ class Getcover(QThread):
     def run(self):
         info = Webinfo()
         result = info.get_info("cover", self.locale, self.artist, self.album)
+        img = QImage()
         if result:
-            img = QImage()
             img.loadFromData(result, "JPG")
-            self.emit(SIGNAL("got-image ( QImage )"), img) 
+        self.emit(SIGNAL("got-image ( QImage )"), img) 
         self.exit()
         
         

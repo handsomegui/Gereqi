@@ -5,12 +5,12 @@ from urllib2 import URLError, build_opener
 from lxml.html import fromstring, tostring
 import socket
 
-TIMEOUT = 10
-socket.setdefaulttimeout(TIMEOUT)
+
 
 class Webinfo:
     def __init__(self):
-        return
+        timeout = 10
+        socket.setdefaulttimeout(timeout)
         
     def __create_url(self, site, *params):
         # Cleans up the string
@@ -68,6 +68,7 @@ class Webinfo:
         """
         Where everything starts from
         """
+        # TODO: obtain the wiki URL then get the printable URL
         if thing == "info":
             site = "wikipedia"
             result = self.__fetch(site, *params)
@@ -106,7 +107,7 @@ class Webinfo:
             
             # Here we need some check that if we haven't found the cover
             # we try again not using the amazon localisation
-            if result != "about:blank":
+            if result:
                 result = result .split("src=")[1].split(" ")[0]
                 result = result.strip('''"''')
                 opener = build_opener()

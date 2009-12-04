@@ -792,10 +792,13 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
     # Inheritance, attributes, etc is turning my brain to mush
             
     def __set_cover(self, img):
-        cover = QPixmap()
-        cover = cover.fromImage(img)
-        cover = cover.scaledToWidth(200, Qt.SmoothTransformation)
-        self.coverView.setPixmap(cover)        
+        if img.isNull():
+            self.coverView.setPixmap(QPixmap(":/Icons/music.png"))
+        else:
+            cover = QPixmap()
+            cover = cover.fromImage(img)
+            cover = cover.scaledToWidth(200, Qt.SmoothTransformation)
+            self.coverView.setPixmap(cover)        
         
     def __set_wiki(self, html):
         if html != "None":
