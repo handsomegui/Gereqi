@@ -2,25 +2,24 @@
 # -*- coding: utf-8 -*-
 
 from sqlite3 import dbapi2 as sqlite
-from os import mkdir, getenv, path
+import os
 
 #TODO: stats database
 
 class Media:
-    
     def __init__(self):
         """
         The table creations perform every class instance(?)
         but only creates them if they don't already exist. This means 
-        to add extra columns to an existing table te database file amaroq.db
+        to add extra columns to an existing table te database file 
         has to be deleted.
         """
-        app_dir = "%s/.amaroq/" % getenv("HOME")
-        db_loc = "%samaroq.db" % app_dir
+        app_dir = "%s/.gereqi/" % os.getenv("HOME")
+        db_loc = "%sgereqi.db" % app_dir
         
-        if not path.exists(app_dir):
-            print "need to make a folder"
-            mkdir(app_dir)
+        if not os.path.exists(app_dir):
+            print "Need to make a folder."
+            os.mkdir(app_dir)
         self.media_db = sqlite.connect(db_loc)
         self.media_curs = self.media_db.cursor()        
         self.__setup_tables()
@@ -108,7 +107,6 @@ class Media:
         AND album=?
         AND title=?'''
         return self.__query_fetchall(query, args)
-        # Should really be fetchOne()
         
     def get_titles(self, artist, album):
         args = (artist, album)
