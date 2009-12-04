@@ -3,8 +3,7 @@
 
 from PyQt4.QtGui import QFont, QMenu, QTreeWidgetItem, QShortcut, \
 QKeySequence, QLabel, QProgressBar, QToolButton, QIcon, QPixmap, \
-QAction, QSystemTrayIcon, qApp, QTreeView, QDirModel, QHBoxLayout, \
-QHeaderView
+QAction, QSystemTrayIcon, qApp, QDirModel
 from PyQt4.QtCore import QStringList, QString, SIGNAL, QSize, SLOT, QDir
 
 

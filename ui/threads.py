@@ -52,7 +52,10 @@ class Getwiki(QThread):
     def run(self):
         info = Webinfo()
         result = info.get_info("info",None,  self.artist)
-        result = QString(result)        
+        if result:
+            result = QString(result)
+        else:
+            result = QString("None")
         self.emit(SIGNAL("got-wiki ( QString )"), result)
         self.exit()
         

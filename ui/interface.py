@@ -794,14 +794,16 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
     def __set_cover(self, img):
         cover = QPixmap()
         cover = cover.fromImage(img)
-        cover = cover.fromImage(img)
         cover = cover.scaledToWidth(200, Qt.SmoothTransformation)
         self.coverView.setPixmap(cover)        
         
     def __set_wiki(self, html):
-        self.tabWidget_2.setTabEnabled(2, True)
-        self.wikiView.setHtml(html)
-        
+        if html != "None":
+            self.tabWidget_2.setTabEnabled(2, True)
+            self.wikiView.setHtml(html)
+        else:
+            self.tabWidget_2.setTabEnabled(2, False)
+            
     def __finish_build(self, status):
         """
         Things to perform when the media library

@@ -44,9 +44,7 @@ class Webinfo:
         except URLError, err:
             print err
             html = "about:blank"
-
-        content = self.__treat(site, html)             
-        return content
+        return self.__treat(site, html)
 
     def __treat(self, site, html):
         """
@@ -62,8 +60,8 @@ class Webinfo:
         try:
             tree = tree.get_element_by_id(tag) #the html enclosed by the tag
             tree  = tostring(tree)
-        except:
-            tree = "about:blank"     
+        except KeyError:
+            tree = None     
         return tree
         
     def get_info(self, thing, locale=None, *params):
@@ -72,33 +70,34 @@ class Webinfo:
         """
         if thing == "info":
             site = "wikipedia"
-            base_html = '''
-            <html>
-            <head>
-            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
-            <style type="text/css">
-            a:link {text-decoration: none; color:black;font-size 11px}
-            a:visited {text-decoration: none; color:black;font-size 11px}
-            a:active {text-decoration: none; color:black;font-size 11px}
-            a:hover {text-decoration: none; color:black;font-size 11px}
-            body{font-size: 12px}
-            h1 {font-size:12px}
-            h2 {font-size:11px}
-            h3 {font-size:11px}
-            h4 {font-size:11px}
-            p {font-size:11px}
-            p.normal {font-size:11px}
-            p.italic {font-size:11px}
-            p.oblique {font-size:11px}
-            </style>
-            <body>
-            %s
-            </body>
-            </html>
-            '''
             result = self.__fetch(site, *params)
-            # Cuts out everything from References down
-            return base_html % result.split('''<div class="references''')[0] 
+            if result:
+                base_html = '''
+                <html>
+                <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+                <style type="text/css">
+                a:link {text-decoration: none; color:black;font-size 11px}
+                a:visited {text-decoration: none; color:black;font-size 11px}
+                a:active {text-decoration: none; color:black;font-size 11px}
+                a:hover {text-decoration: none; color:black;font-size 11px}
+                body{font-size: 12px}
+                h1 {font-size:12px}
+                h2 {font-size:11px}
+                h3 {font-size:11px}
+                h4 {font-size:11px}
+                p {font-size:11px}
+                p.normal {font-size:11px}
+                p.italic {font-size:11px}
+                p.oblique {font-size:11px}
+                </style>
+                <body>
+                %s
+                </body>
+                </html>
+                '''
+                # Cuts out everything from References down
+                return base_html % result.split('''<div class="references''')[0]         
             
         elif thing == "cover":    
             site = "amazon%s" % locale
