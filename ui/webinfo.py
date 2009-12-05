@@ -30,21 +30,20 @@ class Webinfo:
         url = base_url % (site, pre_url)
         return url
         
-    def __fetch(self, site, *params):
+    def __fetch(self, url):
         """
         Using urllib2 the html is retrieved via an url
         generated via create_url.
         """
-        url = self.__create_url(site, *params)
-        # Here we need a check to see if the loaded link is from amazon
+        # TODO: when wiki change the url to printable version
         try:
             opener = build_opener()
             opener.addheaders = [('User-agent', 'Gereqi')]
-            html = opener.open( url ).read()
+            html = opener.open( url )
         except URLError, err:
             print err
-            html = "about:blank"
-        return self.__treat(site, html)
+            html = None
+        return html
 
     def __treat(self, site, html):
         """
@@ -60,18 +59,21 @@ class Webinfo:
         try:
             tree = tree.get_element_by_id(tag) #the html enclosed by the tag
             tree  = tostring(tree)
-        except KeyError:
+        except KeyError, err:
             tree = None     
         return tree
         
-    def get_info(self, thing, locale=None, *params):
+    
+    def get_info(self, thing, *params):
         """
         Where everything starts from
         """
         # TODO: obtain the wiki URL then get the printable URL
         if thing == "info":
             site = "wikipedia"
-            result = self.__fetch(site, *params)
+            url = self.__create_url(site, *params)
+            pre_html = self.__fetch(url).read()
+            result = self.__treat(site, pre_html)
             if result:
                 base_html = '''
                 <html>
@@ -101,17 +103,12 @@ class Webinfo:
                 return base_html % result.split('''<div class="references''')[0]         
             
         elif thing == "cover":    
-            site = "amazon%s" % locale
-            result = self.__fetch(site, *params)
-            html = None
-            
-            # Here we need some check that if we haven't found the cover
-            # we try again not using the amazon localisation
+            site = "amazon.com"
+            url = self.__create_url(site, *params)
+            pre_html = self.__fetch(url).read()
+            result = self.__treat(site, pre_html)
             if result:
-                result = result .split("src=")[1].split(" ")[0]
-                result = result.strip('''"''')
-                opener = build_opener()
-                opener.addheaders = [('User-agent', 'amaroQ')]
-                html = opener.open( result ).read()
-            
-            return html 
+                img_url = result .split("src=")[1].split(" ")[0]
+                img_url = img_url.strip('''"''')
+                img = self.__fetch(img_url).read()
+                return img

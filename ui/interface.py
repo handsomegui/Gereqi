@@ -18,6 +18,7 @@ from setups import Setups
 from Ui_interface import Ui_MainWindow
 from gstbe import Gstbe
 
+
 class AudioBackend:
     def __init__(self, backend="gstreamer"):
         if backend == "gstreamer":

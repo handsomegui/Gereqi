@@ -31,7 +31,7 @@ class Getcover(QThread):
       
     def run(self):
         info = Webinfo()
-        result = info.get_info("cover", self.locale, self.artist, self.album)
+        result = info.get_info("cover", self.artist, self.album)
         img = QImage()
         if result:
             img.loadFromData(result, "JPG")
@@ -51,7 +51,7 @@ class Getwiki(QThread):
         
     def run(self):
         info = Webinfo()
-        result = info.get_info("info",None,  self.artist)
+        result = info.get_info("info", self.artist)
         if result:
             result = QString(result)
         else:

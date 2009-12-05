@@ -12,6 +12,7 @@ from PyQt4.QtGui import QDialog, QLineEdit, QDialogButtonBox, \
 QGridLayout, QPushButton, QFileDialog
 from PyQt4.QtCore import SIGNAL, SLOT
 
+
 # Finally got round to figuring out how to do modal dialogs.
 class Setting_Dialog(QDialog):
     def __init__(self, parent=None):
