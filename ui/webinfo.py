@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from urllib2 import URLError, build_opener
+from urllib2 import Request, urlopen
 from lxml.html import fromstring, tostring
 
 
@@ -32,15 +32,15 @@ class Webinfo:
         Using urllib2 the html is retrieved via an url
         generated via create_url.
         """
-        # TODO: when wiki change the url to printable version
         try:
-            opener = build_opener()
-            opener.addheaders = [('User-agent', 'Gereqi')]
-            html = opener.open( url, None, 30)
+            user_agent = 'Gereqi/dev'
+            headers = { 'User-Agent' : user_agent }
+            req = Request(url, None, headers)
+            response = urlopen(req, None, 30)
         except URLError, err:
             print err
-            html = None
-        return html
+            response = None
+        return response
 
     def __treat(self, site, html):
         """
@@ -60,7 +60,6 @@ class Webinfo:
             tree = None     
         return tree
         
-    
     def get_info(self, thing, *params):
         """
         Where everything starts from
@@ -71,6 +70,7 @@ class Webinfo:
             url = self.__create_url(site, *params)
             pre_html = self.__fetch(url).read()
             result = self.__treat(site, pre_html)
+            
             if result:
                 base_html = '''
                 <html>
