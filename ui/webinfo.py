@@ -3,14 +3,11 @@
 
 from urllib2 import URLError, build_opener
 from lxml.html import fromstring, tostring
-import socket
-
 
 
 class Webinfo:
     def __init__(self):
-        timeout = 10
-        socket.setdefaulttimeout(timeout)
+        return
         
     def __create_url(self, site, *params):
         # Cleans up the string
@@ -39,7 +36,7 @@ class Webinfo:
         try:
             opener = build_opener()
             opener.addheaders = [('User-agent', 'Gereqi')]
-            html = opener.open( url )
+            html = opener.open( url, None, 30)
         except URLError, err:
             print err
             html = None
