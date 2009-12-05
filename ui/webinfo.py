@@ -33,7 +33,7 @@ class Webinfo:
         generated via create_url.
         """
         try:
-            user_agent = 'Gereqi/dev'
+            user_agent = "Firefox/3.0.14"
             headers = { 'User-Agent' : user_agent }
             req = Request(url, None, headers)
             response = urlopen(req, None, 30)
@@ -60,6 +60,12 @@ class Webinfo:
             tree = None     
         return tree
         
+    def __printable_wiki(self, url):
+        title = url.split("/")[-1]
+        url_now = "http://en.wikipedia.org/w/index.php?title=%s&printable=yes" % title
+        html = self.__fetch(url_now)
+        return html.read()
+        
     def get_info(self, thing, *params):
         """
         Where everything starts from
@@ -68,8 +74,8 @@ class Webinfo:
         if thing == "info":
             site = "wikipedia"
             url = self.__create_url(site, *params)
-            pre_html = self.__fetch(url).read()
-            result = self.__treat(site, pre_html)
+            pre_html = self.__fetch(url)
+            result =  self.__printable_wiki(pre_html.geturl())
             
             if result:
                 base_html = '''
@@ -97,7 +103,8 @@ class Webinfo:
                 </html>
                 '''
                 # Cuts out everything from References down
-                return base_html % result.split('''<div class="references''')[0]         
+                splitter = '''<h2><span class="mw-headline" id="References">References</span></h2>'''
+                return base_html % result.split(splitter)[0]         
             
         elif thing == "cover":    
             site = "amazon.com"
