@@ -145,7 +145,7 @@ class Setups:
         self.view_action.setCheckable(True)
         self.view_action.setChecked(True)
         tray_icon_menu = QMenu(self)
-        icon = QIcon(QPixmap(":/Icons/app-paused.png"))
+        icon = QIcon(QPixmap(":/Icons/app.png"))
         tray_icon_menu.addAction(icon, QString("Gereqi"))
         tray_icon_menu.addSeparator()
         tray_icon_menu.addAction(prev_action)
@@ -185,9 +185,8 @@ class Setups:
             artist = artists[cnt][0]
             # When creating collection tree only 
             #  allow certain artists based on the filter.
-            if filt:
-                if filt.lower() not in artist.lower():
-                    continue
+            if filt and (filt.lower() not in artist.lower()):
+                continue
             char = artist[0]   
             if char != old_char:
                 old_char = char  
