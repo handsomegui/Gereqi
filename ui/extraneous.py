@@ -1,10 +1,14 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 from time import localtime
 
-class Timing:
-    def __init__(self):
-        return
+class Extraneous:
+    def qstr2uni(self, qstr):
+        """
+        This is needed as you can't convert cleanly from qstring
+        to unicode, which the database requires
+        """
+        now = str(qstr.toLocal8Bit())
+        return now.decode("utf-8")
         
     def date_now(self):
         date = localtime()

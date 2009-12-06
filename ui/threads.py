@@ -14,7 +14,7 @@ from time import time
 from webinfo import Webinfo
 from database import Media
 from metadata import Metadata
-from timing import Timing
+from extraneous import Extraneous
 
 class Getcover(QThread):
     """
@@ -105,7 +105,7 @@ class Builddb(QThread):
         old_prog = 0    
         meta = Metadata()
         media_db = Media()
-        dating = Timing()
+        extras = Extraneous()
         tracks = self.__track_list()
         tracks_total = len(tracks)
         self.exiting = False
@@ -123,7 +123,7 @@ class Builddb(QThread):
                     old_prog = prog
                     self.emit(SIGNAL("progress ( int )"), prog)
                 tags = meta.extract(trk)
-                date = dating.date_now()
+                date = extras.date_now()
                 # prepends the fileName as the DB function expects
                 # a certain order to the args passed
                 tags.insert(0, trk) 

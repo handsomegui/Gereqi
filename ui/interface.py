@@ -6,17 +6,16 @@ QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
 QIcon, QTreeWidgetItem, QPixmap, QMessageBox, QColor
 from PyQt4.QtCore import QString, Qt, QTime, \
 QStringList, SIGNAL, SLOT
-
 from random import randrange
 
 from settings import Setting_Dialog
 from database import Media
 from metadata import Metadata
 from threads import Getcover, Getwiki, Builddb
-from timing import Timing
 from setups import Setups
 from Ui_interface import Ui_MainWindow
 from gstbe import Gstbe
+from extraneous import Extraneous
 
 
 class AudioBackend:
@@ -286,7 +285,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         self.cover_thread = Getcover()        
         self.html_thread = Getwiki()
         self.build_db_thread = Builddb()
-        self.dating = Timing()               
+        self.extras = Extraneous()
         self.init_setups()
         
         self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.__finish_build)
@@ -325,15 +324,15 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         # In any case we'll have an artist
         if not artist:
             artist = now
-        artist = self.__qstring_to_unicode(artist)
+        artist = self.extras.qstr2uni(artist)
         if track:
-            album = self.__qstring_to_unicode(album)     
-            track = self.__qstring_to_unicode(track)
+            album = self.extras.qstr2uni(album)     
+            track = self.extras.qstr2uni(track)
             track = self.media_db.get_file(artist, album, track)[0][0]
             info = self.media_db.get_info(track)[0][1:] 
             self.add2playlist(str(track), info)
         elif album:
-            album = self.__qstring_to_unicode(album)
+            album = self.extras.qstr2uni(album)
             tracks = self.media_db.get_files(artist, album)
             for track in tracks:
                 track = track[0]
@@ -485,7 +484,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
                         
         if mfiles:
             for item in mfiles:
-                fname = self.__qstring_to_unicode(item)
+                fname = self.extras.qstr2uni(item)
                 ender = fname.split(".")[-1]
                 if ender.lower() in MainWindow.audio_formats:
                     self.add2playlist(fname)
@@ -612,28 +611,26 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
             artist = item.text(0)
             album = None
         # An artist in any case
-        artist = self.__qstring_to_unicode(artist)
+        artist = self.extras.qstr2uni(artist)
         #TODO: add tracks in trackNum order
-        if album:
+        if album and (item.childCount() == 0):
             # Adding tracks to album
-            if item.childCount() == 0:
-                album = self.__qstring_to_unicode(album)
-                tracks = self.media_db.get_titles(artist, album)
-                for cnt in range(len(tracks)):
-                    track = tracks[cnt][0]
-                    track = QStringList(track)                
-                    track = QTreeWidgetItem(track)
-                    item.insertChild(cnt, track)
-        else:
+            album = self.extras.qstr2uni(album)
+            tracks = self.media_db.get_titles(artist, album)
+            for cnt in range(len(tracks)):
+                track = tracks[cnt][0]
+                track = QStringList(track)                
+                track = QTreeWidgetItem(track)
+                item.insertChild(cnt, track)
+        elif item.childCount() == 0: 
             # Adding albums to the artist
-            if item.childCount() == 0:
-                albums = self.media_db.get_albums(artist)
-                for cnt in range(len(albums)):
-                    album = albums[cnt][0]
-                    album = QStringList(album)                
-                    album = QTreeWidgetItem(album)
-                    album.setChildIndicatorPolicy(0)
-                    item.insertChild(cnt, album)
+            albums = self.media_db.get_albums(artist)
+            for cnt in range(len(albums)):
+                album = albums[cnt][0]
+                album = QStringList(album)                
+                album = QTreeWidgetItem(album)
+                album.setChildIndicatorPolicy(0)
+                item.insertChild(cnt, album)
 
     def on_clrCollectBttn_clicked(self):
         """
@@ -651,7 +648,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         filt = self.srchCollectEdt.text()
         filt = str(filt)
         self.setup_db_tree(filt)
-        now = self.dating.date_now()
+        now = self.extras.date_now()
         print "Filter collectionTree WRT time.", now
         
     def on_actionAbout_Gereqi_triggered(self):
@@ -821,10 +818,3 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         self.collectTree.clear()
         self.setup_db_tree()
 
-    def __qstring_to_unicode(self, string):
-        """
-        This is needed as you can't convert cleanly from qstring
-        to unicode, which the database requires
-        """
-        now = str(string.toLocal8Bit())
-        return now.decode("utf-8")
