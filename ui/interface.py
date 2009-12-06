@@ -612,16 +612,12 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
             artist = item.text(0)
             album = None
         # An artist in any case
-        artist = artist.toLocal8Bit()
-        artist = str(artist)
-        artist = artist.decode("utf-8")
+        artist = self.__qstring_to_unicode(artist)
         #TODO: add tracks in trackNum order
         if album:
             # Adding tracks to album
             if item.childCount() == 0:
-                album = album.toLocal8Bit()
-                album = str(album)
-                album = album.decode("utf-8")
+                album = self.__qstring_to_unicode(album)
                 tracks = self.media_db.get_titles(artist, album)
                 for cnt in range(len(tracks)):
                     track = tracks[cnt][0]
