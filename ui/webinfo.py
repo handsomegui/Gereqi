@@ -61,7 +61,7 @@ class Webinfo:
         return tree
         
     def __printable_wiki(self, url):
-        title = url.split("/")[-1]
+        title = url.split("http://en.wikipedia.org/wiki/")[-1]
         url_now = "http://en.wikipedia.org/w/index.php?title=%s&printable=yes" % title
         html = self.__fetch(url_now)
         return html.read()
