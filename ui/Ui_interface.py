@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/ui/interface.ui'
 #
-# Created: Fri Dec  4 21:50:31 2009
+# Created: Sun Dec  6 21:56:03 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -32,7 +32,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
         self.tabWidget.setSizePolicy(sizePolicy)
         self.tabWidget.setMinimumSize(QtCore.QSize(280, 0))
-        self.tabWidget.setMaximumSize(QtCore.QSize(400, 16777215))
+        self.tabWidget.setMaximumSize(QtCore.QSize(480, 16777215))
         self.tabWidget.setTabPosition(QtGui.QTabWidget.West)
         self.tabWidget.setDocumentMode(True)
         self.tabWidget.setObjectName("tabWidget")
