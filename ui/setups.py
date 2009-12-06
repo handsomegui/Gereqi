@@ -4,7 +4,8 @@
 from PyQt4.QtGui import QFont, QMenu, QTreeWidgetItem, QShortcut, \
 QKeySequence, QLabel, QProgressBar, QToolButton, QIcon, QPixmap, \
 QAction, QSystemTrayIcon, qApp, QDirModel
-from PyQt4.QtCore import QStringList, QString, SIGNAL, QSize, SLOT, QDir
+from PyQt4.QtCore import QStringList, QString, SIGNAL, QSize, SLOT, \
+QDir
 
 
 class Setups:
@@ -95,10 +96,13 @@ class Setups:
         A fileView browser where tracks can be (eventually)
         added to the playlist
         """
+            
         self.dir_model = QDirModel()
         filters = QDir.Files | QDir.Dirs | QDir.Readable | QDir.NoDotAndDotDot
         self.dir_model.setFilter(filters)
         self.dir_model.setReadOnly(True)
+        # This bloody thing filters directory names as well.
+#        self.dir_model.setNameFilters(format_filters)
         self.fileView.setModel(self.dir_model)
         self.fileView.setColumnHidden(1, True)
         self.fileView.setColumnHidden(2, True)
@@ -158,7 +162,8 @@ class Setups:
         tray_icon_menu.addAction(self.view_action)
         tray_icon_menu.addAction(quit_action)
         self.tray_icon = QSystemTrayIcon(self)
-        self.tray_icon.setIcon(icon)
+        icon2 = QIcon(QPixmap(":/Icons/app-paused.png"))
+        self.tray_icon.setIcon(icon2)
         self.tray_icon.setContextMenu(tray_icon_menu)
         self.connect(self.play_action, SIGNAL("toggled(bool)"), self.playBttn, SLOT("setChecked(bool)"))
         self.connect(next_action, SIGNAL("triggered()"), self.nxtBttn, SLOT("click()"))
