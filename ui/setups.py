@@ -95,11 +95,11 @@ class Setups:
         A fileView browser where tracks can be (eventually)
         added to the playlist
         """
-        model = QDirModel()
+        self.dir_model = QDirModel()
         filters = QDir.Files | QDir.Dirs | QDir.Readable | QDir.NoDotAndDotDot
-        model.setFilter(filters)
-        model.setReadOnly(True)
-        self.fileView.setModel(model)
+        self.dir_model.setFilter(filters)
+        self.dir_model.setReadOnly(True)
+        self.fileView.setModel(self.dir_model)
         self.fileView.setColumnHidden(1, True)
         self.fileView.setColumnHidden(2, True)
         self.fileView.setColumnHidden(3, True)
@@ -114,8 +114,9 @@ class Setups:
         """
         self.fileView.resizeColumnToContents(0)
         
-    def fileview_item(self, thing):
-        print(thing)
+    def fileview_item(self, index):
+        fname = self.dir_model.filePath(index)
+        print(fname)
         
     def create_actions(self):
         #TODO: get rid of this. Put actions and connects in own function
