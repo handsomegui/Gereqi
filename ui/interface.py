@@ -88,12 +88,15 @@ class Playlist:
                "search": QColor(255, 128, 128, 128)}
                
  # FIXME: For the love of god, de-uglify
-    def add2playlist(self, file_name, info):
+    def add2playlist(self, file_name, info=None):
         """
         Called when adding tracks to the playlist either locally
         or from the database. Does not pull metadata from 
         the database and is passed into the function directly
         """
+        if not info:
+            meta = Metadata()
+            info = meta.extract(file_name) 
         row = self.playlistTree.rowCount()
         hdr = self.header_search
         # Creates each cell for a track based on info
@@ -267,6 +270,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
     art_alb = {"oldart":None, "oldalb":None, "nowart":None, "nowalb":None} 
     old_pos = 0
     locale = ".com"
+    audio_formats = ["flac","mp3","ogg"]
     
     def __init__(self, parent = None):
         """
@@ -471,25 +475,20 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         """
         Extract music files and shove into current playlist.
         """        
-        meta = Metadata()
         mfiles = QFileDialog.getOpenFileNames(\
                         None, 
                         self.trUtf8("Select Music Files"),
                         QDesktopServices.storageLocation(QDesktopServices.MusicLocation), 
+                        #TODO: do not hard-code this
                         self.trUtf8("*.flac *.mp3 *.ogg"), 
                         None)       
                         
         if mfiles:
-            formats = ["ogg", "mp3", "flac"]
             for item in mfiles:
-                item = str(item.toLocal8Bit())
-                item = item.encode("utf-8")
-                ender = item.split(".")[-1]
-                ender = str(ender)
-                ender = ender.lower()
-                if ender in formats:
-                    info = meta.extract(item) 
-                    self.add2playlist(item, info)
+                fname = self.__qstring_to_unicode(item)
+                ender = fname.split(".")[-1]
+                if ender.lower() in MainWindow.audio_formats:
+                    self.add2playlist(fname)
 
     def on_actionMinimise_to_Tray_triggered(self, checked):
         """

@@ -115,8 +115,9 @@ class Setups:
         self.fileView.resizeColumnToContents(0)
         
     def fileview_item(self, index):
-        fname = self.dir_model.filePath(index)
-        print(fname)
+        if not self.dir_model.isDir(index):
+            fname = self.dir_model.filePath(index)
+            self.add2playlist(str(fname))
         
     def create_actions(self):
         #TODO: get rid of this. Put actions and connects in own function
