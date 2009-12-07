@@ -70,17 +70,19 @@ class Tagging:
         mp3s require 2 instances as EasyIDE
         lacks length and bitrate tags
         """
+        #FIXME: this exception implies the track 
+        # can not be played which is wrong in some cases
         try:
             audio = EasyID3(fname)
         # ID3NoHeaderError
         except:
-            print "mp3 file does not start with ID3 tag:", fname
+            print "ERROR:mp3 file does not start with ID3 tag:", fname
             return
         try:
             other = MP3(fname)
         #HeaderNotFoundError
         except: 
-            print "Headers not found. Can't sync to an MPEG frame", fname
+            print "ERROR:Headers not found. Can't sync to an MPEG frame", fname
             return
         length = self.manip.sec_to_time(round(other.info.length))
         bitrate = int(round(other.info.bitrate / 1024))
@@ -97,9 +99,19 @@ class Tagging:
         massive
         """
         if mode == "flac":
-            audio = FLAC(fname)
+            try:
+                audio = FLAC(fname)
+            # FLACNoHeaderError
+            except:
+                print "ERROR:Not a valid FLAC file", fname
+                return
         elif mode == "ogg":
-            audio = OggVorbis(fname)
+            try:
+                audio = OggVorbis(fname)
+            #OggVorbisHeaderError
+            except:
+                print "ERROR:No appropriate stream found", fname
+                return
         length = self.manip.sec_to_time(round(audio.info.length))
         bitrate = self.manip.manual_bitrate(fname, audio)
         tags = self.manip.dict_to_list(audio)
