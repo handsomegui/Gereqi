@@ -32,10 +32,6 @@ class Media:
                 title   VARCHAR(50),
                 artist  VARCHAR(50),
                 album   VARCHAR(50),
-                year    UNSIGNED SMALLINT(4),
-                genre   VARCHAR(50),
-                length  VARCHAR(5),
-                bitrate UNSIGNED SMALLINT(4),
                 added UNSIGNED MEDIUMINT(6),
                 PRIMARY KEY (file_name) ON CONFLICT IGNORE
                 )'''
@@ -81,7 +77,7 @@ class Media:
         """
         Here we add data into the media database
         """
-        query = "INSERT INTO media VALUES (?,?,?,?,?,?,?,?,?,?)"
+        query = "INSERT INTO media VALUES (?,?,?,?,?,?)"
         self.__query_execute(query, meta)
         
     def get_artists(self):
@@ -98,7 +94,8 @@ class Media:
         query = '''SELECT DISTINCT file_name FROM media 
         WHERE artist=?
         AND album=?'''
-        return self.__query_fetchall(query, args)
+        return [fnow[0] for fnow in self.__query_fetchall(query, args)]
+
         
     def get_file(self, artist, album, title):
         args = (artist, album, title)
@@ -106,7 +103,7 @@ class Media:
         WHERE artist=?
         AND album=?
         AND title=?'''
-        return self.__query_fetchall(query, args)
+        return self.__query_fetchall(query, args)[0][0]
         
     def get_titles(self, artist, album):
         args = (artist, album)

@@ -13,7 +13,7 @@ from time import time
 
 from webinfo import Webinfo
 from database import Media
-from metadata import Metadata
+from tagging import Tagging
 from extraneous import Extraneous
 
 class Getcover(QThread):
@@ -71,12 +71,13 @@ class Builddb(QThread):
     def stop_now(self):
         self.exiting = True
         
-    def set_values(self, dir):
+    def set_values(self, dir, formats):
         """
         Required to put parameters into
         this thread from the outside
         """
         self.media_dir = dir
+        self.a_formats = formats
      
     def __track_list(self):
         formats = [".ogg", ".mp3", ".flac"]
@@ -84,13 +85,13 @@ class Builddb(QThread):
         # No point trying to speed this up. os.walk is a generator function
         for root, dirname, filenames in os.walk(str(self.media_dir)):
             for name in filenames:
-                file_now = os.path.join(root, name)
+                now = os.path.join(root, name)
                 try:
-                    file_now = file_now.decode("utf-8")
+                    file_now = now.decode("utf-8")
                 except UnicodeDecodeError:
-                    print "WARNING!: latin1 encoded filename. Ignoring", repr(file_now)
+                    print "WARNING!: Funny encoding for filename. Ignoring", repr(now)
                     continue
-                ender = os.path.splitext(file_now)[-1]
+                ender = os.path.splitext(now)[-1]
                 ender = ender.lower()
                 # We only want to get tags for certain file formats as
                 # tagpy can only work with certain types
@@ -103,7 +104,7 @@ class Builddb(QThread):
         
     def run(self):
         old_prog = 0    
-        meta = Metadata()
+        meta = Tagging(self.a_formats)
         media_db = Media()
         extras = Extraneous()
         tracks = self.__track_list()
@@ -122,14 +123,17 @@ class Builddb(QThread):
                 if prog > old_prog:
                     old_prog = prog
                     self.emit(SIGNAL("progress ( int )"), prog)
-                tags = meta.extract(trk)
-                date = extras.date_now()
-                # prepends the fileName as the DB function expects
-                # a certain order to the args passed
-                tags.insert(0, trk) 
-                tags.append(date)
-                media_db.add_media(tags)
-                cnt += 1
+                
+                tags = meta.extract(trk.encode("utf-8"))
+                if tags:
+                    tags = tags[0:4]
+                    date = extras.date_now()
+                    # prepends the fileName as the DB function expects
+                    # a certain order to the args passed
+                    tags.insert(0, trk) 
+                    tags.append(date)
+                    media_db.add_media(tags)
+                    cnt += 1
             else:
                 print("User terminated scan.")
                 self.emit(SIGNAL("finished( QString )"), QString("cancelled"))

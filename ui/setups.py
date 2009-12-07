@@ -6,6 +6,7 @@ QKeySequence, QLabel, QProgressBar, QToolButton, QIcon, QPixmap, \
 QAction, QSystemTrayIcon, qApp, QDirModel
 from PyQt4.QtCore import QStringList, QString, SIGNAL, QSize, SLOT, \
 QDir
+from extraneous import Extraneous
 
 
 class Setups:
@@ -120,8 +121,9 @@ class Setups:
         
     def fileview_item(self, index):
         if not self.dir_model.isDir(index):
+            extra = Extraneous()
             fname = self.dir_model.filePath(index)
-            self.add2playlist(str(fname))
+            self.add2playlist(extra.qstr2uni(fname))
         
     def create_actions(self):
         #TODO: get rid of this. Put actions and connects in own function

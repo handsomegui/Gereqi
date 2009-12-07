@@ -10,7 +10,7 @@ from random import randrange
 
 from settings import Setting_Dialog
 from database import Media
-from metadata import Metadata
+from tagging import Tagging
 from threads import Getcover, Getwiki, Builddb
 from setups import Setups
 from Ui_interface import Ui_MainWindow
@@ -93,9 +93,9 @@ class Playlist:
         or from the database. Does not pull metadata from 
         the database and is passed into the function directly
         """
-        if not info:
-            meta = Metadata()
-            info = meta.extract(file_name) 
+        # Not sure whether to pull in Tagging for each track
+        meta = Tagging(MainWindow.audio_formats)
+        info = meta.extract(file_name) 
         row = self.playlistTree.rowCount()
         hdr = self.header_search
         # Creates each cell for a track based on info
@@ -328,17 +328,14 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         if track:
             album = self.extras.qstr2uni(album)     
             track = self.extras.qstr2uni(track)
-            track = self.media_db.get_file(artist, album, track)[0][0]
-            info = self.media_db.get_info(track)[0][1:] 
-            self.add2playlist(str(track), info)
+            file_name = self.media_db.get_file(artist, album, track)
+            self.add2playlist(file_name)
         elif album:
             album = self.extras.qstr2uni(album)
             tracks = self.media_db.get_files(artist, album)
             for track in tracks:
-                track = track[0]
                 # Retrieves metadata from database
-                info = self.media_db.get_info(track)[0][1:] 
-                self.add2playlist(str(track), info)
+                self.add2playlist(track)
     
     def on_prevBttn_pressed(self):
         """
@@ -741,7 +738,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         # If the dialog is cancelled in last if statement the below is ignored
         if self.media_dir:
             self.stat_bttn.setEnabled(True)
-            self.build_db_thread.set_values(self.media_dir)
+            self.build_db_thread.set_values(self.media_dir, MainWindow.audio_formats)
             self.stat_prog.setToolTip("Scanning Media")
             self.stat_prog.setValue(0)
             self.build_db_thread.start()
