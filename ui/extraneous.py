@@ -7,7 +7,7 @@ class Extraneous:
         This is needed as you can't convert cleanly from qstring
         to unicode, which the database requires
         """
-        now = str(qstr.toLocal8Bit())
+        now = str(qstr.toUtf8())
         return now.decode("utf-8")
         
     def date_now(self):
