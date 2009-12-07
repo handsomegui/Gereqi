@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 #TODO: Import based on gstreamer capabilities
-from mutagen.flac import FLAC
-from mutagen.mp3 import MP3
-from mutagen.oggvorbis import OggVorbis
+from mutagen.flac import FLAC, FLACNoHeaderError
+from mutagen.mp3 import MP3, HeaderNotFoundError
+from mutagen.oggvorbis import OggVorbis, OggVorbisHeaderError
 from mutagen.easyid3 import EasyID3
+from mutagen.id3 import ID3NoHeaderError
 from os import stat
 
 class Manipulations:
@@ -74,14 +75,12 @@ class Tagging:
         # can not be played which is wrong in some cases
         try:
             audio = EasyID3(fname)
-        # ID3NoHeaderError
-        except:
+        except ID3NoHeaderError:
             print "ERROR:mp3 file does not start with ID3 tag:", fname
             return
         try:
             other = MP3(fname)
-        #HeaderNotFoundError
-        except: 
+        except HeaderNotFoundError: 
             print "ERROR:Headers not found. Can't sync to an MPEG frame", fname
             return
         length = self.manip.sec_to_time(round(other.info.length))
@@ -101,15 +100,13 @@ class Tagging:
         if mode == "flac":
             try:
                 audio = FLAC(fname)
-            # FLACNoHeaderError
-            except:
+            except FLACNoHeaderError:
                 print "ERROR:Not a valid FLAC file", fname
                 return
         elif mode == "ogg":
             try:
                 audio = OggVorbis(fname)
-            #OggVorbisHeaderError
-            except:
+            except OggVorbisHeaderError:
                 print "ERROR:No appropriate stream found", fname
                 return
         length = self.manip.sec_to_time(round(audio.info.length))
