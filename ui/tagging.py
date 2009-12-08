@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 #TODO: Import based on gstreamer capabilities
-from mutagen.flac import FLAC, FLACNoHeaderError
+from mutagen.flac import FLAC, FLACNoHeaderError, FLACVorbisError
 from mutagen.mp3 import MP3, HeaderNotFoundError
 from mutagen.oggvorbis import OggVorbis, OggVorbisHeaderError
 from mutagen.easyid3 import EasyID3
-from mutagen.id3 import ID3NoHeaderError
+from mutagen.id3 import ID3NoHeaderError, ID3BadUnsynchData
+from mutagen.asf import ASF 
 from os import stat
 
 class Manipulations:
@@ -78,6 +79,9 @@ class Tagging:
         except ID3NoHeaderError:
             print "ERROR:mp3 file does not start with ID3 tag:", fname
             return
+        except ID3BadUnsynchData:
+            print "ERROR:invalid sync-safe string", fname
+            return
         try:
             other = MP3(fname)
         except HeaderNotFoundError: 
@@ -100,17 +104,22 @@ class Tagging:
         if mode == "flac":
             try:
                 audio = FLAC(fname)
-            except FLACNoHeaderError:
-                print "ERROR:Not a valid FLAC file", fname
+                bitrate = self.manip.manual_bitrate(fname, audio)
+            except FLACNoHeaderError, err:
+                print "ERROR:", err, fname
+                return
+            except  FLACVorbisError, err:
+                print "ERROR:", err, fname
                 return
         elif mode == "ogg":
             try:
                 audio = OggVorbis(fname)
-            except OggVorbisHeaderError:
-                print "ERROR:No appropriate stream found", fname
+                # Damn kibibyte usage by Mutagen
+                bitrate = audio.info.bitrate / 1000 
+            except OggVorbisHeaderError, err:
+                print "ERROR:", err, fname
                 return
         length = self.manip.sec_to_time(round(audio.info.length))
-        bitrate = self.manip.manual_bitrate(fname, audio)
         tags = self.manip.dict_to_list(audio)
         tags.append(length)
         tags.append(bitrate)
