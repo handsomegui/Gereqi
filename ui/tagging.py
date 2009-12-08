@@ -98,20 +98,22 @@ class Tagging:
         # can not be played which is wrong in some cases
         try:
             audio = EasyID3(fname)
-        except ID3NoHeaderError:
-            print "ERROR:mp3 file does not start with ID3 tag:", fname
-            return
-        except ID3BadUnsynchData:
-            print "ERROR:invalid sync-safe string", fname
+            tags = self.manip.dict_to_list(audio)
+        # This is likely due to having to tags at all.
+        except ID3NoHeaderError, err:
+            title = fname.split("/")[-1]
+            tags = [0, title, "Unknown Artist", "Unknown Album", 0, "Unknown"]
+        except ID3BadUnsynchData, err:
+            print "ERROR:", err, fname
             return
         try:
             other = MP3(fname)
-        except HeaderNotFoundError: 
-            print "ERROR:Headers not found. Can't sync to an MPEG frame", fname
+        except HeaderNotFoundError, err: 
+            print "ERROR:", err, fname
             return
         length = self.manip.sec_to_time(round(other.info.length))
         bitrate = int(round(other.info.bitrate / 1024))
-        tags = self.manip.dict_to_list(audio)
+        
         tags.append(length)
         tags.append(bitrate)
         return tags

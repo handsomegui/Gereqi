@@ -140,6 +140,6 @@ class Builddb(QThread):
                 self.exit()
                 return
             
-        print("%u tracks scanned in: %0.1f seconds" % (cnt, (time() - strt)))
+        print("%u of %u tracks scanned in: %0.1f seconds" % (cnt, tracks_total,  (time() - strt)))
         self.emit(SIGNAL("finished ( QString )"), QString("complete"))
         self.exit()
