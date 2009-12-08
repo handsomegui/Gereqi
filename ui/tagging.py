@@ -7,7 +7,29 @@ from mutagen.easyid3 import EasyID3
 from mutagen.id3 import ID3NoHeaderError, ID3BadUnsynchData
 from mutagen.asf import ASF 
 from os import stat
+import subprocess
 
+class Fixing:
+    def __init__(self):
+        return
+        
+    def flac_bloc_fix(self, fname):
+        cmd = '''metaflac --list --block-type=VORBIS_COMMENT "%s" \
+            | grep "METADATA block #" \
+            | cut -d"#" -f2 \
+            | tr "\n" "/"  '''  % fname
+        proc = subprocess.Popen(cmd, shell = True, stdout = subprocess.PIPE)
+        output = proc.communicate()[0]
+        cnt = [int(item) for item in output.split("/")  if item]
+        
+        if len(cnt) > 1:
+            print("Multiple vorbis comment blocks found. Fixing:", fname)
+            cnt = cnt[1:]
+            cnt.reverse()
+            for val in cnt:
+                cmd = '''metaflac --preserve-modtime --remove --block-number=%s "%s" ''' % (val, fname)
+                subprocess.call(cmd, shell=True)
+        
 class Manipulations:
     def treat_tracknum(self, track):
         """
@@ -109,8 +131,14 @@ class Tagging:
                 print "ERROR:", err, fname
                 return
             except  FLACVorbisError, err:
-                print "ERROR:", err, fname
-                return
+                if "> 1 Vorbis comment block found" in err:
+                    fixer = Fixing()
+                    fixer.flac_bloc_fix(fname)
+                    audio = FLAC(fname)
+                    bitrate = self.manip.manual_bitrate(fname, audio)
+                else:
+                    print "ERROR:", err, fname
+                    return
         elif mode == "ogg":
             try:
                 audio = OggVorbis(fname)
