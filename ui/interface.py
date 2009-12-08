@@ -94,8 +94,8 @@ class Playlist:
         the database and is passed into the function directly
         """
         # Not sure whether to pull in Tagging for each track
-        meta = Tagging(MainWindow.audio_formats)
-        info = meta.extract(file_name) 
+        
+        info = self.meta.extract(file_name) 
         row = self.playlistTree.rowCount()
         hdr = self.header_search
         # Creates each cell for a track based on info
@@ -286,6 +286,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         self.html_thread = Getwiki()
         self.build_db_thread = Builddb()
         self.extras = Extraneous()
+        self.meta = Tagging(MainWindow.audio_formats)
         self.init_setups()
         
         self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.__finish_build)
