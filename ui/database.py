@@ -117,3 +117,10 @@ class Media:
         query = '''SELECT * FROM media 
         WHERE file_name=?'''
         return self.__query_fetchall(query, args)
+        
+    def delete_track(self, fname):
+        args = (fname, )
+        query = '''DELETE FROM media
+        WHERE file_name=?'''
+        self.__query_execute(query, args)
+    

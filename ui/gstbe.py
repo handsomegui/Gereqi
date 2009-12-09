@@ -8,12 +8,8 @@ from time import sleep
 from PyQt4.QtCore import QObject, SIGNAL
 
 class Extraneous:
-    def to_milli(self, val):
-        """
-        Pointless really
-        """
-        milli = int(round(val / 1000000.0))
-        return milli
+    def __init__(self):
+        return
 
     def can_play_source(self, source):
         """
@@ -45,8 +41,7 @@ class Gstbe(QObject):
         self.set_volume(1)
         bus = self.pipe_line.get_bus()
         bus.add_signal_watch()
-        bus.connect("message", self.__on_message)
-        
+        bus.connect("message", self.__on_message)        
         self.pipe_source = self.play_thread_id = None
 
     def __audio_changed(self, pipeline):
@@ -60,7 +55,7 @@ class Gstbe(QObject):
         mtype = msg.type
         if mtype == gst.MESSAGE_EOS:
             print("EOS")
-            Gstbe.play_thread_id = None            
+            self.play_thread_id = None            
             self.pipe_line.set_state(gst.STATE_NULL)
             self.emit(SIGNAL("finished()"))
         
@@ -86,7 +81,7 @@ class Gstbe(QObject):
                 pos_int = self.pipe_line.query_position(gst.FORMAT_TIME)[0]
                 val = int(round(pos_int / 1000000))
                 self.emit(SIGNAL("tick ( int )"), val)
-            except:
+            except gst.QueryError:
                 pass
             sleep(1)
 
@@ -103,10 +98,6 @@ class Gstbe(QObject):
             self.pipe_line.set_property("uri", fnow)  
             self.pipe_line.set_state(gst.STATE_READY)
             self.pipe_source = fname
-            return True
-        else:
-            print("ERROR: %s not loaded" % fname)
-            return False
             
     def play(self):
         """
@@ -116,11 +107,11 @@ class Gstbe(QObject):
         if (now == gst.STATE_READY) or (now == gst.STATE_NULL):
             print("PLAY")
             self.pipe_line.set_state(gst.STATE_PLAYING)
-            Gstbe.play_thread_id = thread.start_new_thread(self.__whilst_playing, ())
+            self.play_thread_id = thread.start_new_thread(self.__whilst_playing, ())
         elif now == gst.STATE_PAUSED:
             print("UNPAUSE")
             self.pipe_line.set_state(gst.STATE_PLAYING)
-            Gstbe.play_thread_id = thread.start_new_thread(self.__whilst_playing, ())
+            self.play_thread_id = thread.start_new_thread(self.__whilst_playing, ())
         else:
             print("FINISHED")
             self.emit(SIGNAL("finished()"))
@@ -133,7 +124,7 @@ class Gstbe(QObject):
     def stop(self):
         print("STOP")
         if self.play_thread_id:
-            self.play_thread_id = None
+            self.pipe_source = self.play_thread_id = None
             self.pipe_line.set_state(gst.STATE_NULL)
    
     def seek(self, val):
@@ -157,10 +148,6 @@ class Gstbe(QObject):
             print("ENQUEUE")
             self.pipe_line.set_property("uri", fnow)
             self.pipe_source = fname
-            return True
-        else:
-            print("ERROR: %s not loaded" % fname)
-            return False
 
     def mute(self, set):
         self.pipe_line.set_property("mute", set)

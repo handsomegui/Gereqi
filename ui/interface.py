@@ -5,7 +5,7 @@ from PyQt4.QtGui import QMainWindow, QFileDialog,   \
 QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
 QIcon, QTreeWidgetItem, QPixmap, QMessageBox, QColor
 from PyQt4.QtCore import QString, Qt, QTime, \
-QStringList, SIGNAL, SLOT
+QStringList, SIGNAL, SLOT, QFile
 from random import randrange
 
 from settings import Setting_Dialog
@@ -76,8 +76,7 @@ class AudioBackend:
         track = self.generate_track("next")
         #Not at end of  playlist
         if track:
-            if not self.audio_object.enqueue(track):
-                print("Do another check, say for it's existence")
+            self.audio_object.enqueue(track)
 
 
 class Playlist:
@@ -98,7 +97,9 @@ class Playlist:
         # This allows to put in manual info for things we know
         # mutagen cannot handle like urls for podcasts
         if not info:
-            info = self.meta.extract(file_name) 
+            info = self.meta.extract(file_name)
+            if not info:
+                return
         row = self.playlistTree.rowCount()
         hdr = self.header_search
         # Creates each cell for a track based on info
@@ -199,7 +200,6 @@ class Playlist:
 
 # This needs to work with Ui_MainWindow somehow
 class Track:
-
     def generate_track(self, mode, row=None):
         """
         As the playlist changes on sorting, the playlist (the immediately next/previous 
@@ -261,7 +261,8 @@ class Track:
         MainWindow.art_alb["nowart"] = artist.toUtf8()
         MainWindow.art_alb["nowalb"] = album.toUtf8()
         
-
+       
+        
 class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWindow): 
     """
     The main class of the app. There's loads of
@@ -351,13 +352,10 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         track = self.generate_track("back")
         if track:
             self.audio_object.stop()
-            loader = self.audio_object.load(track)
+            self.audio_object.load(track)
             # Checks to see if the playbutton is in play state
-            if self.playBttn.isChecked() and loader:
+            if self.playBttn.isChecked():
                 self.audio_object.play()
-            # Just highlight the track we would play
-            elif self.playBttn.setChecked and not loader:
-                print("Do another check, say for it's existence")
             else:
                 self.tracknow_colourise(self.current_row())
 
@@ -378,16 +376,14 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
                 # prevents loading whilst playing
                 if (queued != highlighted) and stopped: 
                     queued = highlighted
-                    if not self.audio_object.load(queued):
-                        print("Do another check, say for it's existence")
+                    self.audio_object.load(queued)
                 # Nothing already loaded into playbin
                 elif not queued:
                     selected = self.playlistTree.currentRow()
                     # A row is selected
                     if selected >= 0:
                         selected = self.generate_track("now", selected)           
-                        if not self.audio_object.load(str(selected)):
-                           print("Do another check, say for it's existence")
+                        self.audio_object.load(selected)
                     # Just reset the play button and stop here
                     else:
                         # This will call this function
@@ -433,11 +429,9 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         track = self.generate_track("next")
         if track:
             self.audio_object.stop() 
-            loader = self.audio_object.load(track)
-            if self.playBttn.isChecked() and loader:
+            self.audio_object.load(track)
+            if self.playBttn.isChecked():
                 self.audio_object.play()
-            elif self.playBttn.isChecked() and loader:
-                print("Do another check, say for it's existence")
             else:
                 self.tracknow_colourise(self.current_row())
         else:
@@ -589,8 +583,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         
         self.audio_object.stop()
         track = self.generate_track("now", row)
-        if not self.audio_object.load(track):
-            print("Do another check, say for it's existence")
+        self.audio_object.load(track)
         # Checking the button is the same
         #  as self.audio_object.play(), just cleaner overall
         self.playBttn.setChecked(True) 

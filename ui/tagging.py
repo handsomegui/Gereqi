@@ -8,6 +8,7 @@ from mutagen.id3 import ID3NoHeaderError, ID3BadUnsynchData
 from mutagen.asf import ASF 
 from os import stat, path
 import subprocess
+from extraneous import Extraneous
 
 class Fixing:
     def __init__(self):
@@ -88,6 +89,7 @@ class Tagging:
         # the '.' and in lower-case
         self.a_formats = formats
         self.manip = Manipulations()
+        self.extras = Extraneous()
         
     def __mp3_extract(self, fname):
         """
@@ -157,10 +159,14 @@ class Tagging:
         return tags
         
         
-    def extract(self, fname):
+    def extract(self, fname, mode="playlist"):
         """
         Based on the file-format extract info
         """
+        if mode == "playlist":
+            if not self.extras.check_source_exists(fname):
+                return
+            
         ext = fname.split(".")[-1].lower()
         if ext in self.a_formats:
             if ext == "flac":

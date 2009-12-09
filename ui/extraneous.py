@@ -1,7 +1,16 @@
 #!/usr/bin/env python
 from time import localtime
+from os import path
+from database import Media
 
 class Extraneous:
+    """
+    Miscellaneous functions that have no real place to
+    go but are used in various Classes.
+    """
+    def __init__(self):
+        return
+        
     def qstr2uni(self, qstr):
         """
         This is needed as you can't convert cleanly from qstring
@@ -19,3 +28,15 @@ class Extraneous:
         minu = "%02d" % date[4]
         date = "%s%s%s%s%s" % (day, month, year, hour, minu)
         return date
+
+    def check_source_exists(self, fname):
+        """
+        Checks whether if a track exists on drives.
+        If not, it removes the track from the database.
+        """
+        if path.exists(fname):
+            return True
+        else:
+            db = Media()
+            print("WARNING: removed non-existing track, %s, from database" % fname)
+            db.delete_track(fname)
