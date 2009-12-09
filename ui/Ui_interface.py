@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/ui/interface.ui'
 #
-# Created: Sun Dec  6 21:56:03 2009
+# Created: Wed Dec  9 11:25:38 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -163,9 +163,6 @@ font: 75 10pt \"DejaVu Sans\";
         self.srchCollectEdt = QtGui.QLineEdit(self.tab_2)
         self.srchCollectEdt.setObjectName("srchCollectEdt")
         self.horizontalLayout.addWidget(self.srchCollectEdt)
-        self.toolButton_4 = QtGui.QToolButton(self.tab_2)
-        self.toolButton_4.setObjectName("toolButton_4")
-        self.horizontalLayout.addWidget(self.toolButton_4)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.collectTimeBox = QtGui.QComboBox(self.tab_2)
         self.collectTimeBox.setMaxVisibleItems(6)
@@ -181,8 +178,10 @@ font: 75 10pt \"DejaVu Sans\";
         self.verticalLayout_2.addWidget(self.collectTimeBox)
         self.collectTree = QtGui.QTreeWidget(self.tab_2)
         self.collectTree.setAlternatingRowColors(True)
+        self.collectTree.setIndentation(15)
         self.collectTree.setRootIsDecorated(True)
         self.collectTree.setAnimated(True)
+        self.collectTree.setExpandsOnDoubleClick(False)
         self.collectTree.setObjectName("collectTree")
         self.verticalLayout_2.addWidget(self.collectTree)
         self.gridLayout_3.addLayout(self.verticalLayout_2, 0, 0, 1, 1)
@@ -294,6 +293,8 @@ font: 75 10pt \"DejaVu Sans\";
         self.gridLayout_13 = QtGui.QGridLayout(self.tab_5)
         self.gridLayout_13.setObjectName("gridLayout_13")
         self.fileView = QtGui.QTreeView(self.tab_5)
+        self.fileView.setIndentation(15)
+        self.fileView.setExpandsOnDoubleClick(False)
         self.fileView.setObjectName("fileView")
         self.gridLayout_13.addWidget(self.fileView, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab_5, "")
@@ -354,9 +355,6 @@ font: 75 10pt \"DejaVu Sans\";
         self.srchplyEdit.setMinimumSize(QtCore.QSize(200, 0))
         self.srchplyEdit.setObjectName("srchplyEdit")
         self.horizontalLayout_4.addWidget(self.srchplyEdit)
-        self.srchPlyBttn = QtGui.QToolButton(self.layoutWidget)
-        self.srchPlyBttn.setObjectName("srchPlyBttn")
-        self.horizontalLayout_4.addWidget(self.srchPlyBttn)
         self.verticalLayout_3.addLayout(self.horizontalLayout_4)
         self.playlistTree = QtGui.QTableWidget(self.layoutWidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
@@ -617,8 +615,6 @@ font: 75 10pt \"DejaVu Sans\";
         self.clrCollectBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Clear Search Field", None, QtGui.QApplication.UnicodeUTF8))
         self.clrCollectBttn.setText(QtGui.QApplication.translate("MainWindow", "X", None, QtGui.QApplication.UnicodeUTF8))
         self.srchCollectEdt.setToolTip(QtGui.QApplication.translate("MainWindow", "Enter search terms here", None, QtGui.QApplication.UnicodeUTF8))
-        self.toolButton_4.setToolTip(QtGui.QApplication.translate("MainWindow", "Click to edit collection filter", None, QtGui.QApplication.UnicodeUTF8))
-        self.toolButton_4.setText(QtGui.QApplication.translate("MainWindow", "...", None, QtGui.QApplication.UnicodeUTF8))
         self.collectTimeBox.setItemText(0, QtGui.QApplication.translate("MainWindow", "Entire Collection", None, QtGui.QApplication.UnicodeUTF8))
         self.collectTimeBox.setItemText(1, QtGui.QApplication.translate("MainWindow", "Added Today", None, QtGui.QApplication.UnicodeUTF8))
         self.collectTimeBox.setItemText(2, QtGui.QApplication.translate("MainWindow", "Added Within 1 Week", None, QtGui.QApplication.UnicodeUTF8))
@@ -653,8 +649,6 @@ font: 75 10pt \"DejaVu Sans\";
         self.clrsrchBttn.setText(QtGui.QApplication.translate("MainWindow", "X", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MainWindow", "Search:", None, QtGui.QApplication.UnicodeUTF8))
         self.srchplyEdit.setToolTip(QtGui.QApplication.translate("MainWindow", "Playlist Search", None, QtGui.QApplication.UnicodeUTF8))
-        self.srchPlyBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Click to edit playlist filter", None, QtGui.QApplication.UnicodeUTF8))
-        self.srchPlyBttn.setText(QtGui.QApplication.translate("MainWindow", "...", None, QtGui.QApplication.UnicodeUTF8))
         self.playlistTree.setSortingEnabled(True)
         self.prevBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Previous Track", None, QtGui.QApplication.UnicodeUTF8))
         self.prevBttn.setText(QtGui.QApplication.translate("MainWindow", "<<", None, QtGui.QApplication.UnicodeUTF8))
