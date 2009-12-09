@@ -51,8 +51,8 @@ class AudioBackend:
         Things to be performed when the playback finishes
         """
         print("FINISHED")
-        self.tabWidget_2.setTabEnabled(1, False)
-        self.tabWidget_2.setTabEnabled(2, False)
+        self.contentTabs.setTabEnabled(1, False)
+        self.contentTabs.setTabEnabled(2, False)
         self.playBttn.setChecked(False)
         self.stopBttn.setEnabled(False)
         self.progSldr.setValue(0)
@@ -410,8 +410,8 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         """
         To stop current track.
         """
-        self.tabWidget_2.setTabEnabled(1, False)
-        self.tabWidget_2.setTabEnabled(2, False)
+        self.contentTabs.setTabEnabled(1, False)
+        self.contentTabs.setTabEnabled(2, False)
         self.audio_object.stop()
         self.playBttn.setChecked(False)
         self.stopBttn.setEnabled(False)
@@ -797,10 +797,10 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         
     def __set_wiki(self, html):
         if html != "None":
-            self.tabWidget_2.setTabEnabled(2, True)
+            self.contentTabs.setTabEnabled(2, True)
             self.wikiView.setHtml(html)
         else:
-            self.tabWidget_2.setTabEnabled(2, False)
+            self.contentTabs.setTabEnabled(2, False)
             
     def __finish_build(self, status):
         """

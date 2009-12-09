@@ -61,8 +61,8 @@ class Setups:
         """
         Extra __init__ things to add to the UI
         """
-        self.tabWidget_2.setTabEnabled(1, False)
-        self.tabWidget_2.setTabEnabled(2, False)
+        self.contentTabs.setTabEnabled(1, False)
+        self.contentTabs.setTabEnabled(2, False)
         self.progSldr.setPageStep(0)
         self.progSldr.setSingleStep(0)
         self.stat_lbl = QLabel("Finished")
