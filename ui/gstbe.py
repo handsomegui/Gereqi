@@ -80,18 +80,11 @@ class Gstbe(QObject):
         emit the playing-file's position
         """
         play_thread = self.play_thread_id
-        dur = None
-        # Stay here until we have a current_source
-        # total_time duration
-        while not dur:
-            dur = self.total_time()            
-            sleep(0.1)
         
-        dur = self.extra.to_milli(dur)
         while play_thread== self.play_thread_id:
             try:
                 pos_int = self.pipe_line.query_position(gst.FORMAT_TIME)[0]
-                val = self.extra.to_milli(pos_int)
+                val = int(round(pos_int / 1000000))
                 self.emit(SIGNAL("tick ( int )"), val)
             except:
                 pass
@@ -109,9 +102,11 @@ class Gstbe(QObject):
             self.pipe_line.set_state(gst.STATE_NULL)
             self.pipe_line.set_property("uri", fnow)  
             self.pipe_line.set_state(gst.STATE_READY)
-            self.pipe_source = fname                
+            self.pipe_source = fname
+            return True
         else:
             print("ERROR: %s not loaded" % fname)
+            return False
             
     def play(self):
         """
@@ -125,6 +120,7 @@ class Gstbe(QObject):
         elif now == gst.STATE_PAUSED:
             print("UNPAUSE")
             self.pipe_line.set_state(gst.STATE_PLAYING)
+            Gstbe.play_thread_id = thread.start_new_thread(self.__whilst_playing, ())
         else:
             print("FINISHED")
             self.emit(SIGNAL("finished()"))
@@ -132,6 +128,7 @@ class Gstbe(QObject):
     def pause(self):
         print("PAUSE")
         self.pipe_line.set_state(gst.STATE_PAUSED)
+        self.play_thread_id = None
         
     def stop(self):
         print("STOP")
@@ -160,6 +157,10 @@ class Gstbe(QObject):
             print("ENQUEUE")
             self.pipe_line.set_property("uri", fnow)
             self.pipe_source = fname
+            return True
+        else:
+            print("ERROR: %s not loaded" % fname)
+            return False
 
     def mute(self, set):
         self.pipe_line.set_property("mute", set)
@@ -182,12 +183,8 @@ class Gstbe(QObject):
         This won't do anything until the pipe_line
         is in a PLAYING_STATE
         """
-        try:
-            dur = self.pipe_line.query_duration(gst.FORMAT_TIME)[0]
-        #FIXME: need an exception type
-        except:
-            dur = None
-        return dur
+        dur = self.pipe_line.query_duration(gst.FORMAT_TIME)[0]
+        return int(round(dur/ 1000000))
         
     def is_playing(self):
         return self.state() == gst.STATE_PLAYING
