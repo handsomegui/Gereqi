@@ -522,7 +522,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_6">
                <item>
-                <widget class="QPushButton" name="pushButton">
+                <widget class="QPushButton" name="connectDevBttn">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -541,7 +541,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="pushButton_2">
+                <widget class="QPushButton" name="disconnectDevbttn">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -560,7 +560,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_2">
+                <widget class="QComboBox" name="transferDevBttn">
                  <property name="minimumSize">
                   <size>
                    <width>80</width>
@@ -577,7 +577,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
               </layout>
              </item>
              <item>
-              <widget class="QComboBox" name="comboBox_3">
+              <widget class="QComboBox" name="devicesComboBox">
                <property name="enabled">
                 <bool>false</bool>
                </property>
@@ -591,7 +591,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_7">
                <item>
-                <widget class="QToolButton" name="toolButton_5">
+                <widget class="QToolButton" name="clrDevSrch">
                  <property name="text">
                   <string>...</string>
                  </property>
@@ -611,21 +611,14 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit"/>
-               </item>
-               <item>
-                <widget class="QToolButton" name="toolButton_6">
-                 <property name="text">
-                  <string>...</string>
-                 </property>
-                </widget>
+                <widget class="QLineEdit" name="devSrchEdit"/>
                </item>
               </layout>
              </item>
             </layout>
            </item>
            <item>
-            <widget class="QTreeWidget" name="treeWidget_2">
+            <widget class="QTreeWidget" name="deviceTree">
              <column>
               <property name="text">
                <string>Artist/Album</string>
