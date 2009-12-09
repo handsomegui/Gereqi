@@ -128,7 +128,7 @@ class Builddb(QThread):
                 info = meta.extract(trk.encode("utf-8"))
                 if info:
                     tags = info[0:3]
-                    del tags
+                    del info
                     date = extras.date_now()
                     # prepends the fileName as the DB function expects
                     # a certain order to the args passed
