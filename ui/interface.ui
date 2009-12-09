@@ -61,7 +61,7 @@
        <property name="documentMode">
         <bool>true</bool>
        </property>
-       <widget class="QWidget" name="tab">
+       <widget class="QWidget" name="contentTab">
         <attribute name="title">
          <string>Context</string>
         </attribute>
@@ -90,7 +90,7 @@
             <enum>QTabWidget::Rounded</enum>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>2</number>
            </property>
            <property name="usesScrollButtons">
             <bool>false</bool>
@@ -104,7 +104,7 @@
            <property name="movable">
             <bool>false</bool>
            </property>
-           <widget class="QWidget" name="tab_6">
+           <widget class="QWidget" name="musicTab">
             <attribute name="title">
              <string>Music</string>
             </attribute>
@@ -237,7 +237,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="tab_8">
+           <widget class="QWidget" name="lyricsTab">
             <attribute name="title">
              <string>Lyrics</string>
             </attribute>
@@ -263,7 +263,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="tab_9">
+           <widget class="QWidget" name="wikipediaTab">
             <attribute name="title">
              <string>Wikipedia</string>
             </attribute>
@@ -295,7 +295,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_2">
+       <widget class="QWidget" name="collectionTab">
         <attribute name="title">
          <string>Collection</string>
         </attribute>
@@ -410,7 +410,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_3">
+       <widget class="QWidget" name="playlistsTab">
         <attribute name="title">
          <string>Playlists</string>
         </attribute>
@@ -510,7 +510,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_4">
+       <widget class="QWidget" name="devicesTab">
         <attribute name="title">
          <string>Media Devices</string>
         </attribute>
@@ -637,7 +637,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_5">
+       <widget class="QWidget" name="filesTab">
         <attribute name="title">
          <string>Files</string>
         </attribute>

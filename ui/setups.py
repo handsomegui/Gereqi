@@ -108,6 +108,7 @@ class Setups:
         self.fileView.setColumnHidden(1, True)
         self.fileView.setColumnHidden(2, True)
         self.fileView.setColumnHidden(3, True)
+        self.fileView.expandToDepth(0)
         self.connect(self.fileView, SIGNAL("expanded (const QModelIndex&)"), \
                                                       self.resize_fileview) 
         self.connect(self.fileView, SIGNAL("doubleClicked (const QModelIndex&)"), self.fileview_item)
