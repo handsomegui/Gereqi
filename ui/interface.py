@@ -64,6 +64,7 @@ class AudioBackend:
         self.coverView.setPixmap(QPixmap(":/Icons/music.png"))
         self.trkNowBox.setTitle(QString("No Track Playing"))
         self.art_alb["oldart"] = self.art_alb["oldalb"] = None
+        self.tray_icon.setToolTip("Stopped")
         
 #TODO: increment the playcount in DB 
     def about_to_finish(self, pipeline):
@@ -249,9 +250,9 @@ class Track:
         # FIXME: Frankly this is crap. You cannot put any '\n' in the Qstring
         # which the title will understand. It's a single line only.
         self.trkNowBox.setTitle(msg3)
-        icon = QSystemTrayIcon.NoIcon
         if MainWindow.show_messages and self.playBttn.isChecked():
-            self.tray_icon.showMessage(msg1, msg2, icon, 3000)
+            self.tray_icon.showMessage(msg1, msg2, QSystemTrayIcon.NoIcon, 3000)
+        self.tray_icon.setToolTip(msg2)
         message = "Playing: %s by %s on %s" % (title, artist, album)
         self.stat_lbl.setText(message)
         self.tracknow_colourise(row)

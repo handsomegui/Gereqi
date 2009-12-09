@@ -175,7 +175,8 @@ class Setups:
         self.connect(self.view_action, SIGNAL("toggled(bool)"), self.minimise_to_tray)  
         self.connect(quit_action, SIGNAL("triggered()"), qApp, SLOT("quit()"))
         self.connect(self.tray_icon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.tray_event)
-        self.tray_icon.show()       
+        self.tray_icon.show()
+        self.tray_icon.setToolTip("Stopped")       
         
     def setup_db_tree(self, filt=None):
         """
