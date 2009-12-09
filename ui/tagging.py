@@ -6,7 +6,7 @@ from mutagen.oggvorbis import OggVorbis, OggVorbisHeaderError
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import ID3NoHeaderError, ID3BadUnsynchData
 from mutagen.asf import ASF 
-from os import stat
+from os import stat, path
 import subprocess
 
 class Fixing:
@@ -101,8 +101,9 @@ class Tagging:
             tags = self.manip.dict_to_list(audio)
         # This is likely due to having to tags at all.
         except ID3NoHeaderError, err:
-            title = fname.split("/")[-1]
-            tags = [0, title, "Unknown Artist", "Unknown Album", 0, "Unknown"]
+            base = path.basename(fname)
+            title = path.splitext(base)[0]
+            tags = [0, title,  "Unknown Artist", "Unknown Album", 0, "Unknown"]
         except ID3BadUnsynchData, err:
             print "ERROR:", err, fname
             return
