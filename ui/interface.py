@@ -103,18 +103,19 @@ class Playlist:
         row = self.playlistTree.rowCount()
         hdr = self.header_search
         # Creates each cell for a track based on info
-        track = QTableWidgetItem(QString("%02u" % info[0]))
-        track.setFlags(track.flags() ^ Qt.ItemIsEditable)
-        title = QTableWidgetItem(QString(info[1]))
+
+        title = QTableWidgetItem(QString(info[0]))
         title.setFlags(title.flags() ^ Qt.ItemIsEditable)
-        artist = QTableWidgetItem(QString(info[2]))
+        artist = QTableWidgetItem(QString(info[1]))
         artist.setFlags(artist.flags() ^ Qt.ItemIsEditable)
-        album = QTableWidgetItem(QString(info[3]))
+        album = QTableWidgetItem(QString(info[2]))
         album.setFlags(album.flags() ^ Qt.ItemIsEditable)
-        year = QTableWidgetItem(str(info[4]))
+        year = QTableWidgetItem(str(info[3]))
         year.setFlags(year.flags() ^ Qt.ItemIsEditable)
-        genre = QTableWidgetItem(QString(info[5]))
+        genre = QTableWidgetItem(QString(info[4]))
         genre.setFlags(genre.flags() ^ Qt.ItemIsEditable)
+        track = QTableWidgetItem(QString("%02u" % info[5]))
+        track.setFlags(track.flags() ^ Qt.ItemIsEditable)
         length = QTableWidgetItem(QString(info[6]))
         bitrate = QTableWidgetItem(QString(str(info[7])))
         file = QTableWidgetItem(QString(file_name))
@@ -464,7 +465,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         Really needs to be done in a separate thread as scan could
         take a while.
         """
-        print "Rebuild: Ensure the db is ON CONFLICT REPLACE"
+        print("Rebuild: Ensure the db is ON CONFLICT REPLACE")
         self.create_collection()
     
     def on_actionQuit_triggered(self):
@@ -525,7 +526,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         """
         # Resets before searching again
         now = self.current_row()
-        print now
+        print(now)
         if now:
             self.tracknow_colourise(now)
         test = len(str(p0).strip())
@@ -569,7 +570,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         Updates collection for new files. Ignore files already in database
         """
         # TODO: not completed yet. See self.create_collection
-        print "Rebuild: Ensure the db is ON CONFLICT IGNORE"
+        print("Rebuild: Ensure the db is ON CONFLICT IGNORE")
         self.create_collection()
 
 #FIXME: this causes a double-trigger of playbin.play() on app's
@@ -651,7 +652,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         filt = str(filt)
         self.setup_db_tree(filt)
         now = self.extras.date_now()
-        print "Filter collectionTree WRT time.", now
+        print("Filter collectionTree WRT time.", now)
         
     def on_actionAbout_Gereqi_triggered(self):
         """
@@ -679,7 +680,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         # ugly doesn't terminate cleanly
         # causes poor performance and errors on a rescan
         # locks up database
-        print self.build_db_thread.stop_now() 
+        print(self.build_db_thread.stop_now() )
 
 # This is needed as the higlighted row can be different
 # than the currentRow method of Qtableview.

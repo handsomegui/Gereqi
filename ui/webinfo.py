@@ -38,7 +38,7 @@ class Webinfo:
             req = Request(url, None, headers)
             response = urlopen(req, None, 30)
         except URLError, err:
-            print err
+            print(err)
             response = None
         return response
 

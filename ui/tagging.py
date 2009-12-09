@@ -48,7 +48,7 @@ class Manipulations:
         a list. Catches missing values and inserts suitable
         None-values
         """
-        headers = ["tracknumber", "title", "artist", "album", "date", "genre"]
+        headers = ["title", "artist", "album", "date", "genre", "tracknumber" ]
         values = []
         for hdr in headers:
             try:
@@ -105,14 +105,14 @@ class Tagging:
         except ID3NoHeaderError, err:
             base = path.basename(fname)
             title = path.splitext(base)[0]
-            tags = [0, title,  "Unknown Artist", "Unknown Album", 0, "Unknown"]
+            tags = [title,  "Unknown Artist", "Unknown Album", 0, "Unknown", 0]
         except ID3BadUnsynchData, err:
-            print "ERROR:", err, fname
+            print("ERROR:", err, fname)
             return
         try:
             other = MP3(fname)
         except HeaderNotFoundError, err: 
-            print "ERROR:", err, fname
+            print("ERROR:", err, fname)
             return
         length = self.manip.sec_to_time(round(other.info.length))
         bitrate = int(round(other.info.bitrate / 1024))
@@ -133,7 +133,7 @@ class Tagging:
                 audio = FLAC(fname)
                 bitrate = self.manip.manual_bitrate(fname, audio)
             except FLACNoHeaderError, err:
-                print "ERROR:", err, fname
+                print("ERROR:", err, fname)
                 return
             except  FLACVorbisError, err:
                 if "> 1 Vorbis comment block found" in err:
@@ -142,7 +142,7 @@ class Tagging:
                     audio = FLAC(fname)
                     bitrate = self.manip.manual_bitrate(fname, audio)
                 else:
-                    print "ERROR:", err, fname
+                    print("ERROR:", err, fname)
                     return
         elif mode == "ogg":
             try:
@@ -150,7 +150,7 @@ class Tagging:
                 # Damn kibibyte usage by Mutagen
                 bitrate = audio.info.bitrate / 1000 
             except OggVorbisHeaderError, err:
-                print "ERROR:", err, fname
+                print("ERROR:", err, fname)
                 return
         length = self.manip.sec_to_time(round(audio.info.length))
         tags = self.manip.dict_to_list(audio)

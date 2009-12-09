@@ -89,7 +89,8 @@ class Builddb(QThread):
                 try:
                     file_now = now.decode("utf-8")
                 except UnicodeDecodeError:
-                    print "WARNING!: Funny encoding for filename. Ignoring", repr(now)
+                    #TODO: filename fixer
+                    print("WARNING!: Funny encoding for filename. Ignoring", repr(now))
                     continue
                 ender = os.path.splitext(now)[-1]
                 ender = ender.lower()
@@ -124,9 +125,10 @@ class Builddb(QThread):
                     old_prog = prog
                     self.emit(SIGNAL("progress ( int )"), prog)
                 
-                tags = meta.extract(trk.encode("utf-8"))
-                if tags:
-                    tags = tags[0:4]
+                info = meta.extract(trk.encode("utf-8"))
+                if info:
+                    tags = info[0:3]
+                    del tags
                     date = extras.date_now()
                     # prepends the fileName as the DB function expects
                     # a certain order to the args passed

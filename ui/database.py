@@ -18,7 +18,7 @@ class Media:
         db_loc = "%sgereqi.db" % app_dir
         
         if not os.path.exists(app_dir):
-            print "Need to make a folder."
+            print("Need to make a folder.")
             os.mkdir(app_dir)
         self.media_db = sqlite.connect(db_loc)
         self.media_curs = self.media_db.cursor()        
@@ -28,7 +28,6 @@ class Media:
         # Only the media table is actually used right now
         tables = ['''CREATE TABLE IF NOT EXISTS media (
                 file_name    TEXT ,
-                track    UNSIGNED TINYINT(2),
                 title   VARCHAR(50),
                 artist  VARCHAR(50),
                 album   VARCHAR(50),
@@ -77,7 +76,7 @@ class Media:
         """
         Here we add data into the media database
         """
-        query = "INSERT INTO media VALUES (?,?,?,?,?,?)"
+        query = "INSERT INTO media VALUES (?,?,?,?,?)"
         self.__query_execute(query, meta)
         
     def get_artists(self):

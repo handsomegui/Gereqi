@@ -125,6 +125,7 @@ class Setups:
                 
         else:
             fname = self.dir_model.filePath(index)
+            print(fname)
         
     def __create_actions(self):
         #TODO: get rid of this. Put actions and connects in own function
