@@ -295,6 +295,9 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         self.connect(self.html_thread, SIGNAL("got-wiki ( QString ) "), self.__set_wiki)
         self.connect(self.build_db_thread, SIGNAL("progress ( int ) "), self.stat_prog, SLOT("setValue(int)"))
         
+        self.parentTabs.setTabEnabled(2, False)
+        self.parentTabs.setTabEnabled(3, False)
+        
     def on_srchCollectEdt_textChanged(self, p0):
         """
         This allows the filtering of the collection tree

@@ -6,7 +6,6 @@ QKeySequence, QLabel, QProgressBar, QToolButton, QIcon, QPixmap, \
 QAction, QSystemTrayIcon, qApp, QDirModel
 from PyQt4.QtCore import QStringList, QString, SIGNAL, QSize, SLOT, \
 QDir
-from extraneous import Extraneous
 
 
 class Setups:
@@ -19,14 +18,15 @@ class Setups:
         
     def init_setups(self):
         self.setup_db_tree()
-        self.setup_shortcuts()
-        self.setup_extra()        
-        self.create_actions()        
-        self.playlist_add_menu()
-        self.create_tray_menu()
-        self.setup_fileview()
+        self.__setup_shortcuts()
+        self.__setup_extra()        
+        self.__create_actions()        
+        self.__playlist_add_menu()
+        self.__create_tray_menu()
+        self.__setup_fileview()
+        self.__disable_tabs()
     
-    def playlist_add_menu(self):
+    def __playlist_add_menu(self):
         """
         In the 'playlist' tab a menu is required for
         the 'add' button
@@ -50,19 +50,17 @@ class Setups:
         self.addPlylstBttn.setMenu(menu)
         #TODO: add functions for actions
     
-    def setup_shortcuts(self):
+    def __setup_shortcuts(self):
         """
         Keyboard shortcuts setup
         """
         delete = QShortcut(QKeySequence(self.tr("Del")), self)
         self.connect(delete, SIGNAL("activated()"), self.del_track) 
         
-    def setup_extra(self):
+    def __setup_extra(self):
         """
         Extra __init__ things to add to the UI
-        """
-        self.contentTabs.setTabEnabled(1, False)
-        self.contentTabs.setTabEnabled(2, False)
+        """        
         self.progSldr.setPageStep(0)
         self.progSldr.setSingleStep(0)
         self.stat_lbl = QLabel("Finished")
@@ -92,7 +90,7 @@ class Setups:
             self.playlistTree.insertColumn(val)
         self.playlistTree.setHorizontalHeaderLabels(headers)
         
-    def setup_fileview(self):
+    def __setup_fileview(self):
         """
         A fileView browser where tracks can be (eventually)
         added to the playlist
@@ -110,23 +108,25 @@ class Setups:
         self.fileView.setColumnHidden(3, True)
         self.fileView.expandToDepth(0)
         self.connect(self.fileView, SIGNAL("expanded (const QModelIndex&)"), \
-                                                      self.resize_fileview) 
-        self.connect(self.fileView, SIGNAL("doubleClicked (const QModelIndex&)"), self.fileview_item)
+                                                      self.__resize_fileview) 
+        self.connect(self.fileView, SIGNAL("doubleClicked (const QModelIndex&)"), self.__fileview_item)
         
-    def resize_fileview(self):
+    def __resize_fileview(self):
         """
         Resizes the fileView to it's contents.
         Because of the '0' this seperate method is needed
         """
         self.fileView.resizeColumnToContents(0)
         
-    def fileview_item(self, index):
+    def __fileview_item(self, index):
         if not self.dir_model.isDir(index):
-            extra = Extraneous()
             fname = self.dir_model.filePath(index)
-            self.add2playlist(extra.qstr2uni(fname))
+            self.add2playlist(self.extras.qstr2uni(fname))
+                
+        else:
+            fname = self.dir_model.filePath(index)
         
-    def create_actions(self):
+    def __create_actions(self):
         #TODO: get rid of this. Put actions and connects in own function
         # to reduce the number of unneeded pointers
         
@@ -139,7 +139,7 @@ class Setups:
         self.connect(self.play_type_bttn, SIGNAL('toggled ( bool )'), self.__play_type)
         self.connect(self.stat_bttn, SIGNAL("pressed()"), self.quit_build)
         
-    def create_tray_menu(self):
+    def __create_tray_menu(self):
         """
         The tray menu contains shortcuts to features
         in the main UI
@@ -217,3 +217,9 @@ class Setups:
             self.play_type_bttn.setText("R")
         else:
             self.play_type_bttn.setText("N")
+
+    def __disable_tabs(self):
+        self.contentTabs.setTabEnabled(1, False)
+        self.contentTabs.setTabEnabled(2, False)
+        self.parentTabs.setTabEnabled(2, False)
+        self.parentTabs.setTabEnabled(3, False)
