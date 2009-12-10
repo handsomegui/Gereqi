@@ -347,6 +347,9 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
              <property name="maxCount">
               <number>6</number>
              </property>
+             <property name="insertPolicy">
+              <enum>QComboBox::NoInsert</enum>
+             </property>
              <property name="frame">
               <bool>true</bool>
              </property>
@@ -782,6 +785,9 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
             <property name="text">
              <string>Search:</string>
             </property>
+            <property name="buddy">
+             <cstring>srchplyEdit</cstring>
+            </property>
            </widget>
           </item>
           <item>
@@ -873,7 +879,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
                <string>Previous Track</string>
               </property>
               <property name="text">
-               <string>&lt;&lt;</string>
+               <string/>
               </property>
               <property name="icon">
                <iconset resource="resource.qrc">
@@ -896,7 +902,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
                <string>Play/Pause</string>
               </property>
               <property name="text">
-               <string>&gt;</string>
+               <string/>
               </property>
               <property name="icon">
                <iconset resource="resource.qrc">
@@ -925,7 +931,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
                <string>Stop</string>
               </property>
               <property name="text">
-               <string>O</string>
+               <string/>
               </property>
               <property name="icon">
                <iconset resource="resource.qrc">
@@ -948,7 +954,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
                <string>Next Track</string>
               </property>
               <property name="text">
-               <string>&gt;&gt;</string>
+               <string/>
               </property>
               <property name="icon">
                <iconset resource="resource.qrc">
@@ -981,7 +987,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
             <item>
              <widget class="QToolButton" name="muteBttn">
               <property name="text">
-               <string>M</string>
+               <string/>
               </property>
               <property name="icon">
                <iconset resource="resource.qrc">
@@ -1369,8 +1375,61 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
    <header>QtWebKit/QWebView</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>srchCollectEdt</tabstop>
+  <tabstop>srchplyEdit</tabstop>
+  <tabstop>playlstTree</tabstop>
+  <tabstop>collectTree</tabstop>
+  <tabstop>lyrcBrowser</tabstop>
+  <tabstop>clrCollectBttn</tabstop>
+  <tabstop>parentTabs</tabstop>
+  <tabstop>collectTimeBox</tabstop>
+  <tabstop>wikiView</tabstop>
+  <tabstop>addPlylstBttn</tabstop>
+  <tabstop>rnmPlylstBtnn</tabstop>
+  <tabstop>delPlylstBttn</tabstop>
+  <tabstop>connectDevBttn</tabstop>
+  <tabstop>disconnectDevbttn</tabstop>
+  <tabstop>transferDevBttn</tabstop>
+  <tabstop>devicesComboBox</tabstop>
+  <tabstop>clrDevSrch</tabstop>
+  <tabstop>devSrchEdit</tabstop>
+  <tabstop>deviceTree</tabstop>
+  <tabstop>fileView</tabstop>
+  <tabstop>clrplyBttn</tabstop>
+  <tabstop>svplyBttn</tabstop>
+  <tabstop>prvplyBttn</tabstop>
+  <tabstop>nxtplyBttn</tabstop>
+  <tabstop>clrsrchBttn</tabstop>
+  <tabstop>contentTabs</tabstop>
+  <tabstop>playlistTree</tabstop>
+  <tabstop>prevBttn</tabstop>
+  <tabstop>playBttn</tabstop>
+  <tabstop>stopBttn</tabstop>
+  <tabstop>nxtBttn</tabstop>
+  <tabstop>muteBttn</tabstop>
+  <tabstop>volSldr</tabstop>
+  <tabstop>progSldr</tabstop>
+ </tabstops>
  <resources>
   <include location="resource.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>volSldr</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>volLbl</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>702</x>
+     <y>459</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>775</x>
+     <y>452</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

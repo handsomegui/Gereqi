@@ -299,7 +299,8 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         self.connect(self.html_thread, SIGNAL("got-wiki ( QString ) "), self.__set_wiki)
         self.connect(self.build_db_thread, SIGNAL("progress ( int ) "), self.stat_prog, SLOT("setValue(int)"))
         
-
+        #Make the collection search line-edit have the keyboard focus on startup.
+        self.srchCollectEdt.setFocus()
         
     def on_srchCollectEdt_textChanged(self, p0):
         """
@@ -443,7 +444,6 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         """
         Self explanatory
         """        
-        self.volLbl.setText("%s" % value)
         value = (value / 100.0) ** 2
         self.audio_object.set_volume(value)
     

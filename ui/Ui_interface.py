@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/ui/interface.ui'
 #
-# Created: Wed Dec  9 11:42:57 2009
+# Created: Thu Dec 10 14:02:23 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -167,6 +167,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.collectTimeBox = QtGui.QComboBox(self.collectionTab)
         self.collectTimeBox.setMaxVisibleItems(6)
         self.collectTimeBox.setMaxCount(6)
+        self.collectTimeBox.setInsertPolicy(QtGui.QComboBox.NoInsert)
         self.collectTimeBox.setFrame(True)
         self.collectTimeBox.setObjectName("collectTimeBox")
         self.collectTimeBox.addItem(QtCore.QString())
@@ -590,11 +591,46 @@ font: 75 10pt \"DejaVu Sans\";
         self.menuBar.addAction(self.menuTools.menuAction())
         self.menuBar.addAction(self.menuSettings.menuAction())
         self.menuBar.addAction(self.menuHelp.menuAction())
+        self.label.setBuddy(self.srchplyEdit)
 
         self.retranslateUi(MainWindow)
         self.parentTabs.setCurrentIndex(1)
         self.contentTabs.setCurrentIndex(0)
+        QtCore.QObject.connect(self.volSldr, QtCore.SIGNAL("valueChanged(int)"), self.volLbl.setNum)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        MainWindow.setTabOrder(self.srchCollectEdt, self.srchplyEdit)
+        MainWindow.setTabOrder(self.srchplyEdit, self.playlstTree)
+        MainWindow.setTabOrder(self.playlstTree, self.collectTree)
+        MainWindow.setTabOrder(self.collectTree, self.lyrcBrowser)
+        MainWindow.setTabOrder(self.lyrcBrowser, self.clrCollectBttn)
+        MainWindow.setTabOrder(self.clrCollectBttn, self.parentTabs)
+        MainWindow.setTabOrder(self.parentTabs, self.collectTimeBox)
+        MainWindow.setTabOrder(self.collectTimeBox, self.wikiView)
+        MainWindow.setTabOrder(self.wikiView, self.addPlylstBttn)
+        MainWindow.setTabOrder(self.addPlylstBttn, self.rnmPlylstBtnn)
+        MainWindow.setTabOrder(self.rnmPlylstBtnn, self.delPlylstBttn)
+        MainWindow.setTabOrder(self.delPlylstBttn, self.connectDevBttn)
+        MainWindow.setTabOrder(self.connectDevBttn, self.disconnectDevbttn)
+        MainWindow.setTabOrder(self.disconnectDevbttn, self.transferDevBttn)
+        MainWindow.setTabOrder(self.transferDevBttn, self.devicesComboBox)
+        MainWindow.setTabOrder(self.devicesComboBox, self.clrDevSrch)
+        MainWindow.setTabOrder(self.clrDevSrch, self.devSrchEdit)
+        MainWindow.setTabOrder(self.devSrchEdit, self.deviceTree)
+        MainWindow.setTabOrder(self.deviceTree, self.fileView)
+        MainWindow.setTabOrder(self.fileView, self.clrplyBttn)
+        MainWindow.setTabOrder(self.clrplyBttn, self.svplyBttn)
+        MainWindow.setTabOrder(self.svplyBttn, self.prvplyBttn)
+        MainWindow.setTabOrder(self.prvplyBttn, self.nxtplyBttn)
+        MainWindow.setTabOrder(self.nxtplyBttn, self.clrsrchBttn)
+        MainWindow.setTabOrder(self.clrsrchBttn, self.contentTabs)
+        MainWindow.setTabOrder(self.contentTabs, self.playlistTree)
+        MainWindow.setTabOrder(self.playlistTree, self.prevBttn)
+        MainWindow.setTabOrder(self.prevBttn, self.playBttn)
+        MainWindow.setTabOrder(self.playBttn, self.stopBttn)
+        MainWindow.setTabOrder(self.stopBttn, self.nxtBttn)
+        MainWindow.setTabOrder(self.nxtBttn, self.muteBttn)
+        MainWindow.setTabOrder(self.muteBttn, self.volSldr)
+        MainWindow.setTabOrder(self.volSldr, self.progSldr)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Gereqi", None, QtGui.QApplication.UnicodeUTF8))
@@ -647,14 +683,9 @@ font: 75 10pt \"DejaVu Sans\";
         self.srchplyEdit.setToolTip(QtGui.QApplication.translate("MainWindow", "Playlist Search", None, QtGui.QApplication.UnicodeUTF8))
         self.playlistTree.setSortingEnabled(True)
         self.prevBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Previous Track", None, QtGui.QApplication.UnicodeUTF8))
-        self.prevBttn.setText(QtGui.QApplication.translate("MainWindow", "<<", None, QtGui.QApplication.UnicodeUTF8))
         self.playBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Play/Pause", None, QtGui.QApplication.UnicodeUTF8))
-        self.playBttn.setText(QtGui.QApplication.translate("MainWindow", ">", None, QtGui.QApplication.UnicodeUTF8))
         self.stopBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Stop", None, QtGui.QApplication.UnicodeUTF8))
-        self.stopBttn.setText(QtGui.QApplication.translate("MainWindow", "O", None, QtGui.QApplication.UnicodeUTF8))
         self.nxtBttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Next Track", None, QtGui.QApplication.UnicodeUTF8))
-        self.nxtBttn.setText(QtGui.QApplication.translate("MainWindow", ">>", None, QtGui.QApplication.UnicodeUTF8))
-        self.muteBttn.setText(QtGui.QApplication.translate("MainWindow", "M", None, QtGui.QApplication.UnicodeUTF8))
         self.volSldr.setToolTip(QtGui.QApplication.translate("MainWindow", "Volume Control", None, QtGui.QApplication.UnicodeUTF8))
         self.volLbl.setText(QtGui.QApplication.translate("MainWindow", "100", None, QtGui.QApplication.UnicodeUTF8))
         self.progLbl.setText(QtGui.QApplication.translate("MainWindow", "00:00 | 00:00", None, QtGui.QApplication.UnicodeUTF8))
