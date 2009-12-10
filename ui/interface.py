@@ -271,7 +271,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
     art_alb = {"oldart":None, "oldalb":None, "nowart":None, "nowalb":None} 
     old_pos = 0
     locale = ".com"
-    audio_formats = ["flac","mp3","ogg"]
+    audio_formats = ["flac","mp3","ogg", "m4a"]
     
     def __init__(self, parent = None):
         """
@@ -483,7 +483,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
                         self.trUtf8("Select Music Files"),
                         QDesktopServices.storageLocation(QDesktopServices.MusicLocation), 
                         #TODO: do not hard-code this
-                        self.trUtf8("*.flac *.mp3 *.ogg"), 
+                        self.trUtf8("*.flac *.mp3 *.ogg *.m4a"), 
                         None)       
                         
         if mfiles:

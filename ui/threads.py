@@ -80,7 +80,8 @@ class Builddb(QThread):
         self.a_formats = formats
      
     def __track_list(self):
-        formats = [".ogg", ".mp3", ".flac"]
+        #FIXME: don't hard code
+        formats = [".ogg", ".mp3", ".flac", ".m4a"]
         tracks = []
         # No point trying to speed this up. os.walk is a generator function
         for root, dirname, filenames in os.walk(str(self.media_dir)):

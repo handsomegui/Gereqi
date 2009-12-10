@@ -100,7 +100,7 @@ class Setups:
         self.dir_model.setFilter(filters)
         self.dir_model.setReadOnly(True)
         #FIXME: do not hard code file formats
-        self.dir_model.setNameFilters(["*.ogg","*.flac","*.mp3"])
+        self.dir_model.setNameFilters(["*.ogg","*.flac","*.mp3", "*.m4a"])
         self.fileView.setModel(self.dir_model)
         self.fileView.setColumnHidden(1, True)
         self.fileView.setColumnHidden(2, True)
@@ -128,7 +128,7 @@ class Setups:
             searcher.setFilter(QDir.Files)
             searcher.setFilter(QDir.Files)
             # FIXME: do not hard code formats
-            searcher.setNameFilters(["*.ogg","*.flac","*.mp3"])
+            searcher.setNameFilters(["*.ogg","*.flac","*.mp3", "*.m4a"])
             for item in searcher.entryInfoList():
                 fname = item.absoluteFilePath()
                 self.add2playlist(self.extras.qstr2uni(fname))

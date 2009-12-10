@@ -98,6 +98,8 @@ class Gstbe(QObject):
             self.pipe_line.set_property("uri", fnow)  
             self.pipe_line.set_state(gst.STATE_READY)
             self.pipe_source = fname
+        else:
+            print("ERROR: Gstreamer cannot play %s" % fname)
             
     def play(self):
         """

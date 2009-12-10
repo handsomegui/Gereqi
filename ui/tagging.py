@@ -6,6 +6,7 @@ from mutagen.oggvorbis import OggVorbis, OggVorbisHeaderError
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import ID3NoHeaderError, ID3BadUnsynchData
 from mutagen.asf import ASF 
+from mutagen.mp4 import MP4
 from os import stat, path
 import subprocess
 from extraneous import Extraneous
@@ -42,17 +43,20 @@ class Manipulations:
             now = track
         return int(now)
         
-    def dict_to_list(self, item):
+    def dict_to_list(self, item, mp4=False):
         """
         Takes the mutagen dictionary and converts into
         a list. Catches missing values and inserts suitable
         None-values
         """
-        headers = ["title", "artist", "album", "date", "genre", "tracknumber" ]
+        if mp4:
+            headers = ["\xa9nam", "\xa9ART", "\xa9alb", "\xa9day", "\xa9gen", "trkn"]
+        else:
+            headers = ["title", "artist", "album", "date", "genre", "tracknumber" ]
         values = []
         for hdr in headers:
             try:
-                if hdr == "tracknumber":
+                if hdr in ["tracknumber", "trkn"]:
                     val = self.treat_tracknum(item[hdr][0])
                 else:
                     val = item[hdr][0]
@@ -60,7 +64,7 @@ class Manipulations:
             except:
                 val = None
             if not val:
-                if (hdr == "tracknumber") or (hdr == "date"):
+                if hdr in ["tracknumber", "date", "trkn",  "\xa9day"]:
                     val = 0
                 else:
                     val = "Unknown"
@@ -158,6 +162,18 @@ class Tagging:
         tags.append(bitrate)
         return tags
         
+    def __m4a_extract(self, fname):
+        try:
+            audio = MP4(fname)
+        except :
+            print("ERROR: %s" % fname)
+            return
+        tags = self.manip.dict_to_list(audio, True)
+        bitrate = audio.info.bitrate / 1000
+        length = self.manip.sec_to_time(round(audio.info.length))
+        tags.append(length)
+        tags.append(bitrate)
+        return tags
         
     def extract(self, fname, mode="playlist"):
         """
@@ -175,5 +191,7 @@ class Tagging:
                 tags = self.__mp3_extract(fname)
             elif ext == "ogg":
                 tags = self.__oggflac_extract(fname, ext)
+            elif ext == "m4a":
+                tags = self.__m4a_extract(fname)
                 
             return tags
