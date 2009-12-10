@@ -39,8 +39,11 @@ class Manipulations:
         """
         if "/" in track:
             now = track.split("/")[0]
+        elif isinstance(track, tuple):
+            now = track[0]
         else:
             now = track
+        
         return int(now)
         
     def dict_to_list(self, item, mp4=False):
