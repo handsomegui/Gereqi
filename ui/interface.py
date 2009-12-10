@@ -4,8 +4,8 @@
 from PyQt4.QtGui import QMainWindow, QFileDialog,   \
 QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
 QIcon, QTreeWidgetItem, QPixmap, QMessageBox, QColor
-from PyQt4.QtCore import QString, Qt, QTime, \
-QStringList, SIGNAL, SLOT, QFile
+from PyQt4.QtCore import QString, Qt, QTime, SIGNAL, \
+SLOT, QFile
 from random import randrange
 
 from settings import Setting_Dialog
@@ -623,17 +623,13 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
             album = self.extras.qstr2uni(album)
             tracks = self.media_db.get_titles(artist, album)
             for cnt in range(len(tracks)):
-                track = tracks[cnt][0]
-                track = QStringList(track)                
-                track = QTreeWidgetItem(track)
+                track = QTreeWidgetItem([ tracks[cnt][0] ] )
                 item.insertChild(cnt, track)
         elif item.childCount() == 0: 
             # Adding albums to the artist
             albums = self.media_db.get_albums(artist)
-            for cnt in range(len(albums)):
-                album = albums[cnt][0]
-                album = QStringList(album)                
-                album = QTreeWidgetItem(album)
+            for cnt in range(len(albums)):      
+                album = QTreeWidgetItem([ albums[cnt][0] ])
                 album.setChildIndicatorPolicy(0)
                 item.insertChild(cnt, album)
 

@@ -4,8 +4,7 @@
 from PyQt4.QtGui import QFont, QMenu, QTreeWidgetItem, QShortcut, \
 QKeySequence, QLabel, QProgressBar, QToolButton, QIcon, QPixmap, \
 QAction, QSystemTrayIcon, qApp, QDirModel
-from PyQt4.QtCore import QStringList, QString, SIGNAL, QSize, SLOT, \
-QDir
+from PyQt4.QtCore import QString, SIGNAL, QSize, SLOT, QDir
 
 
 class Setups:
@@ -97,11 +96,11 @@ class Setups:
         """
             
         self.dir_model = QDirModel()
-        filters = QDir.Files | QDir.Dirs | QDir.Readable | QDir.NoDotAndDotDot
+        filters = QDir.Files | QDir.AllDirs | QDir.Readable | QDir.NoDotAndDotDot
         self.dir_model.setFilter(filters)
         self.dir_model.setReadOnly(True)
-        # This bloody thing filters directory names as well.
-#        self.dir_model.setNameFilters(format_filters)
+        #FIXME: do not hard code file formats
+        self.dir_model.setNameFilters(["*.ogg","*.flac","*.mp3"])
         self.fileView.setModel(self.dir_model)
         self.fileView.setColumnHidden(1, True)
         self.fileView.setColumnHidden(2, True)
@@ -119,13 +118,23 @@ class Setups:
         self.fileView.resizeColumnToContents(0)
         
     def __fileview_item(self, index):
-        if not self.dir_model.isDir(index):
+        """
+        This takes the fileview item and deduces whether
+        it's a file or directory and populates playlist if possible
+        """
+        if self.dir_model.isDir(index):
             fname = self.dir_model.filePath(index)
-            self.add2playlist(self.extras.qstr2uni(fname))
-                
+            searcher = QDir(fname)
+            searcher.setFilter(QDir.Files)
+            searcher.setFilter(QDir.Files)
+            # FIXME: do not hard code formats
+            searcher.setNameFilters(["*.ogg","*.flac","*.mp3"])
+            for item in searcher.entryInfoList():
+                fname = item.absoluteFilePath()
+                self.add2playlist(self.extras.qstr2uni(fname))
         else:
             fname = self.dir_model.filePath(index)
-            print(fname)
+            self.add2playlist(self.extras.qstr2uni(fname))
         
     def __create_actions(self):
         #TODO: get rid of this. Put actions and connects in own function
@@ -202,14 +211,10 @@ class Setups:
             char = artist[0]   
             if char != old_char:
                 old_char = char  
-                char = "== %s ==" % char
-                char = QStringList(char)
-                char = QTreeWidgetItem(char)
+                char = QTreeWidgetItem(["== %s ==" % char])
                 char.setFont(0, font)
                 self.collectTree.addTopLevelItem(char)
-            artist = QString(artist)
-            artist = QStringList(artist)
-            artist = QTreeWidgetItem(artist)
+            artist = QTreeWidgetItem([QString(artist)])
             artist.setChildIndicatorPolicy(0)
             self.collectTree.addTopLevelItem(artist)
             
