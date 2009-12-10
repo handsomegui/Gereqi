@@ -1375,42 +1375,6 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
    <header>QtWebKit/QWebView</header>
   </customwidget>
  </customwidgets>
- <tabstops>
-  <tabstop>srchCollectEdt</tabstop>
-  <tabstop>srchplyEdit</tabstop>
-  <tabstop>playlstTree</tabstop>
-  <tabstop>collectTree</tabstop>
-  <tabstop>lyrcBrowser</tabstop>
-  <tabstop>clrCollectBttn</tabstop>
-  <tabstop>parentTabs</tabstop>
-  <tabstop>collectTimeBox</tabstop>
-  <tabstop>wikiView</tabstop>
-  <tabstop>addPlylstBttn</tabstop>
-  <tabstop>rnmPlylstBtnn</tabstop>
-  <tabstop>delPlylstBttn</tabstop>
-  <tabstop>connectDevBttn</tabstop>
-  <tabstop>disconnectDevbttn</tabstop>
-  <tabstop>transferDevBttn</tabstop>
-  <tabstop>devicesComboBox</tabstop>
-  <tabstop>clrDevSrch</tabstop>
-  <tabstop>devSrchEdit</tabstop>
-  <tabstop>deviceTree</tabstop>
-  <tabstop>fileView</tabstop>
-  <tabstop>clrplyBttn</tabstop>
-  <tabstop>svplyBttn</tabstop>
-  <tabstop>prvplyBttn</tabstop>
-  <tabstop>nxtplyBttn</tabstop>
-  <tabstop>clrsrchBttn</tabstop>
-  <tabstop>contentTabs</tabstop>
-  <tabstop>playlistTree</tabstop>
-  <tabstop>prevBttn</tabstop>
-  <tabstop>playBttn</tabstop>
-  <tabstop>stopBttn</tabstop>
-  <tabstop>nxtBttn</tabstop>
-  <tabstop>muteBttn</tabstop>
-  <tabstop>volSldr</tabstop>
-  <tabstop>progSldr</tabstop>
- </tabstops>
  <resources>
   <include location="resource.qrc"/>
  </resources>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/ui/interface.ui'
 #
-# Created: Thu Dec 10 14:02:23 2009
+# Created: Thu Dec 10 15:05:27 2009
 #      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -598,39 +598,6 @@ font: 75 10pt \"DejaVu Sans\";
         self.contentTabs.setCurrentIndex(0)
         QtCore.QObject.connect(self.volSldr, QtCore.SIGNAL("valueChanged(int)"), self.volLbl.setNum)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        MainWindow.setTabOrder(self.srchCollectEdt, self.srchplyEdit)
-        MainWindow.setTabOrder(self.srchplyEdit, self.playlstTree)
-        MainWindow.setTabOrder(self.playlstTree, self.collectTree)
-        MainWindow.setTabOrder(self.collectTree, self.lyrcBrowser)
-        MainWindow.setTabOrder(self.lyrcBrowser, self.clrCollectBttn)
-        MainWindow.setTabOrder(self.clrCollectBttn, self.parentTabs)
-        MainWindow.setTabOrder(self.parentTabs, self.collectTimeBox)
-        MainWindow.setTabOrder(self.collectTimeBox, self.wikiView)
-        MainWindow.setTabOrder(self.wikiView, self.addPlylstBttn)
-        MainWindow.setTabOrder(self.addPlylstBttn, self.rnmPlylstBtnn)
-        MainWindow.setTabOrder(self.rnmPlylstBtnn, self.delPlylstBttn)
-        MainWindow.setTabOrder(self.delPlylstBttn, self.connectDevBttn)
-        MainWindow.setTabOrder(self.connectDevBttn, self.disconnectDevbttn)
-        MainWindow.setTabOrder(self.disconnectDevbttn, self.transferDevBttn)
-        MainWindow.setTabOrder(self.transferDevBttn, self.devicesComboBox)
-        MainWindow.setTabOrder(self.devicesComboBox, self.clrDevSrch)
-        MainWindow.setTabOrder(self.clrDevSrch, self.devSrchEdit)
-        MainWindow.setTabOrder(self.devSrchEdit, self.deviceTree)
-        MainWindow.setTabOrder(self.deviceTree, self.fileView)
-        MainWindow.setTabOrder(self.fileView, self.clrplyBttn)
-        MainWindow.setTabOrder(self.clrplyBttn, self.svplyBttn)
-        MainWindow.setTabOrder(self.svplyBttn, self.prvplyBttn)
-        MainWindow.setTabOrder(self.prvplyBttn, self.nxtplyBttn)
-        MainWindow.setTabOrder(self.nxtplyBttn, self.clrsrchBttn)
-        MainWindow.setTabOrder(self.clrsrchBttn, self.contentTabs)
-        MainWindow.setTabOrder(self.contentTabs, self.playlistTree)
-        MainWindow.setTabOrder(self.playlistTree, self.prevBttn)
-        MainWindow.setTabOrder(self.prevBttn, self.playBttn)
-        MainWindow.setTabOrder(self.playBttn, self.stopBttn)
-        MainWindow.setTabOrder(self.stopBttn, self.nxtBttn)
-        MainWindow.setTabOrder(self.nxtBttn, self.muteBttn)
-        MainWindow.setTabOrder(self.muteBttn, self.volSldr)
-        MainWindow.setTabOrder(self.volSldr, self.progSldr)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Gereqi", None, QtGui.QApplication.UnicodeUTF8))

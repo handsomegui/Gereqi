@@ -175,4 +175,6 @@ class Gstbe(QObject):
         
     def is_playing(self):
         return self.state() == gst.STATE_PLAYING
-            
+        
+    def is_paused(self):
+        return self.state() == gst.STATE_PAUSED

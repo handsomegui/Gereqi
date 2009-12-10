@@ -247,17 +247,14 @@ class Track:
         min, sec = self.playlistTree.item(row, 6).text().split(":")
         self.play_time = 1000 * ((int(min) * 60) + int(sec))
         
-        msg1 = QString("Now Playing")
-        msg2 = QString("%s by %s" % (title, artist))
-        msg3 = QString("%s - %s\n%s" % (title, artist, album))
-        # FIXME: Frankly this is crap. You cannot put any '\n' in the Qstring
-        # which the title will understand. It's a single line only.
-        self.trkNowBox.setTitle(msg3)
+        msg_header = QString("Now Playing")
+        msg_main = QString("%s by %s" % (title, artist))
+        self.trkNowBox.setTitle(msg_main)
         if MainWindow.show_messages and self.playBttn.isChecked():
-            self.tray_icon.showMessage(msg1, msg2, QSystemTrayIcon.NoIcon, 3000)
-        self.tray_icon.setToolTip(msg2)
-        message = "Playing: %s by %s on %s" % (title, artist, album)
-        self.stat_lbl.setText(message)
+            self.tray_icon.showMessage(msg_header, msg_main, QSystemTrayIcon.NoIcon, 3000)
+        self.tray_icon.setToolTip(msg_main)
+        self.msg_status = "Playing: %s by %s on %s" % (title, artist, album)
+        self.stat_lbl.setText(self.msg_status)
         self.tracknow_colourise(row)
         MainWindow.art_alb["nowart"] = artist.toUtf8()
         MainWindow.art_alb["nowalb"] = album.toUtf8()
@@ -370,7 +367,6 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         #TODO: messy. Clean up.
         if checked:
             queued = self.audio_object.current_source()
-            #FIXME: try and invert the result for less confusing varName
             stopped = self.stopBttn.isEnabled() is False
             highlighted = self.highlighted_track()
             if highlighted:      
@@ -390,6 +386,10 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
                     else:
                         # This will call this function
                         self.playBttn.setChecked(False)
+                # Makes sure the statusbar text changes from
+                # paused back to the artist/album/track string
+                elif self.audio_object.is_paused():
+                    self.stat_lbl.setText(self.msg_status)
                 self.audio_object.play()
                 self.stopBttn.setEnabled(True)
                 icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
@@ -515,9 +515,11 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
     
     def on_clrplyBttn_clicked(self):
         """
-        Clears current playlist
+        Clears current playlist and sets focus
+        on the search linedit
         """
         self.on_actionClear_triggered()
+        self.srchplyEdit.setFocus()
     
     def on_srchplyEdit_textChanged(self, p0):
         """
@@ -642,6 +644,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         """
         #TODO: expand the artist chosen before reset
         self.srchCollectEdt.clear()
+        self.srchCollectEdt.setFocus()
 
     def on_collectTimeBox_currentIndexChanged(self, index):
         """
@@ -787,6 +790,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         if self.tray_icon.isVisible():
             self.hide()
             event.ignore()
+            
             
     # I honestly could not figure out how to deal with Finishes.
     # Inheritance, attributes, etc is turning my brain to mush
