@@ -44,11 +44,11 @@ class Setting_Dialog(QDialog):
             self.trUtf8("Select Music Directory"),
             self.trUtf8("/"),
             QFileDialog.Options(QFileDialog.ShowDirsOnly))
-        if dir_select:
+        if dir_select is not None:
             self.directory.setText(dir_select)
         
     def accept(self):
-        if self.directory:
+        if self.directory is not None:
             QDialog.accept(self)
             
     def reject(self):

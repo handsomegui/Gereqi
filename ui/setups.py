@@ -122,7 +122,7 @@ class Setups:
         This takes the fileview item and deduces whether
         it's a file or directory and populates playlist if possible
         """
-        if self.dir_model.isDir(index):
+        if self.dir_model.isDir(index) is True:
             fname = self.dir_model.filePath(index)
             searcher = QDir(fname)
             searcher.setFilter(QDir.Files)
@@ -206,7 +206,8 @@ class Setups:
             artist = artists[cnt][0]
             # When creating collection tree only 
             #  allow certain artists based on the filter.
-            if filt and (filt.lower() not in artist.lower()):
+            # FIXME: not sure filt is not None is needed
+            if (filt is not None) and (filt.lower() not in artist.lower()):
                 continue
             char = artist[0]   
             if char != old_char:
@@ -219,7 +220,7 @@ class Setups:
             self.collectTree.addTopLevelItem(artist)
             
     def __play_type(self, checked):
-        if checked:
+        if checked is True:
             self.play_type_bttn.setText("R")
         else:
             self.play_type_bttn.setText("N")

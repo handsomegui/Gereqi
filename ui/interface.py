@@ -316,10 +316,10 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         track = album = artist = None
 
         # When we haven't selected an artist
-        if par:
+        if par is not None:
             par_par = par.parent()
             # When we select an individual track
-            if par_par:
+            if par_par is not None:
                 artist = par_par.text(0)
                 album = par.text(0)
                 track = now
@@ -328,15 +328,15 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
                 album = now
                 artist = par.text(0)
         # In any case we'll have an artist
-        if not artist:
+        if artist is None:
             artist = now
         artist = self.extras.qstr2uni(artist)
-        if track:
+        if track is not None:
             album = self.extras.qstr2uni(album)     
             track = self.extras.qstr2uni(track)
             file_name = self.media_db.get_file(artist, album, track)
             self.add2playlist(file_name)
-        elif album:
+        elif album is not None:
             album = self.extras.qstr2uni(album)
             tracks = self.media_db.get_files(artist, album)
             for track in tracks:
@@ -349,11 +349,11 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         if possible
         """
         track = self.generate_track("back")
-        if track:
+        if track is not None:
             self.audio_object.stop()
             self.audio_object.load(track)
             # Checks to see if the playbutton is in play state
-            if self.playBttn.isChecked():
+            if self.playBttn.isChecked() is True:
                 self.audio_object.play()
             else:
                 self.tracknow_colourise(self.current_row())
@@ -365,18 +365,18 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         Not possible to play a highlighted row.
         """
         #TODO: messy. Clean up.
-        if checked:
+        if checked is True:
             queued = self.audio_object.current_source()
             stopped = self.stopBttn.isEnabled() is False
             highlighted = self.highlighted_track()
-            if highlighted:      
+            if highlighted is not None:      
                 # Checks to see if highlighted track matches queued track
                 # prevents loading whilst playing
-                if (queued != highlighted) and stopped: 
+                if (queued != highlighted) and (stopped is True): 
                     queued = highlighted
                     self.audio_object.load(queued)
                 # Nothing already loaded into playbin
-                elif not queued:
+                elif queued is None:
                     selected = self.playlistTree.currentRow()
                     # A row is selected
                     if selected >= 0:
@@ -388,7 +388,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
                         self.playBttn.setChecked(False)
                 # Makes sure the statusbar text changes from
                 # paused back to the artist/album/track string
-                elif self.audio_object.is_paused():
+                elif self.audio_object.is_paused() is True:
                     self.stat_lbl.setText(self.msg_status)
                 self.audio_object.play()
                 self.stopBttn.setEnabled(True)
@@ -400,7 +400,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
                 self.playBttn.setChecked(False)
                 return
         else:
-            if self.audio_object.is_playing():
+            if self.audio_object.is_playing() is True:
                 self.audio_object.pause()
             icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
             tray = QIcon(QPixmap(":/Icons/app-paused.png"))
@@ -429,10 +429,10 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         Go to next item in playlist(down)
         """
         track = self.generate_track("next")
-        if track:
+        if track is not None:
             self.audio_object.stop() 
             self.audio_object.load(track)
-            if self.playBttn.isChecked():
+            if self.playBttn.isChecked() is True:
                 self.audio_object.play()
             else:
                 self.tracknow_colourise(self.current_row())
@@ -486,7 +486,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
                         self.trUtf8("*.flac *.mp3 *.ogg *.m4a"), 
                         None)       
                         
-        if mfiles:
+        if mfiles is not None:
             for item in mfiles:
                 fname = self.extras.qstr2uni(item)
                 ender = fname.split(".")[-1]
@@ -528,8 +528,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         """
         # Resets before searching again
         now = self.current_row()
-        print(now)
-        if now:
+        if now is not None:
             self.tracknow_colourise(now)
         test = len(str(p0).strip())
         # Checks if the search edit isn't empty
@@ -539,7 +538,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
             searched = self.playlistTree.findItems(p0, Qt.MatchContains)
             for search in searched:
                 row = search.row()
-                if not row in rows:
+                if row not in rows:
                     rows.append(row)
                     for col in range(columns):
                         item = self.playlistTree.item(row, col)
@@ -550,7 +549,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         Mutes audio output and changes button icon accordingly
         """
         self.audio_object.mute(checked)
-        if checked:
+        if checked is True:
             icon = QIcon(QPixmap(":/Icons/audio-volume-muted.png"))
             self.muteBttn.setIcon(icon)
         else:
@@ -609,7 +608,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         #TODO: make this aware of collectTimeBox widget
         par = item.parent()
         # If we've expanded an album
-        if par:
+        if par is not None:
             artist = par.text(0)
             album = item.text(0)
         else:
@@ -618,7 +617,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         # An artist in any case
         artist = self.extras.qstr2uni(artist)
         #TODO: add tracks in trackNum order
-        if album and (item.childCount() == 0):
+        if (album is not None) and (item.childCount() == 0):
             # Adding tracks to album
             album = self.extras.qstr2uni(album)
             tracks = self.media_db.get_titles(artist, album)
@@ -690,7 +689,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         """
         file_list = self.gen_file_list()
         file_name = self.audio_object.current_source()
-        if file_name:
+        if file_name is not None:
             return file_list.index(file_name)
         
     def prog_tick(self, time):
@@ -721,7 +720,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         """
         Does what it says.
         """
-        if state:
+        if state is True:
             self.show()
             self.setWindowState(Qt.WindowActive)
         else:
@@ -734,14 +733,14 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         Either generates a new DB or adds new files to it
         Not finished
         """
-        if not self.media_dir:
+        if self.media_dir is None:
             self.media_dir = QFileDialog.getExistingDirectory(\
                 None,
                 self.trUtf8("Select Media Directory"),
                 self.trUtf8("/home"),
                 QFileDialog.Options(QFileDialog.ShowDirsOnly))
         # If the dialog is cancelled in last if statement the below is ignored
-        if self.media_dir:
+        if self.media_dir is not None:
             self.stat_bttn.setEnabled(True)
             self.build_db_thread.set_values(self.media_dir, MainWindow.audio_formats)
             self.stat_prog.setToolTip("Scanning Media")
@@ -753,15 +752,16 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         The wikipedia page + album art to current artist playing
         """
         # Wikipedia info
-        if (self.art_alb["nowart"] != self.art_alb["oldart"] ) and self.art_alb["nowart"]:
+        if (self.art_alb["nowart"] != self.art_alb["oldart"] ) and (self.art_alb["nowart"] is not None):
             # passes the artist to the thread
             self.html_thread.set_values(self.art_alb["nowart"]) 
             # starts the thread
             self.html_thread.start() 
             self.art_alb["oldart"] = self.art_alb["nowart"]
         # Album art
-        if (self.art_alb["nowalb"] != self.art_alb["oldalb"]) and self.art_alb["nowalb"]:
-            self.cover_thread.set_values(self.art_alb["nowalb"], self.art_alb["nowart"], MainWindow.locale)
+        if (self.art_alb["nowalb"] != self.art_alb["oldalb"]) and (self.art_alb["nowalb"] is not None):
+            self.cover_thread.set_values(self.art_alb["nowalb"], 
+                                         self.art_alb["nowart"], MainWindow.locale)
             self.cover_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
 
@@ -783,7 +783,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
         """
         When the 'X' button or alt-f4 is triggered
         """
-        if self.tray_icon.isVisible():
+        if self.tray_icon.isVisible() is True:
             self.hide()
             event.ignore()
             
@@ -792,7 +792,7 @@ class MainWindow(Track, Playlist, AudioBackend,  Setups, Ui_MainWindow, QMainWin
     # Inheritance, attributes, etc is turning my brain to mush
             
     def __set_cover(self, img):
-        if img.isNull():
+        if img.isNull() is True:
             self.coverView.setPixmap(QPixmap(":/Icons/music.png"))
         else:
             cover = QPixmap()

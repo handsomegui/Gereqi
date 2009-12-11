@@ -20,12 +20,12 @@ class Extraneous:
         
     def source_checks(self, source, type):
         fnow= None
-        if type == "file" and path.isfile(source):
+        if type == "file" and (path.isfile(source) is True):
             fnow = "file://%s" % source
         elif type == "cd":
             fnow = "cdda://%s" % source
             
-        if fnow and self.can_play_source(fnow): 
+        if (fnow is not None) and self.can_play_source(fnow): 
             return fnow
             
             
@@ -76,7 +76,7 @@ class Gstbe(QObject):
         """
         play_thread = self.play_thread_id
         
-        while play_thread== self.play_thread_id:
+        while play_thread == self.play_thread_id:
             try:
                 pos_int = self.pipe_line.query_position(gst.FORMAT_TIME)[0]
                 val = int(round(pos_int / 1000000))
@@ -93,7 +93,7 @@ class Gstbe(QObject):
         """
         # cdda://4   <-- cd track#4
         fnow = self.extra.source_checks(fname, type)
-        if fnow:
+        if fnow is not None:
             self.pipe_line.set_state(gst.STATE_NULL)
             self.pipe_line.set_property("uri", fnow)  
             self.pipe_line.set_state(gst.STATE_READY)
@@ -125,7 +125,7 @@ class Gstbe(QObject):
         
     def stop(self):
         print("STOP")
-        if self.play_thread_id:
+        if self.play_thread_id is not None:
             self.pipe_source = self.play_thread_id = None
             self.pipe_line.set_state(gst.STATE_NULL)
    
@@ -146,7 +146,7 @@ class Gstbe(QObject):
 
     def enqueue(self, fname, type="file"):
         fnow  = self.extra.source_checks(fname, type)
-        if fnow:
+        if fnow is not None:
             print("ENQUEUE")
             self.pipe_line.set_property("uri", fnow)
             self.pipe_source = fname

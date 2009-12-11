@@ -57,6 +57,7 @@ class Webinfo:
             tree = tree.get_element_by_id(tag) #the html enclosed by the tag
             tree  = tostring(tree)
         except KeyError, err:
+            print(err)
             tree = None     
         return tree
         
@@ -81,7 +82,7 @@ class Webinfo:
             pre_html = self.__fetch(url)
             result =  self.__printable_wiki(pre_html.geturl())
             
-            if result:
+            if result is not None:
                 base_html = '''
                 <html>
                 <head>
@@ -115,7 +116,7 @@ class Webinfo:
             url = self.__create_url(site, *params)
             pre_html = self.__fetch(url).read()
             result = self.__treat(site, pre_html)
-            if result:
+            if result is not None:
                 img_url = result .split("src=")[1].split(" ")[0]
                 img_url = img_url.strip('''"''')
                 img = self.__fetch(img_url).read()

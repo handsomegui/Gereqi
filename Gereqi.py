@@ -9,7 +9,7 @@ from PyQt4.QtGui import QApplication
 from PyQt4.QtCore import QString
 from ui.interface import MainWindow
 import sys
-VERSION = "master"  
+__version__= "master"  
 
 def main():
     """
@@ -17,7 +17,7 @@ def main():
     """
     app = QApplication(sys.argv)
     app.setApplicationName(QString("Gereqi"))
-    app.setApplicationVersion(QString(VERSION))
+    app.setApplicationVersion(QString(__version__))
     wnd = MainWindow()
     wnd.show()
     sys.exit(app.exec_())

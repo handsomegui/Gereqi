@@ -33,7 +33,7 @@ class Getcover(QThread):
         info = Webinfo()
         result = info.get_info("cover", self.artist, self.album)
         img = QImage()
-        if result:
+        if result is not None:
             img.loadFromData(result, "JPG")
         self.emit(SIGNAL("got-image ( QImage )"), img) 
         self.exit()
@@ -52,7 +52,7 @@ class Getwiki(QThread):
     def run(self):
         info = Webinfo()
         result = info.get_info("info", self.artist)
-        if result:
+        if result is not None:
             result = QString(result)
         else:
             result = QString("None")
@@ -127,7 +127,7 @@ class Builddb(QThread):
                     self.emit(SIGNAL("progress ( int )"), prog)
                 
                 info = meta.extract(trk.encode("utf-8"))
-                if info:
+                if info is not None:
                     tags = info[0:3]
                     del info
                     date = extras.date_now()

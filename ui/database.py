@@ -17,7 +17,7 @@ class Media:
         app_dir = "%s/.gereqi/" % os.getenv("HOME")
         db_loc = "%sgereqi.db" % app_dir
         
-        if not os.path.exists(app_dir):
+        if os.path.exists(app_dir) is False:
             print("Need to make a folder.")
             os.mkdir(app_dir)
         self.media_db = sqlite.connect(db_loc)
@@ -64,7 +64,7 @@ class Media:
         return self.media_curs.fetchall()
         
     def __query_execute(self, query, args=None):
-        if args:
+        if args is not None:
             self.media_curs.execute(query, args)
         else:
             # The execute() doesn't accept NoneTypes

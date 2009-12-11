@@ -34,7 +34,7 @@ class Extraneous:
         Checks whether if a track exists on drives.
         If not, it removes the track from the database.
         """
-        if path.exists(fname):
+        if path.exists(fname) is True:
             return True
         else:
             db = Media()
