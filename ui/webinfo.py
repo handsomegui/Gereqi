@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from urllib2 import Request, urlopen
+from urllib2 import Request, urlopen, URLError
 from lxml.html import fromstring, tostring
 
 
