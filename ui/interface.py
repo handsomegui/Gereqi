@@ -13,19 +13,40 @@ QToolButton, QAction, QSystemTrayIcon, \
 qApp, QDirModel, QMenu
 from PyQt4.QtCore import QString, Qt, QTime, SIGNAL, \
 SLOT, QFile, QDir, QSize
+
 from random import randrange
 
 from settings import Setting_Dialog
 from database import Media
 from tagging import Tagging
 from threads import Getcover, Getwiki, Builddb
-from Ui_interface import Ui_MainWindow
 from gstbe import Gstbe
 from extraneous import Extraneous
+from Ui_interface import Ui_MainWindow
 
-class Setup:
-    def __init__(self):
-        self.ui = Ui_MainWindow()
+
+class SetupExtraWidgets:
+    def __init__(self, BaseObject):
+        self.ui = BaseObject
+        self.__setup_fileview()
+
+    def __setup_fileview(self):
+        """
+        A fileView browser where tracks can be (eventually)
+        added to the playlist
+        """
+        self.dir_model = QDirModel()
+        filters = QDir.Files | QDir.AllDirs | QDir.Readable | QDir.NoDotAndDotDot
+        self.dir_model.setFilter(filters)
+        self.dir_model.setReadOnly(True)
+        self.dir_model.setNameFilters(["*.ogg","*.flac","*.mp3", "*.m4a"])
+        # Apparently Ui_MainWindow has no attribute "fileView" which is wrong
+        self.ui.fileView.setModel(self.dir_model) 
+        self.ui.fileView.setColumnHidden(1, True)
+        self.ui.fileView.setColumnHidden(2, True)
+        self.ui.fileView.setColumnHidden(3, True)
+        self.ui.fileView.expandToDepth(0)
+        
 
 
 class MainWindow(Ui_MainWindow, QMainWindow): 
@@ -49,7 +70,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         from other files as this file is getting messy
         """ 
         QMainWindow.__init__(self, parent)
-        super(MainWindow, self).__init__()
+        Ui_MainWindow.__init__(self)
         self.setupUi(self)
         
         self.media_dir = None
@@ -61,6 +82,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.meta = Tagging(MainWindow.audio_formats)
         self.init_setups()
         self.player = Gstbe()
+        self.xtrawdgt = SetupExtraWidgets(self)
         
         self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.__finish_build)
         self.connect(self.cover_thread, SIGNAL("got-image ( QImage ) "), self.__set_cover) 
@@ -70,6 +92,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.player.pipe_line.connect("about-to-finish",  self.about_to_finish)
         self.connect(self.player, SIGNAL("track_changed()"),  self.track_changed)
         self.connect(self.player, SIGNAL("finished()"),  self.finished_playing)
+        self.connect(self.fileView, SIGNAL("expanded (const QModelIndex&)"), self.__resize_fileview) 
+        self.connect(self.fileView, SIGNAL("doubleClicked (const QModelIndex&)"), self.__fileview_item)
+        self.connect(self.actionPlay, SIGNAL("toggled ( bool )"), self.playBttn, SLOT("setChecked(bool)"))
+        self.connect(self.actionNext_Track, SIGNAL("triggered()"), self.nxtBttn, SLOT("click()"))
+        self.connect(self.actionPrevious_Track, SIGNAL("triggered()"), self.prevBttn, SLOT("click()"))  
+        self.connect(self.actionStop, SIGNAL("triggered()"), self.stopBttn, SLOT("click()"))
+        self.connect(self.play_type_bttn, SIGNAL('toggled ( bool )'), self.__play_type)
+        self.connect(self.stat_bttn, SIGNAL("pressed()"), self.quit_build)
         
         #Make the collection search line-edit have the keyboard focus on startup.
         self.srchCollectEdt.setFocus()
@@ -812,10 +842,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.setup_db_tree()
         self.__setup_shortcuts()
         self.__setup_extra()        
-        self.__create_actions()        
+#        self.__create_actions()        
         self.__playlist_add_menu()
         self.__create_tray_menu()
-        self.__setup_fileview()
+#        self.__setup_fileview()
         self.__disable_tabs()
     
     def __playlist_add_menu(self):
@@ -882,26 +912,23 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.playlistTree.insertColumn(val)
         self.playlistTree.setHorizontalHeaderLabels(headers)
         
-    def __setup_fileview(self):
-        """
-        A fileView browser where tracks can be (eventually)
-        added to the playlist
-        """
-            
-        self.dir_model = QDirModel()
-        filters = QDir.Files | QDir.AllDirs | QDir.Readable | QDir.NoDotAndDotDot
-        self.dir_model.setFilter(filters)
-        self.dir_model.setReadOnly(True)
-        #FIXME: do not hard code file formats
-        self.dir_model.setNameFilters(["*.ogg","*.flac","*.mp3", "*.m4a"])
-        self.fileView.setModel(self.dir_model)
-        self.fileView.setColumnHidden(1, True)
-        self.fileView.setColumnHidden(2, True)
-        self.fileView.setColumnHidden(3, True)
-        self.fileView.expandToDepth(0)
-        self.connect(self.fileView, SIGNAL("expanded (const QModelIndex&)"), \
-                                                      self.__resize_fileview) 
-        self.connect(self.fileView, SIGNAL("doubleClicked (const QModelIndex&)"), self.__fileview_item)
+#    def __setup_fileview(self):
+#        """
+#        A fileView browser where tracks can be (eventually)
+#        added to the playlist
+#        """
+#            
+#        self.dir_model = QDirModel()
+#        filters = QDir.Files | QDir.AllDirs | QDir.Readable | QDir.NoDotAndDotDot
+#        self.dir_model.setFilter(filters)
+#        self.dir_model.setReadOnly(True)
+#        #FIXME: do not hard code file formats
+#        self.dir_model.setNameFilters(["*.ogg","*.flac","*.mp3", "*.m4a"])
+#        self.fileView.setModel(self.dir_model)
+#        self.fileView.setColumnHidden(1, True)
+#        self.fileView.setColumnHidden(2, True)
+#        self.fileView.setColumnHidden(3, True)
+#        self.fileView.expandToDepth(0)
         
     def __resize_fileview(self):
         """
@@ -915,8 +942,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         This takes the fileview item and deduces whether
         it's a file or directory and populates playlist if possible
         """
-        if self.dir_model.isDir(index) is True:
-            fname = self.dir_model.filePath(index)
+        if self.xtrawdgt .dir_model.isDir(index) is True:
+            fname = self.xtrawdgt .dir_model.filePath(index)
             searcher = QDir(fname)
             searcher.setFilter(QDir.Files)
             searcher.setFilter(QDir.Files)
@@ -926,21 +953,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 fname = item.absoluteFilePath()
                 self.add2playlist(self.extras.qstr2uni(fname))
         else:
-            fname = self.dir_model.filePath(index)
+            fname = self.xtrawdgt .dir_model.filePath(index)
             self.add2playlist(self.extras.qstr2uni(fname))
-        
-    def __create_actions(self):
-        #TODO: get rid of this. Put actions and connects in own function
-        # to reduce the number of unneeded pointers
-        
-        #FIXME: the linking to non-existing methods has to be bad
-        # These playing actions are from the toolbar.
-        self.connect(self.actionPlay, SIGNAL("toggled ( bool )"), self.playBttn, SLOT("setChecked(bool)"))
-        self.connect(self.actionNext_Track, SIGNAL("triggered()"), self.nxtBttn, SLOT("click()"))
-        self.connect(self.actionPrevious_Track, SIGNAL("triggered()"), self.prevBttn, SLOT("click()"))  
-        self.connect(self.actionStop, SIGNAL("triggered()"), self.stopBttn, SLOT("click()"))
-        self.connect(self.play_type_bttn, SIGNAL('toggled ( bool )'), self.__play_type)
-        self.connect(self.stat_bttn, SIGNAL("pressed()"), self.quit_build)
         
     def __create_tray_menu(self):
         """
