@@ -27,8 +27,10 @@ from Ui_interface import Ui_MainWindow
 
 class SetupExtraWidgets:
     def __init__(self, BaseObject):
+        # Basically,the parent.
         self.ui = BaseObject
         self.__setup_fileview()
+        self.__create_tray_menu()
 
     def __setup_fileview(self):
         """
@@ -40,12 +42,50 @@ class SetupExtraWidgets:
         self.dir_model.setFilter(filters)
         self.dir_model.setReadOnly(True)
         self.dir_model.setNameFilters(["*.ogg","*.flac","*.mp3", "*.m4a"])
-        # Apparently Ui_MainWindow has no attribute "fileView" which is wrong
         self.ui.fileView.setModel(self.dir_model) 
         self.ui.fileView.setColumnHidden(1, True)
         self.ui.fileView.setColumnHidden(2, True)
         self.ui.fileView.setColumnHidden(3, True)
         self.ui.fileView.expandToDepth(0)
+        
+    def __create_tray_menu(self):
+        """
+        The tray menu contains shortcuts to features
+        in the main UI
+        """
+        quit_action = QAction(QString("&Quit"), self.ui)
+        self.play_action = QAction(QString("&Play"), self.ui)
+        next_action = QAction(QString("&Next"), self.ui)
+        prev_action = QAction(QString("&Previous"), self.ui)
+        stop_action = QAction(QString("&Stop"), self.ui)
+        self.play_action.setCheckable(True)
+        self.view_action = QAction(QString("&Visible"), self.ui)
+        self.view_action.setCheckable(True)
+        self.view_action.setChecked(True)
+        tray_icon_menu = QMenu(self.ui)
+        icon = QIcon(QPixmap(":/Icons/app.png"))
+        tray_icon_menu.addAction(icon, QString("Gereqi"))
+        tray_icon_menu.addSeparator()
+        tray_icon_menu.addAction(prev_action)
+        tray_icon_menu.addAction(self.play_action)
+        tray_icon_menu.addAction(stop_action)
+        tray_icon_menu.addAction(next_action)
+        tray_icon_menu.addSeparator()
+        tray_icon_menu.addAction(self.view_action)
+        tray_icon_menu.addAction(quit_action)
+        self.tray_icon = QSystemTrayIcon(self.ui)
+        icon2 = QIcon(QPixmap(":/Icons/app-paused.png"))
+        self.tray_icon.setIcon(icon2)
+        self.tray_icon.setContextMenu(tray_icon_menu)
+        self.ui.connect(self.play_action, SIGNAL("toggled(bool)"), self.ui.playBttn, SLOT("setChecked(bool)"))
+        self.ui.connect(next_action, SIGNAL("triggered()"), self.ui.nxtBttn, SLOT("click()"))
+        self.ui.connect(prev_action, SIGNAL("triggered()"), self.ui.prevBttn, SLOT("click()"))
+        self.ui.connect(stop_action, SIGNAL("triggered()"), self.ui.stopBttn, SLOT("click()"))
+        self.ui.connect(self.view_action, SIGNAL("toggled(bool)"), self.ui.minimise_to_tray)  
+        self.ui.connect(quit_action, SIGNAL("triggered()"), qApp, SLOT("quit()"))
+        self.ui.connect(self.tray_icon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.ui.tray_event)
+        self.tray_icon.show()
+        self.tray_icon.setToolTip("Stopped")    
         
 
 
@@ -530,7 +570,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.setWindowState(Qt.WindowActive)
         else:
             self.hide()
-        self.view_action.setChecked(state)
+        self.xtrawdgt.view_action.setChecked(state)
         self.actionMinimise_to_Tray.setChecked(state)
     
     def create_collection(self):
@@ -842,10 +882,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.setup_db_tree()
         self.__setup_shortcuts()
         self.__setup_extra()        
-#        self.__create_actions()        
         self.__playlist_add_menu()
-        self.__create_tray_menu()
-#        self.__setup_fileview()
         self.__disable_tabs()
     
     def __playlist_add_menu(self):
@@ -912,24 +949,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.playlistTree.insertColumn(val)
         self.playlistTree.setHorizontalHeaderLabels(headers)
         
-#    def __setup_fileview(self):
-#        """
-#        A fileView browser where tracks can be (eventually)
-#        added to the playlist
-#        """
-#            
-#        self.dir_model = QDirModel()
-#        filters = QDir.Files | QDir.AllDirs | QDir.Readable | QDir.NoDotAndDotDot
-#        self.dir_model.setFilter(filters)
-#        self.dir_model.setReadOnly(True)
-#        #FIXME: do not hard code file formats
-#        self.dir_model.setNameFilters(["*.ogg","*.flac","*.mp3", "*.m4a"])
-#        self.fileView.setModel(self.dir_model)
-#        self.fileView.setColumnHidden(1, True)
-#        self.fileView.setColumnHidden(2, True)
-#        self.fileView.setColumnHidden(3, True)
-#        self.fileView.expandToDepth(0)
-        
     def __resize_fileview(self):
         """
         Resizes the fileView to it's contents.
@@ -956,45 +975,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             fname = self.xtrawdgt .dir_model.filePath(index)
             self.add2playlist(self.extras.qstr2uni(fname))
         
-    def __create_tray_menu(self):
-        """
-        The tray menu contains shortcuts to features
-        in the main UI
-        """
-        quit_action = QAction(self.tr("&Quit"), self)
-        self.play_action = QAction(self.tr("&Play"), self)
-        next_action = QAction(self.tr("&Next"), self)
-        prev_action = QAction(self.tr("&Previous"), self)
-        stop_action = QAction(self.tr("&Stop"), self)
-        self.play_action.setCheckable(True)
-        self.view_action = QAction(self.tr("&Visible"), self)
-        self.view_action.setCheckable(True)
-        self.view_action.setChecked(True)
-        tray_icon_menu = QMenu(self)
-        icon = QIcon(QPixmap(":/Icons/app.png"))
-        tray_icon_menu.addAction(icon, QString("Gereqi"))
-        tray_icon_menu.addSeparator()
-        tray_icon_menu.addAction(prev_action)
-        tray_icon_menu.addAction(self.play_action)
-        tray_icon_menu.addAction(stop_action)
-        tray_icon_menu.addAction(next_action)
-        tray_icon_menu.addSeparator()
-        tray_icon_menu.addAction(self.view_action)
-        tray_icon_menu.addAction(quit_action)
-        self.tray_icon = QSystemTrayIcon(self)
-        icon2 = QIcon(QPixmap(":/Icons/app-paused.png"))
-        self.tray_icon.setIcon(icon2)
-        self.tray_icon.setContextMenu(tray_icon_menu)
-        self.connect(self.play_action, SIGNAL("toggled(bool)"), self.playBttn, SLOT("setChecked(bool)"))
-        self.connect(next_action, SIGNAL("triggered()"), self.nxtBttn, SLOT("click()"))
-        self.connect(prev_action, SIGNAL("triggered()"), self.prevBttn, SLOT("click()"))
-        self.connect(stop_action, SIGNAL("triggered()"), self.stopBttn, SLOT("click()"))
-        self.connect(self.view_action, SIGNAL("toggled(bool)"), self.minimise_to_tray)  
-        self.connect(quit_action, SIGNAL("triggered()"), qApp, SLOT("quit()"))
-        self.connect(self.tray_icon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.tray_event)
-        self.tray_icon.show()
-        self.tray_icon.setToolTip("Stopped")       
-        
+
     def setup_db_tree(self, filt=None):
         """
         viewing the media database in the QTreeView
