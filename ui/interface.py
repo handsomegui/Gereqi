@@ -34,38 +34,24 @@ class Playlist:
         or from the database. Does not pull metadata from 
         the database and is passed into the function directly
         """
-        # This allows to put in manual info for things we know
-        # mutagen cannot handle like urls for podcasts
+        # This allows to manually put in info for things we know
+        # mutagen cannot handle things like urls for podcasts
         if info is None:
             info = self.ui.meta.extract(file_name)
             if info is None:
                 return
         row = self.ui.playlistTree.rowCount()
-        hdr = self.header_search
-        # Creates each cell for a track based on info
-
-        title = QTableWidgetItem(QString(info[0]))
-        title.setFlags(title.flags() ^ Qt.ItemIsEditable)
-        artist = QTableWidgetItem(QString(info[1]))
-        artist.setFlags(artist.flags() ^ Qt.ItemIsEditable)
-        album = QTableWidgetItem(QString(info[2]))
-        album.setFlags(album.flags() ^ Qt.ItemIsEditable)
-        year = QTableWidgetItem(str(info[3]))
-        year.setFlags(year.flags() ^ Qt.ItemIsEditable)
-        genre = QTableWidgetItem(QString(info[4]))
-        genre.setFlags(genre.flags() ^ Qt.ItemIsEditable)
-        track = QTableWidgetItem(QString("%02u" % info[5]))
-        track.setFlags(track.flags() ^ Qt.ItemIsEditable)
-        length = QTableWidgetItem(QString(info[6]))
-        bitrate = QTableWidgetItem(QString(str(info[7])))
-        file_item = QTableWidgetItem(QString(file_name))
         self.ui.playlistTree.insertRow(row)
-        items = [["Track", track], ["Title", title], ["Artist", artist], ["Album", album], 
-                 ["Year", year], ["Genre", genre], ["Length", length], ["Bitrate", bitrate], 
-                 ["FileName", file_item]]
-                 
-        for header, thing in items:
-            self.ui.playlistTree.setItem(row, hdr(header), thing)
+        #TODO: make the metadata come in as a dictionary
+        tbl_items = [   ["Track", "%02u" % info[5]], ["Title", info[0]],  
+                            ["Artist", info[1]], ["Album", info[2]], ["Year", info[3]], 
+                            ["Genre", info[4]], ["Length", info[6]], ["Bitrate", str(info[7])], 
+                            ["FileName", file_name]]
+        # Creates each cell for a track based on info
+        for header, thing in tbl_items:
+            tbl_wdgt = QTableWidgetItem(QString(thing))
+            column = self.header_search(header)
+            self.ui.playlistTree.setItem(row, column, tbl_wdgt)
         self.ui.playlistTree.resizeColumnsToContents()   
         
     # This is needed as the higlighted row can be different
