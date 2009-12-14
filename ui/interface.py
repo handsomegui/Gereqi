@@ -92,9 +92,8 @@ class AudioBackend:
         """
         t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
         now = t_now.toString('mm:ss')
-        # FIXME: is generating maxtime each tick wasteful?
-        maxtime = self.ui.t_length.toString('mm:ss')
-        msg = "%s | %s" % (now, maxtime)
+        max_time = self.ui.t_length.toString('mm:ss')
+        msg = "%s | %s" % (now, max_time)
         self.ui.progLbl.setText(msg)            
         # Allows normal playback whilst slider still grabbed
         if self.ui.progSldr.value() == MainWindow.old_pos: 
@@ -128,7 +127,6 @@ class AudioBackend:
         self.ui.progLbl.setText("00:00 | 00:00")
         # clear things like wiki and reset cover art to default        
         self.ui.wikiView.setHtml(QString(""))
-        # FIXME: seems to do nothing
         self.ui.coverView.setPixmap(QPixmap(":/Icons/music.png"))
         self.ui.trkNowBox.setTitle(QString("No Track Playing"))
         MainWindow.art_alb["oldart"] = MainWindow.art_alb["oldalb"] = None
@@ -174,10 +172,13 @@ class Playlist:
         currently playing track
         """
         file_list = self.__gen_file_list()
-        file_name = self.ui.player.audio_object.current_source()
+        current_file = self.ui.player.audio_object.current_source()
         
-        if file_name is not None:
-            return file_list.index(file_name)
+        if current_file is None:
+            return self.ui.playlistTree.currentRow()
+        else:
+            return file_list.index(current_file)
+        
         
     def __gen_file_list(self):
         """
@@ -264,6 +265,7 @@ class Track:
             rows = self.ui.playlistTree.rowCount() 
             if rows > 0:
                 row_now = self.ui.playlisting.current_row()
+                print row_now
                 if row_now is not None:
                     if mode == "back":
                         if (row_now - 1) >= 0:
@@ -421,7 +423,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             if self.playBttn.isChecked() is True:
                 self.player.audio_object.play()
             else:
-                self.tracking.tracknow_colourise(self.playlisting.current_row())
+                self.playlisting.tracknow_colourise(self.playlisting.current_row())
 
     #TODO: this can be called from 2 other actions. Needs tidy up.
     def on_playBttn_toggled(self, checked):
@@ -493,13 +495,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Go to next item in playlist(down)
         """
         track = self.tracking.generate_track("next")
+        print track
         if track is not None:
             self.player.audio_object.stop() 
             self.player.audio_object.load(track)
             if self.playBttn.isChecked() is True:
                 self.player.audio_object.play()
             else:
-                self.playlisting.highlighted_track(self.playlisting.current_row())
+                self.playlisting.tracknow_colourise(self.playlisting.current_row())
         else:
             # TODO: some tidy up thing could go here
             return
@@ -677,7 +680,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             album = None
         # An artist in any case
         artist = self.extras.qstr2uni(artist)
-        #TODO: add tracks in trackNum order
         if (album is not None) and (item.childCount() == 0):
             # Adding tracks to album
             album = self.extras.qstr2uni(album)
@@ -698,7 +700,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Clears the collection search widget and in turn
         resets the collection tree
         """
-        #TODO: expand the artist chosen before reset
         self.srchCollectEdt.clear()
         self.srchCollectEdt.setFocus()
 
@@ -728,17 +729,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # TODO: not implemented yet
         self.srchplyEdit.clear()
         self.playlisting.highlighted_track(self.playlisting.current_row())
-        #FIXME: need playbin.clearqueue()
         
         
 #######################################
 #######################################
         
     def quit_build(self):
-        #TODO: confirm the below. May be old news.
-        # ugly doesn't terminate cleanly
-        # causes poor performance and errors on a rescan
-        # locks up database
+        """
+        Cancels the collection build if running
+        """
         print(self.build_db_thread.stop_now() )
 
 
@@ -781,7 +780,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.xtrawdgt.stat_prog.setValue(0)
             self.build_db_thread.start()
 
-# FIXME: Holy shit. What a mess. Fix
     def set_info(self):
         """
         The wikipedia page + album art to current artist playing
