@@ -28,8 +28,52 @@ class Playlist:
     def __init__(self, BaseObject):
         self.ui = BaseObject
         
-# This is needed as the higlighted row can be different
-# than the currentRow method of Qtableview.
+    def add2playlist(self, file_name, info=None):
+        """
+        Called when adding tracks to the playlist either locally
+        or from the database. Does not pull metadata from 
+        the database and is passed into the function directly
+        """
+        # This allows to put in manual info for things we know
+        # mutagen cannot handle like urls for podcasts
+        if not info:
+            info = self.ui.meta.extract(file_name)
+            if not info:
+                return
+        row = self.ui.playlistTree.rowCount()
+        hdr = self.header_search
+        # Creates each cell for a track based on info
+
+        title = QTableWidgetItem(QString(info[0]))
+        title.setFlags(title.flags() ^ Qt.ItemIsEditable)
+        artist = QTableWidgetItem(QString(info[1]))
+        artist.setFlags(artist.flags() ^ Qt.ItemIsEditable)
+        album = QTableWidgetItem(QString(info[2]))
+        album.setFlags(album.flags() ^ Qt.ItemIsEditable)
+        year = QTableWidgetItem(str(info[3]))
+        year.setFlags(year.flags() ^ Qt.ItemIsEditable)
+        genre = QTableWidgetItem(QString(info[4]))
+        genre.setFlags(genre.flags() ^ Qt.ItemIsEditable)
+        track = QTableWidgetItem(QString("%02u" % info[5]))
+        track.setFlags(track.flags() ^ Qt.ItemIsEditable)
+        length = QTableWidgetItem(QString(info[6]))
+        bitrate = QTableWidgetItem(QString(str(info[7])))
+        file = QTableWidgetItem(QString(file_name))
+        self.ui.playlistTree.insertRow(row)
+        #TODO: These column assignments have to be dynamic at some point
+        self.ui.playlistTree.setItem(row, hdr("Track"), track)
+        self.ui.playlistTree.setItem(row, hdr("Title"), title)
+        self.ui.playlistTree.setItem(row, hdr("Artist"), artist)
+        self.ui.playlistTree.setItem(row, hdr("Album"), album)
+        self.ui.playlistTree.setItem(row, hdr("Year"), year)
+        self.ui.playlistTree.setItem(row, hdr("Genre"), genre)
+        self.ui.playlistTree.setItem(row, hdr("Length"), length)
+        self.ui.playlistTree.setItem(row, hdr("Bitrate"), bitrate)
+        self.ui.playlistTree.setItem(row, hdr("FileName") , file)
+        self.ui.playlistTree.resizeColumnsToContents()   
+        
+    # This is needed as the higlighted row can be different
+    # than the currentRow method of Qtableview.
     def current_row(self):
         """
         Finds the playlist row of the
@@ -80,7 +124,6 @@ class Playlist:
         set the background colour of each item in a row
         until track changes.
         """
-        
         columns = self.ui.playlistTree.columnCount()
         rows = self.ui.playlistTree.rowCount()
         for row in range(rows):
@@ -393,13 +436,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             album = self.extras.qstr2uni(album)     
             track = self.extras.qstr2uni(track)
             file_name = self.media_db.get_file(artist, album, track)
-            self.add2playlist(file_name)
+            self.playlisting.add2playlist(file_name)
         elif album is not None:
             album = self.extras.qstr2uni(album)
             tracks = self.media_db.get_files(artist, album)
             for track in tracks:
                 # Retrieves metadata from database
-                self.add2playlist(track)
+                self.playlisting.add2playlist(track)
     
     def on_prevBttn_pressed(self):
         """
@@ -549,7 +592,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 fname = self.extras.qstr2uni(item)
                 ender = fname.split(".")[-1]
                 if ender.lower() in MainWindow.audio_formats:
-                    self.add2playlist(fname)
+                    self.playlisting.add2playlist(fname)
 
     def on_actionMinimise_to_Tray_toggled(self, checked):
         self.minimise_to_tray(checked)
@@ -911,59 +954,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if track:
             self.player.enqueue(track)
             
-    def add2playlist(self, file_name, info=None):
-        """
-        Called when adding tracks to the playlist either locally
-        or from the database. Does not pull metadata from 
-        the database and is passed into the function directly
-        """
-        # This allows to put in manual info for things we know
-        # mutagen cannot handle like urls for podcasts
-        if not info:
-            info = self.meta.extract(file_name)
-            if not info:
-                return
-        row = self.playlistTree.rowCount()
-        hdr = self.playlisting.header_search
-        # Creates each cell for a track based on info
 
-        title = QTableWidgetItem(QString(info[0]))
-        title.setFlags(title.flags() ^ Qt.ItemIsEditable)
-        artist = QTableWidgetItem(QString(info[1]))
-        artist.setFlags(artist.flags() ^ Qt.ItemIsEditable)
-        album = QTableWidgetItem(QString(info[2]))
-        album.setFlags(album.flags() ^ Qt.ItemIsEditable)
-        year = QTableWidgetItem(str(info[3]))
-        year.setFlags(year.flags() ^ Qt.ItemIsEditable)
-        genre = QTableWidgetItem(QString(info[4]))
-        genre.setFlags(genre.flags() ^ Qt.ItemIsEditable)
-        track = QTableWidgetItem(QString("%02u" % info[5]))
-        track.setFlags(track.flags() ^ Qt.ItemIsEditable)
-        length = QTableWidgetItem(QString(info[6]))
-        bitrate = QTableWidgetItem(QString(str(info[7])))
-        file = QTableWidgetItem(QString(file_name))
-        self.playlistTree.insertRow(row)
-        #TODO: These column assignments have to be dynamic at some point
-        self.playlistTree.setItem(row, hdr("Track"), track)
-        self.playlistTree.setItem(row, hdr("Title"), title)
-        self.playlistTree.setItem(row, hdr("Artist"), artist)
-        self.playlistTree.setItem(row, hdr("Album"), album)
-        self.playlistTree.setItem(row, hdr("Year"), year)
-        self.playlistTree.setItem(row, hdr("Genre"), genre)
-        self.playlistTree.setItem(row, hdr("Length"), length)
-        self.playlistTree.setItem(row, hdr("Bitrate"), bitrate)
-        self.playlistTree.setItem(row, hdr("FileName") , file)
-        self.playlistTree.resizeColumnsToContents()   
-        
-
-
- 
-                
-
-                    
-                    
-
-        
     def __resize_fileview(self):
         """
         Resizes the fileView to it's contents.
@@ -985,10 +976,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             searcher.setNameFilters(["*.ogg","*.flac","*.mp3", "*.m4a"])
             for item in searcher.entryInfoList():
                 fname = item.absoluteFilePath()
-                self.add2playlist(self.extras.qstr2uni(fname))
+                self.playlisting.add2playlist(self.extras.qstr2uni(fname))
         else:
             fname = self.xtrawdgt .dir_model.filePath(index)
-            self.add2playlist(self.extras.qstr2uni(fname))
+            self.playlisting.add2playlist(self.extras.qstr2uni(fname))
         
 
     def setup_db_tree(self, filt=None):
