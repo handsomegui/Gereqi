@@ -24,6 +24,106 @@ from gstbe import Gstbe
 from extraneous import Extraneous
 from Ui_interface import Ui_MainWindow
 
+class Playlist:
+    def __init__(self, BaseObject):
+        self.ui = BaseObject
+        
+    #TODO: use native/theme colours for odd/even colours
+    def tracknow_colourise(self, now):
+        """
+        Instead of using QTableWidget's selectRow function, 
+        set the background colour of each item in a row
+        until track changes.
+        """
+        if now:
+            self.ui.playlistTree.selectRow(now)
+            columns = self.ui.playlistTree.columnCount()
+            rows = self.ui.playlistTree.rowCount()
+            for row in range(rows):
+                for col in range(columns):
+                    item = self.ui.playlistTree.item(row, col)
+                    if row != now:
+                        if row % 2:
+                            item.setBackgroundColor(MainWindow.colours["odd"])
+                        else:
+                            item.setBackgroundColor(MainWindow.colours["even"])
+                    else:
+                        item.setBackgroundColor(MainWindow.colours["now"])
+                        
+    def highlighted_track(self):
+        """
+        In the playlist
+        """
+        row = self.ui.playlistTree.currentRow() # It's things like this I have no idea how to sort out
+        column = self.ui.header_search("FileName")
+        track = None
+        # -1 is the row value for None
+        if row > -1:
+            track = self.ui.playlistTree.item(row, column).text()
+        return track        
+
+class Track:
+    def __init__(self, BaseObject):
+        self.ui = BaseObject
+        
+    def generate_track(self, mode, row=None):
+        """
+        As the playlist changes on sorting, the playlist (the immediately next/previous 
+        tracks) has to be regenerated before the queing of the next track
+        """
+        # So that it can be dynamic later on when columns can be moved
+        column = self.ui.header_search("FileName")
+        track = None
+        if mode == "now":
+            track = self.ui.playlistTree.item(row, column).text()
+        else:
+            # If 0 then the playlist is empty
+            rows = self.ui.playlistTree.rowCount() 
+            if rows > 0:
+                row_now = self.ui.current_row()
+                if row_now:
+                    if mode == "back":
+                        if (row_now - 1) >= 0:
+                            track = self.ui.playlistTree.item(row_now - 1 , column)
+                            track = track.text()
+                    elif mode == "next":
+                        if self.ui.xtrawdgt.play_type_bttn.isChecked():
+                            # Here we need to randomly choose the next track
+                            row = randrange(0, rows)
+                            track = self.ui.playlistTree.item(row, column)
+                            track = track.text()
+                        elif (row_now + 1) < rows:
+                            track = self.ui.playlistTree.item(row_now + 1, column)
+                            track = track.text()
+        if track:
+            return str(track)
+            
+    def generate_info(self):
+        """
+         This retrieves data from the playlist table, not the database. 
+        This is because the playlist may contain tracks added locally.        
+        """
+        row = self.ui.current_row()
+        title = self.ui.playlistTree.item(row, 1).text()
+        artist = self.ui.playlistTree.item(row, 2).text()
+        album = self.ui.playlistTree.item(row, 3).text()
+        
+        # FIXME: Track total-time from playlist entry not playbin
+        min, sec = self.ui.playlistTree.item(row, 6).text().split(":")
+        self.play_time = 1000 * ((int(min) * 60) + int(sec))
+        
+        msg_header = QString("Now Playing")
+        msg_main = QString("%s by %s" % (title, artist))
+        self.ui.trkNowBox.setTitle(msg_main)
+        if MainWindow.show_messages and self.ui.playBttn.isChecked():
+            self.ui.xtrawdgt.tray_icon.showMessage(msg_header, msg_main, QSystemTrayIcon.NoIcon, 3000)
+        self.ui.xtrawdgt.tray_icon.setToolTip(msg_main)
+        self.msg_status = "Playing: %s by %s on %s" % (title, artist, album)
+        self.ui.xtrawdgt.stat_lbl.setText(self.msg_status)
+        self.ui.playlisting.tracknow_colourise(row)
+        MainWindow.art_alb["nowart"] = artist.toUtf8()
+        MainWindow.art_alb["nowalb"] = album.toUtf8()
+        
 
 class SetupExtraWidgets:
     def __init__(self, BaseObject):
@@ -194,6 +294,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.meta = Tagging(MainWindow.audio_formats)
         self.player = Gstbe()
         self.xtrawdgt = SetupExtraWidgets(self)
+        self.tracking = Track(self)
+        self.playlisting = Playlist(self)
         
         self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.__finish_build)
         self.connect(self.cover_thread, SIGNAL("got-image ( QImage ) "), self.__set_cover) 
@@ -265,7 +367,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Skip to previous track in viewable playlist
         if possible
         """
-        track = self.generate_track("back")
+        track = self.tracking.generate_track("back")
         if track is not None:
             self.player.stop()
             self.player.load(track)
@@ -273,7 +375,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             if self.playBttn.isChecked() is True:
                 self.player.play()
             else:
-                self.tracknow_colourise(self.current_row())
+                self.tracking.tracknow_colourise(self.current_row())
 
     #TODO: this can be called from 2 other actions. Needs tidy up.
     def on_playBttn_toggled(self, checked):
@@ -285,7 +387,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if checked is True:
             queued = self.player.current_source()
             stopped = self.stopBttn.isEnabled() is False
-            highlighted = self.highlighted_track()
+            highlighted = self.playlisting.highlighted_track()
             if highlighted is not None:      
                 # Checks to see if highlighted track matches queued track
                 # prevents loading whilst playing
@@ -297,7 +399,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     selected = self.playlistTree.currentRow()
                     # A row is selected
                     if selected >= 0:
-                        selected = self.generate_track("now", selected)           
+                        selected = self.tracking.generate_track("now", selected)           
                         self.player.load(selected)
                     # Just reset the play button and stop here
                     else:
@@ -306,7 +408,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 # Makes sure the statusbar text changes from
                 # paused back to the artist/album/track string
                 elif self.player.is_paused() is True:
-                    self.xtrawdgt.stat_lbl.setText(self.msg_status)
+                    self.xtrawdgt.stat_lbl.setText(self.tracking.msg_status)
                 self.player.play()
                 self.stopBttn.setEnabled(True)
                 icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
@@ -345,14 +447,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Go to next item in playlist(down)
         """
-        track = self.generate_track("next")
+        track = self.tracking.generate_track("next")
         if track is not None:
             self.player.stop() 
             self.player.load(track)
             if self.playBttn.isChecked() is True:
                 self.player.play()
             else:
-                self.tracknow_colourise(self.current_row())
+                self.playlisting.highlighted_track(self.current_row())
         else:
             # TODO: some tidy up thing could go here
             return
@@ -443,7 +545,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # Resets before searching again
         now = self.current_row()
         if now is not None:
-            self.tracknow_colourise(now)
+            self.playlisting.highlighted_track(now)
         test = len(str(p0).strip())
         # Checks if the search edit isn't empty
         if test > 0:
@@ -498,7 +600,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.playBttn.setChecked(False)
         
         self.player.stop()
-        track = self.generate_track("now", row)
+        track = self.tracking.generate_track("now", row)
         self.player.load(track)
         # Checking the button is the same
         #  as self.player.play(), just cleaner overall
@@ -580,7 +682,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         # TODO: not implemented yet
         self.srchplyEdit.clear()
-        self.tracknow_colourise(self.current_row())
+        self.playlisting.highlighted_track(self.current_row())
         #FIXME: need playbin.clearqueue()
         
         
@@ -627,8 +729,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Linked to the current time of
         track being played
         """
-        self.progSldr.setRange(0, self.play_time)
-        self.t_length = QTime(0, (self.play_time / 60000) % 60, (self.play_time / 1000) % 60)
+        self.progSldr.setRange(0, self.tracking.play_time)
+        self.t_length = QTime(0, (self.tracking.play_time / 60000) % 60, (self.tracking.play_time / 1000) % 60)
             
     def minimise_to_tray(self, state):
         """
@@ -735,63 +837,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.collectTree.clear()
         self.setup_db_tree()
 
-    def generate_track(self, mode, row=None):
-        """
-        As the playlist changes on sorting, the playlist (the immediately next/previous 
-        tracks) has to be regenerated before the queing of the next track
-        """
-        # So that it can be dynamic later on when columns can be moved
-        column = self.header_search("FileName")
-        track = None
-        if mode == "now":
-            track = self.playlistTree.item(row, column).text()
-        else:
-            # If 0 then the playlist is empty
-            rows = self.playlistTree.rowCount() 
-            if rows > 0:
-                row_now = self.current_row()
-                if row_now:
-                    if mode == "back":
-                        if (row_now - 1) >= 0:
-                            track = self.playlistTree.item(row_now - 1 , column)
-                            track = track.text()
-                    elif mode == "next":
-                        if self.xtrawdgt.play_type_bttn.isChecked():
-                            # Here we need to randomly choose the next track
-                            row = randrange(0, rows)
-                            track = self.playlistTree.item(row, column)
-                            track = track.text()
-                        elif (row_now + 1) < rows:
-                            track = self.playlistTree.item(row_now + 1, column)
-                            track = track.text()
-        if track:
-            return str(track)
-            
-    def generate_info(self):
-        """
-         This retrieves data from the playlist table, not the database. 
-        This is because the playlist may contain tracks added locally.        
-        """
-        row = self.current_row()
-        title = self.playlistTree.item(row, 1).text()
-        artist = self.playlistTree.item(row, 2).text()
-        album = self.playlistTree.item(row, 3).text()
-        
-        # FIXME: Track total-time from playlist entry not playbin
-        min, sec = self.playlistTree.item(row, 6).text().split(":")
-        self.play_time = 1000 * ((int(min) * 60) + int(sec))
-        
-        msg_header = QString("Now Playing")
-        msg_main = QString("%s by %s" % (title, artist))
-        self.trkNowBox.setTitle(msg_main)
-        if MainWindow.show_messages and self.playBttn.isChecked():
-            self.xtrawdgt.tray_icon.showMessage(msg_header, msg_main, QSystemTrayIcon.NoIcon, 3000)
-        self.xtrawdgt.tray_icon.setToolTip(msg_main)
-        self.msg_status = "Playing: %s by %s on %s" % (title, artist, album)
-        self.xtrawdgt.stat_lbl.setText(self.msg_status)
-        self.tracknow_colourise(row)
-        MainWindow.art_alb["nowart"] = artist.toUtf8()
-        MainWindow.art_alb["nowalb"] = album.toUtf8()
+
         
     def track_changed(self):
         """
@@ -799,7 +845,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Ui features may need to be updated.
         """
         print("TRACK CHANGED")
-        self.generate_info()
+        self.tracking.generate_info()
         self.set_info()
         self.set_prog_sldr()
         MainWindow.old_pos = 0
@@ -831,7 +877,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         before playback stops
         """
         print("ABOUT TO FINISH", pipeline)
-        track = self.generate_track("next")
+        track = self.tracking.generate_track("next")
         #Not at end of  playlist
         if track:
             self.player.enqueue(track)
@@ -903,27 +949,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 # likely deleted already i.e selected same row but multiple columns
                 return  
                 
-        #TODO: use native/theme colours for odd/even colours
-    def tracknow_colourise(self, now):
-        """
-        Instead of using QTableWidget's selectRow function, 
-        set the background colour of each item in a row
-        until track changes.
-        """
-        if now:
-            self.playlistTree.selectRow(now)
-            columns = self.playlistTree.columnCount()
-            rows = self.playlistTree.rowCount()
-            for row in range(rows):
-                for col in range(columns):
-                    item = self.playlistTree.item(row, col)
-                    if row != now:
-                        if row % 2:
-                            item.setBackgroundColor(MainWindow.colours["odd"])
-                        else:
-                            item.setBackgroundColor(MainWindow.colours["even"])
-                    else:
-                        item.setBackgroundColor(MainWindow.colours["now"])
+
                     
                     
     def header_search(self, val):
@@ -934,18 +960,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         cols = self.playlistTree.columnCount()
         headers = [self.playlistTree.horizontalHeaderItem(col).text() for col in range(cols)]
         return headers.index(val)
-        
-    def highlighted_track(self):
-        """
-        In the playlist
-        """
-        row = self.playlistTree.currentRow() # It's things like this I have no idea how to sort out
-        column = self.header_search("FileName")
-        track = None
-        # -1 is the row value for None
-        if row > -1:
-            track = self.playlistTree.item(row, column).text()
-        return track
         
     def __resize_fileview(self):
         """
@@ -1004,6 +1018,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             artist = QTreeWidgetItem([QString(artist)])
             artist.setChildIndicatorPolicy(0)
             self.collectTree.addTopLevelItem(artist)
+            
     def __play_type(self, checked):
         if checked is True:
             self.xtrawdgt.play_type_bttn.setText("R")
