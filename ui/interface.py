@@ -36,9 +36,9 @@ class Playlist:
         """
         # This allows to put in manual info for things we know
         # mutagen cannot handle like urls for podcasts
-        if not info:
+        if info is None:
             info = self.ui.meta.extract(file_name)
-            if not info:
+            if info is None:
                 return
         row = self.ui.playlistTree.rowCount()
         hdr = self.header_search
@@ -58,18 +58,14 @@ class Playlist:
         track.setFlags(track.flags() ^ Qt.ItemIsEditable)
         length = QTableWidgetItem(QString(info[6]))
         bitrate = QTableWidgetItem(QString(str(info[7])))
-        file = QTableWidgetItem(QString(file_name))
+        file_item = QTableWidgetItem(QString(file_name))
         self.ui.playlistTree.insertRow(row)
-        #TODO: These column assignments have to be dynamic at some point
-        self.ui.playlistTree.setItem(row, hdr("Track"), track)
-        self.ui.playlistTree.setItem(row, hdr("Title"), title)
-        self.ui.playlistTree.setItem(row, hdr("Artist"), artist)
-        self.ui.playlistTree.setItem(row, hdr("Album"), album)
-        self.ui.playlistTree.setItem(row, hdr("Year"), year)
-        self.ui.playlistTree.setItem(row, hdr("Genre"), genre)
-        self.ui.playlistTree.setItem(row, hdr("Length"), length)
-        self.ui.playlistTree.setItem(row, hdr("Bitrate"), bitrate)
-        self.ui.playlistTree.setItem(row, hdr("FileName") , file)
+        items = [["Track", track], ["Title", title], ["Artist", artist], ["Album", album], 
+                 ["Year", year], ["Genre", genre], ["Length", length], ["Bitrate", bitrate], 
+                 ["FileName", file_item]]
+                 
+        for header, thing in items:
+            self.ui.playlistTree.setItem(row, hdr(header), thing)
         self.ui.playlistTree.resizeColumnsToContents()   
         
     # This is needed as the higlighted row can be different
