@@ -69,7 +69,8 @@ class Webinfo:
         title = url.split("http://en.wikipedia.org/wiki/")[-1]
         url_now = "http://en.wikipedia.org/w/index.php?title=%s&printable=yes" % title
         html = self.__fetch(url_now)
-        return html.read()
+        if html is not None:
+            return html.read()
         
     def get_info(self, thing, *params):
         """

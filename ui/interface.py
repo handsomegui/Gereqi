@@ -33,12 +33,12 @@ class Finish:
         Things to perform when the media library
         has been built/cancelled
         """
-        self.ui.stat_bttn.setEnabled(False)
+        self.ui.xtrawdgt.stat_bttn.setEnabled(False)
         if status == "cancelled":
-            self.ui.stat_prog.setToolTip("cancelled")
+            self.ui.xtrawdgt.stat_prog.setToolTip("cancelled")
         else:
-            self.ui.stat_prog.setToolTip("Finished")
-        self.ui.stat_prog.setValue(100)
+            self.ui.xtrawdgt.stat_prog.setToolTip("Finished")
+        self.ui.xtrawdgt.stat_prog.setValue(100)
         self.ui.collectTree.clear()
         self.ui.setup_db_tree()
         
@@ -915,10 +915,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 QFileDialog.Options(QFileDialog.ShowDirsOnly))
         # If the dialog is cancelled in last if statement the below is ignored
         if self.media_dir is not None:
-            self.stat_bttn.setEnabled(True)
+            self.xtrawdgt.stat_bttn.setEnabled(True)
             self.build_db_thread.set_values(self.media_dir, MainWindow.audio_formats)
-            self.stat_prog.setToolTip("Scanning Media")
-            self.stat_prog.setValue(0)
+            self.xtrawdgt.stat_prog.setToolTip("Scanning Media")
+            self.xtrawdgt.stat_prog.setValue(0)
             self.build_db_thread.start()
 
 # FIXME: Holy shit. What a mess. Fix
