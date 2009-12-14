@@ -8,11 +8,10 @@ lost when it comes to Class aggregation.
 from PyQt4.QtGui import QMainWindow, QFileDialog,   \
 QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
 QIcon, QTreeWidgetItem, QPixmap, QMessageBox, QColor, \
-QFont, QShortcut, QKeySequence, QLabel, QProgressBar, \
-QToolButton, QAction, QSystemTrayIcon, \
-qApp, QDirModel, QMenu
+QSystemTrayIcon
+
 from PyQt4.QtCore import QString, Qt, QTime, SIGNAL, \
-SLOT, QFile, QDir, QSize, QObject
+SLOT, QDir, QObject
 
 from random import randrange
 
@@ -23,10 +22,13 @@ from threads import Getcover, Getwiki, Builddb
 from gstbe import Gstbe
 from extraneous import Extraneous
 from Ui_interface import Ui_MainWindow
+from extrawidgets import SetupExtraWidgets, WidgetManips
+
+    
 
 class Finish:
-    def __init__(self, BaseObject):
-        self.ui = BaseObject
+    def __init__(self, parent):
+        self.ui = parent
 
     def db_build(self, status):
         """
@@ -40,7 +42,7 @@ class Finish:
             self.ui.xtrawdgt.stat_prog.setToolTip("Finished")
         self.ui.xtrawdgt.stat_prog.setValue(100)
         self.ui.collectTree.clear()
-        self.ui.setup_db_tree()
+        self.ui.wdgt_manip.setup_db_tree()
         
     def set_cover(self, img):
         if img.isNull() is True:
@@ -60,8 +62,8 @@ class Finish:
             
             
 class AudioBackend:
-    def __init__(self, BaseObject, backend="gstreamer"):
-        self.ui = BaseObject
+    def __init__(self, parent,  backend="gstreamer"):
+        self.ui = parent
         if backend == "gstreamer":
             self.__gstreamer_init()
             
@@ -135,8 +137,8 @@ class AudioBackend:
 
 
 class Playlist:
-    def __init__(self, BaseObject):
-        self.ui = BaseObject
+    def __init__(self, parent):
+        self.ui = parent
         
     def add_to_playlist(self, file_name, info=None):
         """
@@ -244,8 +246,8 @@ class Playlist:
         return track        
 
 class Track:
-    def __init__(self, BaseObject):
-        self.ui = BaseObject
+    def __init__(self, parent):
+        self.ui = parent
         
     def generate_track(self, mode, row=None):
         """
@@ -306,148 +308,6 @@ class Track:
         MainWindow.art_alb["nowalb"] = album.toUtf8()
         
 
-class SetupExtraWidgets:
-    def __init__(self, BaseObject):
-        # Basically,the parent.
-        self.ui = BaseObject
-        self.__setup_fileview()
-        self.__create_tray_menu()
-        self.__playlist_add_menu()
-        self.__disable_tabs()
-        self.__setup_misc()
-        self.__key_shortcuts()
-        QObject.connect(self.play_type_bttn, SIGNAL('toggled ( bool )'), self.__play_type)
-
-    def __setup_fileview(self):
-        """
-        A fileView browser where tracks can be (eventually)
-        added to the playlist
-        """
-        self.dir_model = QDirModel()
-        filters = QDir.Files | QDir.AllDirs | QDir.Readable | QDir.NoDotAndDotDot
-        self.dir_model.setFilter(filters)
-        self.dir_model.setReadOnly(True)
-        self.dir_model.setNameFilters(["*.ogg","*.flac","*.mp3", "*.m4a"])
-        self.ui.fileView.setModel(self.dir_model) 
-        self.ui.fileView.setColumnHidden(1, True)
-        self.ui.fileView.setColumnHidden(2, True)
-        self.ui.fileView.setColumnHidden(3, True)
-        self.ui.fileView.expandToDepth(0)
-        
-    def __create_tray_menu(self):
-        """
-        The tray menu contains shortcuts to features
-        in the main UI
-        """
-        quit_action = QAction(QString("&Quit"), self.ui)
-        self.play_action = QAction(QString("&Play"), self.ui)
-        next_action = QAction(QString("&Next"), self.ui)
-        prev_action = QAction(QString("&Previous"), self.ui)
-        stop_action = QAction(QString("&Stop"), self.ui)
-        self.play_action.setCheckable(True)
-        self.view_action = QAction(QString("&Visible"), self.ui)
-        self.view_action.setCheckable(True)
-        self.view_action.setChecked(True)
-        tray_icon_menu = QMenu(self.ui)
-        icon = QIcon(QPixmap(":/Icons/app.png"))
-        tray_icon_menu.addAction(icon, QString("Gereqi"))
-        tray_icon_menu.addSeparator()
-        tray_icon_menu.addAction(prev_action)
-        tray_icon_menu.addAction(self.play_action)
-        tray_icon_menu.addAction(stop_action)
-        tray_icon_menu.addAction(next_action)
-        tray_icon_menu.addSeparator()
-        tray_icon_menu.addAction(self.view_action)
-        tray_icon_menu.addAction(quit_action)
-        self.tray_icon = QSystemTrayIcon(self.ui)
-        icon2 = QIcon(QPixmap(":/Icons/app-paused.png"))
-        self.tray_icon.setIcon(icon2)
-        self.tray_icon.setContextMenu(tray_icon_menu)
-        self.tray_icon.show()
-        self.tray_icon.setToolTip("Stopped")    
-        
-        QObject.connect(self.play_action, SIGNAL("toggled(bool)"), self.ui.playBttn, SLOT("setChecked(bool)"))
-        QObject.connect(next_action, SIGNAL("triggered()"), self.ui.nxtBttn, SLOT("click()"))
-        QObject.connect(prev_action, SIGNAL("triggered()"), self.ui.prevBttn, SLOT("click()"))
-        QObject.connect(stop_action, SIGNAL("triggered()"), self.ui.stopBttn, SLOT("click()"))
-        QObject.connect(self.view_action, SIGNAL("toggled(bool)"), self.ui.minimise_to_tray)  
-        QObject.connect(quit_action, SIGNAL("triggered()"), qApp, SLOT("quit()"))
-        QObject.connect(self.tray_icon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.ui.tray_event)
-
-     
-    def __playlist_add_menu(self):
-        """
-        In the 'playlist' tab a menu is required for
-        the 'add' button
-        """
-        menu = QMenu(self.ui)
-        playlist_menu = QMenu(self.ui)
-        playlist_menu.setTitle(QString("Playlist"))
-        new = QAction(QString("New..."), self.ui)
-        existing = QAction(QString("Import Existing..."), self.ui)
-        playlist_menu.addAction(new)
-        playlist_menu.addAction(existing)        
-        menu.addMenu(playlist_menu)
-        smart = QAction(QString("Smart Playlist..."), self.ui)
-        dynamic = QAction(QString("Dynamic Playlist..."), self.ui)
-        radio = QAction(QString("Radio Stream..."), self.ui)
-        podcast = QAction(QString("Podcast..."), self.ui)
-        menu.addAction(smart)
-        menu.addAction(dynamic)
-        menu.addAction(radio)
-        menu.addAction(podcast)
-        self.ui.addPlylstBttn.setMenu(menu)
-        
-    def __disable_tabs(self):
-        self.ui.contentTabs.setTabEnabled(1, False)
-        self.ui.contentTabs.setTabEnabled(2, False)
-        self.ui.parentTabs.setTabEnabled(2, False)
-        self.ui.parentTabs.setTabEnabled(3, False)
-        
-    def __setup_misc(self):
-        """
-        Extra __init__ things to add to the UI
-        """        
-        self.ui.progSldr.setPageStep(0)
-        self.ui.progSldr.setSingleStep(0)
-        self.stat_lbl = QLabel("Finished")
-        self.stat_prog = QProgressBar()
-        self.stat_bttn = QToolButton()
-        self.play_type_bttn = QToolButton()
-        icon = QIcon(QPixmap(":/Icons/application-exit.png"))
-        self.stat_prog.setRange(0, 100)
-        self.stat_prog.setValue(100)
-        self.stat_prog.setMaximumSize(QSize(100, 18))
-        self.stat_bttn.setIcon(icon)
-        self.stat_bttn.setAutoRaise(True)
-        self.stat_bttn.setEnabled(False)
-        self.play_type_bttn.setText("N")
-        self.play_type_bttn.setCheckable(True)
-        self.play_type_bttn.setAutoRaise(True)
-        self.ui.statusBar.addPermanentWidget(self.stat_lbl)
-        self.ui.statusBar.addPermanentWidget(self.stat_prog)
-        self.ui.statusBar.addPermanentWidget(self.stat_bttn)
-        self.ui.statusBar.addPermanentWidget(self.play_type_bttn)
-        # Headers for the Playlist widget
-        # TODO: dynamic columns at some point
-        headers = [QString("Track"), QString("Title"), QString("Artist"), \
-                   QString("Album"), QString("Year"), QString("Genre"),   \
-                   QString("Length"), QString("Bitrate"), QString("FileName")]
-        for val in range(len(headers)):
-            self.ui.playlistTree.insertColumn(val)
-        self.ui.playlistTree.setHorizontalHeaderLabels(headers)
-
-    def __play_type(self, checked):
-        if checked is True:
-            self.play_type_bttn.setText("R")
-        else:
-            self.play_type_bttn.setText("N")
-            
-    def __key_shortcuts(self):
-        delete = QShortcut(QKeySequence(QString("Del")), self.ui)
-        QObject.connect(delete, SIGNAL("activated()"), self.ui.playlisting.del_track)   
-            
-
 class MainWindow(Ui_MainWindow, QMainWindow): 
     """
     Where everything starts from, mostly.
@@ -456,7 +316,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     art_alb = {"oldart":None, "oldalb":None, "nowart":None, "nowalb":None} 
     old_pos = 0
     locale = ".com"
-    audio_formats = ["flac","mp3","ogg", "m4a"]
+    audio_formats = ["flac", "mp3", "ogg",  "m4a"]
+    format_filter = ["*.ogg", "*.flac", "*.mp3",  "*.m4a"]
     colours = {
            "odd": QColor(220, 220, 220, 128), 
            "even": QColor(255, 255, 255), 
@@ -483,7 +344,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.playlisting = Playlist(self)
         self.xtrawdgt = SetupExtraWidgets(self)
         self.tracking = Track(self)
-        
+        self.wdgt_manip = WidgetManips(self)
         self.finishes = Finish(self)
         
         self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.finishes.db_build)
@@ -496,20 +357,20 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.connect(self.actionNext_Track, SIGNAL("triggered()"), self.nxtBttn, SLOT("click()"))
         self.connect(self.actionPrevious_Track, SIGNAL("triggered()"), self.prevBttn, SLOT("click()"))  
         self.connect(self.actionStop, SIGNAL("triggered()"), self.stopBttn, SLOT("click()"))
-        
         self.connect(self.xtrawdgt.stat_bttn, SIGNAL("pressed()"), self.quit_build)
+        self.connect(self.xtrawdgt.play_type_bttn, SIGNAL('toggled ( bool )'), self.wdgt_manip.set_play_type)
 
         
         #Make the collection search line-edit have the keyboard focus on startup.
         self.srchCollectEdt.setFocus()
-        self.setup_db_tree()
+        self.wdgt_manip.setup_db_tree()
         
     def on_srchCollectEdt_textChanged(self, p0):
         """
         This allows the filtering of the collection tree
         """
         srch = str(p0)
-        self.setup_db_tree(filt=srch)       
+        self.wdgt_manip.setup_db_tree(filt=srch)       
         
     def on_collectTree_itemDoubleClicked(self, item, column):
         """
@@ -684,10 +545,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """        
         mfiles = QFileDialog.getOpenFileNames(\
                         None, 
-                        self.trUtf8("Select Music Files"),
+                        QString("Select Music Files"),
                         QDesktopServices.storageLocation(QDesktopServices.MusicLocation), 
                         #TODO: do not hard-code this
-                        self.trUtf8("*.flac *.mp3 *.ogg *.m4a"), 
+                        QString(" ".join(MainWindow.format_filter)), 
                         None)       
                         
         if mfiles is not None:
@@ -798,8 +659,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         # TODO: not implemented yet
         QMessageBox.information(None,
-            self.trUtf8("Help"),
-            self.trUtf8("""Boo!"""))
+            QString("Help"),
+            QString("""Boo!"""))
 
     def on_collectTree_itemExpanded(self, item):
         """
@@ -849,7 +710,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # TODO: not implemented yet
         filt = self.srchCollectEdt.text()
         filt = str(filt)
-        self.setup_db_tree(filt)
+        self.wdgt_manip.setup_db_tree(filt)
         now = self.extras.date_now()
         print("Filter collectionTree WRT time.", now)
         
@@ -859,7 +720,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         # TODO: not implemented yet
         QMessageBox.aboutQt(None, 
-            self.trUtf8(""))
+            QString(""))
             
     def on_clrsrchBttn_clicked(self):
         """
@@ -910,8 +771,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if self.media_dir is None:
             self.media_dir = QFileDialog.getExistingDirectory(\
                 None,
-                self.trUtf8("Select Media Directory"),
-                self.trUtf8("/home"),
+                QString("Select Media Directory"),
+                QString("/home"),
                 QFileDialog.Options(QFileDialog.ShowDirsOnly))
         # If the dialog is cancelled in last if statement the below is ignored
         if self.media_dir is not None:
@@ -980,7 +841,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             searcher.setFilter(QDir.Files)
             searcher.setFilter(QDir.Files)
             # FIXME: do not hard code formats
-            searcher.setNameFilters(["*.ogg","*.flac","*.mp3", "*.m4a"])
+            searcher.setNameFilters(MainWindow.format_filter)
             for item in searcher.entryInfoList():
                 fname = item.absoluteFilePath()
                 self.playlisting.add_to_playlist(self.extras.qstr2uni(fname))
@@ -988,34 +849,3 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             fname = self.xtrawdgt .dir_model.filePath(index)
             self.playlisting.add_to_playlist(self.extras.qstr2uni(fname))
         
-
-    def setup_db_tree(self, filt=None):
-        """
-        viewing the media database in the QTreeView
-        """
-        #TODO: make the creation aware of the collectTimeBox widget
-        time_filter = self.collectTimeBox.currentIndex()
-        self.collectTree.clear()
-        # This gives multiples of the same thing i.e albums
-        artists = self.media_db.get_artists()
-        artists = sorted(artists)
-        old_char = None
-        char = None
-        font = QFont()
-        font.setBold(True)
-        for cnt in range(len(artists)):
-            artist = artists[cnt][0]
-            # When creating collection tree only 
-            #  allow certain artists based on the filter.
-            # FIXME: not sure filt is not None is needed
-            if (filt is not None) and (filt.lower() not in artist.lower()):
-                continue
-            char = artist[0]   
-            if char != old_char:
-                old_char = char  
-                char = QTreeWidgetItem(["== %s ==" % char])
-                char.setFont(0, font)
-                self.collectTree.addTopLevelItem(char)
-            artist = QTreeWidgetItem([QString(artist)])
-            artist.setChildIndicatorPolicy(0)
-            self.collectTree.addTopLevelItem(artist)
