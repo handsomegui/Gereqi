@@ -28,7 +28,7 @@ class Playlist:
     def __init__(self, BaseObject):
         self.ui = BaseObject
         
-    def add2playlist(self, file_name, info=None):
+    def add_to_playlist(self, file_name, info=None):
         """
         Called when adding tracks to the playlist either locally
         or from the database. Does not pull metadata from 
@@ -81,6 +81,7 @@ class Playlist:
         """
         file_list = self.__gen_file_list()
         file_name = self.ui.player.current_source()
+        
         if file_name is not None:
             return file_list.index(file_name)
         
@@ -169,13 +170,13 @@ class Track:
             rows = self.ui.playlistTree.rowCount() 
             if rows > 0:
                 row_now = self.ui.playlisting.current_row()
-                if row_now:
+                if row_now is not None:
                     if mode == "back":
                         if (row_now - 1) >= 0:
                             track = self.ui.playlistTree.item(row_now - 1 , column)
                             track = track.text()
                     elif mode == "next":
-                        if self.ui.xtrawdgt.play_type_bttn.isChecked():
+                        if self.ui.xtrawdgt.play_type_bttn.isChecked() is True:
                             # Here we need to randomly choose the next track
                             row = randrange(0, rows)
                             track = self.ui.playlistTree.item(row, column)
@@ -436,13 +437,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             album = self.extras.qstr2uni(album)     
             track = self.extras.qstr2uni(track)
             file_name = self.media_db.get_file(artist, album, track)
-            self.playlisting.add2playlist(file_name)
+            self.playlisting.add_to_playlist(file_name)
         elif album is not None:
             album = self.extras.qstr2uni(album)
             tracks = self.media_db.get_files(artist, album)
             for track in tracks:
                 # Retrieves metadata from database
-                self.playlisting.add2playlist(track)
+                self.playlisting.add_to_playlist(track)
     
     def on_prevBttn_pressed(self):
         """
@@ -592,7 +593,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 fname = self.extras.qstr2uni(item)
                 ender = fname.split(".")[-1]
                 if ender.lower() in MainWindow.audio_formats:
-                    self.playlisting.add2playlist(fname)
+                    self.playlisting.add_to_playlist(fname)
 
     def on_actionMinimise_to_Tray_toggled(self, checked):
         self.minimise_to_tray(checked)
@@ -951,10 +952,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         print("ABOUT TO FINISH", pipeline)
         track = self.tracking.generate_track("next")
         #Not at end of  playlist
-        if track:
+        if track is not None:
             self.player.enqueue(track)
             
-
     def __resize_fileview(self):
         """
         Resizes the fileView to it's contents.
@@ -976,10 +976,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             searcher.setNameFilters(["*.ogg","*.flac","*.mp3", "*.m4a"])
             for item in searcher.entryInfoList():
                 fname = item.absoluteFilePath()
-                self.playlisting.add2playlist(self.extras.qstr2uni(fname))
+                self.playlisting.add_to_playlist(self.extras.qstr2uni(fname))
         else:
             fname = self.xtrawdgt .dir_model.filePath(index)
-            self.playlisting.add2playlist(self.extras.qstr2uni(fname))
+            self.playlisting.add_to_playlist(self.extras.qstr2uni(fname))
         
 
     def setup_db_tree(self, filt=None):
