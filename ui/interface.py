@@ -28,34 +28,79 @@ class Playlist:
     def __init__(self, BaseObject):
         self.ui = BaseObject
         
+# This is needed as the higlighted row can be different
+# than the currentRow method of Qtableview.
+    def current_row(self):
+        """
+        Finds the playlist row of the
+        currently playing track
+        """
+        file_list = self.__gen_file_list()
+        file_name = self.ui.player.current_source()
+        if file_name is not None:
+            return file_list.index(file_name)
+        
+    def __gen_file_list(self):
+        """
+        Creates a list of files in the playlist at its
+        current sorting top to bottom
+        """
+        rows = self.ui.playlistTree.rowCount() 
+        column = self.header_search("FileName")
+        file_list = [self.ui.playlistTree.item(row, column).text() for row in range(rows)]
+        return file_list   
+        
+    def del_track(self):
+        """
+        Deletes selected tracks from playlist
+        """
+        items = self.ui.playlistTree.selectedItems()
+        for item in items:
+            try:
+                row = item.row()
+                self.ui.playlistTree.removeRow(row)
+                self.tracknow_colourise()
+            except RuntimeError:
+                # likely deleted already i.e selected same row but multiple columns
+                return 
+        
+    def header_search(self, val):
+        """
+        This will eventually allows the column order of the 
+        playlist view to be changed         
+        """
+        cols = self.ui.playlistTree.columnCount()
+        headers = [self.ui.playlistTree.horizontalHeaderItem(col).text() for col in range(cols)]
+        return headers.index(val)
+        
     #TODO: use native/theme colours for odd/even colours
-    def tracknow_colourise(self, now):
+    def tracknow_colourise(self, now=None):
         """
         Instead of using QTableWidget's selectRow function, 
         set the background colour of each item in a row
         until track changes.
         """
-        if now:
-            self.ui.playlistTree.selectRow(now)
-            columns = self.ui.playlistTree.columnCount()
-            rows = self.ui.playlistTree.rowCount()
-            for row in range(rows):
-                for col in range(columns):
-                    item = self.ui.playlistTree.item(row, col)
-                    if row != now:
-                        if row % 2:
-                            item.setBackgroundColor(MainWindow.colours["odd"])
-                        else:
-                            item.setBackgroundColor(MainWindow.colours["even"])
+        
+        columns = self.ui.playlistTree.columnCount()
+        rows = self.ui.playlistTree.rowCount()
+        for row in range(rows):
+            for col in range(columns):
+                item = self.ui.playlistTree.item(row, col)
+                if row != now:
+                    if row % 2:
+                        item.setBackgroundColor(MainWindow.colours["odd"])
                     else:
-                        item.setBackgroundColor(MainWindow.colours["now"])
+                        item.setBackgroundColor(MainWindow.colours["even"])
+                else:
+                    item.setBackgroundColor(MainWindow.colours["now"])
+                    self.ui.playlistTree.selectRow(now)
                         
     def highlighted_track(self):
         """
         In the playlist
         """
         row = self.ui.playlistTree.currentRow() # It's things like this I have no idea how to sort out
-        column = self.ui.header_search("FileName")
+        column = self.header_search("FileName")
         track = None
         # -1 is the row value for None
         if row > -1:
@@ -72,7 +117,7 @@ class Track:
         tracks) has to be regenerated before the queing of the next track
         """
         # So that it can be dynamic later on when columns can be moved
-        column = self.ui.header_search("FileName")
+        column = self.ui.playlisting.header_search("FileName")
         track = None
         if mode == "now":
             track = self.ui.playlistTree.item(row, column).text()
@@ -80,7 +125,7 @@ class Track:
             # If 0 then the playlist is empty
             rows = self.ui.playlistTree.rowCount() 
             if rows > 0:
-                row_now = self.ui.current_row()
+                row_now = self.ui.playlisting.current_row()
                 if row_now:
                     if mode == "back":
                         if (row_now - 1) >= 0:
@@ -103,7 +148,7 @@ class Track:
          This retrieves data from the playlist table, not the database. 
         This is because the playlist may contain tracks added locally.        
         """
-        row = self.ui.current_row()
+        row = self.ui.playlisting.current_row()
         title = self.ui.playlistTree.item(row, 1).text()
         artist = self.ui.playlistTree.item(row, 2).text()
         album = self.ui.playlistTree.item(row, 3).text()
@@ -131,7 +176,6 @@ class SetupExtraWidgets:
         self.ui = BaseObject
         self.__setup_fileview()
         self.__create_tray_menu()
-        self.__setup_shortcuts()
         self.__playlist_add_menu()
         self.__disable_tabs()
         self.__setup_misc()
@@ -190,13 +234,6 @@ class SetupExtraWidgets:
         self.ui.connect(self.tray_icon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.ui.tray_event)
         self.tray_icon.show()
         self.tray_icon.setToolTip("Stopped")    
-        
-    def __setup_shortcuts(self):
-        """
-        Keyboard shortcuts setup
-        """
-        delete = QShortcut(QKeySequence(QString("Del")), self.ui)
-        self.ui.connect(delete, SIGNAL("activated()"), self.ui.del_track)     
      
     def __playlist_add_menu(self):
         """
@@ -313,6 +350,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.connect(self.actionStop, SIGNAL("triggered()"), self.stopBttn, SLOT("click()"))
         self.connect(self.xtrawdgt.play_type_bttn, SIGNAL('toggled ( bool )'), self.__play_type)
         self.connect(self.xtrawdgt.stat_bttn, SIGNAL("pressed()"), self.quit_build)
+        delete = QShortcut(QKeySequence(QString("Del")), self)
+        self.connect(delete, SIGNAL("activated()"), self.playlisting.del_track)   
         
         #Make the collection search line-edit have the keyboard focus on startup.
         self.srchCollectEdt.setFocus()
@@ -375,7 +414,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             if self.playBttn.isChecked() is True:
                 self.player.play()
             else:
-                self.tracking.tracknow_colourise(self.current_row())
+                self.tracking.tracknow_colourise(self.playlisting.current_row())
 
     #TODO: this can be called from 2 other actions. Needs tidy up.
     def on_playBttn_toggled(self, checked):
@@ -454,7 +493,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             if self.playBttn.isChecked() is True:
                 self.player.play()
             else:
-                self.playlisting.highlighted_track(self.current_row())
+                self.playlisting.highlighted_track(self.playlisting.current_row())
         else:
             # TODO: some tidy up thing could go here
             return
@@ -543,7 +582,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Not sure whether to highlight row or item
         """
         # Resets before searching again
-        now = self.current_row()
+        now = self.playlisting.current_row()
         if now is not None:
             self.playlisting.highlighted_track(now)
         test = len(str(p0).strip())
@@ -682,7 +721,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         # TODO: not implemented yet
         self.srchplyEdit.clear()
-        self.playlisting.highlighted_track(self.current_row())
+        self.playlisting.highlighted_track(self.playlisting.current_row())
         #FIXME: need playbin.clearqueue()
         
         
@@ -696,17 +735,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # locks up database
         print(self.build_db_thread.stop_now() )
 
-# This is needed as the higlighted row can be different
-# than the currentRow method of Qtableview.
-    def current_row(self):
-        """
-        Finds the playlist row of the
-        currently playing track
-        """
-        file_list = self.gen_file_list()
-        file_name = self.player.current_source()
-        if file_name is not None:
-            return file_list.index(file_name)
+
         
     def prog_tick(self, time):
         """
@@ -895,7 +924,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             if not info:
                 return
         row = self.playlistTree.rowCount()
-        hdr = self.header_search
+        hdr = self.playlisting.header_search
         # Creates each cell for a track based on info
 
         title = QTableWidgetItem(QString(info[0]))
@@ -926,40 +955,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.playlistTree.setItem(row, hdr("FileName") , file)
         self.playlistTree.resizeColumnsToContents()   
         
-    def gen_file_list(self):
-        """
-        Creates a list of files in the playlist at its
-        current sorting top to bottom
-        """
-        rows = self.playlistTree.rowCount() 
-        column = self.header_search("FileName")
-        file_list = [self.playlistTree.item(row, column).text() for row in range(rows)]
-        return file_list   
 
-    def del_track(self):
-        """
-        Deletes selected tracks from playlist
-        """
-        items = self.playlistTree.selectedItems()
-        for item in items:
-            try:
-                row = item.row()
-                self.playlistTree.removeRow(row)
-            except RuntimeError:
-                # likely deleted already i.e selected same row but multiple columns
-                return  
+
+ 
                 
 
                     
                     
-    def header_search(self, val):
-        """
-        This will eventually allows the column order of the 
-        playlist view to be changed         
-        """
-        cols = self.playlistTree.columnCount()
-        headers = [self.playlistTree.horizontalHeaderItem(col).text() for col in range(cols)]
-        return headers.index(val)
+
         
     def __resize_fileview(self):
         """
