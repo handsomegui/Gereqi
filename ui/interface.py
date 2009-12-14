@@ -24,6 +24,41 @@ from gstbe import Gstbe
 from extraneous import Extraneous
 from Ui_interface import Ui_MainWindow
 
+class Finish:
+    def __init__(self, BaseObject):
+        self.ui = BaseObject
+
+    def db_build(self, status):
+        """
+        Things to perform when the media library
+        has been built/cancelled
+        """
+        self.ui.stat_bttn.setEnabled(False)
+        if status == "cancelled":
+            self.ui.stat_prog.setToolTip("cancelled")
+        else:
+            self.ui.stat_prog.setToolTip("Finished")
+        self.ui.stat_prog.setValue(100)
+        self.ui.collectTree.clear()
+        self.ui.setup_db_tree()
+        
+    def set_cover(self, img):
+        if img.isNull() is True:
+            self.ui.coverView.setPixmap(QPixmap(":/Icons/music.png"))
+        else:
+            cover = QPixmap()
+            cover = cover.fromImage(img)
+            cover = cover.scaledToWidth(200, Qt.SmoothTransformation)
+            self.ui.coverView.setPixmap(cover)        
+        
+    def set_wiki(self, html):
+        if html != "None":
+            self.ui.contentTabs.setTabEnabled(2, True)
+            self.ui.wikiView.setHtml(html)
+        else:
+            self.ui.contentTabs.setTabEnabled(2, False)
+            
+            
 class AudioBackend:
     def __init__(self, BaseObject, backend="gstreamer"):
         self.ui = BaseObject
@@ -280,6 +315,8 @@ class SetupExtraWidgets:
         self.__playlist_add_menu()
         self.__disable_tabs()
         self.__setup_misc()
+        self.__key_shortcuts()
+        QObject.connect(self.play_type_bttn, SIGNAL('toggled ( bool )'), self.__play_type)
 
     def __setup_fileview(self):
         """
@@ -326,15 +363,17 @@ class SetupExtraWidgets:
         icon2 = QIcon(QPixmap(":/Icons/app-paused.png"))
         self.tray_icon.setIcon(icon2)
         self.tray_icon.setContextMenu(tray_icon_menu)
-        self.ui.connect(self.play_action, SIGNAL("toggled(bool)"), self.ui.playBttn, SLOT("setChecked(bool)"))
-        self.ui.connect(next_action, SIGNAL("triggered()"), self.ui.nxtBttn, SLOT("click()"))
-        self.ui.connect(prev_action, SIGNAL("triggered()"), self.ui.prevBttn, SLOT("click()"))
-        self.ui.connect(stop_action, SIGNAL("triggered()"), self.ui.stopBttn, SLOT("click()"))
-        self.ui.connect(self.view_action, SIGNAL("toggled(bool)"), self.ui.minimise_to_tray)  
-        self.ui.connect(quit_action, SIGNAL("triggered()"), qApp, SLOT("quit()"))
-        self.ui.connect(self.tray_icon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.ui.tray_event)
         self.tray_icon.show()
         self.tray_icon.setToolTip("Stopped")    
+        
+        QObject.connect(self.play_action, SIGNAL("toggled(bool)"), self.ui.playBttn, SLOT("setChecked(bool)"))
+        QObject.connect(next_action, SIGNAL("triggered()"), self.ui.nxtBttn, SLOT("click()"))
+        QObject.connect(prev_action, SIGNAL("triggered()"), self.ui.prevBttn, SLOT("click()"))
+        QObject.connect(stop_action, SIGNAL("triggered()"), self.ui.stopBttn, SLOT("click()"))
+        QObject.connect(self.view_action, SIGNAL("toggled(bool)"), self.ui.minimise_to_tray)  
+        QObject.connect(quit_action, SIGNAL("triggered()"), qApp, SLOT("quit()"))
+        QObject.connect(self.tray_icon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.ui.tray_event)
+
      
     def __playlist_add_menu(self):
         """
@@ -398,10 +437,20 @@ class SetupExtraWidgets:
             self.ui.playlistTree.insertColumn(val)
         self.ui.playlistTree.setHorizontalHeaderLabels(headers)
 
+    def __play_type(self, checked):
+        if checked is True:
+            self.play_type_bttn.setText("R")
+        else:
+            self.play_type_bttn.setText("N")
+            
+    def __key_shortcuts(self):
+        delete = QShortcut(QKeySequence(QString("Del")), self.ui)
+        QObject.connect(delete, SIGNAL("activated()"), self.ui.playlisting.del_track)   
+            
 
 class MainWindow(Ui_MainWindow, QMainWindow): 
     """
-    Yes, you'er seeing that correctly. A 1000 line class.
+    Where everything starts from, mostly.
     """    
     show_messages = True
     art_alb = {"oldart":None, "oldalb":None, "nowart":None, "nowalb":None} 
@@ -431,13 +480,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.extras = Extraneous()
         self.meta = Tagging(MainWindow.audio_formats)
         self.player = AudioBackend(self)
+        self.playlisting = Playlist(self)
         self.xtrawdgt = SetupExtraWidgets(self)
         self.tracking = Track(self)
-        self.playlisting = Playlist(self)
         
-        self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.__finish_build)
-        self.connect(self.cover_thread, SIGNAL("got-image ( QImage ) "), self.__set_cover) 
-        self.connect(self.html_thread, SIGNAL("got-wiki ( QString ) "), self.__set_wiki)
+        self.finishes = Finish(self)
+        
+        self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.finishes.db_build)
+        self.connect(self.cover_thread, SIGNAL("got-image ( QImage ) "), self.finishes.set_cover) 
+        self.connect(self.html_thread, SIGNAL("got-wiki ( QString ) "), self.finishes.set_wiki)
         self.connect(self.build_db_thread, SIGNAL("progress ( int ) "), self.xtrawdgt.stat_prog, SLOT("setValue(int)"))
         self.connect(self.fileView, SIGNAL("expanded (const QModelIndex&)"), self.__resize_fileview) 
         self.connect(self.fileView, SIGNAL("doubleClicked (const QModelIndex&)"), self.__fileview_item)
@@ -445,10 +496,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.connect(self.actionNext_Track, SIGNAL("triggered()"), self.nxtBttn, SLOT("click()"))
         self.connect(self.actionPrevious_Track, SIGNAL("triggered()"), self.prevBttn, SLOT("click()"))  
         self.connect(self.actionStop, SIGNAL("triggered()"), self.stopBttn, SLOT("click()"))
-        self.connect(self.xtrawdgt.play_type_bttn, SIGNAL('toggled ( bool )'), self.__play_type)
+        
         self.connect(self.xtrawdgt.stat_bttn, SIGNAL("pressed()"), self.quit_build)
-        delete = QShortcut(QKeySequence(QString("Del")), self)
-        self.connect(delete, SIGNAL("activated()"), self.playlisting.del_track)   
+
         
         #Make the collection search line-edit have the keyboard focus on startup.
         self.srchCollectEdt.setFocus()
@@ -832,23 +882,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         print(self.build_db_thread.stop_now() )
 
 
-        
-    def prog_tick(self, time):
-        """
-        Every second update time labels and progress slider
-        """
-        pos = self.progSldr.value()
-        t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
-        now = t_now.toString('mm:ss')
-        maxtime = self.t_length.toString('mm:ss')
-        msg = "%s | %s" % (now, maxtime)
-        self.progLbl.setText(msg)            
-        # This only goes(?) if  the user has not grabbed the slider
-        # The 'or' stops issue where the slider doesn't move after track finishes
-        if pos == MainWindow.old_pos: 
-            self.progSldr.setValue(time)
-        MainWindow.old_pos = time
- 
     def set_prog_sldr(self):
         """
         Linked to the current time of
@@ -888,6 +921,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.stat_prog.setValue(0)
             self.build_db_thread.start()
 
+# FIXME: Holy shit. What a mess. Fix
     def set_info(self):
         """
         The wikipedia page + album art to current artist playing
@@ -927,44 +961,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if self.xtrawdgt.tray_icon.isVisible() is True:
             self.hide()
             event.ignore()
-            
-            
-    # I honestly could not figure out how to deal with Finishes.
-    # Inheritance, attributes, etc is turning my brain to mush
-            
-    def __set_cover(self, img):
-        if img.isNull() is True:
-            self.coverView.setPixmap(QPixmap(":/Icons/music.png"))
-        else:
-            cover = QPixmap()
-            cover = cover.fromImage(img)
-            cover = cover.scaledToWidth(200, Qt.SmoothTransformation)
-            self.coverView.setPixmap(cover)        
-        
-    def __set_wiki(self, html):
-        if html != "None":
-            self.contentTabs.setTabEnabled(2, True)
-            self.wikiView.setHtml(html)
-        else:
-            self.contentTabs.setTabEnabled(2, False)
-            
-    def __finish_build(self, status):
-        """
-        Things to perform when the media library
-        has been built/cancelled
-        """
-        self.stat_bttn.setEnabled(False)
-        if status == "cancelled":
-            self.stat_prog.setToolTip("cancelled")
-        else:
-            self.stat_prog.setToolTip("Finished")
-        self.stat_prog.setValue(100)
-        self.collectTree.clear()
-        self.setup_db_tree()
-
-
-    
-
             
     def __resize_fileview(self):
         """
@@ -1023,9 +1019,3 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             artist = QTreeWidgetItem([QString(artist)])
             artist.setChildIndicatorPolicy(0)
             self.collectTree.addTopLevelItem(artist)
-            
-    def __play_type(self, checked):
-        if checked is True:
-            self.xtrawdgt.play_type_bttn.setText("R")
-        else:
-            self.xtrawdgt.play_type_bttn.setText("N")
