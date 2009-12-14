@@ -80,8 +80,9 @@ class Builddb(QThread):
         self.a_formats = formats
      
     def __track_list(self):
-        #FIXME: don't hard code
-        formats = [".ogg", ".mp3", ".flac", ".m4a"]
+        """
+        Generates a list of compatible files
+        """
         tracks = []
         # No point trying to speed this up. os.walk is a generator function
         for root, dirname, filenames in os.walk(str(self.media_dir)):
@@ -93,14 +94,12 @@ class Builddb(QThread):
                     #TODO: filename fixer
                     print("WARNING!: Funny encoding for filename. Ignoring", repr(now))
                     continue
-                ender = os.path.splitext(now)[-1]
+                ender = os.path.splitext(now)[-1].strip(".")
                 ender = ender.lower()
-                # We only want to get tags for certain file formats as
-                # tagpy can only work with certain types
-                if ender in formats:
+                # We only want to get tags for certain file formats
+                if ender in self.a_formats:
                     # No point doing DB interaction per item. We need to
-                    # know how many tracks being scanned for progress
-                    # update
+                    # Need to know how many tracks for progress bar
                     tracks.append(file_now)
         return tracks
         

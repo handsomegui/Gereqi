@@ -287,12 +287,11 @@ class Track:
         This is because the playlist may contain tracks added locally.        
         """
         row = self.ui.playlisting.current_row()
-        title = self.ui.playlistTree.item(row, 1).text()
-        artist = self.ui.playlistTree.item(row, 2).text()
-        album = self.ui.playlistTree.item(row, 3).text()
-        
-        # FIXME: Track total-time from playlist entry not playbin
-        min, sec = self.ui.playlistTree.item(row, 6).text().split(":")
+        hdr = self.ui.playlisting.header_search
+        title = self.ui.playlistTree.item(row, hdr("Title")).text()
+        artist = self.ui.playlistTree.item(row, hdr("Artist")).text()
+        album = self.ui.playlistTree.item(row, hdr("Album")).text()
+        min, sec = self.ui.playlistTree.item(row, hdr("Length")).text().split(":")
         self.play_time = 1000 * ((int(min) * 60) + int(sec))
         
         msg_header = QString("Now Playing")
@@ -787,19 +786,23 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         The wikipedia page + album art to current artist playing
         """
+        art_change = MainWindow.art_alb["nowart"] != MainWindow.art_alb["oldart"] 
         # Wikipedia info
-        if (self.art_alb["nowart"] != self.art_alb["oldart"] ) and (self.art_alb["nowart"] is not None):
+        if (art_change is True) and (MainWindow.art_alb["nowart"] is not None):
             # passes the artist to the thread
-            self.html_thread.set_values(self.art_alb["nowart"]) 
+            self.html_thread.set_values(MainWindow.art_alb["nowart"]) 
             # starts the thread
             self.html_thread.start() 
-            self.art_alb["oldart"] = self.art_alb["nowart"]
+            MainWindow.art_alb["oldart"] = MainWindow.art_alb["nowart"]
+            
+        alb_change = MainWindow.art_alb["nowalb"] != MainWindow.art_alb["oldalb"]
         # Album art
-        if (self.art_alb["nowalb"] != self.art_alb["oldalb"]) and (self.art_alb["nowalb"] is not None):
-            self.cover_thread.set_values(self.art_alb["nowalb"], 
-                                         self.art_alb["nowart"], MainWindow.locale)
+        if (alb_change is True) and (MainWindow.art_alb["nowalb"] is not None):
+            album = MainWindow.art_alb["nowalb"]
+            artist = MainWindow.art_alb["nowart"]
+            self.cover_thread.set_values(album, artist, MainWindow.locale)
             self.cover_thread.start()
-            self.art_alb["oldalb"] = self.art_alb["nowalb"]
+            MainWindow.art_alb["oldalb"] = MainWindow.art_alb["nowalb"]
 
     def tray_event(self, event):
         """
@@ -840,7 +843,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             searcher = QDir(fname)
             searcher.setFilter(QDir.Files)
             searcher.setFilter(QDir.Files)
-            # FIXME: do not hard code formats
             searcher.setNameFilters(MainWindow.format_filter)
             for item in searcher.entryInfoList():
                 fname = item.absoluteFilePath()
