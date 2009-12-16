@@ -265,7 +265,6 @@ class Track:
             rows = self.ui.playlistTree.rowCount() 
             if rows > 0:
                 row_now = self.ui.playlisting.current_row()
-                print row_now
                 if row_now is not None:
                     if mode == "back":
                         if (row_now - 1) >= 0:
@@ -495,7 +494,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Go to next item in playlist(down)
         """
         track = self.tracking.generate_track("next")
-        print track
         if track is not None:
             self.player.audio_object.stop() 
             self.player.audio_object.load(track)
