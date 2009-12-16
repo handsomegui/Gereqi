@@ -73,7 +73,7 @@ class AudioBackend:
         self.audio_object.pipe_line.connect("about-to-finish", self.__about_to_finish)
         QObject.connect(self.audio_object, SIGNAL("track_changed()"), self.__track_changed)
         QObject.connect(self.audio_object, SIGNAL("finished()"), self.__finished_playing)
-        QObject.connect(self.ui.stopBttn, SIGNAL("clicked()"), self.__finished_playing)
+        QObject.connect(self.ui.stopBttn, SIGNAL("pressed()"), self.__finished_playing)
         
     def __about_to_finish(self, pipeline):
         """
