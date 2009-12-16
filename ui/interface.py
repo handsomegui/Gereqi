@@ -591,7 +591,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # Resets before searching again
         now = self.playlisting.current_row()
         if now is not None:
-            self.playlisting.highlighted_track(now)
+            self.playlisting.highlighted_track()
         test = len(str(p0).strip())
         # Checks if the search edit isn't empty
         if test > 0:
@@ -605,6 +605,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     for col in range(columns):
                         item = self.playlistTree.item(row, col)
                         item.setBackgroundColor(MainWindow.colours["search"])
+            for row in range(self.playlistTree.rowCount()):
+                if row not in rows:
+                    for col in range(columns):
+                        item = self.playlistTree.item(row, col)
+                        if row % 2:
+                            item.setBackgroundColor(MainWindow.colours["odd"])
+                        else:
+                            item.setBackgroundColor(MainWindow.colours["even"])
+        else:
+            self.playlisting.tracknow_colourise()
                 
     def on_muteBttn_toggled(self, checked):
         """
@@ -726,7 +736,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         # TODO: not implemented yet
         self.srchplyEdit.clear()
-        self.playlisting.highlighted_track(self.playlisting.current_row())
+        self.playlisting.highlighted_track()
         
         
 #######################################
