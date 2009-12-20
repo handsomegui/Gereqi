@@ -238,7 +238,7 @@ class Playlist:
         """
         In the playlist
         """
-        row = self.ui.playlistTree.currentRow() # It's things like this I have no idea how to sort out
+        row = self.ui.playlistTree.currentRow()
         column = self.header_search("FileName")
         track = None
         # -1 is the row value for None

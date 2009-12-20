@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 #TODO: Import based on gstreamer capabilities
 from mutagen.flac import FLAC, FLACNoHeaderError, FLACVorbisError
 from mutagen.mp3 import MP3, HeaderNotFoundError
@@ -25,7 +27,7 @@ class Fixing:
         cnt = [int(item) for item in output.split("/")  if item]
         
         if len(cnt) > 1:
-            print("Multiple vorbis comment blocks found. Fixing:", fname)
+            print("Multiple vorbis comment blocks found. Fixing: %s" % fname)
             cnt = cnt[1:]
             cnt.reverse()
             for val in cnt:
@@ -114,12 +116,12 @@ class Tagging:
             title = path.splitext(base)[0]
             tags = [title,  "Unknown Artist", "Unknown Album", 0, "Unknown", 0]
         except ID3BadUnsynchData, err:
-            print("ERROR:", err, fname)
+            print("ERROR:%s %s" % (err, fname))
             return
         try:
             other = MP3(fname)
         except HeaderNotFoundError, err: 
-            print("ERROR:", err, fname)
+            print("ERROR:%s %s" % (err, fname))
             return
         length = self.manip.sec_to_time(round(other.info.length))
         bitrate = int(round(other.info.bitrate / 1024))
@@ -140,7 +142,7 @@ class Tagging:
                 audio = FLAC(fname)
                 bitrate = self.manip.manual_bitrate(fname, audio)
             except FLACNoHeaderError, err:
-                print("ERROR:", err, fname)
+                print("ERROR:%s %s" % (err, fname))
                 return
             except  FLACVorbisError, err:
                 if "> 1 Vorbis comment block found" in err:
@@ -149,7 +151,7 @@ class Tagging:
                     audio = FLAC(fname)
                     bitrate = self.manip.manual_bitrate(fname, audio)
                 else:
-                    print("ERROR:", err, fname)
+                    print("ERROR:%s %s" % (err, fname))
                     return
         elif mode == "ogg":
             try:
@@ -157,7 +159,7 @@ class Tagging:
                 # Damn kibibyte usage by Mutagen
                 bitrate = audio.info.bitrate / 1000 
             except OggVorbisHeaderError, err:
-                print("ERROR:", err, fname)
+                print("ERROR:%s %s" % (err, fname))
                 return
         length = self.manip.sec_to_time(round(audio.info.length))
         tags = self.manip.dict_to_list(audio)
