@@ -44,6 +44,7 @@ class Finish:
         self.ui.xtrawdgt.stat_prog.setValue(100)
         self.ui.collectTree.clear()
         self.ui.wdgt_manip.setup_db_tree()
+        self.ui.srchCollectEdt.clear()
         
     def set_cover(self, img):
         if img.isNull() is True:
