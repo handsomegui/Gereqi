@@ -155,6 +155,7 @@ class Playlist:
         row = self.ui.playlistTree.rowCount()
         self.ui.playlistTree.insertRow(row)
         #TODO: make the metadata come in as a dictionary
+        print info
         tbl_items = [   ["Track", "%02u" % info[5]], ["Title", info[0]],  
                             ["Artist", info[1]], ["Album", info[2]], ["Year", info[3]], 
                             ["Genre", info[4]], ["Length", info[6]], ["Bitrate", str(info[7])], 
@@ -745,7 +746,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Slot documentation goes here.
         """
         # TODO: not implemented yet
-        AudioCD()
+        acd = AudioCD()
+        cd_tracks = acd.get_info()
+        for trk in cd_tracks:
+            self.playlisting.add_to_playlist(trk[-1],  trk)
         
 #######################################
 #######################################
