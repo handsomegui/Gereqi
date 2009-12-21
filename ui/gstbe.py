@@ -24,6 +24,8 @@ class Extraneous:
             fnow = "file://%s" % source
         elif type == "cd":
             fnow = "cdda://%s" % source
+        elif "cdda://" in source:
+            fnow = source
             
         if (fnow is not None) and self.can_play_source(fnow): 
             return fnow
@@ -92,8 +94,9 @@ class Gstbe(QObject):
         we are actually queuing a track if one is already playing
         """
         # cdda://4   <-- cd track#4
+        print fname
         fnow = self.extra.source_checks(fname, type)
-        if fnow is not None:
+        if (fnow is not None):
             self.pipe_line.set_state(gst.STATE_NULL)
             self.pipe_line.set_property("uri", fnow)  
             self.pipe_line.set_state(gst.STATE_READY)

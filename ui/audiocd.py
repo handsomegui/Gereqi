@@ -45,6 +45,5 @@ class AudioCD:
             now = [read_info['TTITLE%d' % trk], art, alb, yr, \
                    read_info['DGENRE' ], trk+1, time_now, 44100, f_name ]
             items.append(now)
-#            print now
             
         return items
