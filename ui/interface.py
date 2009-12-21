@@ -23,6 +23,7 @@ from gstbe import Gstbe
 from extraneous import Extraneous
 from Ui_interface import Ui_MainWindow
 from extrawidgets import SetupExtraWidgets, WidgetManips
+from audiocd import AudioCD
 
     
 
@@ -738,6 +739,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.srchplyEdit.clear()
         self.playlisting.highlighted_track()
         
+    def on_actionPlay_Audio_CD_triggered(self):
+        """
+        Slot documentation goes here.
+        """
+        # TODO: not implemented yet
+        AudioCD()
         
 #######################################
 #######################################
@@ -856,4 +863,5 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             fname = self.xtrawdgt .dir_model.filePath(index)
             self.playlisting.add_to_playlist(self.extras.qstr2uni(fname))
-        
+    
+
