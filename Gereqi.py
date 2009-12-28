@@ -5,8 +5,8 @@ The main script to run the application
 More things could be done in here but i've 
 no idea what yet.
 """
-from PyQt4.QtGui import QApplication
-from PyQt4.QtCore import QString
+from PySide.QtGui import QApplication
+from PySide.QtCore import QString
 from ui.interface import MainWindow
 import sys
 __version__= "master"  

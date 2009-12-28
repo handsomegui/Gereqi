@@ -5,12 +5,12 @@ Yes already. I know what this looks like. Absolutely awful so
 stop telling me already. At least give me a few pointers. I'm
 lost when it comes to Class aggregation.
 """
-from PyQt4.QtGui import QMainWindow, QFileDialog,   \
+from PySide.QtGui import QMainWindow, QFileDialog,   \
 QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
 QIcon, QTreeWidgetItem, QPixmap, QMessageBox, QColor, \
 QSystemTrayIcon
 
-from PyQt4.QtCore import QString, Qt, QTime, SIGNAL, \
+from PySide.QtCore import QString, Qt, QTime, SIGNAL, \
 SLOT, QDir, QObject
 
 from random import randrange
@@ -21,9 +21,9 @@ from tagging import Tagging
 from threads import Getcover, Getwiki, Builddb
 from gstbe import Gstbe
 from extraneous import Extraneous
-from Ui_interface import Ui_MainWindow
+from Ui_pyside import Ui_MainWindow
 from extrawidgets import SetupExtraWidgets, WidgetManips
-
+import Rc_pyside
     
 
 class Finish:
@@ -346,7 +346,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.tracking = Track(self)
         self.wdgt_manip = WidgetManips(self)
         self.finishes = Finish(self)
+        self.__setup_connections()
+        #Make the collection search line-edit have the keyboard focus on startup.
+        self.srchCollectEdt.setFocus()
+        self.wdgt_manip.setup_db_tree()
         
+    def __setup_connections(self):
         self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.finishes.db_build)
         self.connect(self.cover_thread, SIGNAL("got-image ( QImage ) "), self.finishes.set_cover) 
         self.connect(self.html_thread, SIGNAL("got-wiki ( QString ) "), self.finishes.set_wiki)
@@ -361,9 +366,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.connect(self.xtrawdgt.play_type_bttn, SIGNAL('toggled ( bool )'), self.wdgt_manip.set_play_type)
 
         
-        #Make the collection search line-edit have the keyboard focus on startup.
-        self.srchCollectEdt.setFocus()
-        self.wdgt_manip.setup_db_tree()
+
         
     def on_srchCollectEdt_textChanged(self, p0):
         """

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from PyQt4.QtGui import QSystemTrayIcon, QIcon, QTreeWidgetItem, \
+from PySide.QtGui import QSystemTrayIcon, QIcon, QTreeWidgetItem, \
 QPixmap, QFont, QShortcut, QKeySequence, QLabel, QProgressBar, \
 QToolButton, QAction, QSystemTrayIcon, qApp, QDirModel, QMenu
-from PyQt4.QtCore import QString, SIGNAL, SLOT, QDir, QSize, QObject
+from PySide.QtCore import QString, SIGNAL, SLOT, QDir, QSize, QObject
 
 from database import Media
 
@@ -72,7 +72,7 @@ class SetupExtraWidgets:
         QObject.connect(prev_action, SIGNAL("triggered()"), self.ui.prevBttn, SLOT("click()"))
         QObject.connect(stop_action, SIGNAL("triggered()"), self.ui.stopBttn, SLOT("click()"))
         QObject.connect(self.view_action, SIGNAL("toggled(bool)"), self.ui.minimise_to_tray)  
-        QObject.connect(quit_action, SIGNAL("triggered()"), qApp, SLOT("quit()"))
+#        QObject.connect(quit_action, SIGNAL("triggered()"), qApp, SLOT("quit()"))
         QObject.connect(self.tray_icon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.ui.tray_event)
      
     def __playlist_add_menu(self):
@@ -174,7 +174,7 @@ class WidgetManips:
                 char.setFont(0, font)
                 self.ui.collectTree.addTopLevelItem(char)
             artist = QTreeWidgetItem([QString(artist)])
-            artist.setChildIndicatorPolicy(0)
+            artist.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
             self.ui.collectTree.addTopLevelItem(artist)
             
     def set_play_type(self, checked):

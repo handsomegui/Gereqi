@@ -8,9 +8,9 @@ entered. An ok/cancel box then allows whatever called this dialog to
 read the entered text
 """
 
-from PyQt4.QtGui import QDialog, QLineEdit, QDialogButtonBox, \
+from PySide.QtGui import QDialog, QLineEdit, QDialogButtonBox, \
 QGridLayout, QPushButton, QFileDialog
-from PyQt4.QtCore import SIGNAL, SLOT
+from PySide.QtCore import SIGNAL, SLOT
 
 
 # Finally got round to figuring out how to do modal dialogs.

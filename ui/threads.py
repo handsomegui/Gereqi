@@ -6,8 +6,8 @@ This file contains all the necessary threads for the app
 to make it easier to manage
 """
 
-from PyQt4.QtCore import QThread, QString, SIGNAL
-from PyQt4.QtGui import QImage
+from PySide.QtCore import QThread, QString, SIGNAL
+from PySide.QtGui import QImage
 import os
 from time import time
 
