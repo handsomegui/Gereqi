@@ -746,10 +746,19 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Slot documentation goes here.
         """
         # TODO: not implemented yet
-        acd = AudioCD()
-        cd_tracks = acd.get_info()
-        for trk in cd_tracks:
-            self.playlisting.add_to_playlist(trk[-1],  trk)
+        check = QMessageBox.question(None,
+            QString("Play Audio-CD?"),
+            QString("""Playback of CD's works up to a point at the moment. Until Gstreamer-10.26 is released this situation will not change.  You can give it a try anyway.
+"""),
+            QMessageBox.StandardButtons(\
+                QMessageBox.No | \
+                QMessageBox.Yes))
+        
+        if check:
+            acd = AudioCD()
+            cd_tracks = acd.get_info()
+            for trk in cd_tracks:
+                self.playlisting.add_to_playlist(trk[-1],  trk)
         
 #######################################
 #######################################

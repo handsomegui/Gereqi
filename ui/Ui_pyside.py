@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/ui/interface.ui'
+# Form implementation generated from reading ui file 'interface.ui'
 #
-# Created: Thu Dec 10 15:05:27 2009
-#      by: PyQt4 UI code generator 4.5.4
+# Created: Mon Dec 28 12:47:25 2009
+#      by: PySide uic UI code generator
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -377,8 +377,6 @@ font: 75 10pt \"DejaVu Sans\";
         self.playlistTree.setObjectName("playlistTree")
         self.playlistTree.setColumnCount(0)
         self.playlistTree.setRowCount(0)
-        self.playlistTree.horizontalHeader().setVisible(True)
-        self.playlistTree.verticalHeader().setVisible(False)
         self.verticalLayout_3.addWidget(self.playlistTree)
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
@@ -696,15 +694,5 @@ font: 75 10pt \"DejaVu Sans\";
         self.actionStop.setText(QtGui.QApplication.translate("MainWindow", "Stop", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNext_Track.setText(QtGui.QApplication.translate("MainWindow", "Next Track", None, QtGui.QApplication.UnicodeUTF8))
 
-from PyQt4 import QtWebKit
+from PySide import QtWebKit
 import resource_rc
-
-if __name__ == "__main__":
-    import sys
-    app = QtGui.QApplication(sys.argv)
-    MainWindow = QtGui.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
-
