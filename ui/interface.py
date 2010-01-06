@@ -155,7 +155,6 @@ class Playlist:
         row = self.ui.playlistTree.rowCount()
         self.ui.playlistTree.insertRow(row)
         #TODO: make the metadata come in as a dictionary
-        print info
         tbl_items = [   ["Track", "%02u" % info[5]], ["Title", info[0]],  
                             ["Artist", info[1]], ["Album", info[2]], ["Year", info[3]], 
                             ["Genre", info[4]], ["Length", info[6]], ["Bitrate", str(info[7])], 
