@@ -11,7 +11,7 @@ QIcon, QTreeWidgetItem, QPixmap, QMessageBox, QColor, \
 QSystemTrayIcon
 
 from PyQt4.QtCore import QString, Qt, QTime, SIGNAL, \
-SLOT, QDir, QObject
+SLOT, QDir, QObject, pyqtSignature
 
 from random import randrange
 
@@ -366,14 +366,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         #Make the collection search line-edit have the keyboard focus on startup.
         self.srchCollectEdt.setFocus()
         self.wdgt_manip.setup_db_tree()
-        
+       
+    @pyqtSignature("QString")  
     def on_srchCollectEdt_textChanged(self, p0):
         """
         This allows the filtering of the collection tree
         """
         srch = str(p0)
         self.wdgt_manip.setup_db_tree(filt=srch)       
-        
+    
+    @pyqtSignature("QTreeWidgetItem*, int")
     def on_collectTree_itemDoubleClicked(self, item, column):
         """
         When double click and abum in the collection browser
@@ -411,6 +413,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 # Retrieves metadata from database
                 self.playlisting.add_to_playlist(track)
     
+    @pyqtSignature("")
     def on_prevBttn_pressed(self):
         """
         Skip to previous track in viewable playlist
@@ -427,6 +430,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 self.playlisting.tracknow_colourise(self.playlisting.current_row())
 
     #TODO: this can be called from 2 other actions. Needs tidy up.
+    @pyqtSignature("bool")
     def on_playBttn_toggled(self, checked):
         """
         The play button either resumes or starts playback.
@@ -481,6 +485,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.xtrawdgt.play_action.setChecked(checked)
         self.actionPlay.setChecked(checked)
         
+    @pyqtSignature("")    
     def on_stopBttn_pressed(self):
         """
         To stop current track.
@@ -491,6 +496,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.playBttn.setChecked(False)
         self.stopBttn.setEnabled(False)
         
+    @pyqtSignature("")
     def on_nxtBttn_pressed(self):
         """
         Go to next item in playlist(down)
@@ -506,7 +512,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             # TODO: some tidy up thing could go here
             return
-        
+     
+    @pyqtSignature("int")
     def on_volSldr_valueChanged(self, value):
         """
         Self explanatory
@@ -514,6 +521,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         value = (value / 100.0) ** 2
         self.player.audio_object.set_volume(value)
     
+    @pyqtSignature("")
     def on_actionConfigure_triggered(self):
         """
        Brings up the settings Dialog
@@ -525,6 +533,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.media_dir = dialog.dir_val()
             print(self.media_dir)
             
+    @pyqtSignature("")
     def on_actionRescan_Collection_triggered(self):
         """
         Scans through a directory and looks for supported media,
@@ -535,12 +544,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         print("Rebuild: Ensure the db is ON CONFLICT REPLACE")
         self.create_collection()
     
+    @pyqtSignature("")
     def on_actionQuit_triggered(self):
         """
         Closing Down. Maybe some database interaction.
         """
         exit()
     
+    @pyqtSignature("")
     def on_actionPlay_Media_triggered(self):
         """
         Extract music files and shove into current playlist.
@@ -560,9 +571,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 if ender.lower() in MainWindow.audio_formats:
                     self.playlisting.add_to_playlist(fname)
 
+    @pyqtSignature("bool")
     def on_actionMinimise_to_Tray_toggled(self, checked):
         self.minimise_to_tray(checked)
     
+    @pyqtSignature("")
     def on_actionClear_triggered(self):
         """
         Clear current playlist and if no music playing
@@ -577,6 +590,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         for cnt in range(rows, -1, -1):
             self.playlistTree.removeRow(cnt)
     
+    @pyqtSignature("")
     def on_clrplyBttn_clicked(self):
         """
         Clears current playlist and sets focus
@@ -585,6 +599,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.on_actionClear_triggered()
         self.srchplyEdit.setFocus()
     
+    @pyqtSignature("QString")
     def on_srchplyEdit_textChanged(self, p0):
         """
         Filters current playlist based on input.
@@ -618,6 +633,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             self.playlisting.tracknow_colourise()
                 
+    @pyqtSignature("bool")
     def on_muteBttn_toggled(self, checked):
         """
         Mutes audio output and changes button icon accordingly
@@ -631,7 +647,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             icon = QIcon(QPixmap(":/Icons/audio-volume-high.png"))
             self.muteBttn.setIcon(icon)
             self.player.audio_object.set_volume(vol)
-        
+      
+    @pyqtSignature("")  
     def on_progSldr_sliderReleased(self):
         """
         Set's an internal seek value for tick() to use
@@ -640,6 +657,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.player.audio_object.seek(val)
         MainWindow.old_pos = val
     
+    @pyqtSignature("")
     def on_actionUpdate_Collection_triggered(self):
         """
         Updates collection for new files. Ignore files already in database
@@ -650,6 +668,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
 
 #FIXME: this causes a double-trigger of playbin.play() on app's
 # first play.
+    @pyqtSignature("int, int")
     def on_playlistTree_cellDoubleClicked(self, row, column):
         """
         When item is doubleclicked. Play its row.
@@ -665,6 +684,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.playBttn.setChecked(True) 
         self.xtrawdgt.play_action.setChecked(True)
         
+    @pyqtSignature("")
     def on_actionHelp_activated(self):
         """
         Slot documentation goes here.
@@ -674,6 +694,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             QString("Help"),
             QString("""Boo!"""))
 
+    @pyqtSignature("QTreeWidgetItem*")
     def on_collectTree_itemExpanded(self, item):
         """
         Generates the albums to go with the artists in
@@ -705,6 +726,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 album.setChildIndicatorPolicy(0)
                 item.insertChild(cnt, album)
 
+    @pyqtSignature("")
     def on_clrCollectBttn_clicked(self):
         """
         Clears the collection search widget and in turn
@@ -713,6 +735,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.srchCollectEdt.clear()
         self.srchCollectEdt.setFocus()
 
+    @pyqtSignature("int")
     def on_collectTimeBox_currentIndexChanged(self, index):
         """
         Slot documentation goes here.
@@ -724,6 +747,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         now = self.extras.date_now()
         print("Filter collectionTree WRT time.", now)
         
+    @pyqtSignature("")
     def on_actionAbout_Gereqi_triggered(self):
         """
         Slot documentation goes here.
@@ -732,6 +756,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         QMessageBox.aboutQt(None, 
             QString(""))
             
+    @pyqtSignature("")
     def on_clrsrchBttn_clicked(self):
         """
         Slot documentation goes here.
@@ -740,11 +765,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.srchplyEdit.clear()
         self.playlisting.highlighted_track()
         
+    @pyqtSignature("")
     def on_actionPlay_Audio_CD_triggered(self):
         """
         Slot documentation goes here.
         """
-        # TODO: not implemented yet
         check = QMessageBox.question(None,
             QString("Play Audio-CD?"),
             QString("""Playback of CD's works up to a point at the moment. Until Gstreamer-10.26 is released this situation will not change.  You can give it a try anyway.
@@ -877,4 +902,4 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             fname = self.xtrawdgt .dir_model.filePath(index)
             self.playlisting.add_to_playlist(self.extras.qstr2uni(fname))
     
-
+    
