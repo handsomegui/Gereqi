@@ -1,7 +1,8 @@
 TODOLIST - In order of importance
 
 1. Playlist saving/loading
-2. Add trackItems to the media Library for each album
-3. Settings dialog
-4. Settings database interaction
-5. Lyrics
+2. Settings dialog
+3. Settings database interaction
+4. Lyrics
+5. Ipod support
+6. Mtp support
