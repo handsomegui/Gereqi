@@ -9,7 +9,7 @@ to make it easier to manage
 from PyQt4.QtCore import QThread, QString, SIGNAL
 from PyQt4.QtGui import QImage
 import os
-from time import time
+import time
 
 from webinfo import Webinfo
 from database import Media
@@ -107,14 +107,13 @@ class Builddb(QThread):
         old_prog = 0    
         meta = Tagging(self.a_formats)
         media_db = Media()
-        extras = Extraneous()
         tracks = self.__track_list()
         tracks_total = len(tracks)
         self.exiting = False
         
         #TODO:maybe put in a check to not bother getting tags for
         # an existing file and skipping anyway
-        strt = time()
+        strt = time.time()
         cnt = 0
         #TODO: performance tuning
         for trk in tracks:
@@ -129,11 +128,10 @@ class Builddb(QThread):
                 if info is not None:
                     tags = info[0:3]
                     del info
-                    date = extras.date_now()
                     # prepends the fileName as the DB function expects
                     # a certain order to the args passed
                     tags.insert(0, trk) 
-                    tags.append(date)
+                    tags.append(int(round(time.time())))
                     media_db.add_media(tags)
                     cnt += 1
             else:
@@ -142,6 +140,6 @@ class Builddb(QThread):
                 self.exit()
                 return
             
-        print("%u of %u tracks scanned in: %0.1f seconds" % (cnt, tracks_total,  (time() - strt)))
+        print("%u of %u tracks scanned in: %0.1f seconds" % (cnt, tracks_total,  (time.time() - strt)))
         self.emit(SIGNAL("finished ( QString )"), QString("complete"))
         self.exit()

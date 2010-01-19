@@ -145,10 +145,11 @@ class WidgetManips:
     def __init__(self, parent):
         self.ui = parent
         
-    def setup_db_tree(self, filt=None):
+    def setup_db_tree(self, filt=None, t0=None):
         """
         viewing the media database in the QTreeView
         """
+        print(t0)
         #TODO: make the creation aware of the collectTimeBox widget
         media_db = Media()
         time_filter = self.ui.collectTimeBox.currentIndex()

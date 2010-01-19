@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from time import localtime
+# -*- coding: utf-8 -*-
 from os import path
 from database import Media
 
@@ -19,16 +19,6 @@ class Extraneous:
         now = str(qstr.toUtf8())
         return now.decode("utf-8")
         
-    def date_now(self):
-        date = localtime()
-        year = str(date[0])[2:4]
-        month = "%02d" % date[1]
-        day = "%02d" % date[2]
-        hour = "%02d" % date[3]
-        minu = "%02d" % date[4]
-        date = "%s%s%s%s%s" % (day, month, year, hour, minu)
-        return date
-
     def check_source_exists(self, fname):
         """
         Checks whether if a track exists on drives.

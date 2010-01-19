@@ -9,11 +9,11 @@ from PyQt4.QtGui import QMainWindow, QFileDialog,   \
 QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
 QIcon, QTreeWidgetItem, QPixmap, QMessageBox, QColor, \
 QSystemTrayIcon
-
 from PyQt4.QtCore import QString, Qt, QTime, SIGNAL, \
 SLOT, QDir, QObject, pyqtSignature
 
 from random import randrange
+import time
 
 from settings import Setting_Dialog
 from database import Media
@@ -25,7 +25,6 @@ from Ui_interface import Ui_MainWindow
 from extrawidgets import SetupExtraWidgets, WidgetManips
 from audiocd import AudioCD
 
-    
 
 class Finish:
     def __init__(self, parent):
@@ -742,10 +741,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         # TODO: not implemented yet
         filt = self.srchCollectEdt.text()
-        filt = str(filt)
-        self.wdgt_manip.setup_db_tree(filt)
-        now = self.extras.date_now()
-        print("Filter collectionTree WRT time.", now)
+        now = 0
+        if index == 0:
+            self.wdgt_manip.setup_db_tree()
+        elif index == 1:
+            pass
+        
+        self.wdgt_manip.setup_db_tree(str(filt), now)
         
     @pyqtSignature("")
     def on_actionAbout_Gereqi_triggered(self):
@@ -792,7 +794,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Cancels the collection build if running
         """
         print(self.build_db_thread.stop_now() )
-
 
     def set_prog_sldr(self):
         """
