@@ -1,3 +1,5 @@
+#Copyright 2009 Jonathan.W.Noble <jonnobleuk@gmail.com>
+
 # This file is part of Gereqi.
 #
 # Gereqi is free software: you can redistribute it and/or modify
