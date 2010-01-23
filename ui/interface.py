@@ -1,10 +1,22 @@
+# This file is part of Gereqi.
+#
+# Gereqi is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Gereqi is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
+
+
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Yes already. I know what this looks like. Absolutely awful so
-stop telling me already. At least give me a few pointers. I'm
-lost when it comes to Class aggregation.
-"""
+
 from PyQt4.QtGui import QMainWindow, QFileDialog,   \
 QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
 QIcon, QTreeWidgetItem, QPixmap, QMessageBox, QColor, \
@@ -745,6 +757,19 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if index == 0:
             self.wdgt_manip.setup_db_tree()
         elif index == 1:
+            # Today
+            pass
+        elif index == 2:
+            # Week
+            pass
+        elif index == 3:
+            # Month
+            pass
+        elif index == 4:
+            # 3 Months
+            pass
+        elif index == 5:
+            # Year
             pass
         
         self.wdgt_manip.setup_db_tree(str(filt), now)
