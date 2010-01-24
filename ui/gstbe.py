@@ -20,12 +20,12 @@
 # -*- coding: utf-8 -*-
 
 import pygst
+pygst.require("0.10")
 import gst, thread, gobject
 from os import path
 from time import sleep
 from PyQt4.QtCore import QObject, SIGNAL
 
-pygst.require("0.10")
 
 class Extraneous:
     def __init__(self):
