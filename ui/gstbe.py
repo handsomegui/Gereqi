@@ -16,9 +16,6 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import pygst
 pygst.require("0.10")
 import gst, thread, gobject

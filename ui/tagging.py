@@ -16,9 +16,6 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 #TODO: Import based on gstreamer capabilities
 from mutagen.flac import FLAC, FLACNoHeaderError, FLACVorbisError
 from mutagen.mp3 import MP3, HeaderNotFoundError

@@ -16,9 +16,6 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from PyQt4.QtGui import QMainWindow, QFileDialog,   \
 QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
 QIcon, QTreeWidgetItem, QPixmap, QMessageBox, QColor, \
@@ -713,7 +710,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Generates the albums to go with the artists in
         the collection tree when expanded. Only if empty.
         """
-        #TODO: make this aware of collectTimeBox widget
+        filt_time = self.__time_filt_now()
         par = item.parent()
         # If we've expanded an album
         if par is not None:
@@ -724,18 +721,27 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             album = None
         # An artist in any case
         artist = self.extras.qstr2uni(artist)
+        
         if (album is not None) and (item.childCount() == 0):
             # Adding tracks to album
             album = self.extras.qstr2uni(album)
-            tracks = self.media_db.get_titles(artist, album)
+            if filt_time is None:
+                tracks = self.media_db.get_titles(artist, album)
+            else:
+                tracks = self.media_db.get_titles_timed(artist, album, filt_time)
             for cnt in range(len(tracks)):
                 track = QTreeWidgetItem([ tracks[cnt][0] ] )
                 item.insertChild(cnt, track)
+       
+       # Adding albums to the artist 
+       # i.e. the parent has no children    
         elif item.childCount() == 0: 
-            # Adding albums to the artist
-            albums = self.media_db.get_albums(artist)
+            if filt_time is None:
+                albums = self.media_db.get_albums(artist)
+            else:
+                albums = self.media_db.get_albums_timed(artist, filt_time)                
             for cnt in range(len(albums)):      
-                album = QTreeWidgetItem([ albums[cnt][0] ])
+                album = QTreeWidgetItem([albums[cnt][0]])
                 album.setChildIndicatorPolicy(0)
                 item.insertChild(cnt, album)
 
@@ -753,28 +759,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Slot documentation goes here.
         """
-        # TODO: not implemented yet
         filt = self.srchCollectEdt.text()
-        now = 0
-        if index == 0:
+        filt_time = self.__time_filt_now()
+        if filt_time is None:
             self.wdgt_manip.setup_db_tree()
-        elif index == 1:
-            # Today
-            pass
-        elif index == 2:
-            # Week
-            pass
-        elif index == 3:
-            # Month
-            pass
-        elif index == 4:
-            # 3 Months
-            pass
-        elif index == 5:
-            # Year
-            pass
-        
-        self.wdgt_manip.setup_db_tree(str(filt), now)
+        else:
+            self.wdgt_manip.setup_db_tree(str(filt), filt_time)
         
     @pyqtSignature("")
     def on_actionAbout_Gereqi_triggered(self):
@@ -929,5 +919,28 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             fname = self.xtrawdgt .dir_model.filePath(index)
             self.playlisting.add_to_playlist(self.extras.qstr2uni(fname))
+            
+    def __time_filt_now(self):
+        index = self.collectTimeBox.currentIndex()
+        if index == 0:
+            #All
+            filt_time = None
+        elif index == 1:
+            # Today
+            now = time.localtime()
+            filt_time = int(round(time.time() - ( (now[3] * now[4]) + now[5]) ))
+        elif index == 2:
+            # Week
+            filt_time  = int(round(time.time() - (7 * 24 * 60 * 60)))
+        elif index == 3:
+            # Month
+            filt_time  = int(round(time.time() - (28 * 24 * 60 * 60)))
+        elif index == 4:
+            # 3 Months
+            filt_time  = int(round(time.time() - (3 * 28 * 24 * 60 * 60)))
+        elif index == 5:
+            # Year
+            filt_time  = int(round((time.time() - (365 * 24 * 60 * 60))))
     
+        return filt_time
     

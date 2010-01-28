@@ -17,9 +17,6 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from sqlite3 import dbapi2 as sqlite
 import os
 
@@ -101,44 +98,64 @@ class Media:
     def get_artists(self):
         query = "SELECT DISTINCT artist FROM media"
         return self.__query_fetchall(query)
+        
+    def get_artists_timed(self, time):
+        query = '''SELECT DISTINCT artist FROM media
+                                WHERE added>?'''
+        return self.__query_fetchall(query, (time, ))
     
     def get_albums(self, artist):
         args = (artist, )
-        query = "SELECT DISTINCT album FROM media WHERE artist=?"
+        query = '''SELECT DISTINCT album FROM media
+                            WHERE artist=?'''
+        return self.__query_fetchall(query, args)
+        
+    def get_albums_timed(self, artist, time):
+        args = (artist, time)
+        query = '''SELECT DISTINCT album FROM media
+                            WHERE artist=?
+                            AND added>?'''
         return self.__query_fetchall(query, args)
         
     def get_files(self, artist, album):
         args = (artist, album)
         query = '''SELECT DISTINCT file_name FROM media 
-        WHERE artist=?
-        AND album=?'''
+                        WHERE artist=?
+                        AND album=?'''
         return [fnow[0] for fnow in self.__query_fetchall(query, args)]
-
         
     def get_file(self, artist, album, title):
         args = (artist, album, title)
         query = '''SELECT DISTINCT file_name FROM media 
-        WHERE artist=?
-        AND album=?
-        AND title=?'''
+                        WHERE artist=?
+                        AND album=?
+                        AND title=?'''
         return self.__query_fetchall(query, args)[0][0]
         
     def get_titles(self, artist, album):
         args = (artist, album)
         query = '''SELECT DISTINCT title FROM media 
-        WHERE artist=?
-        AND album=?'''
+                        WHERE artist=?
+                        AND album=?'''
+        return self.__query_fetchall(query, args)
+
+    def get_titles_timed(self, artist, album, time):
+        args = (artist, album, time)
+        query = '''SELECT DISTINCT title FROM media 
+                        WHERE artist=?
+                        AND album=?
+                        AND added>?'''
         return self.__query_fetchall(query, args)
         
     def get_info(self, file_name):
         args = (file_name, )
         query = '''SELECT * FROM media 
-        WHERE file_name=?'''
+                        WHERE file_name=?'''
         return self.__query_fetchall(query, args)
         
     def delete_track(self, fname):
         args = (fname, )
         query = '''DELETE FROM media
-        WHERE file_name=?'''
+                        WHERE file_name=?'''
         self.__query_execute(query, args)
     

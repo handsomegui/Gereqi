@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 #Copyright 2009 Jonathan.W.Noble <jonnobleuk@gmail.com>
 
 # This file is part of Gereqi.
@@ -15,9 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
-
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """
 The main script to run the application

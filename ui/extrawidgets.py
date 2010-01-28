@@ -16,9 +16,6 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from PyQt4.QtGui import QSystemTrayIcon, QIcon, QTreeWidgetItem, \
 QPixmap, QFont, QShortcut, QKeySequence, QLabel, QProgressBar, \
 QToolButton, QAction, QSystemTrayIcon, qApp, QDirModel, QMenu
@@ -168,13 +165,14 @@ class WidgetManips:
         """
         viewing the media database in the QTreeView
         """
-        print(t0)
-        #TODO: make the creation aware of the collectTimeBox widget
         media_db = Media()
         time_filter = self.ui.collectTimeBox.currentIndex()
         self.ui.collectTree.clear()
         # This gives multiples of the same thing i.e albums
-        artists = media_db.get_artists()
+        if t0 is None:
+            artists = media_db.get_artists()
+        else:
+            artists = media_db.get_artists_timed(t0)
         artists = sorted(artists)
         old_char = None
         char = None
