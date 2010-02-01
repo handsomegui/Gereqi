@@ -2,12 +2,12 @@
 
 # Form implementation generated from reading ui file 'interface.ui'
 #
-# Created: Mon Dec 28 12:47:25 2009
-#      by: PySide uic UI code generator
+# Created: Mon Feb  1 22:45:32 2010
+#      by: PyQt4 UI code generator 4.5.4
 #
 # WARNING! All changes made in this file will be lost!
 
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -377,6 +377,8 @@ font: 75 10pt \"DejaVu Sans\";
         self.playlistTree.setObjectName("playlistTree")
         self.playlistTree.setColumnCount(0)
         self.playlistTree.setRowCount(0)
+        self.playlistTree.horizontalHeader().setVisible(True)
+        self.playlistTree.verticalHeader().setVisible(False)
         self.verticalLayout_3.addWidget(self.playlistTree)
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
@@ -694,5 +696,5 @@ font: 75 10pt \"DejaVu Sans\";
         self.actionStop.setText(QtGui.QApplication.translate("MainWindow", "Stop", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNext_Track.setText(QtGui.QApplication.translate("MainWindow", "Next Track", None, QtGui.QApplication.UnicodeUTF8))
 
-from PySide import QtWebKit
+from PyQt4 import QtWebKit
 import resource_rc
