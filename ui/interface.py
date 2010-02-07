@@ -762,7 +762,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         filt = self.srchCollectEdt.text()
         filt_time = self.__time_filt_now()
         if filt_time is None:
-            self.wdgt_manip.setup_db_tree()
+            self.wdgt_manip.setup_db_tree(str(filt))
         else:
             self.wdgt_manip.setup_db_tree(str(filt), filt_time)
         
