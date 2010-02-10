@@ -383,7 +383,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         This allows the filtering of the collection tree
         """
         srch = str(p0)
-        self.wdgt_manip.setup_db_tree(filt=srch)       
+        time_filt = self.__time_filt_now()
+        self.wdgt_manip.setup_db_tree(srch, time_filt)       
     
     @pyqtSignature("QTreeWidgetItem*, int")
     def on_collectTree_itemDoubleClicked(self, item, column):
@@ -762,7 +763,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         filt = self.srchCollectEdt.text()
         filt_time = self.__time_filt_now()
         if filt_time is None:
-            self.wdgt_manip.setup_db_tree()
+            self.wdgt_manip.setup_db_tree(str(filt))
         else:
             self.wdgt_manip.setup_db_tree(str(filt), filt_time)
         
