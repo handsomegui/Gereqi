@@ -64,7 +64,6 @@ class Gstbe(QObject):
         self.pipe_source = self.play_thread_id = None
 
     def __audio_changed(self, pipeline):
-        print("AUDIO CHANGED", pipeline)
         self.emit(SIGNAL("track_changed()"))
 
     def __on_message(self, bus, msg):
@@ -73,13 +72,11 @@ class Gstbe(QObject):
         """
         mtype = msg.type
         if mtype == gst.MESSAGE_EOS:
-            print("EOS")
             self.play_thread_id = None            
             self.pipe_line.set_state(gst.STATE_NULL)
             self.emit(SIGNAL("finished()"))
         
         elif mtype == gst.MESSAGE_ERROR:
-            print("ERROR")
             self.pipe_line.set_state(gst.STATE_NULL)
             err, debug = msg.parse_error()
             print("Error: %s" % err, debug)
@@ -111,7 +108,6 @@ class Gstbe(QObject):
         we are actually queuing a track if one is already playing
         """
         # cdda://4   <-- cd track#4
-        print fname
         fnow = self.extra.source_checks(fname, type)
         if (fnow is not None):
             self.pipe_line.set_state(gst.STATE_NULL)
@@ -127,24 +123,19 @@ class Gstbe(QObject):
         """
         now = self.state()
         if (now == gst.STATE_READY) or (now == gst.STATE_NULL):
-            print("PLAY")
             self.pipe_line.set_state(gst.STATE_PLAYING)
             self.play_thread_id = thread.start_new_thread(self.__whilst_playing, ())
         elif now == gst.STATE_PAUSED:
-            print("UNPAUSE")
             self.pipe_line.set_state(gst.STATE_PLAYING)
             self.play_thread_id = thread.start_new_thread(self.__whilst_playing, ())
         else:
-            print("FINISHED")
             self.emit(SIGNAL("finished()"))
         
     def pause(self):
-        print("PAUSE")
         self.pipe_line.set_state(gst.STATE_PAUSED)
         self.play_thread_id = None
         
     def stop(self):
-        print("STOP")
         if self.play_thread_id is not None:
             self.pipe_source = self.play_thread_id = None
             self.pipe_line.set_state(gst.STATE_NULL)
@@ -167,7 +158,6 @@ class Gstbe(QObject):
     def enqueue(self, fname, type="file"):
         fnow  = self.extra.source_checks(fname, type)
         if fnow is not None:
-            print("ENQUEUE")
             self.pipe_line.set_property("uri", fnow)
             self.pipe_source = fname
 

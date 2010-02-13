@@ -92,7 +92,6 @@ class AudioBackend:
         Generates a track to go into queue
         before playback stops
         """
-        print("ABOUT TO FINISH", pipeline)
         track = self.ui.tracking.generate_track("next")
         #Not at end of  playlist
         if track is not None:
@@ -117,7 +116,6 @@ class AudioBackend:
         When the playing track changes certain
         Ui features may need to be updated.
         """
-        print("TRACK CHANGED")
         self.ui.tracking.generate_info()
         self.ui.set_info()
         self.ui.set_prog_sldr()
@@ -128,7 +126,6 @@ class AudioBackend:
         """
         Things to be performed when the playback finishes
         """
-        print("FINISHED")
         self.ui.contentTabs.setTabEnabled(1, False)
         self.ui.contentTabs.setTabEnabled(2, False)
         self.ui.playBttn.setChecked(False)
