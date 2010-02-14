@@ -19,7 +19,7 @@
 from PyQt4.QtGui import QMainWindow, QFileDialog,   \
 QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
 QIcon, QTreeWidgetItem, QPixmap, QMessageBox, QColor, \
-QSystemTrayIcon
+QSystemTrayIcon, QInputDialog, QLineEdit
 from PyQt4.QtCore import QString, Qt, QTime, SIGNAL, \
 SLOT, QDir, QObject, pyqtSignature
 
@@ -408,15 +408,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # In any case we'll have an artist
         if artist is None:
             artist = now
-        artist = self.extras.qstr2uni(artist)
         if track is not None:
-            album = self.extras.qstr2uni(album)     
-            track = self.extras.qstr2uni(track)
-            file_name = self.media_db.get_file(artist, album, track)
+            file_name = self.media_db.get_file(unicode(artist), unicode(album), unicode(track))
             self.playlisting.add_to_playlist(file_name)
         elif album is not None:
-            album = self.extras.qstr2uni(album)
-            tracks = self.media_db.get_files(artist, album)
+            tracks = self.media_db.get_files(unicode(artist), unicode(album))
             for track in tracks:
                 # Retrieves metadata from database
                 self.playlisting.add_to_playlist(track)
@@ -574,10 +570,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                         
         if mfiles is not None:
             for item in mfiles:
-                fname = self.extras.qstr2uni(item)
-                ender = fname.split(".")[-1]
+                ender = unicode(item).split(".")[-1]
                 if ender.lower() in MainWindow.audio_formats:
-                    self.playlisting.add_to_playlist(fname)
+                    self.playlisting.add_to_playlist(unicode(item))
 
     @pyqtSignature("bool")
     def on_actionMinimise_to_Tray_toggled(self, checked):
@@ -717,27 +712,24 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             artist = item.text(0)
             album = None
-        # An artist in any case
-        artist = self.extras.qstr2uni(artist)
         
         if (album is not None) and (item.childCount() == 0):
             # Adding tracks to album
-            album = self.extras.qstr2uni(album)
             if filt_time is None:
-                tracks = self.media_db.get_titles(artist, album)
+                tracks = self.media_db.get_titles(unicode(artist), unicode(album))
             else:
-                tracks = self.media_db.get_titles_timed(artist, album, filt_time)
+                tracks = self.media_db.get_titles_timed(unicode(artist), unicode(album), filt_time)
             for cnt in range(len(tracks)):
-                track = QTreeWidgetItem([ tracks[cnt][0] ] )
+                track = QTreeWidgetItem([tracks[cnt][0] ] )
                 item.insertChild(cnt, track)
        
        # Adding albums to the artist 
        # i.e. the parent has no children    
         elif item.childCount() == 0: 
             if filt_time is None:
-                albums = self.media_db.get_albums(artist)
+                albums = self.media_db.get_albums(unicode(artist))
             else:
-                albums = self.media_db.get_albums_timed(artist, filt_time)                
+                albums = self.media_db.get_albums_timed(unicode(artist), filt_time)                
             for cnt in range(len(albums)):      
                 album = QTreeWidgetItem([albums[cnt][0]])
                 album.setChildIndicatorPolicy(0)
@@ -800,7 +792,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             cd_tracks = acd.get_info()
             for trk in cd_tracks:
                 self.playlisting.add_to_playlist(trk[-1],  trk)
-        
+                
+       
 #######################################
 #######################################
         
@@ -913,10 +906,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             searcher.setNameFilters(MainWindow.format_filter)
             for item in searcher.entryInfoList():
                 fname = item.absoluteFilePath()
-                self.playlisting.add_to_playlist(self.extras.qstr2uni(fname))
+                self.playlisting.add_to_playlist(unicode(fname))
         else:
             fname = self.xtrawdgt .dir_model.filePath(index)
-            self.playlisting.add_to_playlist(self.extras.qstr2uni(fname))
+            self.playlisting.add_to_playlist(unicode(fname))
             
     def __time_filt_now(self):
         index = self.collectTimeBox.currentIndex()
@@ -942,3 +935,4 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     
         return filt_time
     
+
