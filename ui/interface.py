@@ -793,7 +793,23 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             for trk in cd_tracks:
                 self.playlisting.add_to_playlist(trk[-1],  trk)
                 
-       
+    @pyqtSignature("")
+    def on_svplyBttn_clicked(self):
+        """
+        Slot documentation goes here.
+        """
+        # TODO: not implemented yet
+#        raise NotImplementedError
+        play_name = QInputDialog.getText(\
+            None,
+            self.trUtf8("Enter"),
+            self.trUtf8("Playlist Name:"),
+            QLineEdit.Normal)
+            
+        if play_name[1] is True:
+            a = unicode(play_name[0])
+            
+        
 #######################################
 #######################################
         
@@ -801,7 +817,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Cancels the collection build if running
         """
-        print(self.build_db_thread.stop_now() )
+        print(self.build_db_thread.stop_now())
 
     def set_prog_sldr(self):
         """
