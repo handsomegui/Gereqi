@@ -211,11 +211,11 @@ class WidgetManips:
         playlists = self.ui.media_db.playlist_list()
         podcasts = None
         streams = None
-        headers = [QTreeWidgetItem(["== %s ==" % tit]) for tit in [
+        headers = [QTreeWidgetItem(["%s" % tit]) for tit in [
                                     "Podcasts", "Radio Streams",  "Playlists"]]
         for hdr in headers:
             hdr.setFont(0, font)
-            hdr.setChildIndicatorPolicy(0)
+            hdr.setChildIndicatorPolicy(2)
         
         for cnt in range(3):
             if cnt == 2:
