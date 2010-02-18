@@ -811,6 +811,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             tracks = self.playlisting.gen_file_list()            
             for track in tracks:
                 self.media_db.playlist_add(unicode(play_name[0]), unicode(track))
+            self.wdgt_manip.pop_playlist_view()
             
     @pyqtSignature("QTreeWidgetItem*, int")
     def on_playlstView_itemDoubleClicked(self, item, column):
@@ -821,6 +822,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         tracks = self.media_db.playlist_tracks(unicode(playlist))
         for track in tracks:
             self.playlisting.add_to_playlist(track[0])
+            
+    @pyqtSignature("bool")
+    def on_delPlylstBttn_clicked(self, checked):
+        """
+        Delete a selected playlist from the DB
+        """
+        playlist = self.playlstView.selectedItems()
+        if len(playlist) > 0:
+            self.media_db.playlist_delete(unicode(playlist[0].text(0)))
+            self.wdgt_manip.pop_playlist_view()
         
 #######################################
 #######################################

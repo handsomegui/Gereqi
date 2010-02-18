@@ -204,6 +204,7 @@ class WidgetManips:
             self.ui.xtrawdgt.play_type_bttn.setText("N")
             
     def pop_playlist_view(self):
+        self.ui.playlstView.clear()
         playlists = self.ui.media_db.playlist_list()
         
         for play in playlists:
