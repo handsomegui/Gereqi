@@ -204,9 +204,24 @@ class WidgetManips:
             self.ui.xtrawdgt.play_type_bttn.setText("N")
             
     def pop_playlist_view(self):
+        font = QFont()
+        font.setBold(True)
+        
         self.ui.playlstView.clear()
         playlists = self.ui.media_db.playlist_list()
+        podcasts = None
+        streams = None
+        headers = [QTreeWidgetItem(["== %s ==" % tit]) for tit in [
+                                    "Podcasts", "Radio Streams",  "Playlists"]]
+        for hdr in headers:
+            hdr.setFont(0, font)
+            hdr.setChildIndicatorPolicy(0)
         
-        for play in playlists:
-            now = QTreeWidgetItem([QString(play[0])])
-            self.ui.playlstView.addTopLevelItem(now)
+        for cnt in range(3):
+            if cnt == 2:
+                for play in playlists:
+                    now = QTreeWidgetItem([QString(play[0])])
+                    headers[cnt].addChild(now)
+            self.ui.playlstView.addTopLevelItem(headers[cnt])
+                
+                
