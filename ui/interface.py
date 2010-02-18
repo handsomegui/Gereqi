@@ -812,6 +812,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             for track in tracks:
                 self.media_db.playlist_add(unicode(play_name[0]), unicode(track))
             
+    @pyqtSignature("QTreeWidgetItem*, int")
+    def on_playlstView_itemDoubleClicked(self, item, column):
+        """
+        Slot documentation goes here.
+        """
+        playlist = item.text(column)
+        tracks = self.media_db.playlist_tracks(unicode(playlist))
+        for track in tracks:
+            self.playlisting.add_to_playlist(track[0])
         
 #######################################
 #######################################

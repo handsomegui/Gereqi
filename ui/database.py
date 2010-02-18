@@ -166,4 +166,9 @@ class Media:
     def playlist_tracks(self, name):
         query = '''SELECT file_name FROM playlist
                             WHERE name=?'''
-        return self.__query_fetchall(query, (name))
+        return self.__query_fetchall(query, (name, ))
+        
+    def playlist_delete(self, name):
+        query = '''DELETE FROM playlist
+                        WHERE name=?'''
+        self.__query_execute(query, (name, ))

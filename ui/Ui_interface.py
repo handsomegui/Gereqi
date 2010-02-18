@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/ui/interface.ui'
 #
-# Created: Thu Feb 18 19:10:16 2010
+# Created: Thu Feb 18 19:23:17 2010
 #      by: PyQt4 UI code generator 4.7
 #
 # WARNING! All changes made in this file will be lost!
@@ -594,7 +594,7 @@ class Ui_MainWindow(object):
         self.label.setBuddy(self.srchplyEdit)
 
         self.retranslateUi(MainWindow)
-        self.parentTabs.setCurrentIndex(2)
+        self.parentTabs.setCurrentIndex(1)
         self.contentTabs.setCurrentIndex(0)
         QtCore.QObject.connect(self.volSldr, QtCore.SIGNAL("valueChanged(int)"), self.volLbl.setNum)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
