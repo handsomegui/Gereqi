@@ -117,7 +117,7 @@ class SetupExtraWidgets:
     def __disable_tabs(self):
         self.ui.contentTabs.setTabEnabled(1, False)
         self.ui.contentTabs.setTabEnabled(2, False)
-        self.ui.parentTabs.setTabEnabled(2, False)
+        #self.ui.parentTabs.setTabEnabled(2, False)
         self.ui.parentTabs.setTabEnabled(3, False)
         
     def __setup_misc(self):
@@ -155,6 +155,8 @@ class SetupExtraWidgets:
     def __key_shortcuts(self):
         delete = QShortcut(QKeySequence(QString("Del")), self.ui)
         QObject.connect(delete, SIGNAL("activated()"), self.ui.playlisting.del_track)   
+
+
         
         
 class WidgetManips:
@@ -200,3 +202,10 @@ class WidgetManips:
             self.ui.xtrawdgt.play_type_bttn.setText("R")
         else:
             self.ui.xtrawdgt.play_type_bttn.setText("N")
+            
+    def pop_playlist_view(self):
+        playlists = self.ui.media_db.playlist_list()
+        
+        for play in playlists:
+            now = QTreeWidgetItem([QString(play[0])])
+            self.ui.playlstView.addTopLevelItem(now)

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'interface.ui'
+# Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/ui/interface.ui'
 #
-# Created: Mon Feb  1 22:45:32 2010
-#      by: PyQt4 UI code generator 4.5.4
+# Created: Thu Feb 18 19:10:16 2010
+#      by: PyQt4 UI code generator 4.7
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -61,9 +61,9 @@ class Ui_MainWindow(object):
         self.gridLayout_12.setMargin(2)
         self.gridLayout_12.setObjectName("gridLayout_12")
         self.trkNowBox = QtGui.QGroupBox(self.musicTab)
-        self.trkNowBox.setStyleSheet("""text-decoration: underline;
-font: 75 10pt \"DejaVu Sans\";
-""")
+        self.trkNowBox.setStyleSheet("text-decoration: underline;\n"
+"font: 75 10pt \"DejaVu Sans\";\n"
+"")
         self.trkNowBox.setObjectName("trkNowBox")
         self.gridLayout_8 = QtGui.QGridLayout(self.trkNowBox)
         self.gridLayout_8.setMargin(1)
@@ -80,9 +80,9 @@ font: 75 10pt \"DejaVu Sans\";
         self.gridLayout_8.addWidget(self.coverView, 0, 0, 1, 1)
         self.gridLayout_12.addWidget(self.trkNowBox, 0, 0, 1, 1)
         self.groupBox_2 = QtGui.QGroupBox(self.musicTab)
-        self.groupBox_2.setStyleSheet("""text-decoration: underline;
-font: 75 10pt \"DejaVu Sans\";
-""")
+        self.groupBox_2.setStyleSheet("text-decoration: underline;\n"
+"font: 75 10pt \"DejaVu Sans\";\n"
+"")
         self.groupBox_2.setObjectName("groupBox_2")
         self.gridLayout_9 = QtGui.QGridLayout(self.groupBox_2)
         self.gridLayout_9.setMargin(1)
@@ -92,9 +92,9 @@ font: 75 10pt \"DejaVu Sans\";
         self.gridLayout_9.addWidget(self.label_2, 0, 0, 1, 1)
         self.gridLayout_12.addWidget(self.groupBox_2, 1, 0, 1, 1)
         self.groupBox_3 = QtGui.QGroupBox(self.musicTab)
-        self.groupBox_3.setStyleSheet("""text-decoration: underline;
-font: 75 10pt \"DejaVu Sans\";
-""")
+        self.groupBox_3.setStyleSheet("text-decoration: underline;\n"
+"font: 75 10pt \"DejaVu Sans\";\n"
+"")
         self.groupBox_3.setObjectName("groupBox_3")
         self.gridLayout_10 = QtGui.QGridLayout(self.groupBox_3)
         self.gridLayout_10.setMargin(1)
@@ -104,9 +104,9 @@ font: 75 10pt \"DejaVu Sans\";
         self.gridLayout_10.addWidget(self.label_4, 0, 0, 1, 1)
         self.gridLayout_12.addWidget(self.groupBox_3, 2, 0, 1, 1)
         self.groupBox_4 = QtGui.QGroupBox(self.musicTab)
-        self.groupBox_4.setStyleSheet("""text-decoration: underline;
-font: 75 10pt \"DejaVu Sans\";
-""")
+        self.groupBox_4.setStyleSheet("text-decoration: underline;\n"
+"font: 75 10pt \"DejaVu Sans\";\n"
+"")
         self.groupBox_4.setObjectName("groupBox_4")
         self.gridLayout_11 = QtGui.QGridLayout(self.groupBox_4)
         self.gridLayout_11.setMargin(1)
@@ -170,12 +170,12 @@ font: 75 10pt \"DejaVu Sans\";
         self.collectTimeBox.setInsertPolicy(QtGui.QComboBox.NoInsert)
         self.collectTimeBox.setFrame(True)
         self.collectTimeBox.setObjectName("collectTimeBox")
-        self.collectTimeBox.addItem(QtCore.QString())
-        self.collectTimeBox.addItem(QtCore.QString())
-        self.collectTimeBox.addItem(QtCore.QString())
-        self.collectTimeBox.addItem(QtCore.QString())
-        self.collectTimeBox.addItem(QtCore.QString())
-        self.collectTimeBox.addItem(QtCore.QString())
+        self.collectTimeBox.addItem("")
+        self.collectTimeBox.addItem("")
+        self.collectTimeBox.addItem("")
+        self.collectTimeBox.addItem("")
+        self.collectTimeBox.addItem("")
+        self.collectTimeBox.addItem("")
         self.verticalLayout_2.addWidget(self.collectTimeBox)
         self.collectTree = QtGui.QTreeWidget(self.collectionTab)
         self.collectTree.setAlternatingRowColors(True)
@@ -224,9 +224,9 @@ font: 75 10pt \"DejaVu Sans\";
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_5.addItem(spacerItem)
         self.verticalLayout_5.addLayout(self.horizontalLayout_5)
-        self.playlstTree = QtGui.QTreeWidget(self.playlistsTab)
-        self.playlstTree.setObjectName("playlstTree")
-        self.verticalLayout_5.addWidget(self.playlstTree)
+        self.playlstView = QtGui.QTreeWidget(self.playlistsTab)
+        self.playlstView.setObjectName("playlstView")
+        self.verticalLayout_5.addWidget(self.playlstView)
         self.gridLayout_6.addLayout(self.verticalLayout_5, 0, 0, 1, 1)
         self.parentTabs.addTab(self.playlistsTab, "")
         self.devicesTab = QtGui.QWidget()
@@ -260,13 +260,13 @@ font: 75 10pt \"DejaVu Sans\";
         self.transferDevBttn = QtGui.QComboBox(self.devicesTab)
         self.transferDevBttn.setMinimumSize(QtCore.QSize(80, 0))
         self.transferDevBttn.setObjectName("transferDevBttn")
-        self.transferDevBttn.addItem(QtCore.QString())
+        self.transferDevBttn.addItem("")
         self.horizontalLayout_6.addWidget(self.transferDevBttn)
         self.verticalLayout_4.addLayout(self.horizontalLayout_6)
         self.devicesComboBox = QtGui.QComboBox(self.devicesTab)
         self.devicesComboBox.setEnabled(False)
         self.devicesComboBox.setObjectName("devicesComboBox")
-        self.devicesComboBox.addItem(QtCore.QString())
+        self.devicesComboBox.addItem("")
         self.verticalLayout_4.addWidget(self.devicesComboBox)
         self.horizontalLayout_7 = QtGui.QHBoxLayout()
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
@@ -362,7 +362,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.playlistTree.setSizePolicy(sizePolicy)
         self.playlistTree.setMinimumSize(QtCore.QSize(400, 0))
         self.playlistTree.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        self.playlistTree.setProperty("showDropIndicator", QtCore.QVariant(False))
+        self.playlistTree.setProperty("showDropIndicator", False)
         self.playlistTree.setDragEnabled(True)
         self.playlistTree.setDragDropOverwriteMode(False)
         self.playlistTree.setDragDropMode(QtGui.QAbstractItemView.DragOnly)
@@ -432,7 +432,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.volSldr = QtGui.QSlider(self.layoutWidget)
         self.volSldr.setMaximumSize(QtCore.QSize(200, 200))
         self.volSldr.setMaximum(100)
-        self.volSldr.setProperty("value", QtCore.QVariant(100))
+        self.volSldr.setProperty("value", 100)
         self.volSldr.setOrientation(QtCore.Qt.Horizontal)
         self.volSldr.setInvertedAppearance(False)
         self.volSldr.setInvertedControls(False)
@@ -464,7 +464,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 792, 26))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 792, 25))
         self.menuBar.setObjectName("menuBar")
         self.menuActions = QtGui.QMenu(self.menuBar)
         self.menuActions.setObjectName("menuActions")
@@ -594,7 +594,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.label.setBuddy(self.srchplyEdit)
 
         self.retranslateUi(MainWindow)
-        self.parentTabs.setCurrentIndex(1)
+        self.parentTabs.setCurrentIndex(2)
         self.contentTabs.setCurrentIndex(0)
         QtCore.QObject.connect(self.volSldr, QtCore.SIGNAL("valueChanged(int)"), self.volLbl.setNum)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -626,7 +626,7 @@ font: 75 10pt \"DejaVu Sans\";
         self.addPlylstBttn.setText(QtGui.QApplication.translate("MainWindow", "Add", None, QtGui.QApplication.UnicodeUTF8))
         self.rnmPlylstBtnn.setText(QtGui.QApplication.translate("MainWindow", "_", None, QtGui.QApplication.UnicodeUTF8))
         self.delPlylstBttn.setText(QtGui.QApplication.translate("MainWindow", "x", None, QtGui.QApplication.UnicodeUTF8))
-        self.playlstTree.headerItem().setText(0, QtGui.QApplication.translate("MainWindow", "Playlists", None, QtGui.QApplication.UnicodeUTF8))
+        self.playlstView.headerItem().setText(0, QtGui.QApplication.translate("MainWindow", "Playlists", None, QtGui.QApplication.UnicodeUTF8))
         self.parentTabs.setTabText(self.parentTabs.indexOf(self.playlistsTab), QtGui.QApplication.translate("MainWindow", "Playlists", None, QtGui.QApplication.UnicodeUTF8))
         self.connectDevBttn.setText(QtGui.QApplication.translate("MainWindow", "Connect", None, QtGui.QApplication.UnicodeUTF8))
         self.disconnectDevbttn.setText(QtGui.QApplication.translate("MainWindow", "Disconnect", None, QtGui.QApplication.UnicodeUTF8))
@@ -698,3 +698,13 @@ font: 75 10pt \"DejaVu Sans\";
 
 from PyQt4 import QtWebKit
 import resource_rc
+
+if __name__ == "__main__":
+    import sys
+    app = QtGui.QApplication(sys.argv)
+    MainWindow = QtGui.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
+

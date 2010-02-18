@@ -373,9 +373,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         #Make the collection search line-edit have the keyboard focus on startup.
         self.srchCollectEdt.setFocus()
         self.wdgt_manip.setup_db_tree()
+        self.wdgt_manip.pop_playlist_view()
         
-        print self.media_db.playlist_list()
-       
     @pyqtSignature("QString")  
     def on_srchCollectEdt_textChanged(self, p0):
         """
