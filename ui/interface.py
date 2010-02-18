@@ -807,7 +807,27 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             QLineEdit.Normal)
             
         # TODO: put in a check for existing play_name
+        # if found, delete the old playlist
+        
         if play_name[1] is True:
+            check = self.media_db.playlist_tracks(unicode(play_name[0]))
+            if len(check) > 0:
+                
+                msg = QMessageBox.warning(None,
+                    self.trUtf8("Overwrite"),
+                    self.trUtf8("""This playlist name already is used. Would you like to overwrite it?"""),
+                    QMessageBox.StandardButtons(\
+                        QMessageBox.Cancel | \
+                        QMessageBox.No | \
+                        QMessageBox.Yes))
+                
+                if msg == QMessageBox.Yes:
+                    pass
+                elif msg == QMessageBox.Cancel:
+                    return
+                elif msg == QMessageBox.No:
+                    self.on_svplyBttn_clicked()
+                    
             tracks = self.playlisting.gen_file_list()            
             for track in tracks:
                 self.media_db.playlist_add(unicode(play_name[0]), unicode(track))
