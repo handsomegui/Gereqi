@@ -52,11 +52,8 @@ class Media:
                 )'''
                 , 
                 '''CREATE TABLE IF NOT EXISTS playlist (
-                id   INT IDENTITY (1, 1),
-                name    VARCHAR(20),
-                file_name    TEXT,
-                track  UNSIGNED SMALLINT(3),
-                PRIMARY KEY (id)
+                name TEXT,
+                file_name TEXT
                 )'''
                 , 
                 '''CREATE TABLE IF NOT EXISTS settings (
@@ -148,10 +145,9 @@ class Media:
         return self.__query_fetchall(query, args)
         
     def get_info(self, file_name):
-        args = (file_name, )
         query = '''SELECT * FROM media 
                         WHERE file_name=?'''
-        return self.__query_fetchall(query, args)
+        return self.__query_fetchall(query, (file_name, ))
         
     def delete_track(self, fname):
         args = (fname, )
@@ -159,3 +155,15 @@ class Media:
                         WHERE file_name=?'''
         self.__query_execute(query, args)
     
+    def playlist_add(self, *params):
+        query = '''INSERT INTO playlist VALUES (?,?)'''
+        self.__query_execute(query, params)
+        
+    def playlist_list(self):
+        query = '''SELECT DISTINCT name FROM playlist'''
+        return self.__query_fetchall(query)
+        
+    def playlist_tracks(self, name):
+        query = '''SELECT file_name FROM playlist
+                            WHERE name=?'''
+        return self.__query_fetchall(query, (name))

@@ -180,7 +180,7 @@ class Playlist:
         Finds the playlist row of the
         currently playing track
         """
-        file_list = self.__gen_file_list()
+        file_list = self.gen_file_list()
         current_file = self.ui.player.audio_object.current_source()
         
         if current_file is None:
@@ -189,7 +189,7 @@ class Playlist:
             return file_list.index(current_file)
         
         
-    def __gen_file_list(self):
+    def gen_file_list(self):
         """
         Creates a list of files in the playlist at its
         current sorting top to bottom
@@ -373,6 +373,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         #Make the collection search line-edit have the keyboard focus on startup.
         self.srchCollectEdt.setFocus()
         self.wdgt_manip.setup_db_tree()
+        
+        print self.media_db.playlist_list()
        
     @pyqtSignature("QString")  
     def on_srchCollectEdt_textChanged(self, p0):
@@ -796,18 +798,20 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     @pyqtSignature("")
     def on_svplyBttn_clicked(self):
         """
-        Slot documentation goes here.
+        Based on what is in the playlist and chosen name, it'll
+        get put into the database
         """
-        # TODO: not implemented yet
-#        raise NotImplementedError
         play_name = QInputDialog.getText(\
             None,
             self.trUtf8("Enter"),
             self.trUtf8("Playlist Name:"),
             QLineEdit.Normal)
             
+        # TODO: put in a check for existing play_name
         if play_name[1] is True:
-            a = unicode(play_name[0])
+            tracks = self.playlisting.gen_file_list()            
+            for track in tracks:
+                self.media_db.playlist_add(unicode(play_name[0]), unicode(track))
             
         
 #######################################
