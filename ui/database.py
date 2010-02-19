@@ -21,7 +21,7 @@ from sqlite3 import dbapi2 as sqlite
 import os
 
 #TODO: stats database
-
+#FIXME: fix this horrible mess
 class Media:
     def __init__(self):
         """
@@ -48,6 +48,8 @@ class Media:
                 artist  VARCHAR(50),
                 album   VARCHAR(50),
                 added UNSIGNED MEDIUMINT(6),
+                playcount SMALLINT(5),
+                rating TINYINT(0),
                 PRIMARY KEY (file_name) ON CONFLICT IGNORE
                 )'''
                 , 
@@ -89,7 +91,7 @@ class Media:
         """
         Here we add data into the media database
         """
-        query = "INSERT INTO media VALUES (?,?,?,?,?)"
+        query = "INSERT INTO media VALUES (?,?,?,?,?,?,?)"
         self.__query_execute(query, meta)
         
     def get_artists(self):
@@ -172,3 +174,9 @@ class Media:
         query = '''DELETE FROM playlist
                         WHERE name=?'''
         self.__query_execute(query, (name, ))
+
+    def inc_count(self, cnt, fname):
+        query = '''UPDATE media
+                        SET playcount=?
+                        WHERE file_name=?'''
+        self.__query_execute(query, (cnt, fname))

@@ -76,6 +76,7 @@ class Finish:
 class AudioBackend:
     def __init__(self, parent,  backend="gstreamer"):
         self.ui = parent
+        self.just_finished = False
         if backend == "gstreamer":
             self.__gstreamer_init()
             
@@ -92,6 +93,7 @@ class AudioBackend:
         Generates a track to go into queue
         before playback stops
         """
+        self.just_finished = True
         track = self.ui.tracking.generate_track("next")
         #Not at end of  playlist
         if track is not None:
@@ -116,6 +118,11 @@ class AudioBackend:
         When the playing track changes certain
         Ui features may need to be updated.
         """
+        # Cannot do it in "about_to_finish" as it's in another thread
+        if self.just_finished is True:
+            self.just_finished = False
+            self.__inc_playcount()
+        
         self.ui.tracking.generate_info()
         self.ui.set_info()
         self.ui.set_prog_sldr()
@@ -140,6 +147,15 @@ class AudioBackend:
         self.ui.trkNowBox.setTitle(QString("No Track Playing"))
         MainWindow.art_alb["oldart"] = MainWindow.art_alb["oldalb"] = None
         self.ui.xtrawdgt.tray_icon.setToolTip("Stopped")
+        
+    def __inc_playcount(self):
+        """
+        Probably better to do this within the database.
+        """
+        now = self.ui.tracking.generate_track("back")
+        playcount = int(self.ui.media_db.get_info(unicode(now))[0][5])
+        playcount += 1
+        self.ui.media_db.inc_count(playcount, unicode(now))
         
 
 
