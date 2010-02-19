@@ -155,8 +155,6 @@ class SetupExtraWidgets:
     def __key_shortcuts(self):
         delete = QShortcut(QKeySequence(QString("Del")), self.ui)
         QObject.connect(delete, SIGNAL("activated()"), self.ui.playlisting.del_track)   
-
-
         
         
 class WidgetManips:
@@ -222,6 +220,11 @@ class WidgetManips:
                 for play in playlists:
                     now = QTreeWidgetItem([QString(play[0])])
                     headers[cnt].addChild(now)
+                    tracks = self.ui.media_db.playlist_tracks(unicode(play[0]))
+                    for track in tracks: 
+                        info = self.ui.media_db.get_info(track[0])[0]
+                        now.addChild(QTreeWidgetItem([ QString("%s - %s" % (info[2], info[1])) ]))
+                                                                     
             self.ui.playlstView.addTopLevelItem(headers[cnt])
                 
                 

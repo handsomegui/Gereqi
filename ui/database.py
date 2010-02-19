@@ -20,7 +20,8 @@
 from sqlite3 import dbapi2 as sqlite
 import os
 
-#TODO: stats database
+# TODO: stats database
+# TODO: cover-art db
 #FIXME: fix this horrible mess
 class Media:
     def __init__(self):
@@ -33,15 +34,14 @@ class Media:
         app_dir = "%s/.gereqi/" % os.getenv("HOME")
         db_loc = "%sgereqi.db" % app_dir
         
+        # Nowhere to put db
         if os.path.exists(app_dir) is False:
-            print("Need to make a folder.")
             os.mkdir(app_dir)
         self.media_db = sqlite.connect(db_loc)
         self.media_curs = self.media_db.cursor()        
         self.__setup_tables()
         
     def __setup_tables(self):
-        # Only the media table is actually used right now
         tables = ['''CREATE TABLE IF NOT EXISTS media (
                 file_name    TEXT ,
                 title   VARCHAR(50),
@@ -65,10 +65,8 @@ class Media:
                 )'''
                 , 
                 '''CREATE TABLE IF NOT EXISTS local_list (
-                id INT  IDENTITY (1,1),
                 filename TEXT,
-                list UNSIGNED SMALLINT(3),
-                PRIMARY KEY (id)
+                list UNSIGNED SMALLINT(3)
                 )''']      
         
         for table in tables:
@@ -91,41 +89,48 @@ class Media:
         """
         Here we add data into the media database
         """
-        query = "INSERT INTO media VALUES (?,?,?,?,?,?,?)"
+        query = '''INSERT INTO media 
+                        VALUES (?,?,?,?,?,?,?)'''
         self.__query_execute(query, meta)
         
     def get_artists(self):
-        query = "SELECT DISTINCT artist FROM media"
+        query = '''SELECT DISTINCT artist
+                        FROM media'''
         return self.__query_fetchall(query)
         
     def get_artists_timed(self, time):
-        query = '''SELECT DISTINCT artist FROM media
-                                WHERE added>?'''
+        query = '''SELECT DISTINCT artist 
+                            FROM media
+                            WHERE added>?'''
         return self.__query_fetchall(query, (time, ))
     
     def get_albums(self, artist):
         args = (artist, )
-        query = '''SELECT DISTINCT album FROM media
+        query = '''SELECT DISTINCT album 
+                            FROM media
                             WHERE artist=?'''
         return self.__query_fetchall(query, args)
         
     def get_albums_timed(self, artist, time):
         args = (artist, time)
-        query = '''SELECT DISTINCT album FROM media
+        query = '''SELECT DISTINCT album   
+                            FROM media
                             WHERE artist=?
                             AND added>?'''
         return self.__query_fetchall(query, args)
         
     def get_files(self, artist, album):
         args = (artist, album)
-        query = '''SELECT DISTINCT file_name FROM media 
+        query = '''SELECT DISTINCT file_name   
+                        FROM media 
                         WHERE artist=?
                         AND album=?'''
         return [fnow[0] for fnow in self.__query_fetchall(query, args)]
         
     def get_file(self, artist, album, title):
         args = (artist, album, title)
-        query = '''SELECT DISTINCT file_name FROM media 
+        query = '''SELECT DISTINCT file_name 
+                        FROM media 
                         WHERE artist=?
                         AND album=?
                         AND title=?'''
@@ -133,21 +138,24 @@ class Media:
         
     def get_titles(self, artist, album):
         args = (artist, album)
-        query = '''SELECT DISTINCT title FROM media 
+        query = '''SELECT DISTINCT title 
+                        FROM media 
                         WHERE artist=?
                         AND album=?'''
         return self.__query_fetchall(query, args)
 
     def get_titles_timed(self, artist, album, time):
         args = (artist, album, time)
-        query = '''SELECT DISTINCT title FROM media 
+        query = '''SELECT DISTINCT title 
+                        FROM media 
                         WHERE artist=?
                         AND album=?
                         AND added>?'''
         return self.__query_fetchall(query, args)
         
     def get_info(self, file_name):
-        query = '''SELECT * FROM media 
+        query = '''SELECT * 
+                        FROM media 
                         WHERE file_name=?'''
         return self.__query_fetchall(query, (file_name, ))
         
@@ -158,15 +166,18 @@ class Media:
         self.__query_execute(query, args)
     
     def playlist_add(self, *params):
-        query = '''INSERT INTO playlist VALUES (?,?)'''
+        query = '''INSERT INTO playlist 
+                            VALUES (?,?)'''
         self.__query_execute(query, params)
         
     def playlist_list(self):
-        query = '''SELECT DISTINCT name FROM playlist'''
+        query = '''SELECT DISTINCT name 
+                            FROM playlist'''
         return self.__query_fetchall(query)
         
     def playlist_tracks(self, name):
-        query = '''SELECT file_name FROM playlist
+        query = '''SELECT file_name 
+                            FROM playlist
                             WHERE name=?'''
         return self.__query_fetchall(query, (name, ))
         

@@ -818,20 +818,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         play_name = QInputDialog.getText(\
             None,
-            self.trUtf8("Enter"),
-            self.trUtf8("Playlist Name:"),
+            self.trUtf8("Save Playlist"),
+            self.trUtf8("Enter a name for the playlist:"),
             QLineEdit.Normal)
             
-        # TODO: put in a check for existing play_name
-        # if found, delete the old playlist
-        
         if play_name[1] is True:
             check = self.media_db.playlist_tracks(unicode(play_name[0]))
             if len(check) > 0:
-                
                 msg = QMessageBox.warning(None,
-                    self.trUtf8("Overwrite"),
-                    self.trUtf8("""This playlist name already is used. Would you like to overwrite it?"""),
+                    self.trUtf8("Overwrite Playlist?"),
+                    self.trUtf8("""A playlist named '%s' already exists. Do you want to overwrite it?"""  % unicode(play_name[0])),
                     QMessageBox.StandardButtons(\
                         QMessageBox.Cancel | \
                         QMessageBox.No | \
