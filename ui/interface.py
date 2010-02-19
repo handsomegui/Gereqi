@@ -850,10 +850,27 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Slot documentation goes here.
         """
-        playlist = item.text(column)
-        tracks = self.media_db.playlist_tracks(unicode(playlist))
-        for track in tracks:
-            self.playlisting.add_to_playlist(track[0])
+        try:
+            par = unicode(item.parent().text(0))
+        except  AttributeError:
+            return
+        
+        if par =="Podcasts":
+            return
+            
+        elif par == "Radio Streams":
+            return
+            
+        elif par == "Playlists":
+            playlist = item.text(column)
+            tracks = self.media_db.playlist_tracks(unicode(playlist))
+            for track in tracks:
+                self.playlisting.add_to_playlist(track[0])
+                
+        else:
+            new_par = item.parent().parent()
+            print new_par.text(0), item.text(0)
+                
             
     @pyqtSignature("bool")
     def on_delPlylstBttn_clicked(self, checked):
@@ -1005,5 +1022,4 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             filt_time  = int(round((time.time() - (365 * 24 * 60 * 60))))
     
         return filt_time
-    
 
