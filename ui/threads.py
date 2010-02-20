@@ -147,6 +147,10 @@ class Builddb(QThread):
                     # a certain order to the args passed
                     tags.insert(0, trk) 
                     tags.append(int(round(time.time())))
+                    
+                    # The playcount and rating
+                    tags.append(0)
+                    tags.append(0)
                     media_db.add_media(tags)
                     cnt += 1
             else:

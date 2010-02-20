@@ -501,7 +501,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
             </layout>
            </item>
            <item>
-            <widget class="QTreeWidget" name="playlstTree">
+            <widget class="QTreeWidget" name="playlstView">
              <column>
               <property name="text">
                <string>Playlists</string>
@@ -867,6 +867,12 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
           <attribute name="verticalHeaderVisible">
            <bool>false</bool>
           </attribute>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="horizontalHeaderVisible">
+           <bool>true</bool>
+          </attribute>
          </widget>
         </item>
         <item>
@@ -1094,7 +1100,7 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
      <x>0</x>
      <y>0</y>
      <width>792</width>
-     <height>26</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuActions">

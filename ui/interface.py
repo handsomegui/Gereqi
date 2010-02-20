@@ -19,7 +19,7 @@
 from PyQt4.QtGui import QMainWindow, QFileDialog,   \
 QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
 QIcon, QTreeWidgetItem, QPixmap, QMessageBox, QColor, \
-QSystemTrayIcon
+QSystemTrayIcon, QInputDialog, QLineEdit
 from PyQt4.QtCore import QString, Qt, QTime, SIGNAL, \
 SLOT, QDir, QObject, pyqtSignature
 
@@ -76,6 +76,7 @@ class Finish:
 class AudioBackend:
     def __init__(self, parent,  backend="gstreamer"):
         self.ui = parent
+        self.just_finished = False
         if backend == "gstreamer":
             self.__gstreamer_init()
             
@@ -92,7 +93,7 @@ class AudioBackend:
         Generates a track to go into queue
         before playback stops
         """
-        print("ABOUT TO FINISH", pipeline)
+        self.just_finished = True
         track = self.ui.tracking.generate_track("next")
         #Not at end of  playlist
         if track is not None:
@@ -117,7 +118,11 @@ class AudioBackend:
         When the playing track changes certain
         Ui features may need to be updated.
         """
-        print("TRACK CHANGED")
+        # Cannot do it in "about_to_finish" as it's in another thread
+        if self.just_finished is True:
+            self.just_finished = False
+            self.__inc_playcount()
+        
         self.ui.tracking.generate_info()
         self.ui.set_info()
         self.ui.set_prog_sldr()
@@ -128,7 +133,6 @@ class AudioBackend:
         """
         Things to be performed when the playback finishes
         """
-        print("FINISHED")
         self.ui.contentTabs.setTabEnabled(1, False)
         self.ui.contentTabs.setTabEnabled(2, False)
         self.ui.playBttn.setChecked(False)
@@ -143,6 +147,15 @@ class AudioBackend:
         self.ui.trkNowBox.setTitle(QString("No Track Playing"))
         MainWindow.art_alb["oldart"] = MainWindow.art_alb["oldalb"] = None
         self.ui.xtrawdgt.tray_icon.setToolTip("Stopped")
+        
+    def __inc_playcount(self):
+        """
+        Probably better to do this within the database.
+        """
+        now = self.ui.tracking.generate_track("back")
+        playcount = int(self.ui.media_db.get_info(unicode(now))[0][5])
+        playcount += 1
+        self.ui.media_db.inc_count(playcount, unicode(now))
         
 
 
@@ -183,7 +196,7 @@ class Playlist:
         Finds the playlist row of the
         currently playing track
         """
-        file_list = self.__gen_file_list()
+        file_list = self.gen_file_list()
         current_file = self.ui.player.audio_object.current_source()
         
         if current_file is None:
@@ -192,7 +205,7 @@ class Playlist:
             return file_list.index(current_file)
         
         
-    def __gen_file_list(self):
+    def gen_file_list(self):
         """
         Creates a list of files in the playlist at its
         current sorting top to bottom
@@ -376,7 +389,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         #Make the collection search line-edit have the keyboard focus on startup.
         self.srchCollectEdt.setFocus()
         self.wdgt_manip.setup_db_tree()
-       
+        self.wdgt_manip.pop_playlist_view()
+        
     @pyqtSignature("QString")  
     def on_srchCollectEdt_textChanged(self, p0):
         """
@@ -411,15 +425,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # In any case we'll have an artist
         if artist is None:
             artist = now
-        artist = self.extras.qstr2uni(artist)
         if track is not None:
-            album = self.extras.qstr2uni(album)     
-            track = self.extras.qstr2uni(track)
-            file_name = self.media_db.get_file(artist, album, track)
+            file_name = self.media_db.get_file(unicode(artist), unicode(album), unicode(track))
             self.playlisting.add_to_playlist(file_name)
         elif album is not None:
-            album = self.extras.qstr2uni(album)
-            tracks = self.media_db.get_files(artist, album)
+            tracks = self.media_db.get_files(unicode(artist), unicode(album))
             for track in tracks:
                 # Retrieves metadata from database
                 self.playlisting.add_to_playlist(track)
@@ -577,10 +587,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                         
         if mfiles is not None:
             for item in mfiles:
-                fname = self.extras.qstr2uni(item)
-                ender = fname.split(".")[-1]
+                ender = unicode(item).split(".")[-1]
                 if ender.lower() in MainWindow.audio_formats:
-                    self.playlisting.add_to_playlist(fname)
+                    self.playlisting.add_to_playlist(unicode(item))
 
     @pyqtSignature("bool")
     def on_actionMinimise_to_Tray_toggled(self, checked):
@@ -720,27 +729,24 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             artist = item.text(0)
             album = None
-        # An artist in any case
-        artist = self.extras.qstr2uni(artist)
         
         if (album is not None) and (item.childCount() == 0):
             # Adding tracks to album
-            album = self.extras.qstr2uni(album)
             if filt_time is None:
-                tracks = self.media_db.get_titles(artist, album)
+                tracks = self.media_db.get_titles(unicode(artist), unicode(album))
             else:
-                tracks = self.media_db.get_titles_timed(artist, album, filt_time)
+                tracks = self.media_db.get_titles_timed(unicode(artist), unicode(album), filt_time)
             for cnt in range(len(tracks)):
-                track = QTreeWidgetItem([ tracks[cnt][0] ] )
+                track = QTreeWidgetItem([tracks[cnt][0] ] )
                 item.insertChild(cnt, track)
        
        # Adding albums to the artist 
        # i.e. the parent has no children    
         elif item.childCount() == 0: 
             if filt_time is None:
-                albums = self.media_db.get_albums(artist)
+                albums = self.media_db.get_albums(unicode(artist))
             else:
-                albums = self.media_db.get_albums_timed(artist, filt_time)                
+                albums = self.media_db.get_albums_timed(unicode(artist), filt_time)                
             for cnt in range(len(albums)):      
                 album = QTreeWidgetItem([albums[cnt][0]])
                 album.setChildIndicatorPolicy(0)
@@ -803,7 +809,109 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             cd_tracks = acd.get_info()
             for trk in cd_tracks:
                 self.playlisting.add_to_playlist(trk[-1],  trk)
+                
+    @pyqtSignature("")
+    def on_svplyBttn_clicked(self):
+        """
+        Based on what is in the playlist and chosen name, it'll
+        get put into the database
+        """
+        play_name = QInputDialog.getText(\
+            None,
+            self.trUtf8("Save Playlist"),
+            self.trUtf8("Enter a name for the playlist:"),
+            QLineEdit.Normal)
+            
+        if play_name[1] is True:
+            check = self.media_db.playlist_tracks(unicode(play_name[0]))
+            if len(check) > 0:
+                msg = QMessageBox.warning(None,
+                    self.trUtf8("Overwrite Playlist?"),
+                    self.trUtf8("""A playlist named '%s' already exists. Do you want to overwrite it?"""  % unicode(play_name[0])),
+                    QMessageBox.StandardButtons(\
+                        QMessageBox.Cancel | \
+                        QMessageBox.No | \
+                        QMessageBox.Yes))
+                
+                if msg == QMessageBox.Yes:
+                    pass
+                elif msg == QMessageBox.Cancel:
+                    return
+                elif msg == QMessageBox.No:
+                    self.on_svplyBttn_clicked()
+                    
+            tracks = self.playlisting.gen_file_list()            
+            for track in tracks:
+                self.media_db.playlist_add(unicode(play_name[0]), unicode(track))
+            self.wdgt_manip.pop_playlist_view()
+            
+    @pyqtSignature("QTreeWidgetItem*, int")
+    def on_playlstView_itemDoubleClicked(self, item, column):
+        """
+        Slot documentation goes here.
+        """
+        try:
+            par = unicode(item.parent().text(0))
+        except  AttributeError:
+            return
         
+        if par =="Podcasts":
+            return
+            
+        elif par == "Radio Streams":
+            return
+            
+        elif par == "Playlists":
+            playlist = item.text(column)
+            tracks = self.media_db.playlist_tracks(unicode(playlist))
+            for track in tracks:
+                self.playlisting.add_to_playlist(track[0])
+                
+        else:
+            new_par = item.parent().parent()
+            print new_par.text(0), item.text(0)
+                
+            
+    @pyqtSignature("bool")
+    def on_delPlylstBttn_clicked(self, checked):
+        """
+        Delete a selected playlist from the DB
+        """
+        playlist = self.playlstView.selectedItems()
+        if len(playlist) > 0:
+            self.media_db.playlist_delete(unicode(playlist[0].text(0)))
+            self.wdgt_manip.pop_playlist_view()
+            
+    
+    @pyqtSignature("bool")
+    def on_rnmPlylstBtnn_clicked(self, checked):
+        """
+        Rename the slected playlist
+        """
+        playlist = self.playlstView.selectedItems()
+        try:
+            par = unicode(playlist[0].parent().text(0))
+        except  AttributeError:
+            return        
+            
+        if (len(playlist) > 0) and (par in ["Podcasts", "Radio Streams",  "Playlists"]):
+            new_name = QInputDialog.getText(\
+                None,
+                self.trUtf8("Rename Playlist"),
+                self.trUtf8("Rename the playlist to:"),
+                QLineEdit.Normal)
+            
+            # Checks if you entered a non-zero length name and that you clikced 'ok'
+            if (new_name[1] is True) and (len(unicode(new_name[0])) > 0):
+                #get all the tracks in the selected playlist
+                tracks = self.media_db.playlist_tracks(unicode(playlist[0].text(0)))
+                # delete the old playlist
+                self.media_db.playlist_delete(unicode(playlist[0].text(0)))
+                # add the tracks back in but with a new name, probably cleaner using an sql query
+                for track in tracks:
+                    self.media_db.playlist_add(unicode(new_name[0]), track[0])
+                self.wdgt_manip.pop_playlist_view()
+            
 #######################################
 #######################################
         
@@ -811,7 +919,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Cancels the collection build if running
         """
-        print(self.build_db_thread.stop_now() )
+        print(self.build_db_thread.stop_now())
 
     def set_prog_sldr(self):
         """
@@ -916,10 +1024,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             searcher.setNameFilters(MainWindow.format_filter)
             for item in searcher.entryInfoList():
                 fname = item.absoluteFilePath()
-                self.playlisting.add_to_playlist(self.extras.qstr2uni(fname))
+                self.playlisting.add_to_playlist(unicode(fname))
         else:
             fname = self.xtrawdgt .dir_model.filePath(index)
-            self.playlisting.add_to_playlist(self.extras.qstr2uni(fname))
+            self.playlisting.add_to_playlist(unicode(fname))
             
     def __time_filt_now(self):
         index = self.collectTimeBox.currentIndex()
@@ -944,4 +1052,4 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             filt_time  = int(round((time.time() - (365 * 24 * 60 * 60))))
     
         return filt_time
-    
+
