@@ -881,7 +881,37 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if len(playlist) > 0:
             self.media_db.playlist_delete(unicode(playlist[0].text(0)))
             self.wdgt_manip.pop_playlist_view()
-        
+            
+    
+    @pyqtSignature("bool")
+    def on_rnmPlylstBtnn_clicked(self, checked):
+        """
+        Rename the slected playlist
+        """
+        playlist = self.playlstView.selectedItems()
+        try:
+            par = unicode(playlist[0].parent().text(0))
+        except  AttributeError:
+            return        
+            
+        if (len(playlist) > 0) and (par in ["Podcasts", "Radio Streams",  "Playlists"]):
+            new_name = QInputDialog.getText(\
+                None,
+                self.trUtf8("Rename Playlist"),
+                self.trUtf8("Rename the playlist to:"),
+                QLineEdit.Normal)
+            
+            # Checks if you entered a non-zero length name and that you clikced 'ok'
+            if (new_name[1] is True) and (len(unicode(new_name[0])) > 0):
+                #get all the tracks in the selected playlist
+                tracks = self.media_db.playlist_tracks(unicode(playlist[0].text(0)))
+                # delete the old playlist
+                self.media_db.playlist_delete(unicode(playlist[0].text(0)))
+                # add the tracks back in but with a new name, probably cleaner using an sql query
+                for track in tracks:
+                    self.media_db.playlist_add(unicode(new_name[0]), track[0])
+                self.wdgt_manip.pop_playlist_view()
+            
 #######################################
 #######################################
         
