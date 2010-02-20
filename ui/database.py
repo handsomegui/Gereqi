@@ -181,6 +181,7 @@ class Media:
                             WHERE name=?'''
         return self.__query_fetchall(query, (name, ))
         
+        
     def playlist_delete(self, name):
         query = '''DELETE FROM playlist
                         WHERE name=?'''
@@ -191,3 +192,10 @@ class Media:
                         SET playcount=?
                         WHERE file_name=?'''
         self.__query_execute(query, (cnt, fname))
+        
+    def search_by_titandart(self, art, tit):
+        query = '''SELECT DISTINCT file_name   
+                        FROM media 
+                        WHERE artist=?
+                        AND title=?'''        
+        return self.__query_fetchall(query, (art, tit))

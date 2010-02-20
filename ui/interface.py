@@ -870,6 +870,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             new_par = item.parent().parent()
             print new_par.text(0), item.text(0)
+            
+            if new_par.text(0) == "Playlists":
+                artist, title = unicode(item.text(0)).split(" - ")
+                print self.media_db.search_by_titandart(artist, title)
                 
             
     @pyqtSignature("bool")
