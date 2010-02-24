@@ -133,6 +133,7 @@ class AudioBackend:
         """
         Things to be performed when the playback finishes
         """
+        self.just_finished = False
         self.ui.contentTabs.setTabEnabled(1, False)
         self.ui.contentTabs.setTabEnabled(2, False)
         self.ui.playBttn.setChecked(False)
