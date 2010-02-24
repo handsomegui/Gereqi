@@ -686,8 +686,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         print("Rebuild: Ensure the db is ON CONFLICT IGNORE")
         self.create_collection()
 
-#FIXME: this causes a double-trigger of playbin.play() on app's
-# first play.
     @pyqtSignature("int, int")
     def on_playlistTree_cellDoubleClicked(self, row, column):
         """
@@ -798,8 +796,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         check = QMessageBox.question(None,
             QString("Play Audio-CD?"),
-            QString("""Playback of CD's works up to a point at the moment. Until Gstreamer-10.26 is released this situation will not change.  You can give it a try anyway.
-"""),
+            QString("""Playback of CD's works up to a point at the moment. 
+            Until Gstreamer-10.26 is released this situation will not change.  
+            You can give it a try anyway."""),
             QMessageBox.StandardButtons(\
                 QMessageBox.No | \
                 QMessageBox.Yes))
@@ -827,7 +826,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             if len(check) > 0:
                 msg = QMessageBox.warning(None,
                     self.trUtf8("Overwrite Playlist?"),
-                    self.trUtf8("""A playlist named '%s' already exists. Do you want to overwrite it?"""  % unicode(play_name[0])),
+                    self.trUtf8("""A playlist named '%s' already exists. Do you want to overwrite it?"""  
+                                % unicode(play_name[0])),
                     QMessageBox.StandardButtons(\
                         QMessageBox.Cancel | \
                         QMessageBox.No | \
@@ -1043,17 +1043,17 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             now = time.localtime()
             filt_time = int(round(time.time() - ( (now[3] * now[4]) + now[5]) ))
         elif index == 2:
-            # Week
-            filt_time  = int(round(time.time() - (7 * 24 * 60 * 60)))
+            # Week - 7 * 24 * 60 * 60
+            filt_time  = int(round(time.time() - 604800))
         elif index == 3:
-            # Month
-            filt_time  = int(round(time.time() - (28 * 24 * 60 * 60)))
+            # Month - 28 * 24 * 60 * 60
+            filt_time  = int(round(time.time() - 2419200))
         elif index == 4:
-            # 3 Months
-            filt_time  = int(round(time.time() - (3 * 28 * 24 * 60 * 60)))
+            # 3 Months - 3 * 28 * 24 * 60 * 60
+            filt_time  = int(round(time.time() - 7257600))
         elif index == 5:
-            # Year
-            filt_time  = int(round((time.time() - (365 * 24 * 60 * 60))))
+            # Year 365.25 * 24 * 60 * 60
+            filt_time  = int(round((time.time() - 31557600)))
     
         return filt_time
 

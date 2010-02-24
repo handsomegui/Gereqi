@@ -94,7 +94,7 @@ class Webinfo:
             site = "wikipedia"
             url = self.__create_url(site, *params)
             pre_html = self.__fetch(url)
-            # FIXME: nothing to do with geturl if no interent
+            # FIXME: nothing to do with geturl if no internet
             if pre_html is not None:
                 result =  self.__printable_wiki(pre_html.geturl())
                 if result is not None:
