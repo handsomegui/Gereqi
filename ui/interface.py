@@ -957,7 +957,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.media_dir = QFileDialog.getExistingDirectory(\
                 None,
                 QString("Select Media Directory"),
-                QString("/home"),
+                QDesktopServices.storageLocation(QDesktopServices.MusicLocation),
                 QFileDialog.Options(QFileDialog.ShowDirsOnly))
         # If the dialog is cancelled in last if statement the below is ignored
         if self.media_dir is not None:
