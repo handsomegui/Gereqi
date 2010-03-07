@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/ui/interface.ui'
+# Form implementation generated from reading ui file 'interface.ui'
 #
-# Created: Thu Feb 18 19:23:17 2010
+# Created: Sat Mar  6 23:53:54 2010
 #      by: PyQt4 UI code generator 4.7
 #
 # WARNING! All changes made in this file will be lost!
@@ -698,13 +698,3 @@ class Ui_MainWindow(object):
 
 from PyQt4 import QtWebKit
 import resource_rc
-
-if __name__ == "__main__":
-    import sys
-    app = QtGui.QApplication(sys.argv)
-    MainWindow = QtGui.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
-
