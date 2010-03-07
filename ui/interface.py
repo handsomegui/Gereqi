@@ -106,12 +106,11 @@ class AudioBackend:
         t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
         now = t_now.toString('mm:ss')
         max_time = self.ui.t_length.toString('mm:ss')
-        msg = "%s | %s" % (now, max_time)
-        self.ui.progLbl.setText(msg)            
+        self.ui.progLbl.setText("%s | %s" % (now, max_time))            
         # Allows normal playback whilst slider still grabbed
-        if self.ui.progSldr.value() == MainWindow.old_pos: 
+        if self.ui.progSldr.value() == self.ui.old_pos: 
             self.ui.progSldr.setValue(time)
-        MainWindow.old_pos = time
+        self.ui.old_pos = time
         
     def __track_changed(self):
         """
@@ -126,7 +125,7 @@ class AudioBackend:
         self.ui.tracking.generate_info()
         self.ui.set_info()
         self.ui.set_prog_sldr()
-        MainWindow.old_pos = 0
+        self.ui.old_pos = 0
         self.ui.progSldr.setValue(0)
         
     def __finished_playing(self):
@@ -139,14 +138,14 @@ class AudioBackend:
         self.ui.playBttn.setChecked(False)
         self.ui.stopBttn.setEnabled(False)
         self.ui.progSldr.setValue(0)
-        MainWindow.old_pos = 0
+        self.ui.old_pos = 0
         self.ui.xtrawdgt.stat_lbl.setText("Stopped")
         self.ui.progLbl.setText("00:00 | 00:00")
         # clear things like wiki and reset cover art to default        
         self.ui.wikiView.setHtml(QString(""))
         self.ui.coverView.setPixmap(QPixmap(":/Icons/music.png"))
         self.ui.trkNowBox.setTitle(QString("No Track Playing"))
-        MainWindow.art_alb["oldart"] = MainWindow.art_alb["oldalb"] = None
+        self.ui.art_alb["oldart"] = self.ui.art_alb["oldalb"] = None
         self.ui.xtrawdgt.tray_icon.setToolTip("Stopped")
         
     def __inc_playcount(self):
@@ -253,11 +252,11 @@ class Playlist:
                 item = self.ui.playlistTree.item(row, col)
                 if row != now:
                     if row % 2:
-                        item.setBackgroundColor(MainWindow.colours["odd"])
+                        item.setBackgroundColor(self.ui.colours["odd"])
                     else:
-                        item.setBackgroundColor(MainWindow.colours["even"])
+                        item.setBackgroundColor(self.ui.colours["even"])
                 else:
-                    item.setBackgroundColor(MainWindow.colours["now"])
+                    item.setBackgroundColor(self.ui.colours["now"])
                     self.ui.playlistTree.selectRow(now)
                         
     def highlighted_track(self):
@@ -324,37 +323,40 @@ class Track:
         msg_header = QString("Now Playing")
         msg_main = QString("%s by %s" % (title, artist))
         self.ui.trkNowBox.setTitle(msg_main)
-        if MainWindow.show_messages and self.ui.playBttn.isChecked():
+        if self.ui.show_messages and self.ui.playBttn.isChecked():
             self.ui.xtrawdgt.tray_icon.showMessage(msg_header, msg_main, QSystemTrayIcon.NoIcon, 3000)
         self.ui.xtrawdgt.tray_icon.setToolTip(msg_main)
         self.msg_status = "Playing: %s by %s on %s" % (title, artist, album)
         self.ui.xtrawdgt.stat_lbl.setText(self.msg_status)
         self.ui.playlisting.tracknow_colourise(row)
-        MainWindow.art_alb["nowart"] = artist.toUtf8()
-        MainWindow.art_alb["nowalb"] = album.toUtf8()
+        self.ui.art_alb["nowart"] = artist.toUtf8()
+        self.ui.art_alb["nowalb"] = album.toUtf8()
         
 
 class MainWindow(Ui_MainWindow, QMainWindow): 
     """
     Where everything starts from, mostly.
     """    
-    show_messages = True
-    art_alb = {"oldart":None, "oldalb":None, "nowart":None, "nowalb":None} 
-    old_pos = 0
-    locale = ".com"
-    audio_formats = ["flac", "mp3", "ogg",  "m4a"]
-    format_filter = ["*.ogg", "*.flac", "*.mp3",  "*.m4a"]
-    colours = {
-           "odd": QColor(220, 220, 220, 128), 
-           "even": QColor(255, 255, 255), 
-           "now": QColor(128, 184, 255, 128), 
-           "search": QColor(255, 128, 128, 128)}
+
     
     def __init__(self, parent = None):
         """
         Initialisation of key items. Some may be pulled
         from other files as this file is getting messy
         """ 
+        
+        self.show_messages = True
+        self.art_alb = {"oldart":None, "oldalb":None, "nowart":None, "nowalb":None} 
+        self.old_pos = 0
+        self.locale = ".com"
+        self.audio_formats = ["flac", "mp3", "ogg",  "m4a"]
+        self.format_filter = ["*.ogg", "*.flac", "*.mp3",  "*.m4a"]
+        self.colours = {
+           "odd": QColor(220, 220, 220, 128), 
+           "even": QColor(255, 255, 255), 
+           "now": QColor(128, 184, 255, 128), 
+           "search": QColor(255, 128, 128, 128)}
+           
         QMainWindow.__init__(self, parent)
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
@@ -365,7 +367,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.html_thread = Getwiki()
         self.build_db_thread = Builddb()
         self.extras = Extraneous()
-        self.meta = Tagging(MainWindow.audio_formats)
+        self.meta = Tagging(self.audio_formats)
         self.player = AudioBackend(self)
         self.playlisting = Playlist(self)
         self.xtrawdgt = SetupExtraWidgets(self)
@@ -583,13 +585,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                         QString("Select Music Files"),
                         QDesktopServices.storageLocation(QDesktopServices.MusicLocation), 
                         #TODO: do not hard-code this
-                        QString(" ".join(MainWindow.format_filter)), 
+                        QString(" ".join(self.format_filter)), 
                         None)       
                         
         if mfiles is not None:
             for item in mfiles:
                 ender = unicode(item).split(".")[-1]
-                if ender.lower() in MainWindow.audio_formats:
+                if ender.lower() in self.audio_formats:
                     self.playlisting.add_to_playlist(unicode(item))
 
     @pyqtSignature("bool")
@@ -642,15 +644,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     rows.append(row)
                     for col in range(columns):
                         item = self.playlistTree.item(row, col)
-                        item.setBackgroundColor(MainWindow.colours["search"])
+                        item.setBackgroundColor(self.colours["search"])
             for row in range(self.playlistTree.rowCount()):
                 if row not in rows:
                     for col in range(columns):
                         item = self.playlistTree.item(row, col)
                         if row % 2:
-                            item.setBackgroundColor(MainWindow.colours["odd"])
+                            item.setBackgroundColor(self.colours["odd"])
                         else:
-                            item.setBackgroundColor(MainWindow.colours["even"])
+                            item.setBackgroundColor(self.colours["even"])
         else:
             self.playlisting.tracknow_colourise()
                 
@@ -676,7 +678,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         val = self.progSldr.value()
         self.player.audio_object.seek(val)
-        MainWindow.old_pos = val
+        self.old_pos = val
     
     @pyqtSignature("")
     def on_actionUpdate_Collection_triggered(self):
@@ -960,7 +962,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # If the dialog is cancelled in last if statement the below is ignored
         if self.media_dir is not None:
             self.xtrawdgt.stat_bttn.setEnabled(True)
-            self.build_db_thread.set_values(self.media_dir, MainWindow.audio_formats)
+            self.build_db_thread.set_values(self.media_dir, self.audio_formats)
             self.xtrawdgt.stat_prog.setToolTip("Scanning Media")
             self.xtrawdgt.stat_prog.setValue(0)
             self.build_db_thread.start()
@@ -969,23 +971,23 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         The wikipedia page + album art to current artist playing
         """
-        art_change = MainWindow.art_alb["nowart"] != MainWindow.art_alb["oldart"] 
+        art_change = self.art_alb["nowart"] != self.art_alb["oldart"] 
         # Wikipedia info
-        if (art_change is True) and (MainWindow.art_alb["nowart"] is not None):
+        if (art_change is True) and (self.art_alb["nowart"] is not None):
             # passes the artist to the thread
-            self.html_thread.set_values(MainWindow.art_alb["nowart"]) 
+            self.html_thread.set_values(self.art_alb["nowart"]) 
             # starts the thread
             self.html_thread.start() 
-            MainWindow.art_alb["oldart"] = MainWindow.art_alb["nowart"]
+            self.art_alb["oldart"] = self.art_alb["nowart"]
             
-        alb_change = MainWindow.art_alb["nowalb"] != MainWindow.art_alb["oldalb"]
+        alb_change = self.art_alb["nowalb"] != self.art_alb["oldalb"]
         # Album art
-        if (alb_change is True) and (MainWindow.art_alb["nowalb"] is not None):
-            album = MainWindow.art_alb["nowalb"]
-            artist = MainWindow.art_alb["nowart"]
-            self.cover_thread.set_values(album, artist, MainWindow.locale)
+        if (alb_change is True) and (self.art_alb["nowalb"] is not None):
+            album = self.art_alb["nowalb"]
+            artist = self.art_alb["nowart"]
+            self.cover_thread.set_values(album, artist, self.locale)
             self.cover_thread.start()
-            MainWindow.art_alb["oldalb"] = MainWindow.art_alb["nowalb"]
+            self.art_alb["oldalb"] = self.art_alb["nowalb"]
 
     def tray_event(self, event):
         """
@@ -1026,7 +1028,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             searcher = QDir(fname)
             searcher.setFilter(QDir.Files)
             searcher.setFilter(QDir.Files)
-            searcher.setNameFilters(MainWindow.format_filter)
+            searcher.setNameFilters(self.format_filter)
             for item in searcher.entryInfoList():
                 fname = item.absoluteFilePath()
                 self.playlisting.add_to_playlist(unicode(fname))
