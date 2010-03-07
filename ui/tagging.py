@@ -33,6 +33,11 @@ class Fixing:
         return
         
     def flac_bloc_fix(self, fname):
+        """
+        This is required to remove multiple block-types, comments in this case
+        as this is incorrect use of this block-type. Also, mutagen can't/wont work with
+        multiple comment blocks.
+        """
         cmd = '''metaflac --list --block-type=VORBIS_COMMENT "%s" \
             | grep "METADATA block #" \
             | cut -d"#" -f2 \

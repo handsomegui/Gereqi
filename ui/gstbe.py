@@ -22,6 +22,7 @@ import gst, thread, gobject
 from os import path
 from time import sleep
 from PyQt4.QtCore import QObject, SIGNAL
+from urllib import pathname2url
 
 
 class Extraneous:
@@ -38,7 +39,7 @@ class Extraneous:
     def source_checks(self, source, type):
         fnow= None
         if type == "file" and (path.isfile(source) is True):
-            fnow = "file://%s" % source
+            fnow = "file://%s" % pathname2url(source)
         elif type == "cd":
             fnow = "cdda://%s" % source
         elif "cdda://" in source:
