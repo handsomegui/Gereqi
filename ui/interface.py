@@ -73,11 +73,10 @@ class Finish:
             
             
 class AudioBackend:
-    def __init__(self, parent,  backend="gstreamer"):
+    def __init__(self, parent):
         self.ui = parent
         self.just_finished = False
-        if backend == "gstreamer":
-            self.__gstreamer_init()
+        self.__gstreamer_init()
             
     def __gstreamer_init(self):
         self.audio_object = Gstbe()
