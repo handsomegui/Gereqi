@@ -48,11 +48,10 @@ class Finish:
         """
         self.ui.xtrawdgt.stat_bttn.setEnabled(False)
         if status == "cancelled":
-            self.ui.xtrawdgt.stat_prog.setToolTip("cancelled")
+            self.ui.xtrawdgt.stat_prog.setToolTip("Cancelled")
         else:
             self.ui.xtrawdgt.stat_prog.setToolTip("Finished")
         self.ui.xtrawdgt.stat_prog.setValue(100)
-        self.ui.collectTree.clear()
         self.ui.wdgt_manip.setup_db_tree()
         self.ui.srchCollectEdt.clear()
         
