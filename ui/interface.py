@@ -60,7 +60,7 @@ class Finish:
             self.ui.coverView.setPixmap(QPixmap(":/Icons/music.png"))
         else:
             cover = QPixmap()
-            cover = cover.fromImage(img)
+            cover = cover.fromImage(img, Qt.OrderedDither)
             cover = cover.scaledToWidth(200, Qt.SmoothTransformation)
             self.ui.coverView.setPixmap(cover)        
         
