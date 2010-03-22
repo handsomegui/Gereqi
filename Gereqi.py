@@ -26,7 +26,7 @@ no idea what yet.
 """
 from PyQt4.QtGui import QApplication
 from PyQt4.QtCore import QString
-from ui.interface import MainWindow
+from gereqi.interface import MainWindow
 import sys
 __version__= "master"  
 
