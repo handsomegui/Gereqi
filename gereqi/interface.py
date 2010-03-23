@@ -951,10 +951,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         # TODO: not implemented yet
         self.playlisting.clear()
-        self.nxtplyBttn.setEnabled(True)
+        if len(self.play_hist.thing) > 1:
+            self.nxtplyBttn.setEnabled(True)
         tracks, last = self.play_hist.last_list()
         for track in tracks:
             self.playlisting.add_to_playlist(track)
+
         self.clrplyBttn.setEnabled(True)
         
         if last is True:
