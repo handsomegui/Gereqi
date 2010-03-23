@@ -451,14 +451,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             else:
                 self.playlisting.tracknow_colourise(self.playlisting.current_row())
 
-    #TODO: this can be called from 2 other actions. Needs tidy up.
+    #TODO: OH DEAR GOD. CLEAN UP THIS MESS.
     @pyqtSignature("bool")
     def on_playBttn_toggled(self, checked):
         """
         The play button either resumes or starts playback.
         Not possible to play a highlighted row.
         """
-        #TODO: messy. Clean up.
+        
         if checked is True:
             queued = self.player.audio_object.current_source()
             stopped = self.stopBttn.isEnabled() is False
@@ -467,14 +467,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 # Checks to see if highlighted track matches queued track
                 # prevents loading whilst playing
                 if (queued != highlighted) and (stopped is True): 
-                    queued = highlighted
+                    queued = unicode(highlighted)
                     self.player.audio_object.load(queued)
                 # Nothing already loaded into playbin
                 elif queued is None:
                     selected = self.playlistTree.currentRow()
                     # A row is selected
                     if selected >= 0:
-                        selected = self.tracking.generate_track("now", selected)           
+                        selected = self.tracking.generate_track("now", selected)
                         self.player.audio_object.load(selected)
                     # Just reset the play button and stop here
                     else:
@@ -486,6 +486,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     self.xtrawdgt.stat_lbl.setText(self.tracking.msg_status)
                 self.player.audio_object.play()
                 self.stopBttn.setEnabled(True)
+                
                 icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
                 tray = QIcon(QPixmap(":/Icons/app.png"))
                 self.playBttn.setIcon(icon)
