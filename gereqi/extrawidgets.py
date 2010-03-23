@@ -182,7 +182,6 @@ class WidgetManips:
             artist = artists[cnt][0]
             # When creating collection tree only 
             #  allow certain artists based on the filter.
-            # FIXME: not sure filt is not None is needed
             if (filt is not None) and (filt.lower() not in artist.lower()):
                 continue
             char = artist[0]   

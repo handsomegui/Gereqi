@@ -46,7 +46,6 @@ class Setting_Dialog(QDialog):
         
         self.connect(bttn_box, SIGNAL("accepted()"), self, SLOT("accept()"))
         self.connect(bttn_box, SIGNAL("rejected()"), self, SLOT("reject()"))
-        #TODO: Figure out how to do custom slots, i think
         self.connect(dir_bttn, SIGNAL("clicked()"), self, SLOT("dir_sel()"))
         self.setWindowTitle("Settings")
      

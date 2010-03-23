@@ -89,39 +89,37 @@ class Webinfo:
         """
         Where everything starts from
         """
-        # TODO: obtain the wiki URL then get the printable URL
         if thing == "info":
             site = "wikipedia"
             url = self.__create_url(site, *params)
             pre_html = self.__fetch(url)
-            # FIXME: nothing to do with geturl if no internet
             if pre_html is not None:
                 result =  self.__printable_wiki(pre_html.geturl())
                 if result is not None:
                     base_html = '''
-                    <html>
-                    <head>
-                    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
-                    <style type="text/css">
-                    a:link {text-decoration: none; color:black;font-size 11px}
-                    a:visited {text-decoration: none; color:black;font-size 11px}
-                    a:active {text-decoration: none; color:black;font-size 11px}
-                    a:hover {text-decoration: none; color:black;font-size 11px}
-                    body{font-size: 12px}
-                    h1 {font-size:12px}
-                    h2 {font-size:11px}
-                    h3 {font-size:11px}
-                    h4 {font-size:11px}
-                    p {font-size:11px}
-                    p.normal {font-size:11px}
-                    p.italic {font-size:11px}
-                    p.oblique {font-size:11px}
-                    </style>
-                    <body>
-                    %s
-                    </body>
-                    </html>
-                    '''
+                        <html>
+                        <head>
+                        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+                        <style type="text/css">
+                        a:link {text-decoration: none; color:black;font-size 11px}
+                        a:visited {text-decoration: none; color:black;font-size 11px}
+                        a:active {text-decoration: none; color:black;font-size 11px}
+                        a:hover {text-decoration: none; color:black;font-size 11px}
+                        body{font-size: 12px}
+                        h1 {font-size:12px}
+                        h2 {font-size:11px}
+                        h3 {font-size:11px}
+                        h4 {font-size:11px}
+                        p {font-size:11px}
+                        p.normal {font-size:11px}
+                        p.italic {font-size:11px}
+                        p.oblique {font-size:11px}
+                        </style>
+                        <body>
+                        %s
+                        </body>
+                        </html>
+                        '''
                     # Cuts out everything from References down
                     splitter = '''<h2><span class="mw-headline" id="References">References</span></h2>'''
                     return base_html % result.split(splitter)[0]         
@@ -129,7 +127,6 @@ class Webinfo:
         elif thing == "cover":    
             site = "amazon.com"
             url = self.__create_url(site, *params)
-            #FIXME: nothing to read if no internet
             pre_html = self.__fetch(url)
             if pre_html is not None:
                 result = self.__treat(site, pre_html.read())

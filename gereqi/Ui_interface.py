@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'interface.ui'
+# Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/gereqi/interface.ui'
 #
-# Created: Sat Mar  6 23:53:54 2010
+# Created: Tue Mar 23 22:16:41 2010
 #      by: PyQt4 UI code generator 4.7
 #
 # WARNING! All changes made in this file will be lost!
@@ -303,6 +303,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4 = QtGui.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.clrplyBttn = QtGui.QToolButton(self.layoutWidget)
+        self.clrplyBttn.setEnabled(False)
         icon4 = QtGui.QIcon()
         icon4.addPixmap(QtGui.QPixmap(":/Icons/edit-clear-list.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.clrplyBttn.setIcon(icon4)
@@ -319,6 +320,7 @@ class Ui_MainWindow(object):
         self.svplyBttn.setObjectName("svplyBttn")
         self.horizontalLayout_4.addWidget(self.svplyBttn)
         self.prvplyBttn = QtGui.QToolButton(self.layoutWidget)
+        self.prvplyBttn.setEnabled(False)
         icon6 = QtGui.QIcon()
         icon6.addPixmap(QtGui.QPixmap(":/Icons/edit-undo.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.prvplyBttn.setIcon(icon6)
@@ -464,7 +466,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 792, 25))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 792, 22))
         self.menuBar.setObjectName("menuBar")
         self.menuActions = QtGui.QMenu(self.menuBar)
         self.menuActions.setObjectName("menuActions")
@@ -698,3 +700,13 @@ class Ui_MainWindow(object):
 
 from PyQt4 import QtWebKit
 import resource_rc
+
+if __name__ == "__main__":
+    import sys
+    app = QtGui.QApplication(sys.argv)
+    MainWindow = QtGui.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
+
