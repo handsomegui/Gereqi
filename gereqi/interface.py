@@ -467,8 +467,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 # Checks to see if highlighted track matches queued track
                 # prevents loading whilst playing
                 if (queued != highlighted) and (stopped is True): 
-                    queued = unicode(highlighted)
-                    self.player.audio_object.load(queued)
+                    self.player.audio_object.load(unicode(highlighted))
                 # Nothing already loaded into playbin
                 elif queued is None:
                     selected = self.playlistTree.currentRow()
@@ -486,21 +485,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     self.xtrawdgt.stat_lbl.setText(self.tracking.msg_status)
                 self.player.audio_object.play()
                 self.stopBttn.setEnabled(True)
-                
-                icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
-                tray = QIcon(QPixmap(":/Icons/app.png"))
-                self.playBttn.setIcon(icon)
-                self.xtrawdgt.tray_icon.setIcon(tray)
+                self.__icon_change("play")
             else:
                 self.playBttn.setChecked(False)
                 return
         else:
             if self.player.audio_object.is_playing() is True:
                 self.player.audio_object.pause()
-            icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
-            tray = QIcon(QPixmap(":/Icons/app-paused.png"))
-            self.playBttn.setIcon(icon)
-            self.xtrawdgt.tray_icon.setIcon(tray)
+            self.__icon_change("pause")
             if self.playlistTree.currentRow() >= 0:
                 self.xtrawdgt.stat_lbl.setText("Paused")
             else:
@@ -1058,4 +1050,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             filt_time  = int(round((time.time() - 31557600)))
     
         return filt_time
+        
+    def __icon_change(self, state):
+        if state == "play":
+            icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
+            tray = QIcon(QPixmap(":/Icons/app.png"))
+        elif state == "pause":
+            icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
+            tray = QIcon(QPixmap(":/Icons/app-paused.png"))
 
+        self.playBttn.setIcon(icon)
+        self.xtrawdgt.tray_icon.setIcon(tray)
