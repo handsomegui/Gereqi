@@ -300,7 +300,7 @@ class PlaylistHistory:
     def next_list(self):
         if PlaylistHistory.index < len(PlaylistHistory.thing):
             PlaylistHistory.index += 1
-            first = PlaylistHistory.index == len(PlaylistHistory.thing)
+            first = PlaylistHistory.index == (len(PlaylistHistory.thing) - 1)
             return PlaylistHistory.thing[PlaylistHistory.index], first
 
 class Track:
@@ -463,11 +463,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if track is not None:
             file_name = self.media_db.get_file(unicode(artist), unicode(album), unicode(track))
             self.playlisting.add_to_playlist(file_name)
+            self.clrplyBttn.setEnabled(True)
         elif album is not None:
             tracks = self.media_db.get_files(unicode(artist), unicode(album))
             for track in tracks:
                 # Retrieves metadata from database
                 self.playlisting.add_to_playlist(track)
+            self.clrplyBttn.setEnabled(True)
     
     @pyqtSignature("")
     def on_prevBttn_pressed(self):
@@ -629,17 +631,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Clear current playlist and if no music playing
         clear self.player.audio_object
         """
-        #TODO:incorporate playlists in to here or a list of lists for temp storage
-        # When cleared save the playlist first to be
-        # used with the playlist undo/redo buttons
         tracks = self.playlisting.gen_file_list()
         self.play_hist.update(tracks)
         self.playlisting.clear()
-#        self.playlistTree.clearContents()
-#        rows = self.playlistTree.rowCount()
-#        # For some reason can only remove from bot to top
-#        for cnt in range(rows, -1, -1):
-#            self.playlistTree.removeRow(cnt)
+        self.prvplyBttn.setEnabled(True)
+        self.clrplyBttn.setEnabled(False)
     
     @pyqtSignature("")
     def on_clrplyBttn_clicked(self):
@@ -839,6 +835,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             for trk in cd_tracks:
                 self.playlisting.add_to_playlist(trk[-1],  trk)
                 
+            self.clrplyBttn.setEnabled(True)
+                
     @pyqtSignature("")
     def on_svplyBttn_clicked(self):
         """
@@ -896,7 +894,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             tracks = self.media_db.playlist_tracks(unicode(playlist))
             for track in tracks:
                 self.playlisting.add_to_playlist(track[0])
-                
+            self.clrplyBttn.setEnabled(True)
         else:
             new_par = item.parent().parent()
             print new_par.text(0), item.text(0)
@@ -952,19 +950,32 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Slot documentation goes here.
         """
         # TODO: not implemented yet
-        tracks, state= self.play_hist.last_list()
+        self.playlisting.clear()
+        self.nxtplyBttn.setEnabled(True)
+        tracks, last = self.play_hist.last_list()
         for track in tracks:
             self.playlisting.add_to_playlist(track)
-    
+        self.clrplyBttn.setEnabled(True)
+        
+        if last is True:
+            self.prvplyBttn.setEnabled(False)
+        
     @pyqtSignature("bool")
     def on_nxtplyBttn_clicked(self, checked):
         """
         Slot documentation goes here.
         """
         # TODO: not implemented yet
-        tracks, state= self.play_hist.next_list()
+        self.playlisting.clear()
+        self.prvplyBttn.setEnabled(True)
+        tracks, first= self.play_hist.next_list()
         for track in tracks:
             self.playlisting.add_to_playlist(track)
+        self.clrplyBttn.setEnabled(True)
+        
+        if first is True:
+            self.nxtplyBttn.setEnabled(False)
+            
 #######################################
 #######################################
         
@@ -1078,9 +1089,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             for item in searcher.entryInfoList():
                 fname = item.absoluteFilePath()
                 self.playlisting.add_to_playlist(unicode(fname))
+            self.clrplyBttn.setEnabled(True)
         else:
             fname = self.xtrawdgt .dir_model.filePath(index)
             self.playlisting.add_to_playlist(unicode(fname))
+            self.clrplyBttn.setEnabled(True)
             
     def __time_filt_now(self):
         index = self.collectTimeBox.currentIndex()
