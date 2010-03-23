@@ -12,5 +12,5 @@ setup (name='Gereqi',
             license='GPLv3', 
             packages=['gereqi'], 
             package_data={'gereqi': ['gereqi/*.py']}, 
-            scripts = ["Gereqi"]
+            scripts = ["bin/Gereqi"]
             )
