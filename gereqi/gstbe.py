@@ -36,11 +36,11 @@ class Extraneous:
         """
         return gst.element_make_from_uri(gst.URI_SRC, source, "") is not None
         
-    def source_checks(self, source, type):
+    def source_checks(self, source, source_type):
         fnow= None
-        if type == "file" and (path.isfile(source) is True):
+        if source_type == "file" and (path.isfile(source) is True):
             fnow = "file://%s" % pathname2url(source)
-        elif type == "cd":
+        elif source_type == "cd":
             fnow = "cdda://%s" % source
         elif "cdda://" in source:
             fnow = source
