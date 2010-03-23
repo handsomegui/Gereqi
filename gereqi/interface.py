@@ -210,7 +210,8 @@ class Playlist:
         """
         rows = self.ui.playlistTree.rowCount() 
         column = self.header_search("FileName")
-        file_list = [self.ui.playlistTree.item(row, column).text() for row in range(rows)]
+        file_list = [unicode(self.ui.playlistTree.item(row, column).text())
+                                                                          for row in range(rows)]
         return file_list   
         
     def del_track(self):
@@ -268,6 +269,39 @@ class Playlist:
         if row > -1:
             track = self.ui.playlistTree.item(row, column).text()
         return track        
+        
+    def clear(self):
+        self.ui.playlistTree.clearContents()
+        rows = self.ui.playlistTree.rowCount()
+        # For some reason can only remove from bot to top
+        for cnt in range(rows, -1, -1):
+            self.ui.playlistTree.removeRow(cnt)
+        
+class PlaylistHistory:
+    """
+    The playlist history
+    """
+    thing = []
+    index = 0
+    
+    def update(self, tracks):
+        if PlaylistHistory.index != len(PlaylistHistory.thing):
+            del PlaylistHistory.thing[PlaylistHistory.index + 1]
+            
+        PlaylistHistory.thing.append(tracks)
+        PlaylistHistory.index += 1
+        
+    def last_list(self):
+        if PlaylistHistory.index > 0:
+            PlaylistHistory.index -= 1
+            last = PlaylistHistory.index == 0
+            return PlaylistHistory.thing[PlaylistHistory.index], last
+        
+    def next_list(self):
+        if PlaylistHistory.index < len(PlaylistHistory.thing):
+            PlaylistHistory.index += 1
+            first = PlaylistHistory.index == len(PlaylistHistory.thing)
+            return PlaylistHistory.thing[PlaylistHistory.index], first
 
 class Track:
     def __init__(self, parent):
@@ -336,7 +370,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     Where everything starts from, mostly.
     """    
 
-    
     def __init__(self, parent = None):
         """
         Initialisation of key items. Some may be pulled
@@ -372,6 +405,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.tracking = Track(self)
         self.wdgt_manip = WidgetManips(self)
         self.finishes = Finish(self)
+        self.play_hist = PlaylistHistory()
         
         self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.finishes.db_build)
         self.connect(self.cover_thread, SIGNAL("got-image ( QImage ) "), self.finishes.set_cover) 
@@ -595,14 +629,17 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Clear current playlist and if no music playing
         clear self.player.audio_object
         """
-        #TODO:incorporate playlists in to here.
+        #TODO:incorporate playlists in to here or a list of lists for temp storage
         # When cleared save the playlist first to be
         # used with the playlist undo/redo buttons
-        self.playlistTree.clearContents()
-        rows = self.playlistTree.rowCount()
-        # For some reason can only remove from bot to top
-        for cnt in range(rows, -1, -1):
-            self.playlistTree.removeRow(cnt)
+        tracks = self.playlisting.gen_file_list()
+        self.play_hist.update(tracks)
+        self.playlisting.clear()
+#        self.playlistTree.clearContents()
+#        rows = self.playlistTree.rowCount()
+#        # For some reason can only remove from bot to top
+#        for cnt in range(rows, -1, -1):
+#            self.playlistTree.removeRow(cnt)
     
     @pyqtSignature("")
     def on_clrplyBttn_clicked(self):
@@ -777,9 +814,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     @pyqtSignature("")
     def on_clrsrchBttn_clicked(self):
         """
-        Slot documentation goes here.
+        Clears the playlist search filter
         """
-        # TODO: not implemented yet
         self.srchplyEdit.clear()
         self.playlisting.highlighted_track()
         
@@ -836,7 +872,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     
             tracks = self.playlisting.gen_file_list()            
             for track in tracks:
-                self.media_db.playlist_add(unicode(play_name[0]), unicode(track))
+                self.media_db.playlist_add(unicode(play_name[0]), track)
             self.wdgt_manip.pop_playlist_view()
             
     @pyqtSignature("QTreeWidgetItem*, int")
@@ -910,6 +946,25 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     self.media_db.playlist_add(unicode(new_name[0]), track[0])
                 self.wdgt_manip.pop_playlist_view()
             
+    @pyqtSignature("bool")
+    def on_prvplyBttn_clicked(self, checked):
+        """
+        Slot documentation goes here.
+        """
+        # TODO: not implemented yet
+        tracks, state= self.play_hist.last_list()
+        for track in tracks:
+            self.playlisting.add_to_playlist(track)
+    
+    @pyqtSignature("bool")
+    def on_nxtplyBttn_clicked(self, checked):
+        """
+        Slot documentation goes here.
+        """
+        # TODO: not implemented yet
+        tracks, state= self.play_hist.next_list()
+        for track in tracks:
+            self.playlisting.add_to_playlist(track)
 #######################################
 #######################################
         
@@ -1061,3 +1116,5 @@ class MainWindow(Ui_MainWindow, QMainWindow):
 
         self.playBttn.setIcon(icon)
         self.xtrawdgt.tray_icon.setIcon(tray)
+    
+    
