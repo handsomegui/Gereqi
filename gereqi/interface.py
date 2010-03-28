@@ -168,11 +168,13 @@ class Playlist:
         the database and is passed into the function directly
         """
         
-        #TODO: need to find the Qt.Sortorder i.e ascending or descending
+        # Finds the sorting status of the playlist
+        sort_order = self.ui.playlistTree.horizontalHeader().sortIndicatorOrder()
         sort_pos = self.ui.playlistTree.horizontalHeader().sortIndicatorSection()
         fname_pos = self.header_search("FileName")
         
-        if sort_pos != fname_pos:
+        # Not the default FileName+ascending sort
+        if (sort_pos != fname_pos) or (sort_order != 0) :
             self.ui.playlistTree.horizontalHeader().setSortIndicator(fname_pos, 0)
         
         # This allows to manually put in info for things we know
@@ -195,8 +197,8 @@ class Playlist:
             self.ui.playlistTree.setItem(row, column, tbl_wdgt)
         self.ui.playlistTree.resizeColumnsToContents()   
         
-        if sort_pos != fname_pos:
-            self.ui.playlistTree.horizontalHeader().setSortIndicator(sort_pos, 0)
+        if sort_pos != fname_pos or (sort_order != 0):
+            self.ui.playlistTree.horizontalHeader().setSortIndicator(sort_pos, sort_order)
         
     # This is needed as the higlighted row can be different
     # than the currentRow method of Qtableview.
