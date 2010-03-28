@@ -286,7 +286,7 @@ class PlaylistHistory:
     
     def update(self, tracks):
         if PlaylistHistory.index != len(PlaylistHistory.thing):
-            del PlaylistHistory.thing[PlaylistHistory.index + 1]
+            del PlaylistHistory.thing[PlaylistHistory.index:]
             
         PlaylistHistory.thing.append(tracks)
         PlaylistHistory.index += 1
@@ -494,15 +494,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         The play button either resumes or starts playback.
         Not possible to play a highlighted row.
         """
-        
+        paused = self.player.audio_object.is_paused()
+        # The button is set
         if checked is True:
             queued = self.player.audio_object.current_source()
-            stopped = self.stopBttn.isEnabled() is False
             highlighted = self.playlisting.highlighted_track()
+            
+            # Something in the playlist is selected
             if highlighted is not None:      
-                # Checks to see if highlighted track matches queued track
-                # prevents loading whilst playing
-                if (queued != highlighted) and (stopped is True): 
+                # The track in backend is not the same as selected and paused
+                if (queued != highlighted) and (paused is True): 
                     self.player.audio_object.load(unicode(highlighted))
                 # Nothing already loaded into playbin
                 elif queued is None:
@@ -525,6 +526,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             else:
                 self.playBttn.setChecked(False)
                 return
+                
+        # The button is unset
         else:
             if self.player.audio_object.is_playing() is True:
                 self.player.audio_object.pause()
@@ -951,7 +954,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         # TODO: not implemented yet
         self.playlisting.clear()
-        if len(self.play_hist.thing) > 1:
+        if (len(self.play_hist.thing) > 1) or  (self.play_hist.index == (len(self.play_hist.thing) - 1)):
             self.nxtplyBttn.setEnabled(True)
         tracks, last = self.play_hist.last_list()
         for track in tracks:
