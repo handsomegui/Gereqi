@@ -495,11 +495,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Not possible to play a highlighted row.
         """
         paused = self.player.audio_object.is_paused()
+        playing = self.player.audio_object.is_playing()
+        
         # The button is set
         if checked is True:
             queued = self.player.audio_object.current_source()
-            highlighted = self.playlisting.highlighted_track()
-            
+            highlighted = self.playlisting.highlighted_track()            
             # Something in the playlist is selected
             if highlighted is not None:      
                 # The track in backend is not the same as selected and paused
@@ -512,30 +513,36 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     if selected >= 0:
                         selected = self.tracking.generate_track("now", selected)
                         self.player.audio_object.load(selected)
-                    # Just reset the play button and stop here
+                    # Nothing to play
                     else:
-                        # This will call this function
-                        self.playBttn.setChecked(False)
-                # Makes sure the statusbar text changes from
-                # paused back to the artist/album/track string
-                elif self.player.audio_object.is_paused() is True:
-                    self.xtrawdgt.stat_lbl.setText(self.tracking.msg_status)
+                        # Just reset the play button and stop here
+                        self.playBttn.setChecked(False)                        
+                # Just unpausing
+                elif paused is True:
+                    # Makes sure the statusbar text changes from
+                    # paused back to the artist/album/track string
+                    self.xtrawdgt.stat_lbl.setText(self.tracking.msg_status)                    
                 self.player.audio_object.play()
                 self.stopBttn.setEnabled(True)
                 self.__icon_change("play")
+                
+            # Nothing to play
             else:
                 self.playBttn.setChecked(False)
                 return
                 
         # The button is unset
         else:
-            if self.player.audio_object.is_playing() is True:
+            if playing is True:
                 self.player.audio_object.pause()
             self.__icon_change("pause")
             if self.playlistTree.currentRow() >= 0:
                 self.xtrawdgt.stat_lbl.setText("Paused")
             else:
                 self.xtrawdgt.stat_lbl.setText("Finished")
+                
+        # Oblivious to it all. Not sure if these should be part
+        # of the "Nothing to play" situations also.
         self.xtrawdgt.play_action.setChecked(checked)
         self.actionPlay.setChecked(checked)
         
