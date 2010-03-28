@@ -487,7 +487,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             else:
                 self.playlisting.tracknow_colourise(self.playlisting.current_row())
 
-    #TODO: OH DEAR GOD. CLEAN UP THIS MESS.
     @pyqtSignature("bool")
     def on_playBttn_toggled(self, checked):
         """
@@ -524,7 +523,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     self.xtrawdgt.stat_lbl.setText(self.tracking.msg_status)                    
                 self.player.audio_object.play()
                 self.stopBttn.setEnabled(True)
-                self.__icon_change("play")
+                self.wdgt_manip.icon_change("play")
                 
             # Nothing to play
             else:
@@ -535,7 +534,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             if playing is True:
                 self.player.audio_object.pause()
-            self.__icon_change("pause")
+            self.wdgt_manip.icon_change("pause")
             if self.playlistTree.currentRow() >= 0:
                 self.xtrawdgt.stat_lbl.setText("Paused")
             else:
@@ -1129,17 +1128,4 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             # Year 365.25 * 24 * 60 * 60
             filt_time  = int(round((time.time() - 31557600)))
     
-        return filt_time
-        
-    def __icon_change(self, state):
-        if state == "play":
-            icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
-            tray = QIcon(QPixmap(":/Icons/app.png"))
-        elif state == "pause":
-            icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
-            tray = QIcon(QPixmap(":/Icons/app-paused.png"))
-
-        self.playBttn.setIcon(icon)
-        self.xtrawdgt.tray_icon.setIcon(tray)
-    
-    
+        return filt_time 

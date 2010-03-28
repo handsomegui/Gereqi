@@ -227,3 +227,13 @@ class WidgetManips:
             self.ui.playlstView.addTopLevelItem(headers[cnt])
                 
                 
+    def icon_change(self, state):
+        if state == "play":
+            icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
+            tray = QIcon(QPixmap(":/Icons/app.png"))
+        elif state == "pause":
+            icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
+            tray = QIcon(QPixmap(":/Icons/app-paused.png"))
+
+        self.ui.playBttn.setIcon(icon)
+        self.ui.xtrawdgt.tray_icon.setIcon(tray)
