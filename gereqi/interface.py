@@ -667,6 +667,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         self.on_actionClear_triggered()
         self.srchplyEdit.setFocus()
+        self.nxtplyBttn.setEnabled(False)
     
     @pyqtSignature("QString")
     def on_srchplyEdit_textChanged(self, p0):
