@@ -294,6 +294,8 @@ class PlaylistHistory:
     """
     The playlist history
     """
+    
+    #FIXME: Use better variable names
     thing = []
     index = 0
     
@@ -972,9 +974,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Slot documentation goes here.
         """
-        # TODO: not implemented yet
         self.playlisting.clear()
-        if (len(self.play_hist.thing) > 1) or  (self.play_hist.index == (len(self.play_hist.thing) - 1)):
+
+        if self.play_hist.index < len(self.play_hist.thing) :
             self.nxtplyBttn.setEnabled(True)
         tracks, last = self.play_hist.last_list()
         for track in tracks:
@@ -990,7 +992,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Slot documentation goes here.
         """
-        # TODO: not implemented yet
         self.playlisting.clear()
         self.prvplyBttn.setEnabled(True)
         tracks, first= self.play_hist.next_list()
