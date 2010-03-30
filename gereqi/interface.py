@@ -472,10 +472,19 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             else:
                 album = now
                 artist = par.text(0)
+                
         # In any case we'll have an artist
+        # Just an artist selected
         if artist is None:
             artist = now
-        if track is not None:
+            albums = self.media_db.get_albums(unicode(artist))
+            for alb in albums:
+                tracks = self.media_db.get_files(unicode(artist), unicode(alb[0]))
+                for trk in tracks:
+                    self.playlisting.add_to_playlist(trk)
+            self.clrplyBttn.setEnabled(True)
+            
+        elif track is not None:
             file_name = self.media_db.get_file(unicode(artist), unicode(album), unicode(track))
             self.playlisting.add_to_playlist(file_name)
             self.clrplyBttn.setEnabled(True)
