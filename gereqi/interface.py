@@ -805,7 +805,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             else:
                 tracks = self.media_db.get_titles_timed(unicode(artist), unicode(album), filt_time)
             for cnt in range(len(tracks)):
-                track = QTreeWidgetItem([tracks[cnt][0] ] )
+                track = QTreeWidgetItem([tracks[cnt]] )
                 item.insertChild(cnt, track)
        
        # Adding albums to the artist 
@@ -816,7 +816,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             else:
                 albums = self.media_db.get_albums_timed(unicode(artist), filt_time)                
             for cnt in range(len(albums)):      
-                album = QTreeWidgetItem([albums[cnt][0]])
+                album = QTreeWidgetItem([albums[cnt]])
                 album.setChildIndicatorPolicy(0)
                 item.insertChild(cnt, album)
 
