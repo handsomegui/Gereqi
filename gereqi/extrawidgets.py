@@ -217,13 +217,12 @@ class WidgetManips:
         for cnt in range(3):
             if cnt == 2:
                 for play in playlists:
-                    now = QTreeWidgetItem([QString(play[0])])
+                    now = QTreeWidgetItem([QString(play)])
                     headers[cnt].addChild(now)
-                    tracks = self.ui.media_db.playlist_tracks(unicode(play[0]))
+                    tracks = self.ui.media_db.playlist_tracks(unicode(play))
                     for track in tracks: 
-                        info = self.ui.media_db.get_info(track[0])[0]
-                        now.addChild(QTreeWidgetItem([ QString("%s - %s" % (info[2], info[1])) ]))
-                                                                     
+                        info = self.ui.media_db.get_info(track)
+                        now.addChild(QTreeWidgetItem([ QString("%s - %s" % (info[2], info[1])) ]))                                                                     
             self.ui.playlstView.addTopLevelItem(headers[cnt])
                 
                 

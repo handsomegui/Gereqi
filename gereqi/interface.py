@@ -179,11 +179,12 @@ class Playlist:
     def add_list_to_playlist(self, tracks):
         self.__sort4add()
         for trk in tracks:
+            # This is for adding a track which has info attached in a tuple
             if isinstance(trk, tuple):
+                print trk
                 self.add_to_playlist(trk[0], trk[1])
             else:
-                self.add_to_playlist(trk, None)
-        
+                self.add_to_playlist(trk, None)        
         self.__unsort()
     
     def add_to_playlist(self, file_name, info=None):
@@ -491,7 +492,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             artist = now
             albums = self.media_db.get_albums(unicode(artist))
             for alb in albums:
-                tracks = self.media_db.get_files(unicode(artist), unicode(alb[0]))
+                tracks = self.media_db.get_files(unicode(artist), unicode(alb))
                 self.playlisting.add_list_to_playlist(tracks)
             self.clrplyBttn.setEnabled(True)
             
@@ -875,9 +876,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if check:
             acd = AudioCD()
             cd_tracks = acd.get_info()
-            for trk in cd_tracks:
-                self.playlisting.add_to_playlist(trk[-1],  trk)
-                
+            tracks = [(trk[-1],  trk) for trk in cd_tracks]
+            self.playlisting.add_list_to_playlist(tracks)                
             self.clrplyBttn.setEnabled(True)
                 
     @pyqtSignature("")

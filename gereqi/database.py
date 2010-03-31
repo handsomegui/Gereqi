@@ -165,7 +165,7 @@ class Media:
         query = '''SELECT * 
                         FROM media 
                         WHERE file_name=?'''
-        return self.__query_fetchall(query, (file_name, ))
+        return self.__query_fetchall(query, (file_name, ))[0]
         
     def delete_track(self, fname):
         args = (fname, )
@@ -181,13 +181,15 @@ class Media:
     def playlist_list(self):
         query = '''SELECT DISTINCT name 
                             FROM playlist'''
-        return self.__query_fetchall(query)
+        playlists = [play[0] for play in self.__query_fetchall(query)]
+        return playlists
         
     def playlist_tracks(self, name):
         query = '''SELECT file_name 
                             FROM playlist
                             WHERE name=?'''
-        return self.__query_fetchall(query, (name, ))
+        tracks = [track[0] for track in self.__query_fetchall(query, (name, ))]
+        return tracks
         
         
     def playlist_delete(self, name):
@@ -206,4 +208,5 @@ class Media:
                         FROM media 
                         WHERE artist=?
                         AND title=?'''        
-        return self.__query_fetchall(query, (art, tit))
+        files = [fi[0] for fi in self.__query_fetchall(query, (art, tit))]
+        return files
