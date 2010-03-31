@@ -176,14 +176,22 @@ class Playlist:
         if self.sort_pos != fname_pos or (self.sort_order != 0):
             self.ui.playlistTree.horizontalHeader().setSortIndicator(self.sort_pos, self.sort_order)
     
+    def add_list_to_playlist(self, tracks):
+        self.__sort4add()
+        for trk in tracks:
+            if isinstance(trk, tuple):
+                self.add_to_playlist(trk[0], trk[1])
+            else:
+                self.add_to_playlist(trk, None)
         
+        self.__unsort()
+    
     def add_to_playlist(self, file_name, info=None):
         """
         Called when adding tracks to the playlist either locally
         or from the database. Does not pull metadata from 
         the database and is passed into the function directly
         """
-        self.__sort4add()        
         # This allows to manually put in info for things we know
         # mutagen cannot handle things like urls for podcasts
         if info is None:
@@ -203,7 +211,6 @@ class Playlist:
             column = self.header_search(header)
             self.ui.playlistTree.setItem(row, column, tbl_wdgt)
         self.ui.playlistTree.resizeColumnsToContents()   
-        self.__unsort()
         
     # This is needed as the higlighted row can be different
     # than the currentRow method of Qtableview.
@@ -485,8 +492,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             albums = self.media_db.get_albums(unicode(artist))
             for alb in albums:
                 tracks = self.media_db.get_files(unicode(artist), unicode(alb[0]))
-                for trk in tracks:
-                    self.playlisting.add_to_playlist(trk)
+                self.playlisting.add_list_to_playlist(tracks)
             self.clrplyBttn.setEnabled(True)
             
         elif track is not None:
@@ -495,9 +501,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.clrplyBttn.setEnabled(True)
         elif album is not None:
             tracks = self.media_db.get_files(unicode(artist), unicode(album))
-            for track in tracks:
-                # Retrieves metadata from database
-                self.playlisting.add_to_playlist(track)
+            self.playlisting.add_list_to_playlist(tracks)                
             self.clrplyBttn.setEnabled(True)
     
     @pyqtSignature("")
@@ -931,8 +935,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         elif par == "Playlists":
             playlist = item.text(column)
             tracks = self.media_db.playlist_tracks(unicode(playlist))
-            for track in tracks:
-                self.playlisting.add_to_playlist(track[0])
+            print tracks
+            self.playlisting.add_list_to_playlist(tracks)
             self.clrplyBttn.setEnabled(True)
         else:
             new_par = item.parent().parent()
@@ -993,9 +997,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if self.play_hist.index < len(self.play_hist.thing) :
             self.nxtplyBttn.setEnabled(True)
         tracks, last = self.play_hist.last_list()
-        for track in tracks:
-            self.playlisting.add_to_playlist(track)
-
+        self.playlisting.add_list_to_playlist(tracks)
         self.clrplyBttn.setEnabled(True)
         
         if last is True:
@@ -1009,8 +1011,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.playlisting.clear()
         self.prvplyBttn.setEnabled(True)
         tracks, first= self.play_hist.next_list()
-        for track in tracks:
-            self.playlisting.add_to_playlist(track)
+        self.playlisting.add_list_to_playlist(track)
         self.clrplyBttn.setEnabled(True)
         
         if first is True:
@@ -1128,9 +1129,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             searcher.setFilter(QDir.Files)
             searcher.setFilter(QDir.Files)
             searcher.setNameFilters(self.format_filter)
-            for item in searcher.entryInfoList():
-                fname = item.absoluteFilePath()
-                self.playlisting.add_to_playlist(unicode(fname))
+            tracks = [unicode(item.absoluteFilePath()) for item in searcher.entryInfoList()]
+            self.playlisting.add_list_to_playlist(tracks)
             self.clrplyBttn.setEnabled(True)
         else:
             fname = self.xtrawdgt .dir_model.filePath(index)

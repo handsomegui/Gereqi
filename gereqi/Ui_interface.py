@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/gereqi/interface.ui'
 #
-# Created: Tue Mar 23 22:16:41 2010
+# Created: Wed Mar 31 18:39:02 2010
 #      by: PyQt4 UI code generator 4.7
 #
 # WARNING! All changes made in this file will be lost!
@@ -225,6 +225,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_5.addItem(spacerItem)
         self.verticalLayout_5.addLayout(self.horizontalLayout_5)
         self.playlstView = QtGui.QTreeWidget(self.playlistsTab)
+        self.playlstView.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.playlstView.setProperty("showDropIndicator", False)
         self.playlstView.setObjectName("playlstView")
         self.verticalLayout_5.addWidget(self.playlstView)
         self.gridLayout_6.addLayout(self.verticalLayout_5, 0, 0, 1, 1)
