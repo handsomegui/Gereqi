@@ -159,7 +159,23 @@ class AudioBackend:
 
 class Playlist:
     def __init__(self, parent):
-        self.ui = parent        
+        self.ui = parent  
+  
+    def __sort4add(self):
+        # Finds the sorting status of the playlist
+        self.sort_order = self.ui.playlistTree.horizontalHeader().sortIndicatorOrder()
+        self.sort_pos = self.ui.playlistTree.horizontalHeader().sortIndicatorSection()
+        fname_pos = self.header_search("FileName")
+        
+        # Not the default FileName+ascending sort
+        if (self.sort_pos != fname_pos) or (self.sort_order != 0) :
+            self.ui.playlistTree.horizontalHeader().setSortIndicator(fname_pos, 0)
+            
+    def __unsort(self):
+        fname_pos = self.header_search("FileName")
+        if self.sort_pos != fname_pos or (self.sort_order != 0):
+            self.ui.playlistTree.horizontalHeader().setSortIndicator(self.sort_pos, self.sort_order)
+    
         
     def add_to_playlist(self, file_name, info=None):
         """
@@ -167,16 +183,7 @@ class Playlist:
         or from the database. Does not pull metadata from 
         the database and is passed into the function directly
         """
-        
-        # Finds the sorting status of the playlist
-        sort_order = self.ui.playlistTree.horizontalHeader().sortIndicatorOrder()
-        sort_pos = self.ui.playlistTree.horizontalHeader().sortIndicatorSection()
-        fname_pos = self.header_search("FileName")
-        
-        # Not the default FileName+ascending sort
-        if (sort_pos != fname_pos) or (sort_order != 0) :
-            self.ui.playlistTree.horizontalHeader().setSortIndicator(fname_pos, 0)
-        
+        self.__sort4add()        
         # This allows to manually put in info for things we know
         # mutagen cannot handle things like urls for podcasts
         if info is None:
@@ -196,9 +203,7 @@ class Playlist:
             column = self.header_search(header)
             self.ui.playlistTree.setItem(row, column, tbl_wdgt)
         self.ui.playlistTree.resizeColumnsToContents()   
-        
-        if sort_pos != fname_pos or (sort_order != 0):
-            self.ui.playlistTree.horizontalHeader().setSortIndicator(sort_pos, sort_order)
+        self.__unsort()
         
     # This is needed as the higlighted row can be different
     # than the currentRow method of Qtableview.
