@@ -179,7 +179,7 @@ class WidgetManips:
         font = QFont()
         font.setBold(True)
         for cnt in range(len(artists)):
-            artist = artists[cnt][0]
+            artist = artists[cnt]
             # When creating collection tree only 
             #  allow certain artists based on the filter.
             if (filt is not None) and (filt.lower() not in artist.lower()):

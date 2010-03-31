@@ -96,13 +96,15 @@ class Media:
     def get_artists(self):
         query = '''SELECT DISTINCT artist
                         FROM media'''
-        return self.__query_fetchall(query)
+        artists = [art[0] for art in self.__query_fetchall(query)]
+        return artists
         
     def get_artists_timed(self, time):
         query = '''SELECT DISTINCT artist 
                             FROM media
                             WHERE added>?'''
-        return self.__query_fetchall(query, (time, ))
+        artists = [art[0] for art  in self.__query_fetchall(query, (time, ))]
+        return artists
     
     def get_albums(self, artist):
         args = (artist, )
