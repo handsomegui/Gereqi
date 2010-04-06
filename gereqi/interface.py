@@ -160,6 +160,7 @@ class AudioBackend:
 class Playlist:
     def __init__(self, parent):
         self.ui = parent  
+        
   
     def __sort4add(self):
         # Finds the sorting status of the playlist
@@ -447,7 +448,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.connect(self.actionStop, SIGNAL("triggered()"), self.stopBttn, SLOT("click()"))
         self.connect(self.xtrawdgt.stat_bttn, SIGNAL("pressed()"), self.quit_build)
         self.connect(self.xtrawdgt.play_type_bttn, SIGNAL('toggled ( bool )'), self.wdgt_manip.set_play_type)
-
+        self.connect(self.playlistTree.horizontalHeader(), SIGNAL('sectionClicked ( int )'), self.playlisting.tracknow_colourise)
         
         #Make the collection search line-edit have the keyboard focus on startup.
         self.srchCollectEdt.setFocus()
