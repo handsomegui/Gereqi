@@ -36,6 +36,6 @@ class Extraneous:
         if path.exists(fname) is True:
             return True
         else:
-            db = Media()
+            database = Media()
             print("WARNING: removed non-existing track, %s, from database" % fname)
-            db.delete_track(fname)
+            database.delete_track(fname)
