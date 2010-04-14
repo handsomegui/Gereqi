@@ -271,6 +271,10 @@ class Playlist:
         set the background colour of each item in a row
         until track changes.
         """
+        if now is None or isinstance(now, int):
+            #FIXME: this will select the 0 row even if nothing is selected.
+            now = self.current_row()
+       
         columns = self.ui.playlistTree.columnCount()
         rows = self.ui.playlistTree.rowCount()
         for row in range(rows):
@@ -1161,3 +1165,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             filt_time  = int(round((time.time() - 31557600)))
     
         return filt_time 
+        
+    def __sort_trks_colorise(self):
+        self.playlisting.tracknow_colourise(self.playlisting.current_row())
