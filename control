@@ -1,8 +1,8 @@
 Package: Gereqi
-Version: 0.3.8
+Version: 0.3.9
 Section: multimedia
 Priority: optional
-Architecture: amd64
+Architecture: all
 Essential: no
 Depends: python-qt4, python-lxml, python-beautifulsoup, python-gst0.10, python-cddb, python-mutagen
 Recommends: gstreamer0.10-plugins-ugly, gstreamer0.10-plugins-bad
