@@ -4,9 +4,9 @@
 from distutils.core import setup 
 
 setup (name='Gereqi', 
-            version='0.3.8', 
+            version='0.3.9', 
             description='An Amarok-1.4 clone in PyQt4 and Gstreamer', 
-            author='Jon Noble',
+            author='Jonathan Noble',
             author_email='jonnobleuk@gmail.com', 
             url='http://github.com/regomodo/Gereqi', 
             license='GPLv3', 
