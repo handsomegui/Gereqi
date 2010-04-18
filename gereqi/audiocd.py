@@ -12,12 +12,12 @@ class AudioCD:
         device = cdrom.open()
         first, last = cdrom.toc_header(device)
         tr_times = []
-        for n in range(first, last+1):
-            if n > 1:
-                minu, sec = cdrom.toc_entry(device,n)[0:2]
-                total = (minu * 60)+ sec
-                old_m, old_s = cdrom.toc_entry(device,n-1)[0:2]
-                old_t = (old_m * 60)+ old_s
+        for trk in range(first, last+1):
+            if trk > 1:
+                minu, sec = cdrom.toc_entry(device, trk)[0:2]
+                total = (minu * 60) + sec
+                old_m, old_s = cdrom.toc_entry(device, trk-1)[0:2]
+                old_t = (old_m * 60) + old_s
                 total -= old_t
                 tr_times.append(total)
         return tr_times
@@ -28,11 +28,14 @@ class AudioCD:
         cd_drive = DiscID.open()
         disc_id = DiscID.disc_id(cd_drive)
         
-        query_status, query_info = CDDB.query(disc_id)
-        read_status, read_info = CDDB.read(query_info[0]['category'], query_info[0]['disc_id'])
+        #query_status, query_info = CDDB.query(disc_id)
+        query_info = CDDB.query(disc_id)[1]
+        #read_status, read_info = CDDB.read(
+        read_info = CDDB.read(query_info[0]['category'], 
+                              query_info[0]['disc_id'])[1]
         
         art, alb = read_info['DTITLE'].split(" / ")
-        yr = read_info['DYEAR']   
+        year = read_info['DYEAR']   
         
         timings = self.__track_times()
         items = []
@@ -42,7 +45,7 @@ class AudioCD:
             secs = timings [trk] % 60
             time_now = "%02d:%02d" % (minu, secs)
             f_name = "cdda://%s" % (trk+1)
-            now = [read_info['TTITLE%d' % trk], art, alb, yr, \
+            now = [read_info['TTITLE%d' % trk], art, alb, year, \
                    read_info['DGENRE' ], trk+1, time_now, 44100, f_name ]
             items.append(now)
             

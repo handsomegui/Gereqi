@@ -39,7 +39,7 @@ class Extraneous:
         return gst.element_make_from_uri(gst.URI_SRC, source, "") is not None
         
     def source_checks(self, source, source_type):
-        fnow= None
+        fnow = None
         if source_type == "file" and (path.isfile(source) is True):
             fnow = "file://%s" % pathname2url(source)
         elif source_type == "cd":
@@ -104,14 +104,14 @@ class Gstbe(QObject):
                 pass
             sleep(1)
 
-    def load(self, fname, type="file"):
+    def load(self, fname, ftype="file"):
         """
         A dynamic way of loading of media. Files, urls, cds 
-        (last 2 are TODO) can be used. As we are using playbin2 
+        (last 2 are todo) can be used. As we are using playbin2 
         we are actually queuing a track if one is already playing
         """
         # cdda://4   <-- cd track#4
-        fnow = self.extra.source_checks(fname, type)
+        fnow = self.extra.source_checks(fname, ftype)
         if (fnow is not None):
             self.pipe_line.set_state(gst.STATE_NULL)
             self.pipe_line.set_property("uri", fnow)  
@@ -127,10 +127,12 @@ class Gstbe(QObject):
         now = self.state()
         if (now == gst.STATE_READY) or (now == gst.STATE_NULL):
             self.pipe_line.set_state(gst.STATE_PLAYING)
-            self.play_thread_id = thread.start_new_thread(self.__whilst_playing, ())
+            self.play_thread_id = thread.start_new_thread(
+                                    self.__whilst_playing, ())
         elif now == gst.STATE_PAUSED:
             self.pipe_line.set_state(gst.STATE_PLAYING)
-            self.play_thread_id = thread.start_new_thread(self.__whilst_playing, ())
+            self.play_thread_id = thread.start_new_thread(
+                                    self.__whilst_playing, ())
         else:
             self.emit(SIGNAL("finished()"))
         
@@ -158,14 +160,14 @@ class Gstbe(QObject):
         else:
             print("Incorrect volume value. 0 -> 1")
 
-    def enqueue(self, fname, type="file"):
-        fnow  = self.extra.source_checks(fname, type)
+    def enqueue(self, fname, ftype="file"):
+        fnow  = self.extra.source_checks(fname, ftype)
         if fnow is not None:
             self.pipe_line.set_property("uri", fnow)
             self.pipe_source = fname
 
-    def mute(self, set):
-        self.pipe_line.set_property("mute", set)
+    def mute(self, state):
+        self.pipe_line.set_property("mute", state)
 
     def state(self):
         """

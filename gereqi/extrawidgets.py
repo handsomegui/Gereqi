@@ -27,7 +27,7 @@ from database import Media
 class SetupExtraWidgets:
     def __init__(self, parent):
         # Basically,the parent.
-        self.ui = parent
+        self.ui_main = parent
         self.__setup_fileview()
         self.__create_tray_menu()
         self.__playlist_add_menu()
@@ -41,31 +41,31 @@ class SetupExtraWidgets:
         added to the playlist
         """
         self.dir_model = QDirModel()
-        filters = QDir.Files | QDir.AllDirs | QDir.Readable | QDir.NoDotAndDotDot
+        filters = QDir.Files|QDir.AllDirs|QDir.Readable|QDir.NoDotAndDotDot
         self.dir_model.setFilter(filters)
         self.dir_model.setReadOnly(True)
         self.dir_model.setNameFilters(["*.ogg", "*.flac", "*.mp3",  "*.m4a"])
-        self.ui.fileView.setModel(self.dir_model) 
-        self.ui.fileView.setColumnHidden(1, True)
-        self.ui.fileView.setColumnHidden(2, True)
-        self.ui.fileView.setColumnHidden(3, True)
-        self.ui.fileView.expandToDepth(0)
+        self.ui_main.fileView.setModel(self.dir_model) 
+        self.ui_main.fileView.setColumnHidden(1, True)
+        self.ui_main.fileView.setColumnHidden(2, True)
+        self.ui_main.fileView.setColumnHidden(3, True)
+        self.ui_main.fileView.expandToDepth(0)
         
     def __create_tray_menu(self):
         """
         The tray menu contains shortcuts to features
         in the main UI
         """
-        quit_action = QAction(QString("&Quit"), self.ui)
-        self.play_action = QAction(QString("&Play"), self.ui)
-        next_action = QAction(QString("&Next"), self.ui)
-        prev_action = QAction(QString("&Previous"), self.ui)
-        stop_action = QAction(QString("&Stop"), self.ui)
+        quit_action = QAction(QString("&Quit"), self.ui_main)
+        self.play_action = QAction(QString("&Play"), self.ui_main)
+        next_action = QAction(QString("&Next"), self.ui_main)
+        prev_action = QAction(QString("&Previous"), self.ui_main)
+        stop_action = QAction(QString("&Stop"), self.ui_main)
         self.play_action.setCheckable(True)
-        self.view_action = QAction(QString("&Visible"), self.ui)
+        self.view_action = QAction(QString("&Visible"), self.ui_main)
         self.view_action.setCheckable(True)
         self.view_action.setChecked(True)
-        tray_icon_menu = QMenu(self.ui)
+        tray_icon_menu = QMenu(self.ui_main)
         icon = QIcon(QPixmap(":/Icons/app.png"))
         tray_icon_menu.addAction(icon, QString("Gereqi"))
         tray_icon_menu.addSeparator()
@@ -76,56 +76,64 @@ class SetupExtraWidgets:
         tray_icon_menu.addSeparator()
         tray_icon_menu.addAction(self.view_action)
         tray_icon_menu.addAction(quit_action)
-        self.tray_icon = QSystemTrayIcon(self.ui)
+        self.tray_icon = QSystemTrayIcon(self.ui_main)
         icon2 = QIcon(QPixmap(":/Icons/app-paused.png"))
         self.tray_icon.setIcon(icon2)
         self.tray_icon.setContextMenu(tray_icon_menu)
         self.tray_icon.show()
         self.tray_icon.setToolTip("Stopped")    
         
-        QObject.connect(self.play_action, SIGNAL("toggled(bool)"), self.ui.playBttn, SLOT("setChecked(bool)"))
-        QObject.connect(next_action, SIGNAL("triggered()"), self.ui.nxtBttn, SLOT("click()"))
-        QObject.connect(prev_action, SIGNAL("triggered()"), self.ui.prevBttn, SLOT("click()"))
-        QObject.connect(stop_action, SIGNAL("triggered()"), self.ui.stopBttn, SLOT("click()"))
-        QObject.connect(self.view_action, SIGNAL("toggled(bool)"), self.ui.minimise_to_tray)  
-        QObject.connect(quit_action, SIGNAL("triggered()"), qApp, SLOT("quit()"))
-        QObject.connect(self.tray_icon, SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.ui.tray_event)
+        QObject.connect(self.play_action, SIGNAL("toggled(bool)"), 
+                        self.ui_main.playBttn, SLOT("setChecked(bool)"))
+        QObject.connect(next_action, SIGNAL("triggered()"),
+                        self.ui_main.nxtBttn, SLOT("click()"))
+        QObject.connect(prev_action, SIGNAL("triggered()"), 
+                        self.ui_main.prevBttn, SLOT("click()"))
+        QObject.connect(stop_action, SIGNAL("triggered()"), 
+                        self.ui_main.stopBttn, SLOT("click()"))
+        QObject.connect(self.view_action, SIGNAL("toggled(bool)"), 
+                        self.ui_main.minimise_to_tray)  
+        QObject.connect(quit_action, SIGNAL("triggered()"), 
+                        qApp, SLOT("quit()"))
+        QObject.connect(self.tray_icon, 
+                        SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), 
+                        self.ui_main.tray_event)
      
     def __playlist_add_menu(self):
         """
         In the 'playlist' tab a menu is required for
         the 'add' button
         """
-        menu = QMenu(self.ui)
-        playlist_menu = QMenu(self.ui)
+        menu = QMenu(self.ui_main)
+        playlist_menu = QMenu(self.ui_main)
         playlist_menu.setTitle(QString("Playlist"))
-        new = QAction(QString("New..."), self.ui)
-        existing = QAction(QString("Import Existing..."), self.ui)
+        new = QAction(QString("New..."), self.ui_main)
+        existing = QAction(QString("Import Existing..."), self.ui_main)
         playlist_menu.addAction(new)
         playlist_menu.addAction(existing)        
         menu.addMenu(playlist_menu)
-        smart = QAction(QString("Smart Playlist..."), self.ui)
-        dynamic = QAction(QString("Dynamic Playlist..."), self.ui)
-        radio = QAction(QString("Radio Stream..."), self.ui)
-        podcast = QAction(QString("Podcast..."), self.ui)
+        smart = QAction(QString("Smart Playlist..."), self.ui_main)
+        dynamic = QAction(QString("Dynamic Playlist..."), self.ui_main)
+        radio = QAction(QString("Radio Stream..."), self.ui_main)
+        podcast = QAction(QString("Podcast..."), self.ui_main)
         menu.addAction(smart)
         menu.addAction(dynamic)
         menu.addAction(radio)
         menu.addAction(podcast)
-        self.ui.addPlylstBttn.setMenu(menu)
+        self.ui_main.addPlylstBttn.setMenu(menu)
         
     def __disable_tabs(self):
-        self.ui.contentTabs.setTabEnabled(1, False)
-        self.ui.contentTabs.setTabEnabled(2, False)
-        #self.ui.parentTabs.setTabEnabled(2, False)
-        self.ui.parentTabs.setTabEnabled(3, False)
+        self.ui_main.contentTabs.setTabEnabled(1, False)
+        self.ui_main.contentTabs.setTabEnabled(2, False)
+        #self.ui_main.parentTabs.setTabEnabled(2, False)
+        self.ui_main.parentTabs.setTabEnabled(3, False)
         
     def __setup_misc(self):
         """
         Extra __init__ things to add to the UI
         """        
-        self.ui.progSldr.setPageStep(0)
-        self.ui.progSldr.setSingleStep(0)
+        self.ui_main.progSldr.setPageStep(0)
+        self.ui_main.progSldr.setSingleStep(0)
         self.stat_lbl = QLabel("Finished")
         self.stat_prog = QProgressBar()
         self.stat_bttn = QToolButton()
@@ -140,39 +148,39 @@ class SetupExtraWidgets:
         self.play_type_bttn.setText("N")
         self.play_type_bttn.setCheckable(True)
         self.play_type_bttn.setAutoRaise(True)
-        self.ui.statusBar.addPermanentWidget(self.stat_lbl)
-        self.ui.statusBar.addPermanentWidget(self.stat_prog)
-        self.ui.statusBar.addPermanentWidget(self.stat_bttn)
-        self.ui.statusBar.addPermanentWidget(self.play_type_bttn)
+        self.ui_main.statusBar.addPermanentWidget(self.stat_lbl)
+        self.ui_main.statusBar.addPermanentWidget(self.stat_prog)
+        self.ui_main.statusBar.addPermanentWidget(self.stat_bttn)
+        self.ui_main.statusBar.addPermanentWidget(self.play_type_bttn)
         # Headers for the Playlist widget
         headers = [QString("Track"), QString("Title"), QString("Artist"), \
                    QString("Album"), QString("Year"), QString("Genre"),   \
                    QString("Length"), QString("Bitrate"), QString("FileName")]
         for val in range(len(headers)):
-            self.ui.playlistTree.insertColumn(val)
-        self.ui.playlistTree.setHorizontalHeaderLabels(headers)
+            self.ui_main.playlistTree.insertColumn(val)
+        self.ui_main.playlistTree.setHorizontalHeaderLabels(headers)
 
     def __key_shortcuts(self):
-        delete = QShortcut(QKeySequence(QString("Del")), self.ui)
-        QObject.connect(delete, SIGNAL("activated()"), self.ui.playlisting.del_track)   
+        delete = QShortcut(QKeySequence(QString("Del")), self.ui_main)
+        QObject.connect(delete, SIGNAL("activated()"), 
+                        self.ui_main.playlisting.del_track)   
         
         
 class WidgetManips:
     def __init__(self, parent):
-        self.ui = parent
+        self.ui_main = parent
         
-    def setup_db_tree(self, filt=None, t0=None):
+    def setup_db_tree(self, filt=None, time_filt=None):
         """
         viewing the media database in the QTreeView
         """
         media_db = Media()
-        time_filter = self.ui.collectTimeBox.currentIndex()
-        self.ui.collectTree.clear()
+        self.ui_main.collectTree.clear()
         # This gives multiples of the same thing i.e albums
-        if t0 is None:
+        if time_filt is None:
             artists = media_db.get_artists()
         else:
-            artists = media_db.get_artists_timed(t0)
+            artists = media_db.get_artists_timed(time_filt)
         artists = sorted(artists)
         old_char = None
         char = None
@@ -189,25 +197,25 @@ class WidgetManips:
                 old_char = char  
                 char = QTreeWidgetItem(["== %s ==" % char])
                 char.setFont(0, font)
-                self.ui.collectTree.addTopLevelItem(char)
+                self.ui_main.collectTree.addTopLevelItem(char)
             artist = QTreeWidgetItem([QString(artist)])
             artist.setChildIndicatorPolicy(0)
-            self.ui.collectTree.addTopLevelItem(artist)
+            self.ui_main.collectTree.addTopLevelItem(artist)
             
     def set_play_type(self, checked):
         if checked is True:
-            self.ui.xtrawdgt.play_type_bttn.setText("R")
+            self.ui_main.xtrawdgt.play_type_bttn.setText("R")
         else:
-            self.ui.xtrawdgt.play_type_bttn.setText("N")
+            self.ui_main.xtrawdgt.play_type_bttn.setText("N")
             
     def pop_playlist_view(self):
         font = QFont()
         font.setBold(True)
         
-        self.ui.playlstView.clear()
-        playlists = self.ui.media_db.playlist_list()
-        podcasts = None
-        streams = None
+        self.ui_main.playlstView.clear()
+        playlists = self.ui_main.media_db.playlist_list()
+        #podcasts = None
+        #streams = None
         headers = [QTreeWidgetItem(["%s" % tit]) for tit in [
                                     "Podcasts", "Radio Streams",  "Playlists"]]
         for hdr in headers:
@@ -219,11 +227,14 @@ class WidgetManips:
                 for play in playlists:
                     now = QTreeWidgetItem([QString(play)])
                     headers[cnt].addChild(now)
-                    tracks = self.ui.media_db.playlist_tracks(unicode(play))
+                    tracks = self.ui_main.media_db.playlist_tracks(
+                                unicode(play))
                     for track in tracks: 
-                        info = self.ui.media_db.get_info(track)
-                        now.addChild(QTreeWidgetItem([ QString("%s - %s" % (info[2], info[1])) ]))                                                                     
-            self.ui.playlstView.addTopLevelItem(headers[cnt])
+                        info = self.ui_main.media_db.get_info(track)
+                        now.addChild(QTreeWidgetItem([QString("%s - %s"
+                        % (info[2], info[1])) ]))       
+                                                                                      
+            self.ui_main.playlstView.addTopLevelItem(headers[cnt])
                 
                 
     def icon_change(self, state):
@@ -234,5 +245,5 @@ class WidgetManips:
             icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
             tray = QIcon(QPixmap(":/Icons/app-paused.png"))
 
-        self.ui.playBttn.setIcon(icon)
-        self.ui.xtrawdgt.tray_icon.setIcon(tray)
+        self.ui_main.playBttn.setIcon(icon)
+        self.ui_main.xtrawdgt.tray_icon.setIcon(tray)

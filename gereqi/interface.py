@@ -270,7 +270,7 @@ class Playlist:
         Instead of using QTableWidget's selectRow function, 
         set the background colour of each item in a row
         until track changes.
-        """
+        """       
         columns = self.ui.playlistTree.columnCount()
         rows = self.ui.playlistTree.rowCount()
         for row in range(rows):
@@ -398,7 +398,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     """
     Where everything starts from, mostly.
     """    
-
+    
     def __init__(self, parent = None):
         """
         Initialisation of key items. Some may be pulled
@@ -448,7 +448,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.connect(self.actionStop, SIGNAL("triggered()"), self.stopBttn, SLOT("click()"))
         self.connect(self.xtrawdgt.stat_bttn, SIGNAL("pressed()"), self.quit_build)
         self.connect(self.xtrawdgt.play_type_bttn, SIGNAL('toggled ( bool )'), self.wdgt_manip.set_play_type)
-        self.connect(self.playlistTree.horizontalHeader(), SIGNAL('sectionClicked ( int )'), self.playlisting.tracknow_colourise)
+        self.connect(self.playlistTree.horizontalHeader(), SIGNAL('sectionClicked ( int )'), self.__recolourise)
         
         #Make the collection search line-edit have the keyboard focus on startup.
         self.srchCollectEdt.setFocus()
@@ -1161,3 +1161,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             filt_time  = int(round((time.time() - 31557600)))
     
         return filt_time 
+        
+    def __recolourise(self):
+        self.playlisting.tracknow_colourise(self.playlisting.current_row)

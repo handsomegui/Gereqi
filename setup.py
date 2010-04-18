@@ -4,7 +4,7 @@
 from distutils.core import setup 
 
 setup (name='Gereqi', 
-            version='0.3.6', 
+            version='0.3.8', 
             description='An Amarok-1.4 clone in PyQt4 and Gstreamer', 
             author='Jon Noble',
             author_email='jonnobleuk@gmail.com', 
