@@ -27,7 +27,7 @@ from PyQt4.QtCore import QObject, SIGNAL
 from urllib import pathname2url
 
 
-class Extraneous:
+class Utilities:
     def __init__(self):
         return
 
@@ -55,7 +55,7 @@ class Gstbe(QObject):
     def __init__(self):
         QObject.__init__(self)
         gobject.threads_init() # V.Important
-        self.extra = Extraneous()
+        self.extra = Utilities()
 
         self.pipe_line = gst.element_factory_make("playbin2", "player")
         self.pipe_line.connect("audio-changed",  self.__audio_changed)
@@ -157,8 +157,6 @@ class Gstbe(QObject):
     def set_volume(self, val):        
         if 0 <= val <= 1:
             self.pipe_line.set_property('volume', val)
-        else:
-            print("Incorrect volume value. 0 -> 1")
 
     def enqueue(self, fname, ftype="file"):
         fnow  = self.extra.source_checks(fname, ftype)
@@ -179,7 +177,7 @@ class Gstbe(QObject):
         """
         The pipe-line's current loaded track
         """
-        # TODO: replace with GSreamer implementation
+        # TODO: replace with GStreamer implementation
         return self.pipe_source
         
     def total_time(self):
