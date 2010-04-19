@@ -3,8 +3,8 @@
 
 from distutils.core import setup 
 
-setup (name='Gereqi', 
-            version='0.3.9', 
+setup (name='gereqi', 
+            version='0.3.9-2', 
             description='An Amarok-1.4 clone in PyQt4 and Gstreamer', 
             author='Jonathan Noble',
             author_email='jonnobleuk@gmail.com', 
