@@ -14,6 +14,6 @@ setup (name='Gereqi',
             package_data={'gereqi': ['gereqi/*.py']}, 
             
             data_files=[('/usr/share/applications',['gereqi/data/gereqi.desktop']),
-                ('/usr/share/pixmaps',['gereqi/data/Gereqi.png'])],
-            scripts = ["bin/Gereqi"]
+                ('/usr/share/pixmaps',['gereqi/data/gereqi.png'])],
+            scripts = ["bin/gereqi"]
             )
