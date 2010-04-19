@@ -2,8 +2,8 @@
 Name=Gereqi
 GenericName=Music Player
 Comment=Play and organise your music collection
-Exec=Gereqi
-Icon=Gereqi
+Exec=gereqi
+Icon=gereqi
 Terminal=false
 Type=Application
 Categories=AudioVideo;Player;
