@@ -185,19 +185,19 @@ class Finishers:
             self.ui_main.xtrawdgt.stat_prog.setToolTip("Finished")
         self.ui_main.xtrawdgt.stat_prog.setValue(100)
         self.ui_main.wdgt_manip.setup_db_tree()
-        self.ui_main.srchCollectEdt.clear()
+        self.ui_main.search_collect_edit.clear()
         
     def set_cover(self, img):
         """
         Takes the img and displays in info tab
         """
         if img.isNull() is True:
-            self.ui_main.coverView.setPixmap(QPixmap(":/Icons/music.png"))
+            self.ui_main.cover_view.setPixmap(QPixmap(":/Icons/music.png"))
         else:
             cover = QPixmap()
             cover = cover.fromImage(img, Qt.OrderedDither)
             cover = cover.scaledToWidth(200, Qt.SmoothTransformation)
-            self.ui_main.coverView.setPixmap(cover)        
+            self.ui_main.cover_view.setPixmap(cover)        
         
     def set_wiki(self, html):
         """
@@ -205,8 +205,8 @@ class Finishers:
         put into the wikipedia tab
         """
         if html != "None":
-            self.ui_main.contentTabs.setTabEnabled(2, True)
-            self.ui_main.wikiView.setHtml(html)
+            self.ui_main.horizontal_tabs.setTabEnabled(2, True)
+            self.ui_main.wiki_view.setHtml(html)
         else:
-            self.ui_main.contentTabs.setTabEnabled(2, False)
+            self.ui_main.horizontal_tabs.setTabEnabled(2, False)
             

@@ -86,8 +86,8 @@ class AudioBackend:
         Things to be performed when the playback finishes
         """
         self.just_finished = False
-        self.ui.contentTabs.setTabEnabled(1, False)
-        self.ui.contentTabs.setTabEnabled(2, False)
+        self.ui.horizontal_tabs.setTabEnabled(1, False)
+        self.ui.horizontal_tabs.setTabEnabled(2, False)
         self.ui.playBttn.setChecked(False)
         self.ui.stopBttn.setEnabled(False)
         self.ui.progSldr.setValue(0)
@@ -95,8 +95,8 @@ class AudioBackend:
         self.ui.xtrawdgt.stat_lbl.setText("Stopped")
         self.ui.progLbl.setText("00:00 | 00:00")
         # clear things like wiki and reset cover art to default        
-        self.ui.wikiView.setHtml(QString(""))
-        self.ui.coverView.setPixmap(QPixmap(":/Icons/music.png"))
+        self.ui.wiki_view.setHtml(QString(""))
+        self.ui.cover_view.setPixmap(QPixmap(":/Icons/music.png"))
         self.ui.trkNowBox.setTitle(QString("No Track Playing"))
         self.ui.art_alb["oldart"] = self.ui.art_alb["oldalb"] = None
         self.ui.xtrawdgt.tray_icon.setToolTip("Stopped")

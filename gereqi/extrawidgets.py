@@ -123,10 +123,9 @@ class SetupExtraWidgets:
         self.ui_main.addPlylstBttn.setMenu(menu)
         
     def __disable_tabs(self):
-        self.ui_main.contentTabs.setTabEnabled(1, False)
-        self.ui_main.contentTabs.setTabEnabled(2, False)
-        #self.ui_main.parentTabs.setTabEnabled(2, False)
-        self.ui_main.parentTabs.setTabEnabled(3, False)
+        self.ui_main.horizontal_tabs.setTabEnabled(1, False)
+        self.ui_main.horizontal_tabs.setTabEnabled(2, False)
+        self.ui_main.vertical_tabs.setTabEnabled(3, False)
         
     def __setup_misc(self):
         """
@@ -157,8 +156,8 @@ class SetupExtraWidgets:
                    QString("Album"), QString("Year"), QString("Genre"),   \
                    QString("Length"), QString("Bitrate"), QString("FileName")]
         for val in range(len(headers)):
-            self.ui_main.playlistTree.insertColumn(val)
-        self.ui_main.playlistTree.setHorizontalHeaderLabels(headers)
+            self.ui_main.track_tbl.insertColumn(val)
+        self.ui_main.track_tbl.setHorizontalHeaderLabels(headers)
 
     def __key_shortcuts(self):
         delete = QShortcut(QKeySequence(QString("Del")), self.ui_main)
@@ -175,7 +174,7 @@ class WidgetManips:
         viewing the media database in the QTreeView
         """
         media_db = Media()
-        self.ui_main.collectTree.clear()
+        self.ui_main.collect_tree.clear()
         # This gives multiples of the same thing i.e albums
         if time_filt is None:
             artists = media_db.get_artists()
@@ -197,10 +196,10 @@ class WidgetManips:
                 old_char = char  
                 char = QTreeWidgetItem(["== %s ==" % char])
                 char.setFont(0, font)
-                self.ui_main.collectTree.addTopLevelItem(char)
+                self.ui_main.collect_tree.addTopLevelItem(char)
             artist = QTreeWidgetItem([QString(artist)])
             artist.setChildIndicatorPolicy(0)
-            self.ui_main.collectTree.addTopLevelItem(artist)
+            self.ui_main.collect_tree.addTopLevelItem(artist)
             
     def set_play_type(self, checked):
         if checked is True:
