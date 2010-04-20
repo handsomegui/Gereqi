@@ -393,16 +393,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             for alb in albums:
                 tracks = self.media_db.get_files(unicode(artist), unicode(alb))
                 self.playlisting.add_list_to_playlist(tracks)
-            self.clrplyBttn.setEnabled(True)
-            
         elif track is not None:
             file_name = self.media_db.get_file(unicode(artist), unicode(album), unicode(track))
             self.playlisting.add_to_playlist(file_name)
-            self.clrplyBttn.setEnabled(True)
         elif album is not None:
             tracks = self.media_db.get_files(unicode(artist), unicode(album))
             self.playlisting.add_list_to_playlist(tracks)                
-            self.clrplyBttn.setEnabled(True)
     
     @pyqtSignature("")
     def on_prevBttn_pressed(self):
