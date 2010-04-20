@@ -1082,25 +1082,26 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             
     def __time_filt_now(self):
         index = self.collectTimeBox.currentIndex()
+        calc = lambda val: int(round(time.time() - val))
         if index == 0:
             #All
             filt_time = None
         elif index == 1:
             # Today
             now = time.localtime()
-            filt_time = int(round(time.time() - ( (now[3] * now[4]) + now[5]) ))
+            filt_time = calc((now[3] * now[4]) + now[5])
         elif index == 2:
             # Week - 7 * 24 * 60 * 60
-            filt_time  = int(round(time.time() - 604800))
+            filt_time = calc(604800)
         elif index == 3:
             # Month - 28 * 24 * 60 * 60
-            filt_time  = int(round(time.time() - 2419200))
+            filt_time = calc(2419200)
         elif index == 4:
             # 3 Months - 3 * 28 * 24 * 60 * 60
-            filt_time  = int(round(time.time() - 7257600))
+            filt_time = calc(7257600)
         elif index == 5:
             # Year 365.25 * 24 * 60 * 60
-            filt_time  = int(round((time.time() - 31557600)))
+            filt_time = calc(31557600)
     
         return filt_time 
         
