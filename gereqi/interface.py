@@ -340,10 +340,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.connect(self.build_db_thread, SIGNAL("progress ( int ) "), self.xtrawdgt.stat_prog, SLOT("setValue(int)"))
         self.connect(self.filesystem_tree, SIGNAL("expanded (const QModelIndex&)"), self.__resize_filesystem_tree) 
         self.connect(self.filesystem_tree, SIGNAL("doubleClicked (const QModelIndex&)"), self.__filesystem_tree_item)
-        self.connect(self.actionPlay, SIGNAL("toggled ( bool )"), self.play_bttn, SLOT("setChecked(bool)"))
+        self.connect(self.play_actn, SIGNAL("toggled ( bool )"), self.play_bttn, SLOT("setChecked(bool)"))
         self.connect(self.actionNext_Track, SIGNAL("triggered()"), self.next_bttn, SLOT("click()"))
-        self.connect(self.actionPrevious_Track, SIGNAL("triggered()"), self.prev_bttn, SLOT("click()"))  
-        self.connect(self.actionStop, SIGNAL("triggered()"), self.stop_bttn, SLOT("click()"))
+        self.connect(self.prev_track_actn, SIGNAL("triggered()"), self.prev_bttn, SLOT("click()"))  
+        self.connect(self.stop_actn, SIGNAL("triggered()"), self.stop_bttn, SLOT("click()"))
         self.connect(self.xtrawdgt.stat_bttn, SIGNAL("pressed()"), self.quit_build)
         self.connect(self.xtrawdgt.play_type_bttn, SIGNAL('toggled ( bool )'), self.wdgt_manip.set_play_type)
         self.connect(self.track_tbl.horizontalHeader(), SIGNAL('sectionClicked ( int )'), self.__recolourise)
@@ -472,7 +472,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # Oblivious to it all. Not sure if these should be part
         # of the "Nothing to play" situations also.
         self.xtrawdgt.play_action.setChecked(checked)
-        self.actionPlay.setChecked(checked)
+        self.play_actn.setChecked(checked)
         
     @pyqtSignature("")    
     def on_stop_bttn_pressed(self):
@@ -765,8 +765,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             You can give it a try anyway."""),
             QMessageBox.StandardButtons(\
                 QMessageBox.No | \
-                QMessageBox.Yes))
-        
+                QMessageBox.Yes))        
         
         if check == QMessageBox.Yes:
             acd = AudioCD()

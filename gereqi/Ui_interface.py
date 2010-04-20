@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/media/data/Projects/Gereqi/gereqi/interface.ui'
 #
-# Created: Tue Apr 20 23:52:16 2010
+# Created: Tue Apr 20 23:59:07 2010
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -557,22 +557,22 @@ class Ui_MainWindow(object):
         self.actionFavor.setObjectName("actionFavor")
         self.play_cd_actn = QtGui.QAction(MainWindow)
         self.play_cd_actn.setObjectName("play_cd_actn")
-        self.actionPrevious_Track = QtGui.QAction(MainWindow)
-        self.actionPrevious_Track.setObjectName("actionPrevious_Track")
-        self.actionPlay = QtGui.QAction(MainWindow)
-        self.actionPlay.setCheckable(True)
-        self.actionPlay.setObjectName("actionPlay")
-        self.actionStop = QtGui.QAction(MainWindow)
-        self.actionStop.setObjectName("actionStop")
+        self.prev_track_actn = QtGui.QAction(MainWindow)
+        self.prev_track_actn.setObjectName("prev_track_actn")
+        self.play_actn = QtGui.QAction(MainWindow)
+        self.play_actn.setCheckable(True)
+        self.play_actn.setObjectName("play_actn")
+        self.stop_actn = QtGui.QAction(MainWindow)
+        self.stop_actn.setObjectName("stop_actn")
         self.actionNext_Track = QtGui.QAction(MainWindow)
         self.actionNext_Track.setObjectName("actionNext_Track")
         self.menuActions.addAction(self.play_media_actn)
         self.menuActions.addAction(self.play_cd_actn)
         self.menuActions.addSeparator()
         self.menuActions.addAction(self.minimise_tray_actn)
-        self.menuActions.addAction(self.actionPrevious_Track)
-        self.menuActions.addAction(self.actionPlay)
-        self.menuActions.addAction(self.actionStop)
+        self.menuActions.addAction(self.prev_track_actn)
+        self.menuActions.addAction(self.play_actn)
+        self.menuActions.addAction(self.stop_actn)
         self.menuActions.addAction(self.actionNext_Track)
         self.menuActions.addSeparator()
         self.menuActions.addAction(self.actionQuit)
@@ -703,9 +703,9 @@ class Ui_MainWindow(object):
         self.actionRndAlbum.setText(QtGui.QApplication.translate("MainWindow", "Albums", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFavor.setText(QtGui.QApplication.translate("MainWindow", "Favor", None, QtGui.QApplication.UnicodeUTF8))
         self.play_cd_actn.setText(QtGui.QApplication.translate("MainWindow", "Play Audio CD", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionPrevious_Track.setText(QtGui.QApplication.translate("MainWindow", "Previous Track", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionPlay.setText(QtGui.QApplication.translate("MainWindow", "Play", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionStop.setText(QtGui.QApplication.translate("MainWindow", "Stop", None, QtGui.QApplication.UnicodeUTF8))
+        self.prev_track_actn.setText(QtGui.QApplication.translate("MainWindow", "Previous Track", None, QtGui.QApplication.UnicodeUTF8))
+        self.play_actn.setText(QtGui.QApplication.translate("MainWindow", "Play", None, QtGui.QApplication.UnicodeUTF8))
+        self.stop_actn.setText(QtGui.QApplication.translate("MainWindow", "Stop", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNext_Track.setText(QtGui.QApplication.translate("MainWindow", "Next Track", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
