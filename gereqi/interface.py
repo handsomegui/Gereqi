@@ -89,6 +89,7 @@ class Playlist:
         """
         # This allows to manually put in info for things we know
         # mutagen cannot handle things like urls for podcasts
+        self.ui_main.clrplyBttn.setEnabled(True)
         if info is None:
             info = self.ui_main.meta.extract(file_name)
             if info is None:
@@ -836,12 +837,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.playlisting.add_list_to_playlist(tracks)
             self.clrplyBttn.setEnabled(True)
         else:
-            new_par = item.parent().parent()
-            print new_par.text(0), item.text(0)
-            
+            new_par = item.parent().parent()            
             if new_par.text(0) == "Playlists":
                 artist, title = unicode(item.text(0)).split(" - ")
-                print self.media_db.search_by_titandart(artist, title)
+                track = self.media_db.search_by_titandart(artist, title)[0]
+                self.playlisting.add_to_playlist(track)
                 
             
     @pyqtSignature("bool")
