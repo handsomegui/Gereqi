@@ -767,7 +767,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 QMessageBox.No | \
                 QMessageBox.Yes))
         
-        if check:
+        
+        if check == QMessageBox.Yes:
             acd = AudioCD()
             cd_tracks = acd.get_info()
             tracks = [(trk[-1],  trk) for trk in cd_tracks]
