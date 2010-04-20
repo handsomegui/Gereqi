@@ -21,23 +21,23 @@ This file contains all the necessary threads for the app
 to make it easier to manage
 """
 
-from PyQt4.QtCore import QThread, QString, SIGNAL
-from PyQt4.QtGui import QImage
+from PyQt4.QtCore import QThread, QString, SIGNAL, Qt
+from PyQt4.QtGui import QImage, QPixmap
 import os
 import time
 
 from webinfo import Webinfo
 from database import Media
 from tagging import Tagging
-from extraneous import Extraneous
+
 
 class Getcover(QThread):
     """
     Retrives the cover for an album
     from Amazon
     """
-    def __init__(self,parent=None):
-        QThread.__init__(self,parent)
+    def __init__(self, parent=None):
+        QThread.__init__(self, parent)
         
     def set_values(self, art, alb, loc=None):
         self.artist = art
@@ -58,8 +58,8 @@ class Getwiki(QThread):
     """
     Retrieves the wiki info for an artist
     """
-    def __init__(self,parent=None):
-        QThread.__init__(self,parent)
+    def __init__(self, parent=None):
+        QThread.__init__(self, parent)
     
     def set_values(self, art):
         self.artist = art
@@ -80,18 +80,18 @@ class Builddb(QThread):
     Gets files from a directory and build's a 
     media database from the filtered files
     """
-    def __init__(self,parent=None):
+    def __init__(self, parent=None):
         QThread.__init__(self, parent)
         
     def stop_now(self):
         self.exiting = True
         
-    def set_values(self, dir, formats):
+    def set_values(self, directory, formats):
         """
         Required to put parameters into
         this thread from the outside
         """
-        self.media_dir = dir
+        self.media_dir = directory
         self.a_formats = formats
      
     def __track_list(self):
@@ -162,3 +162,51 @@ class Builddb(QThread):
         print("%u of %u tracks scanned in: %0.1f seconds" % (cnt, tracks_total,  (time.time() - strt)))
         self.emit(SIGNAL("finished ( QString )"), QString("complete"))
         self.exit()
+
+class Finishers:
+    """
+    Things to do when the threads finish
+    """
+    def __init__(self, parent):
+        """
+        parent being MainWindow in interface.py
+        """
+        self.ui_main = parent
+
+    def db_build(self, status):
+        """
+        Things to perform when the media library
+        has been built/cancelled
+        """
+        self.ui_main.xtrawdgt.stat_bttn.setEnabled(False)
+        if status == "cancelled":
+            self.ui_main.xtrawdgt.stat_prog.setToolTip("Cancelled")
+        else:
+            self.ui_main.xtrawdgt.stat_prog.setToolTip("Finished")
+        self.ui_main.xtrawdgt.stat_prog.setValue(100)
+        self.ui_main.wdgt_manip.setup_db_tree()
+        self.ui_main.srchCollectEdt.clear()
+        
+    def set_cover(self, img):
+        """
+        Takes the img and displays in info tab
+        """
+        if img.isNull() is True:
+            self.ui_main.coverView.setPixmap(QPixmap(":/Icons/music.png"))
+        else:
+            cover = QPixmap()
+            cover = cover.fromImage(img, Qt.OrderedDither)
+            cover = cover.scaledToWidth(200, Qt.SmoothTransformation)
+            self.ui_main.coverView.setPixmap(cover)        
+        
+    def set_wiki(self, html):
+        """
+        The printable wikipedia page (if found) is
+        put into the wikipedia tab
+        """
+        if html != "None":
+            self.ui_main.contentTabs.setTabEnabled(2, True)
+            self.ui_main.wikiView.setHtml(html)
+        else:
+            self.ui_main.contentTabs.setTabEnabled(2, False)
+            
