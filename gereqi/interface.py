@@ -881,7 +881,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 self.media_db.playlist_delete(unicode(playlist[0].text(0)))
                 # add the tracks back in but with a new name, probably cleaner using an sql query
                 for track in tracks:
-                    self.media_db.playlist_add(unicode(new_name[0]), track[0])
+                    self.media_db.playlist_add(unicode(new_name[0]), track)
                 self.wdgt_manip.pop_playlist_view()
             
     @pyqtSignature("bool")
