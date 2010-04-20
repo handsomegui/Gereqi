@@ -310,27 +310,27 @@ class PlaylistHistory:
     """
     
     #FIXME: Use better variable names
-    thing = []
-    index = 0
+    stack = []
+    position = 0
     
     def update(self, tracks):
-        if PlaylistHistory.index != len(PlaylistHistory.thing):
-            del PlaylistHistory.thing[PlaylistHistory.index:]
+        if PlaylistHistory.position != len(PlaylistHistory.stack):
+            del PlaylistHistory.stack[PlaylistHistory.position:]
             
-        PlaylistHistory.thing.append(tracks)
-        PlaylistHistory.index += 1
+        PlaylistHistory.stack.append(tracks)
+        PlaylistHistory.position += 1
         
     def last_list(self):
-        if PlaylistHistory.index > 0:
-            PlaylistHistory.index -= 1
-            last = PlaylistHistory.index == 0
-            return PlaylistHistory.thing[PlaylistHistory.index], last
+        if PlaylistHistory.position > 0:
+            PlaylistHistory.position -= 1
+            last = PlaylistHistory.position == 0
+            return PlaylistHistory.stack[PlaylistHistory.position], last
         
     def next_list(self):
-        if PlaylistHistory.index < len(PlaylistHistory.thing):
-            PlaylistHistory.index += 1
-            first = PlaylistHistory.index == (len(PlaylistHistory.thing) - 1)
-            return PlaylistHistory.thing[PlaylistHistory.index], first
+        if PlaylistHistory.position < len(PlaylistHistory.stack):
+            PlaylistHistory.position += 1
+            first = PlaylistHistory.position == (len(PlaylistHistory.stack) - 1)
+            return PlaylistHistory.stack[PlaylistHistory.position], first
 
 class Track:
     def __init__(self, parent):
@@ -995,7 +995,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         self.playlisting.clear()
 
-        if self.play_hist.index < len(self.play_hist.thing) :
+        if PlaylistHistory.position < len(PlaylistHistory.stack) :
             self.nxtplyBttn.setEnabled(True)
         tracks, last = self.play_hist.last_list()
         self.playlisting.add_list_to_playlist(tracks)
@@ -1012,7 +1012,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.playlisting.clear()
         self.prvplyBttn.setEnabled(True)
         tracks, first= self.play_hist.next_list()
-        self.playlisting.add_list_to_playlist(track)
+        self.playlisting.add_list_to_playlist(tracks)
         self.clrplyBttn.setEnabled(True)
         
         if first is True:
