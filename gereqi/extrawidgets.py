@@ -229,10 +229,10 @@ class WidgetManips:
                     headers[cnt].addChild(now)
                     tracks = self.ui_main.media_db.playlist_tracks(
                                 unicode(play))
-                    for track in tracks: 
+                    for track in tracks:
                         info = self.ui_main.media_db.get_info(track)
                         now.addChild(QTreeWidgetItem([QString("%s - %s"
-                        % (info[2], info[1])) ]))       
+                                                    % (info[2], info[1])) ]))       
                                                                                       
             self.ui_main.playlstView.addTopLevelItem(headers[cnt])
                 

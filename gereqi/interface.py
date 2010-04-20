@@ -154,7 +154,8 @@ class Playlist:
         playlist view to be changed         
         """
         cols = self.ui_main.playlistTree.columnCount()
-        headers = [self.ui_main.playlistTree.horizontalHeaderItem(col).text() for col in range(cols)]
+        headers = [self.ui_main.playlistTree.horizontalHeaderItem(col).text() 
+                   for col in range(cols)]
         return headers.index(val)
         
     #TODO: use native/theme colours for odd/even colours
@@ -522,7 +523,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         dialog = Setting_Dialog(self)
         if dialog.exec_():
             self.media_dir = dialog.dir_val()
-            print(self.media_dir)
             
     @pyqtSignature("")
     def on_actionRescan_Collection_triggered(self):
@@ -763,7 +763,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         check = QMessageBox.question(None,
             QString("Play Audio-CD?"),
-            QString("""Playback of CD's works up to a point at the moment. 
+            QString("""Playback of CDs works up to a point at the moment. 
             Until Gstreamer-10.26 is released this situation will not change.  
             You can give it a try anyway."""),
             QMessageBox.StandardButtons(\
@@ -785,16 +785,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         play_name = QInputDialog.getText(\
             None,
-            self.trUtf8("Save Playlist"),
-            self.trUtf8("Enter a name for the playlist:"),
+            QString("Save Playlist"),
+            QString("Enter a name for the playlist:"),
             QLineEdit.Normal)
             
         if play_name[1] is True:
             check = self.media_db.playlist_tracks(unicode(play_name[0]))
             if len(check) > 0:
                 msg = QMessageBox.warning(None,
-                    self.trUtf8("Overwrite Playlist?"),
-                    self.trUtf8("""A playlist named '%s' already exists. Do you want to overwrite it?"""  
+                    QString("Overwrite Playlist?"),
+                    QString("""A playlist named '%s' already exists. Do you want to overwrite it?"""  
                                 % unicode(play_name[0])),
                     QMessageBox.StandardButtons(\
                         QMessageBox.Cancel | \
@@ -869,11 +869,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if (len(playlist) > 0) and (par in ["Podcasts", "Radio Streams",  "Playlists"]):
             new_name = QInputDialog.getText(\
                 None,
-                self.trUtf8("Rename Playlist"),
-                self.trUtf8("Rename the playlist to:"),
+                QString("Rename Playlist"),
+                QString("Rename the playlist to:"),
                 QLineEdit.Normal)
             
-            # Checks if you entered a non-zero length name and that you clikced 'ok'
+            # Checks if you entered a non-zero length name and that you clicked 'ok'
             if (new_name[1] is True) and (len(unicode(new_name[0])) > 0):
                 #get all the tracks in the selected playlist
                 tracks = self.media_db.playlist_tracks(unicode(playlist[0].text(0)))
