@@ -16,7 +16,7 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from PyQt4.QtGui import QMainWindow, QFileDialog,   \
+from PyQt4.QtGui import QMainWindow, QFileDialog, \
 QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
 QIcon, QTreeWidgetItem, QPixmap, QMessageBox, QColor, \
 QSystemTrayIcon, QInputDialog, QLineEdit
@@ -56,6 +56,9 @@ class Finish:
         self.ui.srchCollectEdt.clear()
         
     def set_cover(self, img):
+        """
+        Takes the img and displays in info tab
+        """
         if img.isNull() is True:
             self.ui.coverView.setPixmap(QPixmap(":/Icons/music.png"))
         else:
@@ -65,6 +68,10 @@ class Finish:
             self.ui.coverView.setPixmap(cover)        
         
     def set_wiki(self, html):
+        """
+        The printable wikipedia page (if found) is
+        put into the wikipedia tab
+        """
         if html != "None":
             self.ui.contentTabs.setTabEnabled(2, True)
             self.ui.wikiView.setHtml(html)
@@ -79,6 +86,10 @@ class AudioBackend:
         self.__gstreamer_init()
             
     def __gstreamer_init(self):
+        """
+        Sets up the environment/signals on
+        backend initialisation
+        """
         self.audio_object = Gstbe()
         QObject.connect(self.audio_object, SIGNAL("tick ( int )"), self.__prog_tick)
         self.audio_object.pipe_line.connect("about-to-finish", self.__about_to_finish)
@@ -163,6 +174,11 @@ class Playlist:
         
   
     def __sort4add(self):
+        """
+        Puts the playlist into a sorting order
+        that works only for filename sorting (the only
+        order that appears to work)
+        """
         # Finds the sorting status of the playlist
         self.sort_order = self.ui.playlistTree.horizontalHeader().sortIndicatorOrder()
         self.sort_pos = self.ui.playlistTree.horizontalHeader().sortIndicatorSection()
@@ -173,11 +189,18 @@ class Playlist:
             self.ui.playlistTree.horizontalHeader().setSortIndicator(fname_pos, 0)
             
     def __unsort(self):
+        """
+        Puts the playlist sorting back to what it was 
+        """
         fname_pos = self.header_search("FileName")
         if self.sort_pos != fname_pos or (self.sort_order != 0):
             self.ui.playlistTree.horizontalHeader().setSortIndicator(self.sort_pos, self.sort_order)
     
     def add_list_to_playlist(self, tracks):
+        """
+        Takes a list of filenames and adds to the playlist
+        whilst handling the sorting orders
+        """
         self.__sort4add()
         for trk in tracks:
             # This is for adding a track which has info attached in a tuple
@@ -298,6 +321,9 @@ class Playlist:
         return track        
         
     def clear(self):
+        """
+        Clears the playlist
+        """
         self.ui.playlistTree.clearContents()
         rows = self.ui.playlistTree.rowCount()
         # For some reason can only remove from bot to top
@@ -370,7 +396,7 @@ class Track:
             
     def generate_info(self):
         """
-         This retrieves data from the playlist table, not the database. 
+        This retrieves data from the playlist table, not the database. 
         This is because the playlist may contain tracks added locally.        
         """
         row = self.ui.playlisting.current_row()
