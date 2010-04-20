@@ -1044,27 +1044,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         index = self.collectTimeBox.currentIndex()
         calc = lambda val: int(round(time.time() - val))
-        if index == 0:
-            #All
-            filt_time = None
-        elif index == 1:
-            # Today
-            now = time.localtime()
-            filt_time = calc((now[3] * now[4]) + now[5])
-        elif index == 2:
-            # Week - 7 * 24 * 60 * 60
-            filt_time = calc(604800)
-        elif index == 3:
-            # Month - 28 * 24 * 60 * 60
-            filt_time = calc(2419200)
-        elif index == 4:
-            # 3 Months - 3 * 28 * 24 * 60 * 60
-            filt_time = calc(7257600)
-        else:
-            # Year 365.25 * 24 * 60 * 60
-            filt_time = calc(31557600)
-    
-        return filt_time 
+        now = time.localtime()
+        filts = [(now[3] * now[4]) + now[5], 604800, 2419200, 7257600, 31557600]   
+        if index > 0:
+            return calc(filts[index - 1])
         
     def __recolourise(self):
         self.playlisting.tracknow_colourise(self.playlisting.current_row)
