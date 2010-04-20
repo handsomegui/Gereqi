@@ -282,7 +282,7 @@ class Track:
         msg_header = QString("Now Playing")
         msg_main = QString("%s by %s" % (title, artist))
         self.ui_main.trkNowBox.setTitle(msg_main)
-        if self.ui_main.show_messages and self.ui_main.playBttn.isChecked():
+        if self.ui_main.show_messages and self.ui_main.play_bttn.isChecked():
             self.ui_main.xtrawdgt.tray_icon.showMessage(msg_header, msg_main, QSystemTrayIcon.NoIcon, 3000)
         self.ui_main.xtrawdgt.tray_icon.setToolTip(msg_main)
         self.msg_status = "Playing: %s by %s on %s" % (title, artist, album)
@@ -338,12 +338,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.connect(self.cover_thread, SIGNAL("got-image ( QImage ) "), self.finishes.set_cover) 
         self.connect(self.html_thread, SIGNAL("got-wiki ( QString ) "), self.finishes.set_wiki)
         self.connect(self.build_db_thread, SIGNAL("progress ( int ) "), self.xtrawdgt.stat_prog, SLOT("setValue(int)"))
-        self.connect(self.fileView, SIGNAL("expanded (const QModelIndex&)"), self.__resize_fileview) 
-        self.connect(self.fileView, SIGNAL("doubleClicked (const QModelIndex&)"), self.__fileview_item)
-        self.connect(self.actionPlay, SIGNAL("toggled ( bool )"), self.playBttn, SLOT("setChecked(bool)"))
-        self.connect(self.actionNext_Track, SIGNAL("triggered()"), self.nxtBttn, SLOT("click()"))
-        self.connect(self.actionPrevious_Track, SIGNAL("triggered()"), self.prevBttn, SLOT("click()"))  
-        self.connect(self.actionStop, SIGNAL("triggered()"), self.stopBttn, SLOT("click()"))
+        self.connect(self.filesystem_tree, SIGNAL("expanded (const QModelIndex&)"), self.__resize_filesystem_tree) 
+        self.connect(self.filesystem_tree, SIGNAL("doubleClicked (const QModelIndex&)"), self.__filesystem_tree_item)
+        self.connect(self.actionPlay, SIGNAL("toggled ( bool )"), self.play_bttn, SLOT("setChecked(bool)"))
+        self.connect(self.actionNext_Track, SIGNAL("triggered()"), self.next_bttn, SLOT("click()"))
+        self.connect(self.actionPrevious_Track, SIGNAL("triggered()"), self.prev_bttn, SLOT("click()"))  
+        self.connect(self.actionStop, SIGNAL("triggered()"), self.stop_bttn, SLOT("click()"))
         self.connect(self.xtrawdgt.stat_bttn, SIGNAL("pressed()"), self.quit_build)
         self.connect(self.xtrawdgt.play_type_bttn, SIGNAL('toggled ( bool )'), self.wdgt_manip.set_play_type)
         self.connect(self.track_tbl.horizontalHeader(), SIGNAL('sectionClicked ( int )'), self.__recolourise)
@@ -401,7 +401,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.playlisting.add_list_to_playlist(tracks)                
     
     @pyqtSignature("")
-    def on_prevBttn_pressed(self):
+    def on_prev_bttn_pressed(self):
         """
         Skip to previous track in viewable playlist
         if possible
@@ -411,13 +411,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.player.audio_object.stop()
             self.player.audio_object.load(track)
             # Checks to see if the playbutton is in play state
-            if self.playBttn.isChecked() is True:
+            if self.play_bttn.isChecked() is True:
                 self.player.audio_object.play()
             else:
                 self.playlisting.tracknow_colourise(self.playlisting.current_row())
 
     @pyqtSignature("bool")
-    def on_playBttn_toggled(self, checked):
+    def on_play_bttn_toggled(self, checked):
         """
         The play button either resumes or starts playback.
         Not possible to play a highlighted row.
@@ -444,19 +444,19 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     # Nothing to play
                     else:
                         # Just reset the play button and stop here
-                        self.playBttn.setChecked(False)                        
+                        self.play_bttn.setChecked(False)                        
                 # Just unpausing
                 elif paused is True:
                     # Makes sure the statusbar text changes from
                     # paused back to the artist/album/track string
                     self.xtrawdgt.stat_lbl.setText(self.tracking.msg_status)                    
                 self.player.audio_object.play()
-                self.stopBttn.setEnabled(True)
+                self.stop_bttn.setEnabled(True)
                 self.wdgt_manip.icon_change("play")
                 
             # Nothing to play
             else:
-                self.playBttn.setChecked(False)
+                self.play_bttn.setChecked(False)
                 return
                 
         # The button is unset
@@ -475,18 +475,18 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.actionPlay.setChecked(checked)
         
     @pyqtSignature("")    
-    def on_stopBttn_pressed(self):
+    def on_stop_bttn_pressed(self):
         """
         To stop current track.
         """
         self.horizontal_tabs.setTabEnabled(1, False)
         self.horizontal_tabs.setTabEnabled(2, False)
         self.player.audio_object.stop()
-        self.playBttn.setChecked(False)
-        self.stopBttn.setEnabled(False)
+        self.play_bttn.setChecked(False)
+        self.stop_bttn.setEnabled(False)
         
     @pyqtSignature("")
-    def on_nxtBttn_pressed(self):
+    def on_next_bttn_pressed(self):
         """
         Go to next item in playlist(down)
         """
@@ -494,7 +494,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if track is not None:
             self.player.audio_object.stop() 
             self.player.audio_object.load(track)
-            if self.playBttn.isChecked() is True:
+            if self.play_bttn.isChecked() is True:
                 self.player.audio_object.play()
             else:
                 self.playlisting.tracknow_colourise(self.playlisting.current_row())
@@ -503,7 +503,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             return
      
     @pyqtSignature("int")
-    def on_volSldr_valueChanged(self, value):
+    def on_volume_slider_valueChanged(self, value):
         """
         Self explanatory
         """        
@@ -540,7 +540,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         exit()
     
     @pyqtSignature("")
-    def on_actionPlay_Media_triggered(self):
+    def on_play_media_actn_triggered(self):
         """
         Extract music files and shove into current playlist.
         """        
@@ -559,7 +559,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     self.playlisting.add_to_playlist(unicode(item))
 
     @pyqtSignature("bool")
-    def on_actionMinimise_to_Tray_toggled(self, checked):
+    def on_minimise_tray_actn_toggled(self, checked):
         self.minimise_to_tray(checked)
     
     @pyqtSignature("")
@@ -619,26 +619,26 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.playlisting.tracknow_colourise()
                 
     @pyqtSignature("bool")
-    def on_muteBttn_toggled(self, checked):
+    def on_mute_bttn_toggled(self, checked):
         """
         Mutes audio output and changes button icon accordingly
         """
         self.player.audio_object.mute(checked)
         if checked is True:
             icon = QIcon(QPixmap(":/Icons/audio-volume-muted.png"))
-            self.muteBttn.setIcon(icon)
+            self.mute_bttn.setIcon(icon)
         else:
-            vol = (self.volSldr.value() / 100.0) ** 2
+            vol = (self.volume_slider.value() / 100.0) ** 2
             icon = QIcon(QPixmap(":/Icons/audio-volume-high.png"))
-            self.muteBttn.setIcon(icon)
+            self.mute_bttn.setIcon(icon)
             self.player.audio_object.set_volume(vol)
       
     @pyqtSignature("")  
-    def on_progSldr_sliderReleased(self):
+    def on_progress_sldr_sliderReleased(self):
         """
         Set's an internal seek value for tick() to use
         """
-        val = self.progSldr.value()
+        val = self.progress_sldr.value()
         self.player.audio_object.seek(val)
         self.old_pos = val
     
@@ -657,14 +657,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         When item is doubleclicked. Play its row.
         """
         #This won't actualy stop. It'll pause instead.
-        self.playBttn.setChecked(False)
+        self.play_bttn.setChecked(False)
         
         self.player.audio_object.stop()
         track = self.tracking.generate_track("now", row)
         self.player.audio_object.load(track)
         # Checking the button is the same
         #  as self.player.audio_object.play(), just cleaner overall
-        self.playBttn.setChecked(True) 
+        self.play_bttn.setChecked(True) 
         self.xtrawdgt.play_action.setChecked(True)
         
     @pyqtSignature("")
@@ -754,7 +754,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.playlisting.highlighted_track()
         
     @pyqtSignature("")
-    def on_actionPlay_Audio_CD_triggered(self):
+    def on_play_cd_actn_triggered(self):
         """
         Slot documentation goes here.
         """
@@ -812,7 +812,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.wdgt_manip.pop_playlist_view()
             
     @pyqtSignature("QTreeWidgetItem*, int")
-    def on_playlstView_itemDoubleClicked(self, item, column):
+    def on_playlist_tree_itemDoubleClicked(self, item, column):
         """
         Slot documentation goes here.
         """
@@ -841,22 +841,22 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 
             
     @pyqtSignature("bool")
-    def on_delPlylstBttn_clicked(self, checked):
+    def on_delete_playlist_bttn_clicked(self, checked):
         """
         Delete a selected playlist from the DB
         """
-        playlist = self.playlstView.selectedItems()
+        playlist = self.playlist_tree.selectedItems()
         if len(playlist) > 0:
             self.media_db.playlist_delete(unicode(playlist[0].text(0)))
             self.wdgt_manip.pop_playlist_view()
             
     
     @pyqtSignature("bool")
-    def on_rnmPlylstBtnn_clicked(self, checked):
+    def on_rename_playlist_bttn_clicked(self, checked):
         """
         Rename the slected playlist
         """
-        playlist = self.playlstView.selectedItems()
+        playlist = self.playlist_tree.selectedItems()
         try:
             par = unicode(playlist[0].parent().text(0))
         except  AttributeError:
@@ -928,7 +928,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Linked to the current time of
         track being played
         """
-        self.progSldr.setRange(0, self.tracking.play_time)
+        self.progress_sldr.setRange(0, self.tracking.play_time)
         self.t_length = QTime(0, (self.tracking.play_time / 60000) % 60, 
                               (self.tracking.play_time / 1000) % 60)
             
@@ -942,7 +942,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             self.hide()
         self.xtrawdgt.view_action.setChecked(state)
-        self.actionMinimise_to_Tray.setChecked(state)
+        self.minimise_tray_actn.setChecked(state)
     
     def create_collection(self):
         """
@@ -997,7 +997,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # Middle-click to pause/play
         elif event == 4:
             stopped = self.player.audio_object.is_playing() is False
-            self.playBttn.setChecked(stopped)
+            self.play_bttn.setChecked(stopped)
 
     def closeEvent(self, event):
         """
@@ -1007,16 +1007,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.hide()
             event.ignore()
             
-    def __resize_fileview(self):
+    def __resize_filesystem_tree(self):
         """
-        Resizes the fileView to it's contents.
+        Resizes the filesystem_tree to it's contents.
         Because of the '0' this seperate method is needed
         """
-        self.fileView.resizeColumnToContents(0)
+        self.filesystem_tree.resizeColumnToContents(0)
         
-    def __fileview_item(self, index):
+    def __filesystem_tree_item(self, index):
         """
-        This takes the fileview item and deduces whether
+        This takes the filesystem_tree item and deduces whether
         it's a file or directory and populates playlist if possible
         """
         if self.xtrawdgt .dir_model.isDir(index) is True:

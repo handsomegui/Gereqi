@@ -24,7 +24,7 @@ from gstbe import Gstbe
 
 class AudioBackend:
     def __init__(self, parent):
-        self.ui = parent
+        self.ui_main = parent
         self.media_db = Media()
         self.just_finished = False
         self.__gstreamer_init()
@@ -39,7 +39,7 @@ class AudioBackend:
         self.audio_object.pipe_line.connect("about-to-finish", self.__about_to_finish)
         QObject.connect(self.audio_object, SIGNAL("track_changed()"), self.__track_changed)
         QObject.connect(self.audio_object, SIGNAL("finished()"), self.__finished_playing)
-        QObject.connect(self.ui.stopBttn, SIGNAL("pressed()"), self.__finished_playing)
+        QObject.connect(self.ui_main.stop_bttn, SIGNAL("pressed()"), self.__finished_playing)
         
     def __about_to_finish(self, pipeline):
         """
@@ -47,7 +47,7 @@ class AudioBackend:
         before playback stops
         """
         self.just_finished = True
-        track = self.ui.tracking.generate_track("next")
+        track = self.ui_main.tracking.generate_track("next")
         #Not at end of  playlist
         if track is not None:
             self.audio_object.enqueue(track)
@@ -58,12 +58,12 @@ class AudioBackend:
         """
         t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
         now = t_now.toString('mm:ss')
-        max_time = self.ui.t_length.toString('mm:ss')
-        self.ui.progLbl.setText("%s | %s" % (now, max_time))            
+        max_time = self.ui_main.t_length.toString('mm:ss')
+        self.ui_main.progress_lbl.setText("%s | %s" % (now, max_time))            
         # Allows normal playback whilst slider still grabbed
-        if self.ui.progSldr.value() == self.ui.old_pos: 
-            self.ui.progSldr.setValue(time)
-        self.ui.old_pos = time
+        if self.ui_main.progress_sldr.value() == self.ui_main.old_pos: 
+            self.ui_main.progress_sldr.setValue(time)
+        self.ui_main.old_pos = time
         
     def __track_changed(self):
         """
@@ -75,37 +75,37 @@ class AudioBackend:
             self.just_finished = False
             self.__inc_playcount()
         
-        self.ui.tracking.generate_info()
-        self.ui.set_info()
-        self.ui.set_prog_sldr()
-        self.ui.old_pos = 0
-        self.ui.progSldr.setValue(0)
+        self.ui_main.tracking.generate_info()
+        self.ui_main.set_info()
+        self.ui_main.set_prog_sldr()
+        self.ui_main.old_pos = 0
+        self.ui_main.progress_sldr.setValue(0)
         
     def __finished_playing(self):
         """
         Things to be performed when the playback finishes
         """
         self.just_finished = False
-        self.ui.horizontal_tabs.setTabEnabled(1, False)
-        self.ui.horizontal_tabs.setTabEnabled(2, False)
-        self.ui.playBttn.setChecked(False)
-        self.ui.stopBttn.setEnabled(False)
-        self.ui.progSldr.setValue(0)
-        self.ui.old_pos = 0
-        self.ui.xtrawdgt.stat_lbl.setText("Stopped")
-        self.ui.progLbl.setText("00:00 | 00:00")
+        self.ui_main.horizontal_tabs.setTabEnabled(1, False)
+        self.ui_main.horizontal_tabs.setTabEnabled(2, False)
+        self.ui_main.play_bttn.setChecked(False)
+        self.ui_main.stop_bttn.setEnabled(False)
+        self.ui_main.progress_sldr.setValue(0)
+        self.ui_main.old_pos = 0
+        self.ui_main.xtrawdgt.stat_lbl.setText("Stopped")
+        self.ui_main.progress_lbl.setText("00:00 | 00:00")
         # clear things like wiki and reset cover art to default        
-        self.ui.wiki_view.setHtml(QString(""))
-        self.ui.cover_view.setPixmap(QPixmap(":/Icons/music.png"))
-        self.ui.trkNowBox.setTitle(QString("No Track Playing"))
-        self.ui.art_alb["oldart"] = self.ui.art_alb["oldalb"] = None
-        self.ui.xtrawdgt.tray_icon.setToolTip("Stopped")
+        self.ui_main.wiki_view.setHtml(QString(""))
+        self.ui_main.cover_view.setPixmap(QPixmap(":/Icons/music.png"))
+        self.ui_main.trkNowBox.setTitle(QString("No Track Playing"))
+        self.ui_main.art_alb["oldart"] = self.ui_main.art_alb["oldalb"] = None
+        self.ui_main.xtrawdgt.tray_icon.setToolTip("Stopped")
         
     def __inc_playcount(self):
         """
         Probably better to do this within the database.
         """
-        now = self.ui.tracking.generate_track("back")
+        now = self.ui_main.tracking.generate_track("back")
         playcount = int(self.media_db.get_info(unicode(now))[5])
         playcount += 1
         self.media_db.inc_count(playcount, unicode(now))

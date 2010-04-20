@@ -28,16 +28,16 @@ class SetupExtraWidgets:
     def __init__(self, parent):
         # Basically,the parent.
         self.ui_main = parent
-        self.__setup_fileview()
+        self.__setup_filesystem_tree()
         self.__create_tray_menu()
         self.__playlist_add_menu()
         self.__disable_tabs()
         self.__setup_misc()
         self.__key_shortcuts()
         
-    def __setup_fileview(self):
+    def __setup_filesystem_tree(self):
         """
-        A fileView browser where tracks can be (eventually)
+        A filesystem_tree browser where tracks can be (eventually)
         added to the playlist
         """
         self.dir_model = QDirModel()
@@ -45,11 +45,11 @@ class SetupExtraWidgets:
         self.dir_model.setFilter(filters)
         self.dir_model.setReadOnly(True)
         self.dir_model.setNameFilters(["*.ogg", "*.flac", "*.mp3",  "*.m4a"])
-        self.ui_main.fileView.setModel(self.dir_model) 
-        self.ui_main.fileView.setColumnHidden(1, True)
-        self.ui_main.fileView.setColumnHidden(2, True)
-        self.ui_main.fileView.setColumnHidden(3, True)
-        self.ui_main.fileView.expandToDepth(0)
+        self.ui_main.filesystem_tree.setModel(self.dir_model) 
+        self.ui_main.filesystem_tree.setColumnHidden(1, True)
+        self.ui_main.filesystem_tree.setColumnHidden(2, True)
+        self.ui_main.filesystem_tree.setColumnHidden(3, True)
+        self.ui_main.filesystem_tree.expandToDepth(0)
         
     def __create_tray_menu(self):
         """
@@ -84,13 +84,13 @@ class SetupExtraWidgets:
         self.tray_icon.setToolTip("Stopped")    
         
         QObject.connect(self.play_action, SIGNAL("toggled(bool)"), 
-                        self.ui_main.playBttn, SLOT("setChecked(bool)"))
+                        self.ui_main.play_bttn, SLOT("setChecked(bool)"))
         QObject.connect(next_action, SIGNAL("triggered()"),
-                        self.ui_main.nxtBttn, SLOT("click()"))
+                        self.ui_main.next_bttn, SLOT("click()"))
         QObject.connect(prev_action, SIGNAL("triggered()"), 
-                        self.ui_main.prevBttn, SLOT("click()"))
+                        self.ui_main.prev_bttn, SLOT("click()"))
         QObject.connect(stop_action, SIGNAL("triggered()"), 
-                        self.ui_main.stopBttn, SLOT("click()"))
+                        self.ui_main.stop_bttn, SLOT("click()"))
         QObject.connect(self.view_action, SIGNAL("toggled(bool)"), 
                         self.ui_main.minimise_to_tray)  
         QObject.connect(quit_action, SIGNAL("triggered()"), 
@@ -120,7 +120,7 @@ class SetupExtraWidgets:
         menu.addAction(dynamic)
         menu.addAction(radio)
         menu.addAction(podcast)
-        self.ui_main.addPlylstBttn.setMenu(menu)
+        self.ui_main.add_playlist_bttn.setMenu(menu)
         
     def __disable_tabs(self):
         self.ui_main.horizontal_tabs.setTabEnabled(1, False)
@@ -131,8 +131,8 @@ class SetupExtraWidgets:
         """
         Extra __init__ things to add to the UI
         """        
-        self.ui_main.progSldr.setPageStep(0)
-        self.ui_main.progSldr.setSingleStep(0)
+        self.ui_main.progress_sldr.setPageStep(0)
+        self.ui_main.progress_sldr.setSingleStep(0)
         self.stat_lbl = QLabel("Finished")
         self.stat_prog = QProgressBar()
         self.stat_bttn = QToolButton()
@@ -211,7 +211,7 @@ class WidgetManips:
         font = QFont()
         font.setBold(True)
         
-        self.ui_main.playlstView.clear()
+        self.ui_main.playlist_tree.clear()
         playlists = self.ui_main.media_db.playlist_list()
         #podcasts = None
         #streams = None
@@ -233,7 +233,7 @@ class WidgetManips:
                         now.addChild(QTreeWidgetItem([QString("%s - %s"
                                                     % (info[2], info[1])) ]))       
                                                                                       
-            self.ui_main.playlstView.addTopLevelItem(headers[cnt])
+            self.ui_main.playlist_tree.addTopLevelItem(headers[cnt])
                 
                 
     def icon_change(self, state):
@@ -244,5 +244,5 @@ class WidgetManips:
             icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
             tray = QIcon(QPixmap(":/Icons/app-paused.png"))
 
-        self.ui_main.playBttn.setIcon(icon)
+        self.ui_main.play_bttn.setIcon(icon)
         self.ui_main.xtrawdgt.tray_icon.setIcon(tray)
