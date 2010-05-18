@@ -191,12 +191,6 @@ class WidgetManips:
             #  allow certain artists based on the filter.
             if (filt is not None) and (filt.lower() not in artist.lower()):
                 continue
-            char = artist[0]   
-            if char != old_char:
-                old_char = char  
-                char = QTreeWidgetItem(["== %s ==" % char])
-                char.setFont(0, font)
-                self.ui_main.collect_tree.addTopLevelItem(char)
             artist = QTreeWidgetItem([QString(artist)])
             artist.setChildIndicatorPolicy(0)
             self.ui_main.collect_tree.addTopLevelItem(artist)
