@@ -129,6 +129,13 @@ class Media:
                         FROM media                  
                     '''
         return [alb[0] for alb in self.__query_fetchall(query)]
+
+    def get_albums_all_timed(self, time):
+        query = '''SELECT DISTINCT album
+                        FROM media   
+                        WHERE added>?
+                    '''
+        return [alb[0] for alb in self.__query_fetchall(query, (time, ))]
         
     def get_files(self, artist, album):
         args = (artist, album)
