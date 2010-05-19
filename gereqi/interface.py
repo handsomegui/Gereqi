@@ -347,6 +347,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.connect(self.xtrawdgt.stat_bttn, SIGNAL("pressed()"), self.quit_build)
         self.connect(self.xtrawdgt.play_type_bttn, SIGNAL('toggled ( bool )'), self.wdgt_manip.set_play_type)
         self.connect(self.track_tbl.horizontalHeader(), SIGNAL('sectionClicked ( int )'), self.__recolourise)
+        self.connect(self.collect_tree_hdr, SIGNAL('sectionClicked ( int )'), self.__collection_sort)
         
         #Make the collection search line-edit have the keyboard focus on startup.
         self.search_collect_edit.setFocus()
@@ -548,7 +549,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                         None, 
                         QString("Select Music Files"),
                         QDesktopServices.storageLocation(QDesktopServices.MusicLocation), 
-                        #TODO: do not hard-code this
                         QString(" ".join(self.format_filter)), 
                         None)       
                         
@@ -1046,3 +1046,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
     def __recolourise(self):
         self.playlisting.tracknow_colourise(self.playlisting.current_row)
+        
+    def __collection_sort(self, p0):
+        text_now = unicode(self.collect_tree.headerItem().text(p0))
+        if text_now == "Artist/Album":
+            self.collect_tree.headerItem().setText(0, unicode("Album/Artist"))
+        else:
+            self.collect_tree.headerItem().setText(0, unicode("Artist/Album"))

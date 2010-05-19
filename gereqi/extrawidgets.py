@@ -158,6 +158,9 @@ class SetupExtraWidgets:
         for val in range(len(headers)):
             self.ui_main.track_tbl.insertColumn(val)
         self.ui_main.track_tbl.setHorizontalHeaderLabels(headers)
+        
+        self.ui_main.collect_tree_hdr = self.ui_main.collect_tree.header()
+        self.ui_main.collect_tree_hdr.setClickable(True)
 
     def __key_shortcuts(self):
         delete = QShortcut(QKeySequence(QString("Del")), self.ui_main)
@@ -169,6 +172,10 @@ class WidgetManips:
     def __init__(self, parent):
         self.ui_main = parent
         
+        
+    # TODO: when the collect_tree header is clicked, swap the
+    # order between album and artist swap. Only way to check the
+    # current mode is to look in the header title
     def setup_db_tree(self, filt=None, time_filt=None):
         """
         viewing the media database in the QTreeView

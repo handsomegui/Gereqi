@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/media/data/Projects/Gereqi/gereqi/interface.ui'
+# Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/gereqi/interface.ui'
 #
-# Created: Tue Apr 20 23:59:07 2010
-#      by: PyQt4 UI code generator 4.7.2
+# Created: Tue May 18 21:17:39 2010
+#      by: PyQt4 UI code generator 4.7
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -16,7 +16,6 @@ class Ui_MainWindow(object):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/Icons/app.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
-        MainWindow.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedKingdom))
         self.centralWidget = QtGui.QWidget(MainWindow)
         self.centralWidget.setObjectName("centralWidget")
         self.gridLayout = QtGui.QGridLayout(self.centralWidget)
@@ -74,7 +73,6 @@ class Ui_MainWindow(object):
         self.cover_view.setMaximumSize(QtCore.QSize(215, 215))
         self.cover_view.setFrameShape(QtGui.QFrame.StyledPanel)
         self.cover_view.setFrameShadow(QtGui.QFrame.Raised)
-        self.cover_view.setText("None")
         self.cover_view.setPixmap(QtGui.QPixmap(":/Icons/music.png"))
         self.cover_view.setAlignment(QtCore.Qt.AlignCenter)
         self.cover_view.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
@@ -138,7 +136,6 @@ class Ui_MainWindow(object):
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.wiki_view = QtWebKit.QWebView(self.wikipediaTab)
         self.wiki_view.setAutoFillBackground(True)
-        self.wiki_view.setStyleSheet("")
         self.wiki_view.setUrl(QtCore.QUrl("about:blank"))
         self.wiki_view.setZoomFactor(1.0)
         self.wiki_view.setObjectName("wiki_view")
@@ -181,9 +178,13 @@ class Ui_MainWindow(object):
         self.collect_time_box.addItem("")
         self.verticalLayout_2.addWidget(self.collect_time_box)
         self.collect_tree = QtGui.QTreeWidget(self.collectionTab)
+        self.collect_tree.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.collect_tree.setProperty("showDropIndicator", False)
         self.collect_tree.setAlternatingRowColors(True)
+        self.collect_tree.setSelectionMode(QtGui.QAbstractItemView.ContiguousSelection)
         self.collect_tree.setIndentation(15)
         self.collect_tree.setRootIsDecorated(True)
+        self.collect_tree.setUniformRowHeights(True)
         self.collect_tree.setAnimated(True)
         self.collect_tree.setExpandsOnDoubleClick(False)
         self.collect_tree.setObjectName("collect_tree")
@@ -392,7 +393,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3 = QtGui.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.prev_bttn = QtGui.QToolButton(self.layoutWidget)
-        self.prev_bttn.setText("")
         icon8 = QtGui.QIcon()
         icon8.addPixmap(QtGui.QPixmap(":/Icons/media-skip-backward.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.prev_bttn.setIcon(icon8)
@@ -401,7 +401,6 @@ class Ui_MainWindow(object):
         self.prev_bttn.setObjectName("prev_bttn")
         self.horizontalLayout_3.addWidget(self.prev_bttn)
         self.play_bttn = QtGui.QToolButton(self.layoutWidget)
-        self.play_bttn.setText("")
         icon9 = QtGui.QIcon()
         icon9.addPixmap(QtGui.QPixmap(":/Icons/media-playback-start.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.play_bttn.setIcon(icon9)
@@ -412,7 +411,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.addWidget(self.play_bttn)
         self.stop_bttn = QtGui.QToolButton(self.layoutWidget)
         self.stop_bttn.setEnabled(False)
-        self.stop_bttn.setText("")
         icon10 = QtGui.QIcon()
         icon10.addPixmap(QtGui.QPixmap(":/Icons/media-playback-stop.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.stop_bttn.setIcon(icon10)
@@ -421,7 +419,6 @@ class Ui_MainWindow(object):
         self.stop_bttn.setObjectName("stop_bttn")
         self.horizontalLayout_3.addWidget(self.stop_bttn)
         self.next_bttn = QtGui.QToolButton(self.layoutWidget)
-        self.next_bttn.setText("")
         icon11 = QtGui.QIcon()
         icon11.addPixmap(QtGui.QPixmap(":/Icons/media-skip-forward.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.next_bttn.setIcon(icon11)
@@ -432,7 +429,6 @@ class Ui_MainWindow(object):
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem1)
         self.mute_bttn = QtGui.QToolButton(self.layoutWidget)
-        self.mute_bttn.setText("")
         icon12 = QtGui.QIcon()
         icon12.addPixmap(QtGui.QPixmap(":/Icons/audio-volume-high.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.mute_bttn.setIcon(icon12)
@@ -476,7 +472,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 792, 26))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 792, 22))
         self.menuBar.setObjectName("menuBar")
         self.menuActions = QtGui.QMenu(self.menuBar)
         self.menuActions.setObjectName("menuActions")
