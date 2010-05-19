@@ -373,34 +373,44 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         now = item.text(0)
         par = item.parent()
         track = album = artist = None
-
-        # When we haven't selected an artist
-        if par is not None:
-            par_par = par.parent()
-            # When we select an individual track
-            if par_par is not None:
-                artist = par_par.text(0)
-                album = par.text(0)
-                track = now
-            # When we've selected an album
-            else:
-                album = now
-                artist = par.text(0)
-                
-        # In any case we'll have an artist
-        # Just an artist selected
-        if artist is None:
-            artist = now
-            albums = self.media_db.get_albums(unicode(artist))
-            for alb in albums:
-                tracks = self.media_db.get_files(unicode(artist), unicode(alb))
+        mode = self.__collection_mode()
+        
+        if mode == "artist":
+            # When we haven't selected an artist
+            if par is not None:
+                par_par = par.parent()
+                # When we select an individual track
+                if par_par is not None:
+                    artist = par_par.text(0)
+                    album = par.text(0)
+                    track = now
+                # When we've selected an album
+                else:
+                    album = now
+                    artist = par.text(0)
+                    
+            # In any case we'll have an artist
+            # Just an artist selected
+            if artist is None:
+                artist = now
+                albums = self.media_db.get_albums(unicode(artist))
+                for alb in albums:
+                    tracks = self.media_db.get_files(unicode(artist), unicode(alb))
+                    self.playlisting.add_list_to_playlist(tracks)
+            elif track is not None:
+                file_name = self.media_db.get_file(unicode(artist), unicode(album), unicode(track))
+                self.playlisting.add_to_playlist(file_name)
+            elif album is not None:
+                tracks = self.media_db.get_files(unicode(artist), unicode(album))
                 self.playlisting.add_list_to_playlist(tracks)
-        elif track is not None:
-            file_name = self.media_db.get_file(unicode(artist), unicode(album), unicode(track))
-            self.playlisting.add_to_playlist(file_name)
-        elif album is not None:
-            tracks = self.media_db.get_files(unicode(artist), unicode(album))
-            self.playlisting.add_list_to_playlist(tracks)                
+        else:
+            if par is not None:
+                file_name = self.media_db.get_album_file(unicode(par.text(0)), unicode(now))
+                self.playlisting.add_to_playlist(file_name)
+                
+            else:
+                file_names = self.media_db.get_album_files(unicode(now))
+                self.playlisting.add_list_to_playlist(file_names)
     
     @pyqtSignature("")
     def on_prev_bttn_pressed(self):
@@ -686,36 +696,57 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         filt_time = self.__time_filt_now()
         par = item.parent()
-        # If we've expanded an album
-        if par is not None:
-            artist = par.text(0)
-            album = item.text(0)
-        else:
-            artist = item.text(0)
-            album = None
+        mode = self.__collection_mode()
         
-        if (album is not None) and (item.childCount() == 0):
-            # Adding tracks to album
-            if filt_time is None:
-                tracks = self.media_db.get_titles(unicode(artist), unicode(album))
+        if mode == "artist":
+        # If we've expanded an album
+            if par is not None:
+                artist = par.text(0)
+                album = item.text(0)
             else:
-                tracks = self.media_db.get_titles_timed(unicode(artist), unicode(album), filt_time)
-            for cnt in range(len(tracks)):
-                track = QTreeWidgetItem([tracks[cnt]] )
-                item.insertChild(cnt, track)
-       
-       # Adding albums to the artist 
-       # i.e. the parent has no children    
-        elif item.childCount() == 0: 
-            if filt_time is None:
-                albums = self.media_db.get_albums(unicode(artist))
+                artist = item.text(0)
+                album = None
+            
+            if (album is not None) and (item.childCount() == 0):
+                # Adding tracks to album
+                if filt_time is None:
+                    tracks = self.media_db.get_titles(unicode(artist), unicode(album))
+                else:
+                    tracks = self.media_db.get_titles_timed(unicode(artist), unicode(album), filt_time)
+                for cnt in range(len(tracks)):
+                    track = QTreeWidgetItem([tracks[cnt]] )
+                    item.insertChild(cnt, track)
+      
+           # Adding albums to the artist 
+           # i.e. the parent has no children    
+            elif item.childCount() == 0: 
+                if filt_time is None:
+                    albums = self.media_db.get_albums(unicode(artist))
+                else:
+                    albums = self.media_db.get_albums_timed(unicode(artist), filt_time)                
+                for cnt in range(len(albums)):      
+                    album = QTreeWidgetItem([albums[cnt]])
+                    album.setChildIndicatorPolicy(0)
+                    item.insertChild(cnt, album)
+                
+        else:
+            if par is not None:
+                album = unicode(par.text(0))
+                track = unicode(item.text(0))
             else:
-                albums = self.media_db.get_albums_timed(unicode(artist), filt_time)                
-            for cnt in range(len(albums)):      
-                album = QTreeWidgetItem([albums[cnt]])
-                album.setChildIndicatorPolicy(0)
-                item.insertChild(cnt, album)
-
+                album = unicode(item.text(0))
+                track = None
+            
+            if (track is None) and (item.childCount() == 0):
+                if filt_time is None:
+                    tracks = self.media_db.get_album_titles(album)
+                else:
+                    tracks = self.media_db.get_album_titles_timed(album, filt_time)                
+                for cnt in range(len(tracks)):      
+                    track = QTreeWidgetItem([tracks[cnt]])
+                    item.insertChild(cnt, track)
+                
+                
     @pyqtSignature("")
     def on_clear_collect_bttn_clicked(self):
         """
@@ -1048,9 +1079,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def __recolourise(self):
         self.playlisting.tracknow_colourise(self.playlisting.current_row)
         
-    def __collection_sort(self, p0):
-        text_now = unicode(self.collect_tree.headerItem().text(p0))
+    def __collection_mode(self):
+        text_now = unicode(self.collect_tree.headerItem().text(0))
         if text_now == "Artist/Album":
+            return "artist"
+        else:
+            return "album"
+        
+    def __collection_sort(self, p0):
+        mode = self.__collection_mode()
+        if mode == "artist":
             self.collect_tree.headerItem().setText(0, unicode("Album/Artist"))
         else:
             self.collect_tree.headerItem().setText(0, unicode("Artist/Album"))
