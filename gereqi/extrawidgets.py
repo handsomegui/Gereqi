@@ -172,35 +172,46 @@ class WidgetManips:
     def __init__(self, parent):
         self.ui_main = parent
         
-        
-    # TODO: when the collect_tree header is clicked, swap the
-    # order between album and artist swap. Only way to check the
-    # current mode is to look in the header title
-    def setup_db_tree(self, filt=None, time_filt=None):
+    def setup_db_tree(self, filt=None, time_filt=None, mode=None):
         """
         viewing the media database in the QTreeView
         """
         media_db = Media()
         self.ui_main.collect_tree.clear()
         # This gives multiples of the same thing i.e albums
+            
+        if mode is None:
+            text_now = unicode(self.ui_main.collect_tree.headerItem().text(0))
+            if text_now == "Artist/Album":
+                mode = "artist"
+            else:
+                mode = "album"
+                
         if time_filt is None:
-            artists = media_db.get_artists()
+            if mode == "artist":
+                things = media_db.get_artists()
+            elif mode == "album":
+                things = media_db.get_albums_all()
         else:
-            artists = media_db.get_artists_timed(time_filt)
-        artists = sorted(artists)
+            if mode == "artist":
+                things = media_db.get_artists(time_filt)
+            elif mode == "album":
+                things = media_db.get_albums_all_timed(time_filt)
+                
+        things = sorted(things)
         old_char = None
         char = None
         font = QFont()
         font.setBold(True)
-        for cnt in range(len(artists)):
-            artist = artists[cnt]
+        for cnt in range(len(things)):
+            thing = things[cnt]
             # When creating collection tree only 
-            #  allow certain artists based on the filter.
-            if (filt is not None) and (filt.lower() not in artist.lower()):
+            #  allow certain things based on the filter.
+            if (filt is not None) and (filt.lower() not in thing.lower()):
                 continue
-            artist = QTreeWidgetItem([QString(artist)])
-            artist.setChildIndicatorPolicy(0)
-            self.ui_main.collect_tree.addTopLevelItem(artist)
+            thing = QTreeWidgetItem([QString(thing)])
+            thing.setChildIndicatorPolicy(0)
+            self.ui_main.collect_tree.addTopLevelItem(thing)
             
     def set_play_type(self, checked):
         if checked is True:
