@@ -360,9 +360,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         This allows the filtering of the collection tree
         """
-        srch = str(srch_str)
-        time_filt = self.__time_filt_now()
-        self.wdgt_manip.setup_db_tree(srch, time_filt)       
+        self.wdgt_manip.setup_db_tree()       
     
     @pyqtSignature("QTreeWidgetItem*, int")
     def on_collect_tree_itemDoubleClicked(self, item, column):
@@ -370,7 +368,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         When double click and abum in the collection browser
         add the album's tracks to the playlist.
         """
-        now = item.text(0)
+        now = unicode(item.text(0))
         par = item.parent()
         track = album = artist = None
         mode = self.__collection_mode()
@@ -381,35 +379,34 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 par_par = par.parent()
                 # When we select an individual track
                 if par_par is not None:
-                    artist = par_par.text(0)
-                    album = par.text(0)
+                    artist = unicode(par_par.text(0))
+                    album = unicode(par.text(0))
                     track = now
                 # When we've selected an album
                 else:
                     album = now
-                    artist = par.text(0)
+                    artist = unicode(par.text(0))
                     
             # In any case we'll have an artist
             # Just an artist selected
             if artist is None:
                 artist = now
-                albums = self.media_db.get_albums(unicode(artist))
-                for alb in albums:
-                    tracks = self.media_db.get_files(unicode(artist), unicode(alb))
-                    self.playlisting.add_list_to_playlist(tracks)
+                tracks = self.media_db.get_artists_files(artist)
+                self.playlisting.add_list_to_playlist(tracks)
+
             elif track is not None:
-                file_name = self.media_db.get_file(unicode(artist), unicode(album), unicode(track))
+                file_name = self.media_db.get_file(artist, album, track)
                 self.playlisting.add_to_playlist(file_name)
             elif album is not None:
-                tracks = self.media_db.get_files(unicode(artist), unicode(album))
+                tracks = self.media_db.get_files(artist, album)
                 self.playlisting.add_list_to_playlist(tracks)
         else:
             if par is not None:
-                file_name = self.media_db.get_album_file(unicode(par.text(0)), unicode(now))
+                file_name = self.media_db.get_album_file(unicode(par.text(0)), now)
                 self.playlisting.add_to_playlist(file_name)
                 
             else:
-                file_names = self.media_db.get_album_files(unicode(now))
+                file_names = self.media_db.get_album_files(now)
                 self.playlisting.add_list_to_playlist(file_names)
     
     @pyqtSignature("")
@@ -701,18 +698,18 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if mode == "artist":
         # If we've expanded an album
             if par is not None:
-                artist = par.text(0)
-                album = item.text(0)
+                artist = unicode(par.text(0))
+                album = unicode(item.text(0))
             else:
-                artist = item.text(0)
+                artist = unicode(item.text(0))
                 album = None
             
             if (album is not None) and (item.childCount() == 0):
                 # Adding tracks to album
                 if filt_time is None:
-                    tracks = self.media_db.get_titles(unicode(artist), unicode(album))
+                    tracks = self.media_db.get_titles(artist, album)
                 else:
-                    tracks = self.media_db.get_titles_timed(unicode(artist), unicode(album), filt_time)
+                    tracks = self.media_db.get_titles_timed(artist, album, filt_time)
                 for cnt in range(len(tracks)):
                     track = QTreeWidgetItem([tracks[cnt]] )
                     item.insertChild(cnt, track)
@@ -721,9 +718,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
            # i.e. the parent has no children    
             elif item.childCount() == 0: 
                 if filt_time is None:
-                    albums = self.media_db.get_albums(unicode(artist))
+                    albums = self.media_db.get_albums(artist)
                 else:
-                    albums = self.media_db.get_albums_timed(unicode(artist), filt_time)                
+                    albums = self.media_db.get_albums_timed(artist, filt_time)                
                 for cnt in range(len(albums)):      
                     album = QTreeWidgetItem([albums[cnt]])
                     album.setChildIndicatorPolicy(0)
@@ -761,12 +758,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Slot documentation goes here.
         """
-        filt = self.search_collect_edit.text()
-        filt_time = self.__time_filt_now()
-        if filt_time is None:
-            self.wdgt_manip.setup_db_tree(str(filt))
-        else:
-            self.wdgt_manip.setup_db_tree(str(filt), filt_time)
+        self.wdgt_manip.setup_db_tree()
         
     @pyqtSignature("")
     def on_actionAbout_Gereqi_triggered(self):

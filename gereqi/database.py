@@ -105,7 +105,9 @@ class Media:
                             WHERE added>?'''
         artists = [art[0] for art  in self.__query_fetchall(query, (time, ))]
         return artists
-    
+        
+
+        
     def get_albums(self, artist):
         args = (artist, )
         query = '''SELECT DISTINCT album 
@@ -155,6 +157,14 @@ class Media:
                         AND title=?'''
         return self.__query_fetchall(query, args)[0][0]
         
+    def get_album_file(self, album, title):
+        args = (album, title)
+        query = '''SELECT DISTINCT file_name
+                        FROM media
+                        WHERE album=?
+                        AND title=?'''
+        return self.__query_fetchall(query, args)[0][0]
+        
     def get_album_files(self, album):
         args = (album, )
         query = '''SELECT DISTINCT file_name
@@ -170,13 +180,13 @@ class Media:
                         AND added>?'''
         return [title[0] for title in self.__query_fetchall(query, args)]
         
-    def get_album_file(self, album, title):
-        args = (album, title)
-        query = '''SELECT DISTINCT file_name
-                        FROM media
-                        WHERE album=?
-                        AND title=?'''
-        return self.__query_fetchall(query, args)[0][0]
+    def get_artists_files(self, artist):
+        args = (artist, )
+        query = '''SELECT DISTINCT file_name 
+                            FROM media
+                            WHERE artist=?'''
+                            
+        return [trk[0] for trk in self.__query_fetchall(query, args)]
                         
     def get_titles(self, artist, album):
         args = (artist, album)

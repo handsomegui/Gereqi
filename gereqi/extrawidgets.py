@@ -21,6 +21,8 @@ QPixmap, QFont, QShortcut, QKeySequence, QLabel, QProgressBar, \
 QToolButton, QAction, QSystemTrayIcon, qApp, QDirModel, QMenu
 from PyQt4.QtCore import QString, SIGNAL, SLOT, QDir, QSize, QObject
 
+import time
+
 from database import Media
 
 
@@ -172,20 +174,33 @@ class WidgetManips:
     def __init__(self, parent):
         self.ui_main = parent
         
-    def setup_db_tree(self, filt=None, time_filt=None, mode=None):
+    def __time_filt_now(self):
+        """
+        Based on the combobox selection, the collection
+        browser is filtered by addition date
+        """
+        index = self.ui_main.collect_time_box.currentIndex()
+        calc = lambda val: int(round(time.time() - val))
+        now = time.localtime()
+        filts = [(now[3] * now[4]) + now[5], 604800, 2419200, 7257600, 31557600]   
+        if index > 0:
+            return calc(filts[index - 1])
+        
+    def setup_db_tree(self):
         """
         viewing the media database in the QTreeView
         """
         media_db = Media()
         self.ui_main.collect_tree.clear()
         # This gives multiples of the same thing i.e albums
-            
-        if mode is None:
-            text_now = unicode(self.ui_main.collect_tree.headerItem().text(0))
-            if text_now == "Artist/Album":
-                mode = "artist"
-            else:
-                mode = "album"
+        filt = unicode(self.ui_main.search_collect_edit.text())        
+        time_filt = self.__time_filt_now()
+        
+        text_now = unicode(self.ui_main.collect_tree.headerItem().text(0))
+        if text_now == "Artist/Album":
+            mode = "artist"
+        else:
+            mode = "album"
                 
         if time_filt is None:
             if mode == "artist":
@@ -194,7 +209,7 @@ class WidgetManips:
                 things = media_db.get_albums_all()
         else:
             if mode == "artist":
-                things = media_db.get_artists(time_filt)
+                things = media_db.get_artists_timed(time_filt)
             elif mode == "album":
                 things = media_db.get_albums_all_timed(time_filt)
                 
