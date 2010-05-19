@@ -124,6 +124,12 @@ class Media:
         albums = [alb[0] for alb in self.__query_fetchall(query, args)]
         return albums
         
+    def get_albums_all(self):
+        query = '''SELECT DISTINCT album
+                        FROM media                  
+                    '''
+        return [alb[0] for alb in self.__query_fetchall(query)]
+        
     def get_files(self, artist, album):
         args = (artist, album)
         query = '''SELECT DISTINCT file_name   
