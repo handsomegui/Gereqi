@@ -317,6 +317,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
            
         QMainWindow.__init__(self, parent)
         Ui_MainWindow.__init__(self)
+        # TODO: change ui settings based on saved states/options
         self.setupUi(self)
         
         self.media_dir = None
@@ -349,7 +350,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.connect(self.track_tbl.horizontalHeader(), SIGNAL('sectionClicked ( int )'), self.__recolourise)
         self.connect(self.collect_tree_hdr, SIGNAL('sectionClicked ( int )'), self.__collection_sort)
         
-        #Make the collection search line-edit have the keyboard focus on startup.
+        # Make the collection search line-edit have the keyboard focus on startup.
         self.search_collect_edit.setFocus()
         self.wdgt_manip.setup_db_tree()
         self.wdgt_manip.pop_playlist_view()
@@ -1053,3 +1054,5 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.collect_tree.headerItem().setText(0, unicode("Album/Artist"))
         else:
             self.collect_tree.headerItem().setText(0, unicode("Artist/Album"))
+
+        self.wdgt_manip.setup_db_tree()
