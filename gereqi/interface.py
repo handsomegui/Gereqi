@@ -255,7 +255,7 @@ class Track:
                             track = self.ui_main.track_tbl.item(row_now - 1 , column)
                             track = track.text()
                     elif mode == "next":
-                        if self.ui_main.xtrawdgt.play_type_bttn.isChecked() is True:
+                        if self.ui_main.play_type_bttn.isChecked() is True:
                             # Here we need to randomly choose the next track
                             row = randrange(0, rows)
                             track = self.ui_main.track_tbl.item(row, column)
@@ -283,10 +283,10 @@ class Track:
         msg_main = QString("%s by %s" % (title, artist))
         self.ui_main.trkNowBox.setTitle(msg_main)
         if self.ui_main.show_messages and self.ui_main.play_bttn.isChecked():
-            self.ui_main.xtrawdgt.tray_icon.showMessage(msg_header, msg_main, QSystemTrayIcon.NoIcon, 3000)
-        self.ui_main.xtrawdgt.tray_icon.setToolTip(msg_main)
+            self.ui_main.tray_icon.showMessage(msg_header, msg_main, QSystemTrayIcon.NoIcon, 3000)
+        self.ui_main.tray_icon.setToolTip(msg_main)
         self.msg_status = "Playing: %s by %s on %s" % (title, artist, album)
-        self.ui_main.xtrawdgt.stat_lbl.setText(self.msg_status)
+        self.ui_main.stat_lbl.setText(self.msg_status)
         self.ui_main.playlisting.tracknow_colourise(row)
         self.ui_main.art_alb["nowart"] = artist.toUtf8()
         self.ui_main.art_alb["nowalb"] = album.toUtf8()
@@ -338,15 +338,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.finishes.db_build)
         self.connect(self.cover_thread, SIGNAL("got-image ( QImage ) "), self.finishes.set_cover) 
         self.connect(self.html_thread, SIGNAL("got-wiki ( QString ) "), self.finishes.set_wiki)
-        self.connect(self.build_db_thread, SIGNAL("progress ( int ) "), self.xtrawdgt.stat_prog, SLOT("setValue(int)"))
+        self.connect(self.build_db_thread, SIGNAL("progress ( int ) "), self.stat_prog, SLOT("setValue(int)"))
         self.connect(self.filesystem_tree, SIGNAL("expanded (const QModelIndex&)"), self.__resize_filesystem_tree) 
         self.connect(self.filesystem_tree, SIGNAL("doubleClicked (const QModelIndex&)"), self.__filesystem_tree_item)
         self.connect(self.play_actn, SIGNAL("toggled ( bool )"), self.play_bttn, SLOT("setChecked(bool)"))
         self.connect(self.actionNext_Track, SIGNAL("triggered()"), self.next_bttn, SLOT("click()"))
         self.connect(self.prev_track_actn, SIGNAL("triggered()"), self.prev_bttn, SLOT("click()"))  
         self.connect(self.stop_actn, SIGNAL("triggered()"), self.stop_bttn, SLOT("click()"))
-        self.connect(self.xtrawdgt.stat_bttn, SIGNAL("pressed()"), self.quit_build)
-        self.connect(self.xtrawdgt.play_type_bttn, SIGNAL('toggled ( bool )'), self.wdgt_manip.set_play_type)
+        self.connect(self.stat_bttn, SIGNAL("pressed()"), self.quit_build)
+        self.connect(self.play_type_bttn, SIGNAL('toggled ( bool )'), self.wdgt_manip.set_play_type)
         self.connect(self.track_tbl.horizontalHeader(), SIGNAL('sectionClicked ( int )'), self.__recolourise)
         self.connect(self.collect_tree_hdr, SIGNAL('sectionClicked ( int )'), self.__collection_sort)
         
@@ -458,7 +458,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 elif paused is True:
                     # Makes sure the statusbar text changes from
                     # paused back to the artist/album/track string
-                    self.xtrawdgt.stat_lbl.setText(self.tracking.msg_status)                    
+                    self.stat_lbl.setText(self.tracking.msg_status)                    
                 self.player.audio_object.play()
                 self.stop_bttn.setEnabled(True)
                 self.wdgt_manip.icon_change("play")
@@ -474,13 +474,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 self.player.audio_object.pause()
             self.wdgt_manip.icon_change("pause")
             if self.track_tbl.currentRow() >= 0:
-                self.xtrawdgt.stat_lbl.setText("Paused")
+                self.stat_lbl.setText("Paused")
             else:
-                self.xtrawdgt.stat_lbl.setText("Finished")
+                self.stat_lbl.setText("Finished")
                 
         # Oblivious to it all. Not sure if these should be part
         # of the "Nothing to play" situations also.
-        self.xtrawdgt.play_action.setChecked(checked)
+        self.play_action.setChecked(checked)
         self.play_actn.setChecked(checked)
         
     @pyqtSignature("")    
@@ -673,7 +673,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # Checking the button is the same
         #  as self.player.audio_object.play(), just cleaner overall
         self.play_bttn.setChecked(True) 
-        self.xtrawdgt.play_action.setChecked(True)
+        self.play_action.setChecked(True)
         
     @pyqtSignature("")
     def on_actionHelp_activated(self):
@@ -964,7 +964,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.setWindowState(Qt.WindowActive)
         else:
             self.hide()
-        self.xtrawdgt.view_action.setChecked(state)
+        self.view_action.setChecked(state)
         self.minimise_tray_actn.setChecked(state)
     
     def create_collection(self):
@@ -980,10 +980,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 QFileDialog.Options(QFileDialog.ShowDirsOnly))
         # If the dialog is cancelled in last if statement the below is ignored
         if self.media_dir is not None:
-            self.xtrawdgt.stat_bttn.setEnabled(True)
+            self.stat_bttn.setEnabled(True)
             self.build_db_thread.set_values(self.media_dir, self.audio_formats)
-            self.xtrawdgt.stat_prog.setToolTip("Scanning Media")
-            self.xtrawdgt.stat_prog.setValue(0)
+            self.stat_prog.setToolTip("Scanning Media")
+            self.stat_prog.setValue(0)
             self.build_db_thread.start()
 
     def set_info(self):
@@ -1026,7 +1026,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         When the 'X' button or alt-f4 is triggered
         """
-        if self.xtrawdgt.tray_icon.isVisible() is True:
+        if self.tray_icon.isVisible() is True:
             self.hide()
             event.ignore()
             
@@ -1042,8 +1042,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         This takes the filesystem_tree item and deduces whether
         it's a file or directory and populates playlist if possible
         """
-        if self.xtrawdgt .dir_model.isDir(index) is True:
-            fname = self.xtrawdgt .dir_model.filePath(index)
+        if self.dir_model.isDir(index) is True:
+            fname = self.dir_model.filePath(index)
             searcher = QDir(fname)
             searcher.setFilter(QDir.Files)
             searcher.setFilter(QDir.Files)
@@ -1052,7 +1052,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.playlisting.add_list_to_playlist(tracks)
             self.clear_trktbl_bttn.setEnabled(True)
         else:
-            fname = self.xtrawdgt .dir_model.filePath(index)
+            fname = self.dir_model.filePath(index)
             self.playlisting.add_to_playlist(unicode(fname))
             self.clear_trktbl_bttn.setEnabled(True)
             

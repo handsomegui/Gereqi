@@ -28,7 +28,7 @@ from database import Media
 
 class SetupExtraWidgets:
     def __init__(self, parent):
-        # Basically,the parent.
+        # Basically,the parent
         self.ui_main = parent
         self.__setup_filesystem_tree()
         self.__create_tray_menu()
@@ -42,12 +42,12 @@ class SetupExtraWidgets:
         A filesystem_tree browser where tracks can be (eventually)
         added to the playlist
         """
-        self.dir_model = QDirModel()
+        self.ui_main.dir_model = QDirModel()
         filters = QDir.Files|QDir.AllDirs|QDir.Readable|QDir.NoDotAndDotDot
-        self.dir_model.setFilter(filters)
-        self.dir_model.setReadOnly(True)
-        self.dir_model.setNameFilters(["*.ogg", "*.flac", "*.mp3",  "*.m4a"])
-        self.ui_main.filesystem_tree.setModel(self.dir_model) 
+        self.ui_main.dir_model.setFilter(filters)
+        self.ui_main.dir_model.setReadOnly(True)
+        self.ui_main.dir_model.setNameFilters(["*.ogg", "*.flac", "*.mp3",  "*.m4a"])
+        self.ui_main.filesystem_tree.setModel(self.ui_main.dir_model) 
         self.ui_main.filesystem_tree.setColumnHidden(1, True)
         self.ui_main.filesystem_tree.setColumnHidden(2, True)
         self.ui_main.filesystem_tree.setColumnHidden(3, True)
@@ -59,33 +59,33 @@ class SetupExtraWidgets:
         in the main UI
         """
         quit_action = QAction(QString("&Quit"), self.ui_main)
-        self.play_action = QAction(QString("&Play"), self.ui_main)
+        self.ui_main.play_action = QAction(QString("&Play"), self.ui_main)
         next_action = QAction(QString("&Next"), self.ui_main)
         prev_action = QAction(QString("&Previous"), self.ui_main)
         stop_action = QAction(QString("&Stop"), self.ui_main)
-        self.play_action.setCheckable(True)
-        self.view_action = QAction(QString("&Visible"), self.ui_main)
-        self.view_action.setCheckable(True)
-        self.view_action.setChecked(True)
+        self.ui_main.play_action.setCheckable(True)
+        self.ui_main.view_action = QAction(QString("&Visible"), self.ui_main)
+        self.ui_main.view_action.setCheckable(True)
+        self.ui_main.view_action.setChecked(True)
         tray_icon_menu = QMenu(self.ui_main)
         icon_normal = QIcon(QPixmap(":/Icons/app.png"))
         tray_icon_menu.addAction(icon_normal, QString("Gereqi"))
         tray_icon_menu.addSeparator()
         tray_icon_menu.addAction(prev_action)
-        tray_icon_menu.addAction(self.play_action)
+        tray_icon_menu.addAction(self.ui_main.play_action)
         tray_icon_menu.addAction(stop_action)
         tray_icon_menu.addAction(next_action)
         tray_icon_menu.addSeparator()
-        tray_icon_menu.addAction(self.view_action)
+        tray_icon_menu.addAction(self.ui_main.view_action)
         tray_icon_menu.addAction(quit_action)
-        self.tray_icon = QSystemTrayIcon(self.ui_main)
+        self.ui_main.tray_icon = QSystemTrayIcon(self.ui_main)
         icon_stopped = QIcon(QPixmap(":/Icons/app-paused.png"))
-        self.tray_icon.setIcon(icon_stopped)
-        self.tray_icon.setContextMenu(tray_icon_menu)
-        self.tray_icon.show()
-        self.tray_icon.setToolTip("Stopped")    
+        self.ui_main.tray_icon.setIcon(icon_stopped)
+        self.ui_main.tray_icon.setContextMenu(tray_icon_menu)
+        self.ui_main.tray_icon.show()
+        self.ui_main.tray_icon.setToolTip("Stopped")    
         
-        QObject.connect(self.play_action, SIGNAL("toggled(bool)"), 
+        QObject.connect(self.ui_main.play_action, SIGNAL("toggled(bool)"), 
                         self.ui_main.play_bttn, SLOT("setChecked(bool)"))
         QObject.connect(next_action, SIGNAL("triggered()"),
                         self.ui_main.next_bttn, SLOT("click()"))
@@ -93,11 +93,11 @@ class SetupExtraWidgets:
                         self.ui_main.prev_bttn, SLOT("click()"))
         QObject.connect(stop_action, SIGNAL("triggered()"), 
                         self.ui_main.stop_bttn, SLOT("click()"))
-        QObject.connect(self.view_action, SIGNAL("toggled(bool)"), 
+        QObject.connect(self.ui_main.view_action, SIGNAL("toggled(bool)"), 
                         self.ui_main.minimise_to_tray)  
         QObject.connect(quit_action, SIGNAL("triggered()"), 
                         qApp, SLOT("quit()"))
-        QObject.connect(self.tray_icon, 
+        QObject.connect(self.ui_main.tray_icon, 
                         SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), 
                         self.ui_main.tray_event)
      
@@ -135,24 +135,24 @@ class SetupExtraWidgets:
         """        
         self.ui_main.progress_sldr.setPageStep(0)
         self.ui_main.progress_sldr.setSingleStep(0)
-        self.stat_lbl = QLabel("Finished")
-        self.stat_prog = QProgressBar()
-        self.stat_bttn = QToolButton()
-        self.play_type_bttn = QToolButton()
+        self.ui_main.stat_lbl = QLabel("Finished")
+        self.ui_main.stat_prog= QProgressBar()
+        self.ui_main.stat_bttn = QToolButton()
+        self.ui_main.play_type_bttn = QToolButton()
         icon = QIcon(QPixmap(":/Icons/application-exit.png"))
-        self.stat_prog.setRange(0, 100)
-        self.stat_prog.setValue(100)
-        self.stat_prog.setMaximumSize(QSize(100, 18))
-        self.stat_bttn.setIcon(icon)
-        self.stat_bttn.setAutoRaise(True)
-        self.stat_bttn.setEnabled(False)
-        self.play_type_bttn.setText("N")
-        self.play_type_bttn.setCheckable(True)
-        self.play_type_bttn.setAutoRaise(True)
-        self.ui_main.statusBar.addPermanentWidget(self.stat_lbl)
-        self.ui_main.statusBar.addPermanentWidget(self.stat_prog)
-        self.ui_main.statusBar.addPermanentWidget(self.stat_bttn)
-        self.ui_main.statusBar.addPermanentWidget(self.play_type_bttn)
+        self.ui_main.stat_prog.setRange(0, 100)
+        self.ui_main.stat_prog.setValue(100)
+        self.ui_main.stat_prog.setMaximumSize(QSize(100, 18))
+        self.ui_main.stat_bttn.setIcon(icon)
+        self.ui_main.stat_bttn.setAutoRaise(True)
+        self.ui_main.stat_bttn.setEnabled(False)
+        self.ui_main.play_type_bttn.setText("N")
+        self.ui_main.play_type_bttn.setCheckable(True)
+        self.ui_main.play_type_bttn.setAutoRaise(True)
+        self.ui_main.statusBar.addPermanentWidget(self.ui_main.stat_lbl)
+        self.ui_main.statusBar.addPermanentWidget(self.ui_main.stat_prog)
+        self.ui_main.statusBar.addPermanentWidget(self.ui_main.stat_bttn)
+        self.ui_main.statusBar.addPermanentWidget(self.ui_main.play_type_bttn)
         # Headers for the Playlist widget
         headers = [QString("Track"), QString("Title"), QString("Artist"), \
                    QString("Album"), QString("Year"), QString("Genre"),   \
@@ -272,4 +272,4 @@ class WidgetManips:
             tray = QIcon(QPixmap(":/Icons/app-paused.png"))
 
         self.ui_main.play_bttn.setIcon(icon)
-        self.ui_main.xtrawdgt.tray_icon.setIcon(tray)
+        self.ui_main.tray_icon.setIcon(tray)
