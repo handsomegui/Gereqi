@@ -230,9 +230,9 @@ class WidgetManips:
             
     def set_play_type(self, checked):
         if checked is True:
-            self.ui_main.xtrawdgt.play_type_bttn.setText("R")
+            self.ui_main.play_type_bttn.setText("R")
         else:
-            self.ui_main.xtrawdgt.play_type_bttn.setText("N")
+            self.ui_main.play_type_bttn.setText("N")
             
     def pop_playlist_view(self):
         font = QFont()
