@@ -86,13 +86,14 @@ class Builddb(QThread):
     def stop_now(self):
         self.exiting = True
         
-    def set_values(self, directory, formats):
+    def set_values(self, directory, formats, tracks=None):
         """
         Required to put parameters into
         this thread from the outside
         """
         self.media_dir = directory
         self.a_formats = formats
+        self.file_list = tracks
      
     def __track_list(self):
         """
@@ -122,7 +123,12 @@ class Builddb(QThread):
         old_prog = 0    
         meta = Tagging(self.a_formats)
         media_db = Media()
-        tracks = self.__track_list()
+        
+        if self.file_list is None:
+            tracks = self.__track_list()
+        else:
+            tracks = self.file_list
+            
         tracks_total = len(tracks)
         self.exiting = False
         
