@@ -251,8 +251,7 @@ class Media:
                             WHERE name=?'''
         tracks = [track[0] for track in self.__query_fetchall(query, (name, ))]
         return tracks
-        
-        
+    
     def playlist_delete(self, name):
         query = '''DELETE FROM playlist
                         WHERE name=?'''
@@ -271,3 +270,16 @@ class Media:
                         AND title=?'''        
         files = [fi[0] for fi in self.__query_fetchall(query, (art, tit))]
         return files
+        
+    def setting_save(self, setting, value):
+        args = (setting, value)
+        query = '''INSERT INTO settings
+                        VALUES (?,?)'''     
+        self.__query_execute(query, setting)
+        
+    def setting_get(self, setting):
+        query = '''SELECT value
+                        FROM settings
+                        WHERE setting=?'''
+        return self.__query_fetchall(query, (setting, ))
+                        
