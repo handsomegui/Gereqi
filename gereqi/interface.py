@@ -539,7 +539,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # TODO: not finished yet. Need to learn
         # more about modal dialogs
         params = {"dir": self.media_dir}
-        dialog = Setting_Dialog(self)
+        dialog = Setting_Dialog(params)
         if dialog.exec_():
             self.media_dir = unicode(dialog.dir_val())
             self.media_db.setting_save("media_dir", self.media_dir)

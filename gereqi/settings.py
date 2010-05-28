@@ -25,20 +25,19 @@ read the entered text
 
 from PyQt4.QtGui import QDialog, QLineEdit, QDialogButtonBox, \
 QGridLayout, QPushButton, QFileDialog
-from PyQt4.QtCore import SIGNAL, SLOT
+from PyQt4.QtCore import SIGNAL, SLOT, QString
 
 
 class Setting_Dialog(QDialog):
-    def __init__(self, parent):
-        super(Setting_Dialog, self).__init__(parent)
+    def __init__(self, params):
+        QDialog.__init__(self)
 
-#        print params
         self.directory = QLineEdit()
-#        self.directory.setText(params["dir"])
+        self.directory.setText(params["dir"])
         dir_bttn = QPushButton()
         dir_bttn.setText("...")
         bttn_box = QDialogButtonBox(QDialogButtonBox.Ok|
-                                   QDialogButtonBox.Cancel)
+                                                QDialogButtonBox.Cancel)
         grid = QGridLayout()
         
         grid.addWidget(self.directory, 0, 0)
