@@ -72,6 +72,10 @@ class Media:
         for table in tables:
             self.__query_execute(table)
             
+    def __query_fetchone(self, query, args=None):
+        self.__query_execute(query, args)
+        return self.media_curs.fetchone()
+            
     def __query_fetchall(self, query, args=None):
         self.__query_execute(query, args)
         return self.media_curs.fetchall()
@@ -271,15 +275,15 @@ class Media:
         files = [fi[0] for fi in self.__query_fetchall(query, (art, tit))]
         return files
         
-    def setting_save(self, setting, value):
+    def setting_save(self, setting, value):        
         args = (setting, value)
         query = '''INSERT INTO settings
                         VALUES (?,?)'''     
-        self.__query_execute(query, setting)
+        self.__query_execute(query, args)
         
     def setting_get(self, setting):
         query = '''SELECT value
                         FROM settings
                         WHERE setting=?'''
-        return self.__query_fetchall(query, (setting, ))
+        return self.__query_fetchone(query, (setting, ))
                         

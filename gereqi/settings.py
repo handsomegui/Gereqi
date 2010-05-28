@@ -29,10 +29,12 @@ from PyQt4.QtCore import SIGNAL, SLOT
 
 
 class Setting_Dialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super(Setting_Dialog, self).__init__(parent)
 
+#        print params
         self.directory = QLineEdit()
+#        self.directory.setText(params["dir"])
         dir_bttn = QPushButton()
         dir_bttn.setText("...")
         bttn_box = QDialogButtonBox(QDialogButtonBox.Ok|
@@ -54,8 +56,8 @@ class Setting_Dialog(QDialog):
         print("SPAM!")
         dir_select = QFileDialog.getExistingDirectory(\
             None,
-            self.trUtf8("Select Music Directory"),
-            self.trUtf8("/"),
+            QString("Select Music Directory"),
+            QString("/"),
             QFileDialog.Options(QFileDialog.ShowDirsOnly))
         if dir_select is not None:
             self.directory.setText(dir_select)

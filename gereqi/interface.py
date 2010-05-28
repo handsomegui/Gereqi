@@ -302,8 +302,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Initialisation of key items. Some may be pulled
         from other files as this file is getting messy
         """ 
+        self.media_db = Media()
+        self.__settings_init()
         
-        self.show_messages = True
         self.art_alb = {"oldart":None, "oldalb":None, "nowart":None, "nowalb":None} 
         self.old_pos = 0
         self.locale = ".com"
@@ -320,8 +321,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # TODO: change ui settings based on saved states/options
         self.setupUi(self)
         
-        self.media_dir = None
-        self.media_db = Media()
         self.cover_thread = Getcover()        
         self.html_thread = Getwiki()
         self.build_db_thread = Builddb()
@@ -354,6 +353,19 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.search_collect_edit.setFocus()
         self.wdgt_manip.setup_db_tree()
         self.wdgt_manip.pop_playlist_view()
+        
+        
+    def __settings_init(self):
+        self.show_messages = self.media_db.setting_get("messages")
+        if self.show_messages is None:
+            self.show_messages = "True"
+        
+        dir = self.media_db.setting_get("media_dir") 
+        if dir is not None:
+            self.media_dir = dir[0]
+        else:
+            self.media_dir = None
+        
         
     @pyqtSignature("QString")  
     def on_search_collect_edit_textChanged(self, srch_str):
@@ -526,9 +538,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         # TODO: not finished yet. Need to learn
         # more about modal dialogs
+        params = {"dir": self.media_dir}
         dialog = Setting_Dialog(self)
         if dialog.exec_():
-            self.media_dir = dialog.dir_val()
+            self.media_dir = unicode(dialog.dir_val())
+            self.media_db.setting_save("media_dir", self.media_dir)
             
     @pyqtSignature("")
     def on_actionRescan_Collection_triggered(self):
