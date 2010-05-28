@@ -178,12 +178,12 @@ class Finishers:
         Things to perform when the media library
         has been built/cancelled
         """
-        self.ui_main.xtrawdgt.stat_bttn.setEnabled(False)
+        self.ui_main.stat_bttn.setEnabled(False)
         if status == "cancelled":
-            self.ui_main.xtrawdgt.stat_prog.setToolTip("Cancelled")
+            self.ui_main.stat_prog.setToolTip("Cancelled")
         else:
-            self.ui_main.xtrawdgt.stat_prog.setToolTip("Finished")
-        self.ui_main.xtrawdgt.stat_prog.setValue(100)
+            self.ui_main.stat_prog.setToolTip("Finished")
+        self.ui_main.stat_prog.setValue(100)
         self.ui_main.wdgt_manip.setup_db_tree()
         self.ui_main.search_collect_edit.clear()
         
