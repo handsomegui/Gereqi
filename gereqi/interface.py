@@ -356,16 +356,17 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         
     def __settings_init(self):
-        self.show_messages = self.media_db.setting_get("messages")
-        if self.show_messages is None:
-            self.show_messages = "True"
+        msg = self.media_db.setting_get("messages")
+        if (msg is None) or (msg == "true"):
+            self.show_messages = True
+        else :
+            self.show_messages = False            
         
         dir = self.media_db.setting_get("media_dir") 
         if dir is not None:
             self.media_dir = dir[0]
         else:
-            self.media_dir = None
-        
+            self.media_dir = None        
         
     @pyqtSignature("QString")  
     def on_search_collect_edit_textChanged(self, srch_str):
@@ -538,11 +539,20 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         # TODO: not finished yet. Need to learn
         # more about modal dialogs
-        params = {"dir": self.media_dir}
+        params = {"dir": self.media_dir, "msg": self.show_messages}
         dialog = Setting_Dialog(params)
         if dialog.exec_():
-            self.media_dir = unicode(dialog.dir_val())
+            results = dialog.finished()
+            self.media_dir = unicode(results["dir"])
+            self.show_messages = results["msg"]
+            del results
+            
             self.media_db.setting_save("media_dir", self.media_dir)
+            
+            state = "false"
+            if self.show_messages is True:
+                state = "true"                
+            self.media_db.setting_save("messages", state)
             
     @pyqtSignature("")
     def on_actionRescan_Collection_triggered(self):

@@ -24,8 +24,8 @@ read the entered text
 """
 
 from PyQt4.QtGui import QDialog, QLineEdit, QDialogButtonBox, \
-QGridLayout, QPushButton, QFileDialog
-from PyQt4.QtCore import SIGNAL, SLOT, QString
+QGridLayout, QPushButton, QFileDialog, QCheckBox, QLabel
+from PyQt4.QtCore import SIGNAL, SLOT, QString, Qt
 
 
 class Setting_Dialog(QDialog):
@@ -33,22 +33,37 @@ class Setting_Dialog(QDialog):
         QDialog.__init__(self)
 
         self.directory = QLineEdit()
-        self.directory.setText(params["dir"])
-        dir_bttn = QPushButton()
-        dir_bttn.setText("...")
-        bttn_box = QDialogButtonBox(QDialogButtonBox.Ok|
+        
+        self.dir_bttn = QPushButton()
+        self.dir_bttn.setText("...")
+        self.bttn_box = QDialogButtonBox(QDialogButtonBox.Ok|
                                                 QDialogButtonBox.Cancel)
         grid = QGridLayout()
         
+        self.checker = QCheckBox("Show Messages")
+        self.checker.setTristate(False)
         grid.addWidget(self.directory, 0, 0)
-        grid.addWidget(dir_bttn, 0, 1)
-        grid.addWidget(bttn_box, 1, 0, 1, 2)
+        grid.addWidget(self.dir_bttn, 0, 1)
+        grid.addWidget(self.checker, 1, 0)
+        grid.addWidget(self.bttn_box, 2, 0, 2, -1)
         self.setLayout(grid)
         
-        self.connect(bttn_box, SIGNAL("accepted()"), self, SLOT("accept()"))
-        self.connect(bttn_box, SIGNAL("rejected()"), self, SLOT("reject()"))
-        self.connect(dir_bttn, SIGNAL("clicked()"), self.dir_sel)
         self.setWindowTitle("Settings")
+        self.directory.setText(params["dir"])
+        
+        state = params["msg"]
+        if state is True:
+            self.checker.setCheckState(Qt.Checked)
+        else:
+            self.checker.setCheckState(Qt.Unchecked)
+            
+        self.__signals()
+        
+    def __signals(self):
+        self.connect(self.bttn_box, SIGNAL("accepted()"), self, SLOT("accept()"))
+        self.connect(self.bttn_box, SIGNAL("rejected()"), self, SLOT("reject()"))
+        self.connect(self.dir_bttn, SIGNAL("clicked()"), self.dir_sel)
+        
      
     # This is not a slot according to PyQt
     def dir_sel(self):
@@ -68,8 +83,13 @@ class Setting_Dialog(QDialog):
     def reject(self):
         QDialog.reject(self)
         
-    def dir_val(self):
+    def finished(self):
         """
         Called externally to get the directory linedit
         """
-        return self.directory.text()
+        if self.checker.checkState() == Qt.Checked:
+            state = True
+        else:
+            state = False        
+        
+        return {"dir": self.directory.text(), "msg": state}
