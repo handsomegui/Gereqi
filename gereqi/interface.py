@@ -553,7 +553,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             return
      
     @pyqtSignature("int")
-    def on_volume_slider_valueChanged(self, value):
+    def on_volume_sldr_valueChanged(self, value):
         """
         Self explanatory
         """        
@@ -690,7 +690,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             icon = QIcon(QPixmap(":/Icons/audio-volume-muted.png"))
             self.mute_bttn.setIcon(icon)
         else:
-            vol = (self.volume_slider.value() / 100.0) ** 2
+            vol = (self.volume_sldr.value() / 100.0) ** 2
             icon = QIcon(QPixmap(":/Icons/audio-volume-high.png"))
             self.mute_bttn.setIcon(icon)
             self.player.audio_object.set_volume(vol)
