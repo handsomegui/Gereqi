@@ -49,7 +49,8 @@ class Setting_Dialog(QDialog):
         self.setLayout(grid)
         
         self.setWindowTitle("Settings")
-        self.directory.setText(params["dir"])
+        if params["dir"] is not None:
+            self.directory.setText(params["dir"])
         
         state = params["msg"]
         if state is True:

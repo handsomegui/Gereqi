@@ -236,6 +236,7 @@ class Media:
         args = (fname, )
         query = '''DELETE FROM media
                         WHERE file_name=?'''
+#        print query
         self.__query_execute(query, args)
     
     def playlist_add(self, *params):
