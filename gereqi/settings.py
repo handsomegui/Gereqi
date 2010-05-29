@@ -24,7 +24,8 @@ read the entered text
 """
 
 from PyQt4.QtGui import QDialog, QLineEdit, QDialogButtonBox, \
-QGridLayout, QPushButton, QFileDialog, QCheckBox, QLabel
+QGridLayout, QPushButton, QFileDialog, QCheckBox, QLabel, \
+QDesktopServices
 from PyQt4.QtCore import SIGNAL, SLOT, QString, Qt
 
 
@@ -68,12 +69,12 @@ class Setting_Dialog(QDialog):
      
     # This is not a slot according to PyQt
     def dir_sel(self):
-        print("SPAM!")
-        dir_select = QFileDialog.getExistingDirectory(\
-            None,
-            QString("Select Music Directory"),
-            QString("/"),
-            QFileDialog.Options(QFileDialog.ShowDirsOnly))
+        dir_select = QFileDialog.getExistingDirectory(
+                                None,
+                                QString("Select Media Directory"),
+                                QDesktopServices.storageLocation(QDesktopServices.MusicLocation),
+                                QFileDialog.Options(QFileDialog.ShowDirsOnly))
+                                
         if dir_select is not None:
             self.directory.setText(dir_select)
         
