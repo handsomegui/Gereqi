@@ -40,9 +40,3 @@ class Extraneous:
             print("WARNING: removed non-existing track, %s, from database" % fname)
             database.delete_track(fname)
             
-    def cleanup_encodings(self, before):
-        try:
-            return before.decode("utf-8")
-        except UnicodeDecodeError:
-        #TODO: filename fixer
-            print("WARNING!: Funny encoding for filename. Ignoring - ", repr(now))
