@@ -304,9 +304,9 @@ class Finishers:
         """
         self.ui_main.stat_bttn.setEnabled(False)
         if status == "cancelled":
-            self.ui_main.stat_prog.setToolTip("Cancelled")
+            self.ui_main.stat_lbl.setText("Cancelled")
         else:
-            self.ui_main.stat_prog.setToolTip("Finished")
+            self.ui_main.stat_lbl.setText("Finished")
         self.ui_main.stat_prog.setValue(100)
         self.ui_main.wdgt_manip.setup_db_tree()
         self.ui_main.search_collect_edit.clear()

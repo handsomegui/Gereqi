@@ -378,7 +378,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             
     def __files_created(self, creations):
         self.build_db_thread.set_values(None, self.audio_formats, creations)
-        self.stat_prog.setToolTip("Scanning Media")
+        self.stat_lbl.setText("Auto-Scanning")
         self.stat_prog.setValue(0)
         self.build_db_thread.start()
             
@@ -1036,7 +1036,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if self.media_dir is not None:
             self.stat_bttn.setEnabled(True)
             self.build_db_thread.set_values(self.media_dir, self.audio_formats)
-            self.stat_prog.setToolTip("Scanning Media")
+            self.stat_lbl.setText("Scanning Media")
             self.stat_prog.setValue(0)
             self.build_db_thread.start()
 
