@@ -30,8 +30,18 @@ import pyinotify
 from webinfo import Webinfo
 from database import Media
 from tagging import Tagging
+#from extraneous import Extraneous
 
 build_lock = delete_lock = False
+
+def cleanup_encodings(before):
+    try:
+        return before.decode("utf-8")
+    except UnicodeDecodeError:
+    #TODO: filename fixer
+        print("WARNING!: Funny encoding for filename. Ignoring - ", repr(before))
+
+
 
 class Getcover(QThread):
     """
@@ -82,8 +92,9 @@ class Builddb(QThread):
     Gets files from a directory and build's a 
     media database from the filtered files
     """
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         QThread.__init__(self, parent)
+        self.ui_main = parent
         
     def stop_now(self):
         self.exiting = True
@@ -106,12 +117,10 @@ class Builddb(QThread):
         for root, dirname, filenames in os.walk(str(self.media_dir)):
             for name in filenames:
                 now = os.path.join(root, name)
-                try:
-                    file_now = now.decode("utf-8")
-                except UnicodeDecodeError:
-                    #TODO: filename fixer
-                    print("WARNING!: Funny encoding for filename. Ignoring", repr(now))
+                file_now = cleanup_encodings(now)
+                if file_now is None:
                     continue
+                    
                 ender = os.path.splitext(now)[-1].strip(".")
                 ender = ender.lower()
                 # We only want to get tags for certain file formats
@@ -122,8 +131,9 @@ class Builddb(QThread):
         return tracks
         
     def run(self):
-        build_lock = True
-        while delete_lock is True:
+        self.ui_main.build_lock = True
+        while self.ui_main.delete_lock is True:
+            print("WAITING: creation")
             time.sleep(1)
             
         old_prog = 0    
@@ -170,13 +180,13 @@ class Builddb(QThread):
             else:
                 print("User terminated scan.")
                 self.emit(SIGNAL("finished( QString )"), QString("cancelled"))
-                build_lock = False
+                self.ui_main.build_lock = False
                 self.exit()
                 return
             
         print("%u of %u tracks scanned in: %0.1f seconds" % (cnt, tracks_total,  (time.time() - strt)))
         self.emit(SIGNAL("finished ( QString )"), QString("complete"))
-        build_lock = False
+        self.ui_main.build_lock = False
         self.exit()
         
         
@@ -184,23 +194,26 @@ class Watcher(QThread, pyinotify.ProcessEvent):
     """
     Watches a directory periodically for file changes
     """
-    def __init__(self):
+    def __init__(self, parent):
         QThread.__init__(self)
         pyinotify.ProcessEvent.__init__(self)
         
+        self.ui_main = parent
         self.start_time = time.time()
         self.created = QStringList()
         self.deleted = QStringList()
     
     def process_IN_CREATE(self, event):
-        if event.pathname not in self.created:
-            print event.pathname
-            self.created.append(event.pathname)
+        file_name = cleanup_encodings(event.pathname)
+        if file_name is not None:
+            if file_name not in self.created:            
+                self.created.append(file_name)
 
     def process_IN_DELETE(self, event):
-        if event.pathname not in self.deleted:
-            print event.pathname
-            self.deleted.append(event.pathname)
+        file_name = cleanup_encodings(event.pathname)
+        if file_name is not None:
+            if file_name not in self.deleted:            
+                self.deleted.append(file_name)
 
     def set_values(self, directory, timer):
         self.directory = directory
@@ -212,22 +225,33 @@ class Watcher(QThread, pyinotify.ProcessEvent):
         self.gogogo = False        
         
     def __poller(self):
+        """
+        At every time interval, as specified by self.timer,
+        if the deleted/created lists are non-empty and nothing else
+        is happening (i.i. some other func/thread is already working on
+        something sent previously from this func) the list SIGNALd to 
+        be handled such as deleting/adding tracks from/to the DB.
+        """
         if self.deleted.count() > 0:
-            self.emit(SIGNAL("deletions ( QStringList )"), self.deleted) 
-            if delete_lock is False:
+            if self.ui_main.delete_lock is False:
+                self.emit(SIGNAL("deletions ( QStringList )"), self.deleted)            
                 self.deleted.clear()
+            else:
+                print("WAITING: deletion list")
                 
         if self.created.count() > 0:
-            self.emit(SIGNAL("creations ( QStringList )"), self.created)
-            if build_lock is False:
+            if self.ui_main.build_lock is False:
+                self.emit(SIGNAL("creations ( QStringList )"), self.created)
                 self.created.clear()
+            else:
+                print("WAITING: creation list")
             
         self.start_time = time.time()
         
     def run(self):
         wm = pyinotify.WatchManager()
         mask = pyinotify.IN_DELETE | pyinotify.IN_CREATE
-        notifier = pyinotify.Notifier(wm, self,  timeout=10)
+        notifier = pyinotify.Notifier(wm, self,  read_freq=3, timeout=10)
         wdd = wm.add_watch(self.directory, mask, rec=True, auto_add=True)
         
         while self.gogogo is True:
@@ -248,19 +272,20 @@ class DeleteFiles(QThread):
     def set_values(self, deletions):
         self.file_list = deletions
         
-    def run(self):
-        print "BOO"
-        delete_lock = True
-        while build_lock is True:
-            time.sleep(1)
+    def run(self):        
+        self.ui_main.delete_lock = True
+        while self.ui_main.build_lock is True:
+            print("WAITING: deletion")
+            time.sleep(1)     
         
         media_db = Media()
         for trk in self.file_list:
-            print trk
             media_db.delete_track(unicode(trk))
             
-        delete_lock = False
-        self.ui_main.wdgt_manip.setup_db_tree()
+        self.ui_main.wdgt_manip.setup_db_tree()  
+        self.ui_main.delete_lock = False
+        self.exit()            
+
 
 class Finishers:
     """

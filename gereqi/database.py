@@ -110,8 +110,6 @@ class Media:
         artists = [art[0] for art  in self.__query_fetchall(query, (time, ))]
         return artists
         
-
-        
     def get_albums(self, artist):
         args = (artist, )
         query = '''SELECT DISTINCT album 
@@ -236,7 +234,6 @@ class Media:
         args = (fname, )
         query = '''DELETE FROM media
                         WHERE file_name=?'''
-#        print query
         self.__query_execute(query, args)
     
     def playlist_add(self, *params):

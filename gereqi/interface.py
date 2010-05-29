@@ -302,9 +302,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Initialisation of key items. Some may be pulled
         from other files as this file is getting messy
         """ 
-        self.media_db = Media()
         self.__settings_init()
         
+        self.build_lock = self.delete_lock = False
         self.art_alb = {"oldart":None, "oldalb":None, "nowart":None, "nowalb":None} 
         self.old_pos = 0
         self.locale = ".com"
@@ -324,6 +324,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.cover_thread = Getcover()        
         self.html_thread = Getwiki()
         self.build_db_thread = Builddb(self)
+        self.del_thread = DeleteFiles(self)
         self.extras = Extraneous()
         self.meta = Tagging(self.audio_formats)
         self.player = AudioBackend(self)
@@ -335,6 +336,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.play_hist = PlaylistHistory()
         
         self.__setup_watcher()
+        
         
         self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.finishes.db_build)
         self.connect(self.cover_thread, SIGNAL("got-image ( QImage ) "), self.finishes.set_cover) 
@@ -359,23 +361,29 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
     def __setup_watcher(self):
         if self.media_dir is not None:
-            self.watch_thread = Watcher()
-            self.watch_thread.set_values(str(self.media_dir), 10)
+            self.watch_thread = Watcher(self)
+            self.watch_thread.set_values(str(self.media_dir), 60)
             self.watch_thread.start()
             self.connect(self.watch_thread, SIGNAL('deletions ( QStringList )'), self.__files_deleted)
             self.connect(self.watch_thread, SIGNAL('creations ( QStringList )'), self.__files_created)
         
     def __files_deleted(self, deletions):
-        print "BOO"
-        del_thread = DeleteFiles(self)
-        del_thread.set_values(deletions)
-        del_thread.start()
+        """
+        When something is deleted in the collection dir
+        the filename is put into a list. This list checked every 60secs
+        and fed into the DB
+        """
+        self.del_thread.set_values(deletions)        
+        self.del_thread.start()
             
     def __files_created(self, creations):
         self.build_db_thread.set_values(None, self.audio_formats, creations)
+        self.stat_prog.setToolTip("Scanning Media")
+        self.stat_prog.setValue(0)
         self.build_db_thread.start()
             
     def __settings_init(self):
+        self.media_db = Media()
         msg = self.media_db.setting_get("messages")
         if (msg is None) or (msg == "true"):
             self.show_messages = True
@@ -572,7 +580,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             if self.show_messages is True:
                 state = "true"                
             self.media_db.setting_save("messages", state)
-            
+                
             self.__setup_watcher()
             
     @pyqtSignature("")
