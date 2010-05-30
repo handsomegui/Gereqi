@@ -33,7 +33,7 @@ from threads import Getcover, Getwiki, Builddb, Finishers, \
 Watcher, DeleteFiles
 
 from Ui_interface import Ui_MainWindow
-from Ui_equaliser import Ui_Dialog
+from equaliser import Equaliser
 
 from extraneous import Extraneous
 from extrawidgets import SetupExtraWidgets, WidgetManips
@@ -320,12 +320,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Ui_MainWindow.__init__(self)
         # TODO: change ui settings based on saved states/options
         self.setupUi(self)
-        
-        equaliser_ui = Ui_Dialog()
-        self.equaliser_dialog =QDialog()
-        equaliser_ui.setupUi(self.equaliser_dialog)
-
-        
+       
         self.cover_thread = Getcover()        
         self.html_thread = Getwiki()
         self.build_db_thread = Builddb(self)
@@ -997,7 +992,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
      
     @pyqtSignature("")
     def on_actionEqualiser_activated(self):
-        self.equaliser_dialog.show()
+        dialog = Equaliser(self)
+        dialog.show()
         
             
 #######################################
