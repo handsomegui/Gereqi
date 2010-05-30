@@ -198,6 +198,8 @@ class Watcher(QThread, pyinotify.ProcessEvent):
         QThread.__init__(self)
         pyinotify.ProcessEvent.__init__(self)
         
+        self.setPriority(QThread.IdlePriority)
+        
         self.ui_main = parent
         self.start_time = time.time()
         self.created = QStringList()
