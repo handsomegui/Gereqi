@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/gereqi/interface.ui'
 #
-# Created: Tue May 18 21:17:39 2010
-#      by: PyQt4 UI code generator 4.7
+# Created: Sun May 30 16:12:54 2010
+#      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -16,6 +16,7 @@ class Ui_MainWindow(object):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/Icons/app.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
+        MainWindow.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedKingdom))
         self.centralWidget = QtGui.QWidget(MainWindow)
         self.centralWidget.setObjectName("centralWidget")
         self.gridLayout = QtGui.QGridLayout(self.centralWidget)
@@ -73,6 +74,7 @@ class Ui_MainWindow(object):
         self.cover_view.setMaximumSize(QtCore.QSize(215, 215))
         self.cover_view.setFrameShape(QtGui.QFrame.StyledPanel)
         self.cover_view.setFrameShadow(QtGui.QFrame.Raised)
+        self.cover_view.setText("None")
         self.cover_view.setPixmap(QtGui.QPixmap(":/Icons/music.png"))
         self.cover_view.setAlignment(QtCore.Qt.AlignCenter)
         self.cover_view.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
@@ -136,6 +138,7 @@ class Ui_MainWindow(object):
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.wiki_view = QtWebKit.QWebView(self.wikipediaTab)
         self.wiki_view.setAutoFillBackground(True)
+        self.wiki_view.setStyleSheet("")
         self.wiki_view.setUrl(QtCore.QUrl("about:blank"))
         self.wiki_view.setZoomFactor(1.0)
         self.wiki_view.setObjectName("wiki_view")
@@ -393,6 +396,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3 = QtGui.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.prev_bttn = QtGui.QToolButton(self.layoutWidget)
+        self.prev_bttn.setText("")
         icon8 = QtGui.QIcon()
         icon8.addPixmap(QtGui.QPixmap(":/Icons/media-skip-backward.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.prev_bttn.setIcon(icon8)
@@ -401,6 +405,7 @@ class Ui_MainWindow(object):
         self.prev_bttn.setObjectName("prev_bttn")
         self.horizontalLayout_3.addWidget(self.prev_bttn)
         self.play_bttn = QtGui.QToolButton(self.layoutWidget)
+        self.play_bttn.setText("")
         icon9 = QtGui.QIcon()
         icon9.addPixmap(QtGui.QPixmap(":/Icons/media-playback-start.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.play_bttn.setIcon(icon9)
@@ -411,6 +416,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.addWidget(self.play_bttn)
         self.stop_bttn = QtGui.QToolButton(self.layoutWidget)
         self.stop_bttn.setEnabled(False)
+        self.stop_bttn.setText("")
         icon10 = QtGui.QIcon()
         icon10.addPixmap(QtGui.QPixmap(":/Icons/media-playback-stop.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.stop_bttn.setIcon(icon10)
@@ -419,6 +425,7 @@ class Ui_MainWindow(object):
         self.stop_bttn.setObjectName("stop_bttn")
         self.horizontalLayout_3.addWidget(self.stop_bttn)
         self.next_bttn = QtGui.QToolButton(self.layoutWidget)
+        self.next_bttn.setText("")
         icon11 = QtGui.QIcon()
         icon11.addPixmap(QtGui.QPixmap(":/Icons/media-skip-forward.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.next_bttn.setIcon(icon11)
@@ -429,6 +436,7 @@ class Ui_MainWindow(object):
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem1)
         self.mute_bttn = QtGui.QToolButton(self.layoutWidget)
+        self.mute_bttn.setText("")
         icon12 = QtGui.QIcon()
         icon12.addPixmap(QtGui.QPixmap(":/Icons/audio-volume-high.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.mute_bttn.setIcon(icon12)
@@ -480,8 +488,6 @@ class Ui_MainWindow(object):
         self.menuPlaylist.setObjectName("menuPlaylist")
         self.menuCurrent = QtGui.QMenu(self.menuPlaylist)
         self.menuCurrent.setObjectName("menuCurrent")
-        self.menuTools = QtGui.QMenu(self.menuBar)
-        self.menuTools.setObjectName("menuTools")
         self.menuSettings = QtGui.QMenu(self.menuBar)
         self.menuSettings.setObjectName("menuSettings")
         self.menuHelp = QtGui.QMenu(self.menuBar)
@@ -492,6 +498,8 @@ class Ui_MainWindow(object):
         self.menuRepeat.setObjectName("menuRepeat")
         self.menuRandom = QtGui.QMenu(self.menuMode)
         self.menuRandom.setObjectName("menuRandom")
+        self.menuTools = QtGui.QMenu(self.menuBar)
+        self.menuTools.setObjectName("menuTools")
         MainWindow.setMenuBar(self.menuBar)
         self.statusBar = QtGui.QStatusBar(MainWindow)
         self.statusBar.setObjectName("statusBar")
@@ -562,6 +570,8 @@ class Ui_MainWindow(object):
         self.stop_actn.setObjectName("stop_actn")
         self.actionNext_Track = QtGui.QAction(MainWindow)
         self.actionNext_Track.setObjectName("actionNext_Track")
+        self.actionEqualiser = QtGui.QAction(MainWindow)
+        self.actionEqualiser.setObjectName("actionEqualiser")
         self.menuActions.addAction(self.play_media_actn)
         self.menuActions.addAction(self.play_cd_actn)
         self.menuActions.addSeparator()
@@ -576,8 +586,6 @@ class Ui_MainWindow(object):
         self.menuCurrent.addAction(self.actionSave_2)
         self.menuCurrent.addAction(self.actionLoad)
         self.menuPlaylist.addAction(self.menuCurrent.menuAction())
-        self.menuTools.addAction(self.actionUpdate_Collection)
-        self.menuTools.addAction(self.actionRescan_Collection)
         self.menuSettings.addAction(self.actionConfigure)
         self.menuHelp.addAction(self.actionHelp)
         self.menuHelp.addSeparator()
@@ -593,6 +601,10 @@ class Ui_MainWindow(object):
         self.menuRandom.addAction(self.actionFavor)
         self.menuMode.addAction(self.menuRepeat.menuAction())
         self.menuMode.addAction(self.menuRandom.menuAction())
+        self.menuTools.addAction(self.actionEqualiser)
+        self.menuTools.addSeparator()
+        self.menuTools.addAction(self.actionUpdate_Collection)
+        self.menuTools.addAction(self.actionRescan_Collection)
         self.menuBar.addAction(self.menuActions.menuAction())
         self.menuBar.addAction(self.menuPlaylist.menuAction())
         self.menuBar.addAction(self.menuMode.menuAction())
@@ -667,12 +679,12 @@ class Ui_MainWindow(object):
         self.menuActions.setTitle(QtGui.QApplication.translate("MainWindow", "Engage", None, QtGui.QApplication.UnicodeUTF8))
         self.menuPlaylist.setTitle(QtGui.QApplication.translate("MainWindow", "Playlist", None, QtGui.QApplication.UnicodeUTF8))
         self.menuCurrent.setTitle(QtGui.QApplication.translate("MainWindow", "Current", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuTools.setTitle(QtGui.QApplication.translate("MainWindow", "Tools", None, QtGui.QApplication.UnicodeUTF8))
         self.menuSettings.setTitle(QtGui.QApplication.translate("MainWindow", "Settings", None, QtGui.QApplication.UnicodeUTF8))
         self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
         self.menuMode.setTitle(QtGui.QApplication.translate("MainWindow", "Mode", None, QtGui.QApplication.UnicodeUTF8))
         self.menuRepeat.setTitle(QtGui.QApplication.translate("MainWindow", "Repeat", None, QtGui.QApplication.UnicodeUTF8))
         self.menuRandom.setTitle(QtGui.QApplication.translate("MainWindow", "Random", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuTools.setTitle(QtGui.QApplication.translate("MainWindow", "Tools", None, QtGui.QApplication.UnicodeUTF8))
         self.actionConfigure.setText(QtGui.QApplication.translate("MainWindow", "Configure Gereqi", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRescan_Collection.setText(QtGui.QApplication.translate("MainWindow", "Rescan Collection", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setText(QtGui.QApplication.translate("MainWindow", "Quit", None, QtGui.QApplication.UnicodeUTF8))
@@ -703,6 +715,7 @@ class Ui_MainWindow(object):
         self.play_actn.setText(QtGui.QApplication.translate("MainWindow", "Play", None, QtGui.QApplication.UnicodeUTF8))
         self.stop_actn.setText(QtGui.QApplication.translate("MainWindow", "Stop", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNext_Track.setText(QtGui.QApplication.translate("MainWindow", "Next Track", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionEqualiser.setText(QtGui.QApplication.translate("MainWindow", "Equaliser", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import resource_rc

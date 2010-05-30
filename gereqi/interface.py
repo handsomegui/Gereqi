@@ -19,7 +19,7 @@
 from PyQt4.QtGui import QMainWindow, QFileDialog, \
 QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
 QIcon, QTreeWidgetItem, QPixmap, QMessageBox, QColor, \
-QSystemTrayIcon, QInputDialog, QLineEdit
+QSystemTrayIcon, QInputDialog, QLineEdit, QDialog
 from PyQt4.QtCore import QString, Qt, QTime, SIGNAL, \
 SLOT, QDir, pyqtSignature
 
@@ -32,8 +32,10 @@ from tagging import Tagging
 from threads import Getcover, Getwiki, Builddb, Finishers, \
 Watcher, DeleteFiles
 
-from extraneous import Extraneous
 from Ui_interface import Ui_MainWindow
+from Ui_equaliser import Ui_Dialog
+
+from extraneous import Extraneous
 from extrawidgets import SetupExtraWidgets, WidgetManips
 from audiocd import AudioCD
 from backend import AudioBackend
@@ -206,8 +208,6 @@ class PlaylistHistory:
     """
     The playlist history
     """
-    
-    #FIXME: Use better variable names
     stack = []
     position = 0
     
@@ -321,6 +321,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # TODO: change ui settings based on saved states/options
         self.setupUi(self)
         
+        equaliser_ui = Ui_Dialog()
+        self.equaliser_dialog =QDialog()
+        equaliser_ui.setupUi(self.equaliser_dialog)
+
+        
         self.cover_thread = Getcover()        
         self.html_thread = Getwiki()
         self.build_db_thread = Builddb(self)
@@ -334,6 +339,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.wdgt_manip = WidgetManips(self)
         self.finishes = Finishers(self)
         self.play_hist = PlaylistHistory()
+
         
         self.__setup_watcher()
         
@@ -988,6 +994,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         if first is True:
             self.next_trktbl_bttn.setEnabled(False)
+     
+    @pyqtSignature("")
+    def on_actionEqualiser_activated(self):
+        self.equaliser_dialog.show()
+        
             
 #######################################
 #######################################

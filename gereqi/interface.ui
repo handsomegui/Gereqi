@@ -1156,13 +1156,6 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     </widget>
     <addaction name="menuCurrent"/>
    </widget>
-   <widget class="QMenu" name="menuTools">
-    <property name="title">
-     <string>Tools</string>
-    </property>
-    <addaction name="actionUpdate_Collection"/>
-    <addaction name="actionRescan_Collection"/>
-   </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">
      <string>Settings</string>
@@ -1202,6 +1195,15 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
     </widget>
     <addaction name="menuRepeat"/>
     <addaction name="menuRandom"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionEqualiser"/>
+    <addaction name="separator"/>
+    <addaction name="actionUpdate_Collection"/>
+    <addaction name="actionRescan_Collection"/>
    </widget>
    <addaction name="menuActions"/>
    <addaction name="menuPlaylist"/>
@@ -1395,6 +1397,11 @@ font: 75 10pt &quot;DejaVu Sans&quot;;
   <action name="actionNext_Track">
    <property name="text">
     <string>Next Track</string>
+   </property>
+  </action>
+  <action name="actionEqualiser">
+   <property name="text">
+    <string>Equaliser</string>
    </property>
   </action>
  </widget>
