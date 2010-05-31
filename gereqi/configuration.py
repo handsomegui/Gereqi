@@ -5,29 +5,30 @@ Module implementing Configuration.
 """
 
 from PyQt4.QtGui import QDialog, QDirModel
-from PyQt4.QtCore import pyqtSignature, QDir, Qt, QAbstractItemModel
+from PyQt4.QtCore import pyqtSignature, QDir, Qt, QAbstractItemModel, \
+SIGNAL
 
 from Ui_configuration import Ui_settings_dialog
 
 class MyQDirModel(QDirModel):
-    checked = []
-    unchecked = []
+    check_list = [[], []]
+#    unchecked = []
         
     def data(self, index, role = Qt.DisplayRole):
         if index.isValid() and (index.column() == 0) and (role == Qt.CheckStateRole):
             dir_now = self.filePath(index)
             par_dir = dir_now.split("/")[:-1].join("/")
             # the item is checked only if we have stored its path
-            if dir_now in MyQDirModel.unchecked:
+            if dir_now in MyQDirModel.check_list[1]:
                 return Qt.Unchecked
-            elif par_dir in MyQDirModel.unchecked:
+            elif par_dir in MyQDirModel.check_list[1]:
                 return Qt.Unchecked
                 
             else:
-                if dir_now in MyQDirModel.checked:
+                if dir_now in MyQDirModel.check_list[0]:
                     return Qt.Checked
-                elif par_dir in MyQDirModel.checked:
-                    MyQDirModel.checked.append(dir_now)
+                elif par_dir in MyQDirModel.check_list[0]:
+                    MyQDirModel.check_list[0].append(dir_now)
                     return Qt.Checked
                 else:
                     return Qt.Unchecked
@@ -38,22 +39,38 @@ class MyQDirModel(QDirModel):
         if index.column() == 0: # make the first column checkable
            return QDirModel.flags(self, index) | Qt.ItemIsUserCheckable
         else:
-            return QDirModel.flags(self, index)            
+            return QDirModel.flags(self, index)
         
     def setData(self, index, value, role = Qt.EditRole):
         if index.isValid() and (index.column() == 0) and role == Qt.CheckStateRole:
             # store checked paths, remove unchecked paths
             if (value == Qt.Checked):
-                MyQDirModel.checked.append(self.filePath(index))
+                MyQDirModel.check_list[0].append(self.filePath(index))
                 try:
-                    MyQDirModel.unchecked.remove(self.filePath(index))
+                    MyQDirModel.check_list[1].remove(self.filePath(index))
                 except ValueError:
                     # Doesn't exist yet
-                    return True
+                    pass
+                self.emit(SIGNAL("needsRefresh( QModelIndex )"), index)
                 return True
+                
             else:
-                MyQDirModel.checked.remove(self.filePath(index))
-                MyQDirModel.unchecked.append(self.filePath(index))
+                dir_now = self.filePath(index)
+                par_dir = dir_now.split("/")[:-1].join("/")                
+                tmp_list = (list(MyQDirModel.check_list[0]), list(MyQDirModel.check_list[1]))
+                
+                for item in tmp_list[0]:
+                    if dir_now in item:
+                        MyQDirModel.check_list[0].remove(item)                    
+                for item in tmp_list[1]:
+                    if par_dir in item:
+                        MyQDirModel.check_list[1].remove(item)                      
+                        
+                # Only add to unchecked if anything above is checked
+                if par_dir in MyQDirModel.check_list[0]:
+                    MyQDirModel.check_list[1].append(dir_now)                                
+                
+                self.emit(SIGNAL("needsRefresh( QModelIndex )"), index)
                 return True
                 
         else:
@@ -70,13 +87,21 @@ class Configuration(QDialog, Ui_settings_dialog):
         """
         QDialog.__init__(self, parent)
         self.setupUi(self)
+        self.dir_model = MyQDirModel()        
+        self.connect(self.dir_model, SIGNAL("needsRefresh( QModelIndex )"), self.__refreshing)
         self.__fileview_setup()
+        
+    def __refreshing(self, index):
+        if self.collection_view.isExpanded(index):
+            self.collection_view.collapse(index)
+            self.collection_view.expand(index)
+        
         
     def __fileview_setup(self):
         """
         Make the fileview the correct type
         """
-        self.dir_model = MyQDirModel()
+        
         filters = QDir.AllDirs|QDir.Readable|QDir.NoDotAndDotDot
         self.dir_model.setFilter(filters)
         self.dir_model.setReadOnly(True)
