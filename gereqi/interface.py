@@ -34,7 +34,7 @@ Watcher, DeleteFiles
 
 from Ui_interface import Ui_MainWindow
 from equaliser import Equaliser
-from configuration import Configuration
+import configuration
 
 from extraneous import Extraneous
 from extrawidgets import SetupExtraWidgets, WidgetManips
@@ -336,9 +336,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.finishes = Finishers(self)
         self.play_hist = PlaylistHistory()
 
-        
         self.__setup_watcher()
-        
         
         self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.finishes.db_build)
         self.connect(self.cover_thread, SIGNAL("got-image ( QImage ) "), self.finishes.set_cover) 
@@ -355,7 +353,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.connect(self.track_tbl.horizontalHeader(), SIGNAL('sectionClicked ( int )'), self.__recolourise)
         self.connect(self.collect_tree_hdr, SIGNAL('sectionClicked ( int )'), self.__collection_sort)
 
-        
         # Make the collection search line-edit have the keyboard focus on startup.
         self.search_collect_edit.setFocus()
         self.wdgt_manip.setup_db_tree()
@@ -568,14 +565,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
        Brings up the configuration Dialog
         """
-       
         # Using this 'register' as the old settings dialog
         # works to an extent
         test = True
         if test is True:
-            config = Configuration(self)
+            config = configuration.Configuration(self)
             config.show()        
             if config.exec_():
+                print config.dir_model.checked
                 print "SPAM"
         
         else:
@@ -592,9 +589,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 if self.show_messages is True:
                     state = "true"                
                 self.media_db.setting_save("messages", state)
-                    
                 self.__setup_watcher()       
-        
         
             
     @pyqtSignature("")
