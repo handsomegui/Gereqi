@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/gereqi/configuration.ui'
 #
-# Created: Sun May 30 22:53:27 2010
+# Created: Mon May 31 00:48:09 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PyQt4 import QtCore, QtGui
 class Ui_settings_dialog(object):
     def setupUi(self, settings_dialog):
         settings_dialog.setObjectName("settings_dialog")
-        settings_dialog.setWindowModality(QtCore.Qt.ApplicationModal)
+        settings_dialog.setWindowModality(QtCore.Qt.WindowModal)
         settings_dialog.resize(480, 640)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -145,7 +145,7 @@ class Ui_settings_dialog(object):
         self.label_3.setObjectName("label_3")
         self.verticalLayout_4.addWidget(self.label_3)
         self.collection_view = QtGui.QTreeView(self.groupBox_4)
-        self.collection_view.setIndentation(10)
+        self.collection_view.setIndentation(20)
         self.collection_view.setExpandsOnDoubleClick(True)
         self.collection_view.setObjectName("collection_view")
         self.verticalLayout_4.addWidget(self.collection_view)

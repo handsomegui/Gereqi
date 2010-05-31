@@ -34,6 +34,7 @@ Watcher, DeleteFiles
 
 from Ui_interface import Ui_MainWindow
 from equaliser import Equaliser
+from configuration import Configuration
 
 from extraneous import Extraneous
 from extrawidgets import SetupExtraWidgets, WidgetManips
@@ -393,6 +394,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         dir = self.media_db.setting_get("media_dir") 
         if dir is not None:
+            
             self.media_dir = dir[0]
         else:
             self.media_dir = None        
@@ -564,25 +566,36 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     @pyqtSignature("")
     def on_actionConfigure_triggered(self):
         """
-       Brings up the settings Dialog
+       Brings up the configuration Dialog
         """
-        # TODO: not finished yet. Need to learn
-        # more about modal dialogs
-        params = {"dir": self.media_dir, "msg": self.show_messages}
-        dialog = Setting_Dialog(params)
-        if dialog.exec_():
-            results = dialog.finished()
-            self.media_dir = unicode(results["dir"])
-            self.show_messages = results["msg"]
-            del results
-            
-            self.media_db.setting_save("media_dir", self.media_dir)            
-            state = "false"
-            if self.show_messages is True:
-                state = "true"                
-            self.media_db.setting_save("messages", state)
+       
+        # Using this 'register' as the old settings dialog
+        # works to an extent
+        test = True
+        if test is True:
+            config = Configuration(self)
+            config.show()        
+            if config.exec_():
+                print "SPAM"
+        
+        else:
+            params = {"dir": self.media_dir, "msg": self.show_messages}
+            dialog = Setting_Dialog(params)
+            if dialog.exec_():
+                results = dialog.finished()
+                self.media_dir = unicode(results["dir"])
+                self.show_messages = results["msg"]
+                del results
                 
-            self.__setup_watcher()
+                self.media_db.setting_save("media_dir", self.media_dir)            
+                state = "false"
+                if self.show_messages is True:
+                    state = "true"                
+                self.media_db.setting_save("messages", state)
+                    
+                self.__setup_watcher()       
+        
+        
             
     @pyqtSignature("")
     def on_actionRescan_Collection_triggered(self):

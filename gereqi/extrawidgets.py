@@ -22,7 +22,6 @@ QToolButton, QAction, QSystemTrayIcon, qApp, QDirModel, QMenu
 from PyQt4.QtCore import QString, SIGNAL, SLOT, QDir, QSize, QObject
 
 import time
-
 from database import Media
 
 

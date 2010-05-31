@@ -3,7 +3,7 @@
  <class>settings_dialog</class>
  <widget class="QDialog" name="settings_dialog">
   <property name="windowModality">
-   <enum>Qt::ApplicationModal</enum>
+   <enum>Qt::WindowModal</enum>
   </property>
   <property name="geometry">
    <rect>
@@ -303,7 +303,7 @@
           <item>
            <widget class="QTreeView" name="collection_view">
             <property name="indentation">
-             <number>10</number>
+             <number>20</number>
             </property>
             <property name="expandsOnDoubleClick">
              <bool>true</bool>
