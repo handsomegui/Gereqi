@@ -104,7 +104,7 @@ class Playlist:
                                         "Album": info[2], "Year": unicode(info[3]), "Genre": info[4], "Length": info[6],
                                         "Bitrate": unicode(info[7]), "FileName": file_name}
             else:
-                metadata = {'Track': ("%02u" % info[6]), "Title": info[1], "Artist": info[3], "Album": info[3], 
+                metadata = {'Track': ("%02u" % info[6]), "Title": info[1], "Artist": info[2], "Album": info[3], 
                                     "Year": unicode(info[4]), "Genre": info[5], "Length": info[7], 
                                     "Bitrate": unicode(info[8]), "FileName": file_name}
                                     
