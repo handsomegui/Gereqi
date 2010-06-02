@@ -779,8 +779,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     tracks = self.media_db.get_titles(artist, album)
                 else:
                     tracks = self.media_db.get_titles_timed(artist, album, filt_time)
+                 
+                # Found this via Schwartzian transform. Only 2/3rds of full transform
+                tracks = [(trk[1], trk[0]) for trk in tracks]
+                tracks.sort()
+                
                 for cnt in range(len(tracks)):
-                    track = QTreeWidgetItem([tracks[cnt]] )
+                    track = QTreeWidgetItem([tracks[cnt][1]] )
                     item.insertChild(cnt, track)
       
            # Adding albums to the artist 

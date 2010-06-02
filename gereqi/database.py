@@ -197,22 +197,20 @@ class Media:
                         
     def get_titles(self, artist, album):
         args = (artist, album)
-        query = '''SELECT DISTINCT title 
+        query = '''SELECT DISTINCT title,track 
                         FROM media 
                         WHERE artist=?
                         AND album=?'''
-        titles = [title[0] for title in self.__query_fetchall(query, args)]
-        return titles
+        return self.__query_fetchall(query, args)
 
     def get_titles_timed(self, artist, album, time):
         args = (artist, album, time)
-        query = '''SELECT DISTINCT title 
+        query = '''SELECT DISTINCT title,track 
                         FROM media 
                         WHERE artist=?
                         AND album=?
                         AND added>?'''
-        titles = [title[0] for title in self.__query_fetchall(query, args)]
-        return titles
+        return self.__query_fetchall(query, args)
         
     def get_album_titles(self, album):
         args = (album, )
