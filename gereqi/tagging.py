@@ -235,5 +235,6 @@ class Tagging:
                 tags = self.__oggflac_extract(fname, ext)
             elif ext == "m4a":
                 tags = self.__m4a_extract(fname)
-                
+            
+            tags[3] = int(tags[3])
             return tags

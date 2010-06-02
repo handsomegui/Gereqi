@@ -235,8 +235,7 @@ class WidgetManips:
             
     def pop_playlist_view(self):
         font = QFont()
-        font.setBold(True)
-        
+        font.setBold(True)        
         self.ui_main.playlist_tree.clear()
         playlists = self.ui_main.media_db.playlist_list()
         #podcasts = None

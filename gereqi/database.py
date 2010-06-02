@@ -47,9 +47,14 @@ class Media:
                 title   VARCHAR(50),
                 artist  VARCHAR(50),
                 album   VARCHAR(50),
+                year   SMALLINT(4),
+                genre  VARCHAR(20),
+                track UNSIGNED TINYINT(2),
+                length  VARCHAR(5),
+                bitrate SMALLINT(4),
                 added UNSIGNED MEDIUMINT(6),
                 playcount SMALLINT(5),
-                rating TINYINT(0),
+                rating TINYINT(1),
                 PRIMARY KEY (file_name) ON CONFLICT IGNORE
                 )'''
                 , 
@@ -94,7 +99,7 @@ class Media:
         Here we add data into the media database
         """
         query = '''INSERT INTO media 
-                        VALUES (?,?,?,?,?,?,?)'''
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''
         self.__query_execute(query, meta)
         
     def get_artists(self):
@@ -228,7 +233,9 @@ class Media:
         query = '''SELECT * 
                         FROM media 
                         WHERE file_name=?'''
-        return self.__query_fetchall(query, (file_name, ))[0]
+        result = self.__query_fetchall(query, (file_name, ))
+        if len(result) > 0:
+            return result[0]
         
     def delete_track(self, fname):
         args = (fname, )

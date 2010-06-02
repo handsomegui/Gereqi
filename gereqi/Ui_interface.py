@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/gereqi/interface.ui'
 #
-# Created: Sun May 30 22:53:26 2010
+# Created: Wed Jun  2 21:03:45 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -377,7 +377,7 @@ class Ui_MainWindow(object):
         self.track_tbl.setDragEnabled(True)
         self.track_tbl.setDragDropOverwriteMode(False)
         self.track_tbl.setDragDropMode(QtGui.QAbstractItemView.DragOnly)
-        self.track_tbl.setAlternatingRowColors(True)
+        self.track_tbl.setAlternatingRowColors(False)
         self.track_tbl.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
         self.track_tbl.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.track_tbl.setHorizontalScrollMode(QtGui.QAbstractItemView.ScrollPerPixel)

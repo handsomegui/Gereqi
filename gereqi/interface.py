@@ -94,20 +94,26 @@ class Playlist:
         # mutagen cannot handle things like urls for podcasts
         self.ui_main.clear_trktbl_bttn.setEnabled(True)
         if info is None:
-            info = self.ui_main.meta.extract(file_name)
+            info = self.ui_main.media_db.get_info(file_name)
             if info is None:
-                return
+                info = self.ui_main.meta.extract(file_name)
+                if info is None:
+                    return
+                else:       
+                    metadata = {"Track": ("%02u" % info[5]), "Title": info[0], "Artist": info[1], 
+                                        "Album": info[2], "Year": unicode(info[3]), "Genre": info[4], "Length": info[6],
+                                        "Bitrate": unicode(info[7]), "FileName": file_name}
+            else:
+                metadata = {'Track': ("%02u" % info[6]), "Title": info[1], "Artist": info[3], "Album": info[3], 
+                                    "Year": unicode(info[4]), "Genre": info[5], "Length": info[7], 
+                                    "Bitrate": unicode(info[8]), "FileName": file_name}
+                                    
         row = self.ui_main.track_tbl.rowCount()
         self.ui_main.track_tbl.insertRow(row)
-        #TODO: make the metadata come in as a dictionary
-        tbl_items = [   ["Track", "%02u" % info[5]], ["Title", info[0]],  
-                            ["Artist", info[1]], ["Album", info[2]], ["Year", info[3]], 
-                            ["Genre", info[4]], ["Length", info[6]], ["Bitrate", str(info[7])], 
-                            ["FileName", file_name]]
         # Creates each cell for a track based on info
-        for header, thing in tbl_items:
-            tbl_wdgt = QTableWidgetItem(QString(thing))
-            column = self.header_search(header)
+        for key in metadata:
+            tbl_wdgt = QTableWidgetItem(QString(metadata[key]))
+            column = self.header_search(key)
             self.ui_main.track_tbl.setItem(row, column, tbl_wdgt)
         self.ui_main.track_tbl.resizeColumnsToContents()   
         

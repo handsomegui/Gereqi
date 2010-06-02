@@ -165,17 +165,17 @@ class Builddb(QThread):
                 
                 info = meta.extract(trk.encode("utf-8"))
                 if info is not None:
-                    tags = info[0:3]
-                    del info
+#                    tags = info[0:3]
+#                    del info
                     # prepends the fileName as the DB function expects
                     # a certain order to the args passed
-                    tags.insert(0, trk) 
-                    tags.append(int(round(time.time())))
+                    info.insert(0, trk) 
+                    info.append(int(round(time.time())))
                     
                     # The playcount and rating
-                    tags.append(0)
-                    tags.append(0)
-                    media_db.add_media(tags)
+                    info.append(0)
+                    info.append(0)
+                    media_db.add_media(info)
                     cnt += 1
             else:
                 print("User terminated scan.")
