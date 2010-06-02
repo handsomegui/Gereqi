@@ -16,7 +16,9 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#TODO: Import based on gstreamer capabilities
+#TODO: Import based on gstreamer capabilities (#gstreamer says it's near impossible)
+from PyQt4.QtGui import QMessageBox
+from PyQt4.QtCore import QString
 from mutagen.flac import FLAC, FLACNoHeaderError, FLACVorbisError
 from mutagen.mp3 import MP3, HeaderNotFoundError
 from mutagen.oggvorbis import OggVorbis, OggVorbisHeaderError
@@ -28,6 +30,7 @@ from os import stat, path
 import subprocess
 from extraneous import Extraneous
 
+
 class Fixing:
     def __init__(self):
         return
@@ -38,6 +41,18 @@ class Fixing:
         as this is incorrect use of this block-type. Also, mutagen can't/wont work with
         multiple comment blocks.
         """
+        question = QMessageBox.question(None,
+            QString("Flac block fixing"),
+            QString("""It is likely a Flac file has multiple comment blocks. This is an incorrect use of this block-type and prevents metadata from being extracted unless fixed.
+
+Fixing this issue is an irreversible process, would you like to continue and fix the file %s?""" % fname),
+            QMessageBox.StandardButtons(\
+                QMessageBox.No | \
+                QMessageBox.Yes))
+        
+        if question == QMessageBox.No:
+            return False
+        
         cmd = '''metaflac --list --block-type=VORBIS_COMMENT "%s" \
             | grep "METADATA block #" \
             | cut -d"#" -f2 \
@@ -167,9 +182,11 @@ class Tagging:
             except  FLACVorbisError, err:
                 if "> 1 Vorbis comment block found" in err:
                     fixer = Fixing()
-                    fixer.flac_bloc_fix(fname)
-                    audio = FLAC(fname)
-                    bitrate = self.manip.manual_bitrate(fname, audio)
+                    if fixer.flac_bloc_fix(fname) is not False:
+                        audio = FLAC(fname)
+                        bitrate = self.manip.manual_bitrate(fname, audio)
+                    else:
+                        return
                 else:
                     print("ERROR:%s %s" % (err, fname))
                     return
