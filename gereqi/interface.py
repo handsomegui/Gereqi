@@ -434,7 +434,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         dir = self.media_db.setting_get("media_dir")
         if dir is not None:
             now = dir[0].split("||")
-            chk = now[0].split(",")
+            chk = now[0].split(";;")
             unchk = []
             if len(now) > 1:
                 unchk = now[1].split(",")
@@ -619,7 +619,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             config.show()        
             if config.exec_():
                 dirs =  config.dir_list()
-                chkd = (",".join(dirs[0]),  ",".join(dirs[1]))
+                chkd = (";;".join(dirs[0]),  ";;".join(dirs[1]))
                 if len(dirs[1]) > 0:
                     for_db = "%s||%s" % (chkd[0], chkd[1])
                 elif len(dirs[0]) > 0:
