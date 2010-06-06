@@ -431,14 +431,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else :
             self.show_messages = False            
         
-        dir = self.media_db.setting_get("media_dir") 
-        if dir is not None:   
-            if "||" in dir:
-                chk = dir.split("||")[0].split(",")
-                unchk = dir.split("||")[1].split(",")
-                self.media_dir = (chk, unchk)
-            else:
-                self.media_dir = dir.split(",")
+        dir = self.media_db.setting_get("media_dir")
+        if dir is not None:
+            now = dir[0].split("||")
+            chk = now[0].split(",")
+            unchk = []
+            if len(now) > 1:
+                unchk = now[1].split(",")
+            self.media_dir = (chk, unchk)
         else:
             self.media_dir = None        
         
