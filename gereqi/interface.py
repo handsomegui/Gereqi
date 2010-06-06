@@ -210,6 +210,41 @@ class Playlist:
         # For some reason can only remove from bot to top
         for cnt in range(rows, -1, -1):
             self.ui_main.track_tbl.removeRow(cnt)
+            
+    def gen_full_list(self):
+        rows = self.ui_main.track_tbl.rowCount()
+        columns = self.ui_main.track_tbl.columnCount()
+        headers = [unicode(self.ui_main.track_tbl.horizontalHeaderItem(cnt).text())
+                                                                                  for cnt in range(columns)]
+        tracks = []
+        for row in range(rows):
+            tmp_list = []
+            for col in range(columns):
+                tmp_list.append(unicode(self.ui_main.track_tbl.item(row, col).text()))
+            tracks.append(tmp_list)        
+        return headers, tracks
+            
+    def change_sort(self, index):
+        hdrs, tracks = self.gen_full_list()
+        self.tracknow_colourise()
+        
+        if hdrs[index] == "Track":
+            self.ui_main.track_tbl.setSortingEnabled(False)
+            new_list = sorted(tracks, key=lambda tracks: tracks[hdrs.index("Album")])
+            del tracks
+            self.clear()
+            for trk in new_list:
+                print trk
+                row = self.ui_main.track_tbl.rowCount()
+                self.ui_main.track_tbl.insertRow(row)
+                for cnt in range(len(trk)):
+                    tbl_wdgt = QTableWidgetItem(QString(trk[cnt]))
+                    self.ui_main.track_tbl.setItem(row, cnt, tbl_wdgt)
+            self.ui_main.track_tbl.resizeColumnsToContents()
+            self.tracknow_colourise()
+        else:
+            self.ui_main.track_tbl.setSortingEnabled(True)
+        
         
 class PlaylistHistory:
     """
@@ -356,7 +391,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.connect(self.stop_actn, SIGNAL("triggered()"), self.stop_bttn, SLOT("click()"))
         self.connect(self.stat_bttn, SIGNAL("pressed()"), self.quit_build)
         self.connect(self.play_type_bttn, SIGNAL('toggled ( bool )'), self.wdgt_manip.set_play_type)
-        self.connect(self.track_tbl.horizontalHeader(), SIGNAL('sectionClicked ( int )'), self.__recolourise)
+        self.connect(self.track_tbl.horizontalHeader(), SIGNAL('sectionClicked ( int )'), self.playlisting.change_sort)
         self.connect(self.collect_tree_hdr, SIGNAL('sectionClicked ( int )'), self.__collection_sort)
 
         # Make the collection search line-edit have the keyboard focus on startup.
@@ -1147,9 +1182,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         filts = [(now[3] * now[4]) + now[5], 604800, 2419200, 7257600, 31557600]   
         if index > 0:
             return calc(filts[index - 1])
-        
-    def __recolourise(self):
-        self.playlisting.tracknow_colourise(self.playlisting.current_row)
         
     def __collection_mode(self):
         text_now = unicode(self.collect_tree.headerItem().text(0))
