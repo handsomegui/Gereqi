@@ -30,7 +30,6 @@ import pyinotify
 from webinfo import Webinfo
 from database import Media
 from tagging import Tagging
-#from extraneous import Extraneous
 
 build_lock = delete_lock = False
 
@@ -99,22 +98,22 @@ class Builddb(QThread):
     def stop_now(self):
         self.exiting = True
         
-    def set_values(self, directory, formats, tracks=None):
+    def set_values(self, dirs, formats, tracks=None):
         """
         Required to put parameters into
         this thread from the outside
         """
-        self.media_dir = directory
+        self.media_dir = dirs[0]
         self.a_formats = formats
         self.file_list = tracks
      
-    def __track_list(self):
+    def __track_list(self, dir):
         """
         Generates a list of compatible files
         """
         tracks = []
         # No point trying to speed this up. os.walk is a generator function
-        for root, dirname, filenames in os.walk(str(self.media_dir)):
+        for root, dirname, filenames in os.walk(dir):
             for name in filenames:
                 now = os.path.join(root, name)
                 file_now = cleanup_encodings(now)
@@ -141,7 +140,9 @@ class Builddb(QThread):
         media_db = Media()
         
         if self.file_list is None:
-            tracks = self.__track_list()
+            tracks = []
+            for dir in self.media_dir:
+                tracks.extend(self.__track_list(dir))
         else:
             tracks = []
             for trk in self.file_list:
@@ -165,8 +166,6 @@ class Builddb(QThread):
                 
                 info = meta.extract(trk.encode("utf-8"))
                 if info is not None:
-#                    tags = info[0:3]
-#                    del info
                     # prepends the fileName as the DB function expects
                     # a certain order to the args passed
                     info.insert(0, trk) 
@@ -196,35 +195,11 @@ class Watcher(QThread, pyinotify.ProcessEvent):
     """
     def __init__(self, parent):
         QThread.__init__(self)
-        pyinotify.ProcessEvent.__init__(self)
-        
-        self.setPriority(QThread.IdlePriority)
-        
+        pyinotify.ProcessEvent.__init__(self)       
         self.ui_main = parent
         self.start_time = time.time()
         self.created = QStringList()
         self.deleted = QStringList()
-    
-    def process_IN_CREATE(self, event):
-        file_name = cleanup_encodings(event.pathname)
-        if file_name is not None:
-            if file_name not in self.created:            
-                self.created.append(file_name)
-
-    def process_IN_DELETE(self, event):
-        file_name = cleanup_encodings(event.pathname)
-        if file_name is not None:
-            if file_name not in self.deleted:            
-                self.deleted.append(file_name)
-
-    def set_values(self, directory, timer):
-        self.directory = directory
-        self.timer = timer
-        self.gogogo = True
-        self.checkers = [False, False]
-        
-    def stopstop(self):
-        self.gogogo = False        
         
     def __poller(self):
         """
@@ -250,7 +225,36 @@ class Watcher(QThread, pyinotify.ProcessEvent):
             
         self.start_time = time.time()
         
+    def gen_exc_list(self, dirs):
+        return 
+    
+    def process_IN_CREATE(self, event):
+        file_name = cleanup_encodings(event.pathname)
+        if file_name is not None:
+            if file_name not in self.created:            
+                self.created.append(file_name)
+
+    def process_IN_DELETE(self, event):
+        file_name = cleanup_encodings(event.pathname)
+        if file_name is not None:
+            if file_name not in self.deleted:            
+                self.deleted.append(file_name)
+
+    def set_values(self, dirs, timer):
+        self.directory = dirs[0]
+        self.timer = timer
+        self.gogogo = True
+        self.checkers = [False, False]
+        
+    def stopstop(self):
+        """
+        To stop the watcher. If it works it's
+        just a crude bodge
+        """
+        self.gogogo = False               
+        
     def run(self):
+        self.setPriority(QThread.IdlePriority)
         wm = pyinotify.WatchManager()
         mask = pyinotify.IN_DELETE | pyinotify.IN_CREATE
         notifier = pyinotify.Notifier(wm, self,  read_freq=3, timeout=10)

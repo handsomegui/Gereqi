@@ -117,6 +117,7 @@ class Playlist:
             self.ui_main.track_tbl.setItem(row, column, tbl_wdgt)
         self.ui_main.track_tbl.resizeColumnsToContents()   
         
+        
     # This is needed as the higlighted row can be different
     # than the currentRow method of Qtableview.
     def current_row(self):
@@ -142,7 +143,7 @@ class Playlist:
         column = self.header_search("FileName")
         file_list = [unicode(self.ui_main.track_tbl.item(row, column).text())
                                                                           for row in range(rows)]
-        return file_list   
+        return file_list           
         
     def del_track(self):
         """
@@ -402,7 +403,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def __setup_watcher(self):
         if self.media_dir is not None:
             self.watch_thread = Watcher(self)
-            self.watch_thread.set_values(str(self.media_dir), 60)
+            self.watch_thread.set_values(self.media_dir, 60)
             self.watch_thread.start()
             self.connect(self.watch_thread, SIGNAL('deletions ( QStringList )'), self.__files_deleted)
             self.connect(self.watch_thread, SIGNAL('creations ( QStringList )'), self.__files_created)
@@ -431,9 +432,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.show_messages = False            
         
         dir = self.media_db.setting_get("media_dir") 
-        if dir is not None:
-            
-            self.media_dir = dir[0]
+        if dir is not None:   
+            if "||" in dir:
+                chk = dir.split("||")[0].split(",")
+                unchk = dir.split("||")[1].split(",")
+                self.media_dir = (chk, unchk)
+            else:
+                self.media_dir = dir.split(",")
         else:
             self.media_dir = None        
         
@@ -613,8 +618,18 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             config = configuration.Configuration(self)
             config.show()        
             if config.exec_():
-                print config.dir_model.checked
-                print "SPAM"
+                dirs =  config.dir_list()
+                chkd = (",".join(dirs[0]),  ",".join(dirs[1]))
+                if len(dirs[1]) > 0:
+                    for_db = "%s||%s" % (chkd[0], chkd[1])
+                elif len(dirs[0]) > 0:
+                    for_db = chkd[0]
+                else:
+                    return
+                print for_db
+                self.media_db.setting_save("media_dir", for_db)
+                self.media_dir = dirs
+                self.__setup_watcher() 
         
         else:
             params = {"dir": self.media_dir, "msg": self.show_messages}
@@ -1087,12 +1102,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Either generates a new DB or adds new files to it
         Not finished
         """
-        if self.media_dir is None:
-            self.media_dir = QFileDialog.getExistingDirectory(
-                None,
-                QString("Select Media Directory"),
-                QDesktopServices.storageLocation(QDesktopServices.MusicLocation),
-                QFileDialog.Options(QFileDialog.ShowDirsOnly))
         # If the dialog is cancelled in last if statement the below is ignored
         if self.media_dir is not None:
             self.stat_bttn.setEnabled(True)
