@@ -40,6 +40,7 @@ class Media:
         self.media_db = sqlite.connect(db_loc)
         self.media_curs = self.media_db.cursor()        
         self.__setup_tables()
+        self.__pragma()
         
     def __setup_tables(self):
         tables = ['''CREATE TABLE IF NOT EXISTS media (
@@ -93,6 +94,15 @@ class Media:
             self.media_curs.execute(query) 
         # Not sure to use this on reads   
         self.media_db.commit() 
+        
+    def __pragma(self):
+        """
+        This command will cause SQLite to not wait on data to reach the disk surface, 
+        which will make write operations appear to be much faster. 
+        But if you lose power in the middle of a transaction, your database file might go corrupt.
+        """
+        query = '''PRAGMA synchronous = OFF'''
+        self.__query_execute(query)
 
     def add_media(self, meta):
         """
