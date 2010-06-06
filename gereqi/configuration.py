@@ -44,8 +44,18 @@ class MyQDirModel(QDirModel):
             # store checked paths, remove unchecked paths
             # FIXME: no need to append if it's par_dir is there
             if (value == Qt.Checked):
-                print self.filePath(index)
-                MyQDirModel.check_list[0].append(self.filePath(index))
+                
+                # No point adding if it's root dir is already there
+                checker = self.filePath(index).split("/")
+                there = False
+                for val in range(len(checker)):
+                    thing = checker[:val+1].join("/")
+                    if thing in MyQDirModel.check_list[0]:
+                        there = True
+                        break
+                if there is False:
+                    MyQDirModel.check_list[0].append(self.filePath(index))
+                    
                 try:
                     MyQDirModel.check_list[1].remove(self.filePath(index))
                 except ValueError:
