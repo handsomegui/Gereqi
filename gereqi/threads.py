@@ -23,6 +23,7 @@ to make it easier to manage
 
 from PyQt4.QtCore import QThread, QString, SIGNAL, Qt, QStringList
 from PyQt4.QtGui import QImage, QPixmap
+
 import os
 import time
 import pyinotify
@@ -103,19 +104,25 @@ class Builddb(QThread):
         Required to put parameters into
         this thread from the outside
         """
-        self.media_dir = dirs[0]
+        self.media_dir = dirs
         self.a_formats = formats
         self.file_list = tracks
      
-    def __track_list(self, dir):
+    def __track_list(self, dir, excl):
         """
         Generates a list of compatible files
         """
         tracks = []
+        not_need = [u"%s" % now for now in excl 
+                    if dir in now]
         # No point trying to speed this up. os.walk is a generator function
-        for root, dirname, filenames in os.walk(dir):
+        for dirpath, dirnames, filenames in os.walk(dir):
+            # The exclusion part
+            if dirpath in not_need:
+                continue
+                    
             for name in filenames:
-                now = os.path.join(root, name)
+                now = os.path.join(dirpath, name)
                 file_now = cleanup_encodings(now)
                 if file_now is None:
                     continue
@@ -141,8 +148,8 @@ class Builddb(QThread):
         
         if self.file_list is None:
             tracks = []
-            for dir in self.media_dir:
-                tracks.extend(self.__track_list(dir))
+            for dir in self.media_dir[0]:
+                tracks.extend(self.__track_list(dir, self.media_dir[1]))
         else:
             tracks = []
             for trk in self.file_list:
@@ -225,23 +232,26 @@ class Watcher(QThread, pyinotify.ProcessEvent):
             
         self.start_time = time.time()
         
-    def gen_exc_list(self, dirs):
-        return 
+    def __gen_exc_list(self, dirs):
+        if dirs is not None:
+            return [u"^%s" % dir for dir in dirs]
     
     def process_IN_CREATE(self, event):
         file_name = cleanup_encodings(event.pathname)
+        print file_name
         if file_name is not None:
             if file_name not in self.created:            
                 self.created.append(file_name)
 
     def process_IN_DELETE(self, event):
         file_name = cleanup_encodings(event.pathname)
+        print file_name
         if file_name is not None:
             if file_name not in self.deleted:            
                 self.deleted.append(file_name)
 
     def set_values(self, dirs, timer):
-        self.directory = dirs[0]
+        self.directory = dirs
         self.timer = timer
         self.gogogo = True
         self.checkers = [False, False]
@@ -258,13 +268,17 @@ class Watcher(QThread, pyinotify.ProcessEvent):
         wm = pyinotify.WatchManager()
         mask = pyinotify.IN_DELETE | pyinotify.IN_CREATE
         notifier = pyinotify.Notifier(wm, self,  read_freq=3, timeout=10)
-        wdd = wm.add_watch(self.directory, mask, rec=True, auto_add=True)
+        exclusions = self.__gen_exc_list(self.directory[1])
+        print exclusions
+        excl = pyinotify.ExcludeFilter(exclusions)
+#        incl = [u"%s" % pathname2url(dir) for dir in self.directory[0]]
+        wdd = wm.add_watch(self.directory[0], mask, rec=True, auto_add=True,
+                            exclude_filter=excl)
         
         while self.gogogo is True:
             notifier.process_events()
             if notifier.check_events():
-                notifier.read_events()
-                
+                notifier.read_events()                
             if int(time.time() - self.start_time) > self.timer:
                 self.__poller()         
         self.exit()

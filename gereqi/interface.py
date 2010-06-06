@@ -437,7 +437,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             chk = now[0].split(";;")
             unchk = []
             if len(now) > 1:
-                unchk = now[1].split(",")
+                unchk = now[1].split(";;")
             self.media_dir = (chk, unchk)
         else:
             self.media_dir = None        
@@ -628,7 +628,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     return
                 print for_db
                 self.media_db.setting_save("media_dir", for_db)
-                self.media_dir = dirs
+                self.media_dir = config.dir_list()
                 self.__setup_watcher() 
         
         else:
