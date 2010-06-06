@@ -62,7 +62,8 @@ class MyQDirModel(QDirModel):
                 for item in tmp_list[0]:
                     # removes if we've already checked it
                     if dir_now in item:
-                        MyQDirModel.check_list[0].remove(item)                    
+                        MyQDirModel.check_list[0].remove(item)            
+                        
 #                for item in tmp_list[1]:
 #                    if par_dir in item:
 #                        MyQDirModel.check_list[1].remove(item)                      
