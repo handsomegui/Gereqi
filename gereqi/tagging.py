@@ -236,5 +236,14 @@ class Tagging:
             elif ext == "m4a":
                 tags = self.__m4a_extract(fname)
             
-            tags[3] = int(tags[3])
+            
+            if tags is not None:
+                year = tags[3]                
+                if isinstance(year, str):
+                    if "-" in year:
+                        year = year.split("-")
+                        year.sort()
+                        year = int(year[0])
+                tags[3] = year
+                
             return tags
