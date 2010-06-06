@@ -43,6 +43,7 @@ class MyQDirModel(QDirModel):
     def setData(self, index, value, role = Qt.EditRole):
         if index.isValid() and (index.column() == 0) and role == Qt.CheckStateRole:
             # store checked paths, remove unchecked paths
+            # FIXME: no need to append if it's par_dir is there
             if (value == Qt.Checked):
                 MyQDirModel.check_list[0].append(self.filePath(index))
                 try:
@@ -91,6 +92,12 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.setupUi(self)
         self.dir_model = MyQDirModel()        
         self.connect(self.dir_model, SIGNAL("needsRefresh( QModelIndex )"), self.__refreshing)
+        if parent.media_dir is not None:
+            MyQDirModel.check_list = list(parent.media_dir)
+            if  MyQDirModel.check_list[0] is None:
+                MyQDirModel.check_list[0]  = []
+            if  MyQDirModel.check_list[1] is None:
+                MyQDirModel.check_list[1]  = [] 
         self.__fileview_setup()
         
     def __refreshing(self, index):
