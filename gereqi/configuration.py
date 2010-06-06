@@ -12,7 +12,6 @@ from Ui_configuration import Ui_settings_dialog
 
 class MyQDirModel(QDirModel):
     check_list = [[], []]
-#    unchecked = []
         
     def data(self, index, role = Qt.DisplayRole):
         if index.isValid() and (index.column() == 0) and (role == Qt.CheckStateRole):
@@ -54,17 +53,19 @@ class MyQDirModel(QDirModel):
                 self.emit(SIGNAL("needsRefresh( QModelIndex )"), index)
                 return True
                 
+            # Want to exclude dir
             else:
                 dir_now = self.filePath(index)
                 par_dir = dir_now.split("/")[:-1].join("/")                
                 tmp_list = (list(MyQDirModel.check_list[0]), list(MyQDirModel.check_list[1]))
                 
                 for item in tmp_list[0]:
+                    # removes if we've already checked it
                     if dir_now in item:
                         MyQDirModel.check_list[0].remove(item)                    
-                for item in tmp_list[1]:
-                    if par_dir in item:
-                        MyQDirModel.check_list[1].remove(item)                      
+#                for item in tmp_list[1]:
+#                    if par_dir in item:
+#                        MyQDirModel.check_list[1].remove(item)                      
                         
                 # Only add to unchecked if anything above is checked
                 if par_dir in MyQDirModel.check_list[0]:
@@ -101,7 +102,6 @@ class Configuration(QDialog, Ui_settings_dialog):
         """
         Make the fileview the correct type
         """
-        
         filters = QDir.AllDirs|QDir.Readable|QDir.NoDotAndDotDot
         self.dir_model.setFilter(filters)
         self.dir_model.setReadOnly(True)
@@ -136,3 +136,9 @@ class Configuration(QDialog, Ui_settings_dialog):
         # TODO: not implemented yet
         print "REJECTED"
         QDialog.reject(self)
+        
+        
+    def dir_list(self):
+        checked = [unicode(chk) for chk in MyQDirModel.check_list[0] ]
+        unchecked = [unicode(chk) for chk in MyQDirModel.check_list[1] ]
+        return checked, unchecked
