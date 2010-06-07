@@ -40,6 +40,7 @@ from extraneous import Extraneous
 from extrawidgets import SetupExtraWidgets, WidgetManips
 from audiocd import AudioCD
 from backend import AudioBackend
+from infopage import InfoPage
 
 
 class Playlist:
@@ -326,15 +327,15 @@ class Track:
         
         msg_header = QString("Now Playing")
         msg_main = QString("%s by %s" % (title, artist))
-        self.ui_main.trkNowBox.setTitle(msg_main)
         if self.ui_main.show_messages and self.ui_main.play_bttn.isChecked():
             self.ui_main.tray_icon.showMessage(msg_header, msg_main, QSystemTrayIcon.NoIcon, 3000)
         self.ui_main.tray_icon.setToolTip(msg_main)
         self.msg_status = "Playing: %s by %s on %s" % (title, artist, album)
         self.ui_main.stat_lbl.setText(self.msg_status)
         self.ui_main.playlisting.tracknow_colourise(row)
-        self.ui_main.art_alb["nowart"] = artist.toUtf8()
-        self.ui_main.art_alb["nowalb"] = album.toUtf8()
+        self.ui_main.art_alb["nowart"] = unicode(artist)
+        self.ui_main.art_alb["nowalb"] = unicode(album)
+        self.ui_main.art_alb["title"] = unicode(title)
         
 
 class MainWindow(Ui_MainWindow, QMainWindow): 
@@ -350,7 +351,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.__settings_init()
         
         self.build_lock = self.delete_lock = False
-        self.art_alb = {"oldart":None, "oldalb":None, "nowart":None, "nowalb":None} 
+        self.art_alb = {"oldart":None, "oldalb":None, 
+                                "nowart":None, "nowalb":None, 
+                                "title":None} 
         self.old_pos = 0
         self.locale = ".com"
         self.audio_formats = ["flac", "mp3", "ogg",  "m4a"]
@@ -383,7 +386,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.__setup_watcher()
         
         self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.finishes.db_build)
-        self.connect(self.cover_thread, SIGNAL("got-image ( QImage ) "), self.finishes.set_cover) 
+        self.connect(self.cover_thread, SIGNAL("got-image ( QString ) "), self.__set_info_page) 
         self.connect(self.html_thread, SIGNAL("got-wiki ( QString ) "), self.finishes.set_wiki)
         self.connect(self.build_db_thread, SIGNAL("progress ( int ) "), self.stat_prog, SLOT("setValue(int)"))
         self.connect(self.filesystem_tree, SIGNAL("expanded (const QModelIndex&)"), self.__resize_filesystem_tree) 
@@ -401,6 +404,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.search_collect_edit.setFocus()
         self.wdgt_manip.setup_db_tree()
         self.wdgt_manip.pop_playlist_view()
+        
+    def __set_info_page(self, img):
+        pager = InfoPage(self)
+        info = (self.art_alb["title"],self.art_alb["nowart"],  self.art_alb["nowalb"], img)
+        pager.set_info(info)
+        
         
     def __setup_watcher(self):
         if self.media_dir is not None:
@@ -441,13 +450,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             unchk = []
             if len(now) > 1:
                 unchk = now[1].split(";;")
-                print unchk
             self.media_dir = (chk, unchk)
         else:
             self.media_dir = None        
             
-        print self.media_dir
-        
     @pyqtSignature("QString")  
     def on_search_collect_edit_textChanged(self, srch_str):
         """

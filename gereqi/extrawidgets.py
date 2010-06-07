@@ -162,6 +162,12 @@ class SetupExtraWidgets:
         
         self.ui_main.collect_tree_hdr = self.ui_main.collect_tree.header()
         self.ui_main.collect_tree_hdr.setClickable(True)
+        
+        # Disables the webView link-clicks as we want to manually handle them
+        self.ui_main.info_view.page().setLinkDelegationPolicy(2)
+        self.ui_main.wiki_view.page().setLinkDelegationPolicy(2)
+        # The images are scaled smoothly using opengl and antialias edges of primitives(?)
+        self.ui_main.info_view.setRenderHint(1|5)
 
     def __key_shortcuts(self):
         delete = QShortcut(QKeySequence(QString("Del")), self.ui_main)

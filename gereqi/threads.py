@@ -32,6 +32,7 @@ from webinfo import Webinfo
 from database import Media
 from tagging import Tagging
 
+
 build_lock = delete_lock = False
 
 def cleanup_encodings(before):
@@ -45,7 +46,7 @@ def cleanup_encodings(before):
 
 class Getcover(QThread):
     """
-    Retrives the cover for an album
+    Retrieves the cover for an album
     from Amazon
     """
     def __init__(self, parent=None):
@@ -58,11 +59,9 @@ class Getcover(QThread):
       
     def run(self):
         info = Webinfo()
-        result = info.get_info("cover", self.artist, self.album)
-        img = QImage()
-        if result is not None:
-            img.loadFromData(result, "JPG")
-        self.emit(SIGNAL("got-image ( QImage )"), img) 
+        img = info.get_info("cover", self.artist, self.album)
+        if img is not None:
+            self.emit(SIGNAL("got-image ( QString )"), img) 
         self.exit()
         
         
@@ -331,17 +330,6 @@ class Finishers:
         self.ui_main.wdgt_manip.setup_db_tree()
         self.ui_main.search_collect_edit.clear()
         
-    def set_cover(self, img):
-        """
-        Takes the img and displays in info tab
-        """
-        if img.isNull() is True:
-            self.ui_main.cover_view.setPixmap(QPixmap(":/Icons/music.png"))
-        else:
-            cover = QPixmap()
-            cover = cover.fromImage(img, Qt.OrderedDither)
-            cover = cover.scaledToWidth(200, Qt.SmoothTransformation)
-            self.ui_main.cover_view.setPixmap(cover)        
         
     def set_wiki(self, html):
         """

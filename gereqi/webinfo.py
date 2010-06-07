@@ -62,8 +62,10 @@ class Webinfo:
         """
         if site == "wikipedia":
             tag = "bodyContent"
-        else:
+        elif site == "amazon.com":
             tag = "prodImage" # album art
+        else:
+            return
             
         tree = fromstring(html) # loads html into lxml        
         try:
@@ -123,7 +125,8 @@ class Webinfo:
                     # Cuts out everything from References down
                     splitter = '''<h2><span class="mw-headline" id="References">References</span></h2>'''
                     return base_html % result.split(splitter)[0]         
-            
+        
+        # TODO: look in the dir for a cover.jpg
         elif thing == "cover":    
             site = "amazon.com"
             url = self.__create_url(site, *params)
@@ -133,5 +136,5 @@ class Webinfo:
                 if result is not None:
                     img_url = result .split("src=")[1].split(" ")[0]
                     img_url = img_url.strip('''"''')
-                    img = self.__fetch(img_url).read()
-                    return img
+                    return img_url
+

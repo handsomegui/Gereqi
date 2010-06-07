@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/gereqi/interface.ui'
 #
-# Created: Thu Jun  3 23:07:33 2010
+# Created: Mon Jun  7 12:42:23 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -61,62 +61,10 @@ class Ui_MainWindow(object):
         self.gridLayout_12 = QtGui.QGridLayout(self.musicTab)
         self.gridLayout_12.setMargin(2)
         self.gridLayout_12.setObjectName("gridLayout_12")
-        self.trkNowBox = QtGui.QGroupBox(self.musicTab)
-        self.trkNowBox.setStyleSheet("text-decoration: underline;\n"
-"font: 75 10pt \"DejaVu Sans\";\n"
-"")
-        self.trkNowBox.setObjectName("trkNowBox")
-        self.gridLayout_8 = QtGui.QGridLayout(self.trkNowBox)
-        self.gridLayout_8.setMargin(1)
-        self.gridLayout_8.setObjectName("gridLayout_8")
-        self.cover_view = QtGui.QLabel(self.trkNowBox)
-        self.cover_view.setMinimumSize(QtCore.QSize(215, 215))
-        self.cover_view.setMaximumSize(QtCore.QSize(215, 215))
-        self.cover_view.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.cover_view.setFrameShadow(QtGui.QFrame.Raised)
-        self.cover_view.setText("None")
-        self.cover_view.setPixmap(QtGui.QPixmap(":/Icons/music.png"))
-        self.cover_view.setAlignment(QtCore.Qt.AlignCenter)
-        self.cover_view.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
-        self.cover_view.setObjectName("cover_view")
-        self.gridLayout_8.addWidget(self.cover_view, 0, 0, 1, 1)
-        self.gridLayout_12.addWidget(self.trkNowBox, 0, 0, 1, 1)
-        self.groupBox_2 = QtGui.QGroupBox(self.musicTab)
-        self.groupBox_2.setStyleSheet("text-decoration: underline;\n"
-"font: 75 10pt \"DejaVu Sans\";\n"
-"")
-        self.groupBox_2.setObjectName("groupBox_2")
-        self.gridLayout_9 = QtGui.QGridLayout(self.groupBox_2)
-        self.gridLayout_9.setMargin(1)
-        self.gridLayout_9.setObjectName("gridLayout_9")
-        self.label_2 = QtGui.QLabel(self.groupBox_2)
-        self.label_2.setObjectName("label_2")
-        self.gridLayout_9.addWidget(self.label_2, 0, 0, 1, 1)
-        self.gridLayout_12.addWidget(self.groupBox_2, 1, 0, 1, 1)
-        self.groupBox_3 = QtGui.QGroupBox(self.musicTab)
-        self.groupBox_3.setStyleSheet("text-decoration: underline;\n"
-"font: 75 10pt \"DejaVu Sans\";\n"
-"")
-        self.groupBox_3.setObjectName("groupBox_3")
-        self.gridLayout_10 = QtGui.QGridLayout(self.groupBox_3)
-        self.gridLayout_10.setMargin(1)
-        self.gridLayout_10.setObjectName("gridLayout_10")
-        self.label_4 = QtGui.QLabel(self.groupBox_3)
-        self.label_4.setObjectName("label_4")
-        self.gridLayout_10.addWidget(self.label_4, 0, 0, 1, 1)
-        self.gridLayout_12.addWidget(self.groupBox_3, 2, 0, 1, 1)
-        self.groupBox_4 = QtGui.QGroupBox(self.musicTab)
-        self.groupBox_4.setStyleSheet("text-decoration: underline;\n"
-"font: 75 10pt \"DejaVu Sans\";\n"
-"")
-        self.groupBox_4.setObjectName("groupBox_4")
-        self.gridLayout_11 = QtGui.QGridLayout(self.groupBox_4)
-        self.gridLayout_11.setMargin(1)
-        self.gridLayout_11.setObjectName("gridLayout_11")
-        self.label_5 = QtGui.QLabel(self.groupBox_4)
-        self.label_5.setObjectName("label_5")
-        self.gridLayout_11.addWidget(self.label_5, 0, 0, 1, 1)
-        self.gridLayout_12.addWidget(self.groupBox_4, 3, 0, 1, 1)
+        self.info_view = QtWebKit.QWebView(self.musicTab)
+        self.info_view.setUrl(QtCore.QUrl("about:blank"))
+        self.info_view.setObjectName("info_view")
+        self.gridLayout_12.addWidget(self.info_view, 0, 0, 1, 1)
         self.horizontal_tabs.addTab(self.musicTab, "")
         self.lyricsTab = QtGui.QWidget()
         self.lyricsTab.setObjectName("lyricsTab")
@@ -621,13 +569,6 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Gereqi", None, QtGui.QApplication.UnicodeUTF8))
-        self.trkNowBox.setTitle(QtGui.QApplication.translate("MainWindow", "No Track Playing", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_2.setTitle(QtGui.QApplication.translate("MainWindow", "Fresh Podcast Episodes", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("MainWindow", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_3.setTitle(QtGui.QApplication.translate("MainWindow", "Your Newest Albums", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("MainWindow", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_4.setTitle(QtGui.QApplication.translate("MainWindow", "Favourite Albums", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setText(QtGui.QApplication.translate("MainWindow", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
         self.horizontal_tabs.setTabText(self.horizontal_tabs.indexOf(self.musicTab), QtGui.QApplication.translate("MainWindow", "Music", None, QtGui.QApplication.UnicodeUTF8))
         self.horizontal_tabs.setTabText(self.horizontal_tabs.indexOf(self.lyricsTab), QtGui.QApplication.translate("MainWindow", "Lyrics", None, QtGui.QApplication.UnicodeUTF8))
         self.horizontal_tabs.setTabText(self.horizontal_tabs.indexOf(self.wikipediaTab), QtGui.QApplication.translate("MainWindow", "Wikipedia", None, QtGui.QApplication.UnicodeUTF8))
