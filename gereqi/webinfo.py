@@ -34,12 +34,14 @@ class Webinfo:
             
         if "wikipedia" in site:
             pre_url = "%s+music+OR+band+OR+artist" % "+".join(things)
+            base_url = "http://www.google.com/search?hl=en&q=%s+%s&btnI=745"
+            url = base_url % (site, pre_url)
+            return url
         else:
-            pre_url = "+".join(things)
-            
-        base_url = "http://www.google.com/search?hl=en&q=%s+%s&btnI=745" 
-        url = base_url % (site, pre_url)
-        return url
+            base_url = "http://www.albumart.org/index.php?srchkey=%s&itempage=1&newsearch=1&searchindex=Music"
+            url = base_url % "+".join(things)
+            print url
+            return url
         
     def __fetch(self, url):
         """
@@ -47,10 +49,10 @@ class Webinfo:
         generated via create_url.
         """
         try:
-            user_agent = "Firefox/3.0.14"
+            user_agent = "Googlebot/2.1 (+http://www.google.com/bot.html)"
             headers = { 'User-Agent' : user_agent }
             req = Request(url, None, headers)
-            return urlopen(req, None, 30)
+            return urlopen(req, None, 3)
         except URLError, err:
             print(err)
 
@@ -131,10 +133,12 @@ class Webinfo:
             url = self.__create_url(site, *params)
             pre_html = self.__fetch(url)
             if pre_html is not None:
-                result = self.__treat(site, pre_html.read())
-                if result is not None:
-                    img_url = result .split("src=")[1].split(" ")[0]
-                    img_url = img_url.strip('''"''')
-                    img = self.__fetch(img_url).read()
+                srch = "http://www.albumart.org/images/zoom-icon.jpg"
+                html = pre_html.read().split("\n")
+                html = filter(lambda x: srch in x,  html)
+                images = [line.partition('</a><a href="')[2].partition('"')[0] for line in html]
+                        
+                if images is not None:
+                    img = self.__fetch(images[0]).read()
                     return img
 

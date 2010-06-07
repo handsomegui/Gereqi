@@ -30,6 +30,7 @@ HTML = '''
                 text-align: left;
                 font-size: 0.9em;
             }
+            ul{list-style-type: none;}
             </style>
             </head>
             
