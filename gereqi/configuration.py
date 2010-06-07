@@ -21,8 +21,7 @@ class MyQDirModel(QDirModel):
             if dir_now in MyQDirModel.check_list[1]:
                 return Qt.Unchecked
             elif par_dir in MyQDirModel.check_list[1]:
-                return Qt.Unchecked
-                
+                return Qt.Unchecked                
             else:
                 checker = dir_now.split("/")
                 for val in range(len(checker)):
@@ -44,23 +43,31 @@ class MyQDirModel(QDirModel):
             # store checked paths, remove unchecked paths
             # FIXME: no need to append if it's par_dir is there
             if (value == Qt.Checked):
-                
+                dir_now = self.filePath(index)
                 # No point adding if it's root dir is already there
-                checker = self.filePath(index).split("/")
+                checker = dir_now.split("/")
                 there = False
                 for val in range(len(checker)):
                     thing = checker[:val+1].join("/")
                     if thing in MyQDirModel.check_list[0]:
                         there = True
                         break
-                if there is False:
-                    MyQDirModel.check_list[0].append(self.filePath(index))
-                    
+                        
                 try:
-                    MyQDirModel.check_list[1].remove(self.filePath(index))
+                    tmp_list = []
+                    for thing in MyQDirModel.check_list[1]:
+                        if dir_now in thing:
+                            thing.append(tmp_list)
+                    for thing in tmp_list:
+                        MyQDirModel.check_list[1].remove(thing)   
+#                    MyQDirModel.check_list[1].remove(self.filePath(index))
+
                 except ValueError:
                     # Doesn't exist yet
                     pass
+                    
+                if there is False:
+                    MyQDirModel.check_list[0].append(self.filePath(index))
                 self.emit(SIGNAL("needsRefresh( QModelIndex )"), index)
                 return True
                 
@@ -151,6 +158,6 @@ class Configuration(QDialog, Ui_settings_dialog):
         QDialog.reject(self)
         
     def dir_list(self):
-        checked = [unicode(chk) for chk in MyQDirModel.check_list[0] ]
-        unchecked = [unicode(chk) for chk in MyQDirModel.check_list[1] ]
+        checked = [str(chk) for chk in MyQDirModel.check_list[0] ]
+        unchecked = [str(chk) for chk in MyQDirModel.check_list[1] ]
         return checked, unchecked
