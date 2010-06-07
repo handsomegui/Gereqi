@@ -435,12 +435,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if dir is not None:
             now = dir[0].split("||")
             chk = now[0].split(";;")
+            chk = map(lambda x : str(x), chk)
             unchk = []
             if len(now) > 1:
                 unchk = now[1].split(";;")
+                print unchk
             self.media_dir = (chk, unchk)
         else:
             self.media_dir = None        
+            
+        print self.media_dir
         
     @pyqtSignature("QString")  
     def on_search_collect_edit_textChanged(self, srch_str):

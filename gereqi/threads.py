@@ -156,6 +156,7 @@ class Builddb(QThread):
                 tracks.append(unicode(trk))
             
         tracks_total = len(tracks)
+        print("%06d tracks to scan" % tracks_total)
         self.exiting = False
         
         #TODO:maybe put in a check to not bother getting tags for
@@ -234,7 +235,7 @@ class Watcher(QThread, pyinotify.ProcessEvent):
         
     def __gen_exc_list(self, dirs):
         if dirs is not None:
-            return [u"^%s" % dir for dir in dirs]
+            return ["^%s" % dir for dir in dirs]
     
     def process_IN_CREATE(self, event):
         file_name = cleanup_encodings(event.pathname)
@@ -271,7 +272,6 @@ class Watcher(QThread, pyinotify.ProcessEvent):
         exclusions = self.__gen_exc_list(self.directory[1])
         print exclusions
         excl = pyinotify.ExcludeFilter(exclusions)
-#        incl = [u"%s" % pathname2url(dir) for dir in self.directory[0]]
         wdd = wm.add_watch(self.directory[0], mask, rec=True, auto_add=True,
                             exclude_filter=excl)
         
