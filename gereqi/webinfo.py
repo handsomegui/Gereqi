@@ -52,7 +52,7 @@ class Webinfo:
             user_agent = "Googlebot/2.1 (+http://www.google.com/bot.html)"
             headers = { 'User-Agent' : user_agent }
             req = Request(url, None, headers)
-            return urlopen(req, None, 3)
+            return urlopen(req, None, 10)
         except URLError, err:
             print(err)
 
@@ -125,9 +125,9 @@ class Webinfo:
                         '''
                     # Cuts out everything from References down
                     splitter = '''<h2><span class="mw-headline" id="References">References</span></h2>'''
-                    return base_html % result.split(splitter)[0]         
+                    final = base_html % result.split(splitter)[0] 
+                    return final.encode("utf-8")       
         
-        # TODO: look in the dir for a cover.jpg
         elif thing == "cover":    
             site = "amazon.com"
             url = self.__create_url(site, *params)
@@ -138,7 +138,9 @@ class Webinfo:
                 html = filter(lambda x: srch in x,  html)
                 images = [line.partition('</a><a href="')[2].partition('"')[0] for line in html]
                         
-                if images is not None:
+                if len(images) > 0:
                     img = self.__fetch(images[0]).read()
                     return img
-
+                    
+                else:
+                    return ""

@@ -37,7 +37,7 @@ HTML = '''
             <body>
             <h1>%s - %s</h1>
             <h2>%s</h2>
-            <img border="0" src="%s" width="200" />
+            <img border="0" src="%s" width="240" />
             <h1>Albums by %s</h1>
             <p>%s</p>
             </body>
