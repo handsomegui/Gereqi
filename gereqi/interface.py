@@ -407,7 +407,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
     def __set_info_page(self, img):
         pager = InfoPage(self)
-        info = (self.art_alb["title"],self.art_alb["nowart"],  self.art_alb["nowalb"], img)
+        info = {"title": self.art_alb["title"],  "artist": self.art_alb["nowart"],  
+                    "album": self.art_alb["nowalb"], "cover": img}
         pager.set_info(info)
         
         
