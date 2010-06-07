@@ -51,8 +51,8 @@ class InfoPage:
         return
         
     def __gen_albs(self, albums):
-        tmpl = '''%s<br>'''
-        thing = ""
+        tmpl = '''<li>%s</li>'''
+        thing = "<ul>"
         for alb in albums:
             thing += tmpl % alb
         return thing

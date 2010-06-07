@@ -23,6 +23,7 @@ to make it easier to manage
 
 from PyQt4.QtCore import QThread, QString, SIGNAL, Qt, QStringList
 from PyQt4.QtGui import QImage, QPixmap
+from urllib import pathname2url
 
 import os
 import time
@@ -56,13 +57,32 @@ class Getcover(QThread):
         self.artist = art
         self.album = alb
         self.locale = loc
+        
+    def __filenamer(self, *params):
+        things = []
+        exc = '''!,.%%$&(){}[]/"'''
+        for item in params:
+            result = filter(lambda x : x not in exc, item.lower())
+            result = result.replace(" ", "_")
+            things.append(result)
+        return "%s-%s" % tuple(things)
       
     def run(self):
-        info = Webinfo()
-        img = info.get_info("cover", self.artist, self.album)
-        if img is not None:
-            self.emit(SIGNAL("got-image ( QString )"), img) 
-        self.exit()
+        cover_dir = "%s/.gereqi/album-art/" % os.environ["HOME"]
+        cover = "%s%s.jpg" % (cover_dir, self.__filenamer(self.artist, self.album))
+        print cover
+        if os.path.exists(cover_dir) is False:
+            os.mkdir(cover_dir)
+        elif os.path.exists(cover) is True:
+            self.emit(SIGNAL("got-image ( QString )"), "file://%s" % cover) 
+        else:                        
+            info = Webinfo()
+            img = info.get_info("cover", self.artist, self.album)            
+            if img is not None:
+                now = open(cover, "wb")
+                now.write(img)
+                self.emit(SIGNAL("got-image ( QString )"), "file://%s" % cover) 
+#        self.exit()
         
         
 class Getwiki(QThread):

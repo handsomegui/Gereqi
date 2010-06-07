@@ -96,8 +96,6 @@ class AudioBackend:
         self.ui_main.progress_lbl.setText("00:00 | 00:00")
         # clear things like wiki and reset cover art to default        
         self.ui_main.wiki_view.setHtml(QString(""))
-        self.ui_main.cover_view.setPixmap(QPixmap(":/Icons/music.png"))
-        self.ui_main.trkNowBox.setTitle(QString("No Track Playing"))
         self.ui_main.art_alb["oldart"] = self.ui_main.art_alb["oldalb"] = None
         self.ui_main.tray_icon.setToolTip("Stopped")
         

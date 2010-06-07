@@ -29,9 +29,8 @@ class Webinfo:
         things = []
         exc = '''!,.%%$&(){}[]'''
         for item in params:
-            result = ''.join([c for c in item if c not in exc])
-            fin = result.replace(" ", "+")
-            things.append(fin)
+            result = filter(lambda x : x not in exc, item)
+            things.append(result.replace(" ", "+"))
             
         if "wikipedia" in site:
             pre_url = "%s+music+OR+band+OR+artist" % "+".join(things)
@@ -136,5 +135,6 @@ class Webinfo:
                 if result is not None:
                     img_url = result .split("src=")[1].split(" ")[0]
                     img_url = img_url.strip('''"''')
-                    return img_url
+                    img = self.__fetch(img_url).read()
+                    return img
 
