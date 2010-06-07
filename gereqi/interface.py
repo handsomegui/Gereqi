@@ -224,8 +224,10 @@ class Playlist:
                 tmp_list.append(unicode(self.ui_main.track_tbl.item(row, col).text()))
             tracks.append(tmp_list)        
         return headers, tracks
-            
+     
+    # It's really rubbish so disabling for now
     def change_sort(self, index):
+        return
         hdrs, tracks = self.gen_full_list()
         self.tracknow_colourise()
         
