@@ -32,7 +32,7 @@ import pyinotify
 from webinfo import Webinfo
 from database import Media
 from tagging import Tagging
-
+from extraneous import Extraneous
 
 build_lock = delete_lock = False
 
@@ -40,7 +40,7 @@ def cleanup_encodings(before):
     try:
         return before.decode("utf-8")
     except UnicodeDecodeError:
-    #TODO: filename fixer
+        # TODO: filename fixer
         print("WARNING!: Funny encoding for filename. Ignoring - ", repr(before))
 
 
@@ -53,36 +53,14 @@ class Getcover(QThread):
     def __init__(self, parent=None):
         QThread.__init__(self, parent)
         
-    def set_values(self, art, alb, loc=None):
+    def set_values(self, art, alb):
         self.artist = art
         self.album = alb
-        self.locale = loc
-        
-    def __filenamer(self, *params):
-        things = []
-        exc = '''!,.%%$&(){}[]/"'''
-        for item in params:
-            result = filter(lambda x : x not in exc, item.lower())
-            result = result.replace(" ", "_")
-            things.append(result)
-        return "%s-%s" % tuple(things)
       
     def run(self):
-        cover_dir = "%s/.gereqi/album-art/" % os.environ["HOME"]
-        cover = "%s%s.jpg" % (cover_dir, self.__filenamer(self.artist, self.album))
-        print cover
-        if os.path.exists(cover_dir) is False:
-            os.mkdir(cover_dir)
-        elif os.path.exists(cover) is True:
+        cover = Extraneous().get_cover_source(self.artist, self.album)
+        if cover is not None:
             self.emit(SIGNAL("got-image ( QString )"), "file://%s" % cover) 
-        else:                        
-            info = Webinfo()
-            img = info.get_info("cover", self.artist, self.album)            
-            if img is not None:
-                now = open(cover, "wb")
-                now.write(img)
-                self.emit(SIGNAL("got-image ( QString )"), "file://%s" % cover) 
-#        self.exit()
         
         
 class Getwiki(QThread):

@@ -1141,7 +1141,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if (alb_change is True) and (self.art_alb["nowalb"] is not None):
             album = self.art_alb["nowalb"]
             artist = self.art_alb["nowart"]
-            self.cover_thread.set_values(album, artist, self.locale)
+            self.cover_thread.set_values(album, artist)
             self.cover_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
 
