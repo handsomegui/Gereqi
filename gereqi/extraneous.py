@@ -52,17 +52,22 @@ class Extraneous:
             database.delete_track(fname)
             
 
-    def get_cover_source(self, artist, album):
+    def get_cover_source(self, artist, album, check=True):
         cover_dir = "%s/.gereqi/album-art/" % os.environ["HOME"]
         cover = "%s%s.jpg" % (cover_dir, self.__filenamer(artist, album))
-        if os.path.exists(cover_dir) is False:
-            os.mkdir(cover_dir)
-        elif os.path.exists(cover) is True:
-            return "file://%s" % cover
-        else:                        
-            info = Webinfo()
-            img = info.get_info("cover", artist, album)            
-            if img is not None:
-                now = open(cover, "wb")
-                now.write(img)
+        
+        if check is True:
+            if os.path.exists(cover_dir) is False:
+                os.mkdir(cover_dir)
+            elif os.path.exists(cover) is True:
                 return "file://%s" % cover
+            else:                        
+                info = Webinfo()
+                img = info.get_info("cover", artist, album)            
+                if img is not None:
+                    now = open(cover, "wb")
+                    now.write(img)
+                    return "file://%s" % cover
+                    
+        else:
+            return "file://%s" % cover

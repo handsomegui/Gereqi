@@ -352,7 +352,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.build_lock = self.delete_lock = False
         self.art_alb = {"oldart":None, "oldalb":None, 
                                 "nowart":None, "nowalb":None, 
-                                "title":None} 
+                                "title":None, "oldtit":None} 
         self.old_pos = 0
         self.locale = ".com"
         self.audio_formats = ["flac", "mp3", "ogg",  "m4a"]
@@ -1114,12 +1114,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.stat_lbl.setText("Scanning Media")
             self.stat_prog.setValue(0)
             self.build_db_thread.start()
-
+    
+    # FIXME: this looks horrendously crap
     def set_info(self):
         """
         The wikipedia page + album art to current artist playing
         """
         art_change = self.art_alb["nowart"] != self.art_alb["oldart"] 
+        alb_change = self.art_alb["nowalb"] != self.art_alb["oldalb"]
+        tit_change = self.art_alb["title"] != self.art_alb["oldtit"]
+        
         # Wikipedia info
         if (art_change is True) and (self.art_alb["nowart"] is not None):
             # passes the artist to the thread
@@ -1127,12 +1131,18 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             # starts the thread
             self.html_thread.start() 
             self.art_alb["oldart"] = self.art_alb["nowart"]
-            
-        alb_change = self.art_alb["nowalb"] != self.art_alb["oldalb"]
+
         # Album art
         if (alb_change is True) and (self.art_alb["nowalb"] is not None):
             self.info_thread.set_values(artist=self.art_alb["nowart"],  album=self.art_alb["nowalb"], 
-                                                    title=self.art_alb["title"])
+                                                    title=self.art_alb["title"], check=True)
+            self.info_thread.start()
+            self.art_alb["oldalb"] = self.art_alb["nowalb"]
+            
+        # TODO: maybe tell to not check for covers as we should have them by now
+        elif (tit_change is True) and (self.art_alb["title"] is not None):
+            self.info_thread.set_values(artist=self.art_alb["nowart"],  album=self.art_alb["nowalb"], 
+                                                    title=self.art_alb["title"], check=False)
             self.info_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
 

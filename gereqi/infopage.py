@@ -43,6 +43,7 @@ HTML = '''
             }
             ul{
                 list-style-type: none;
+                font-size: 0.9em;
             }
             </style>
             </head>
@@ -74,7 +75,7 @@ class InfoPage:
         
     def gen_info(self, **params):
         albs = Media().get_albums(params["artist"])
-        cover = Extraneous().get_cover_source(params["artist"], params["album"])
+        cover = Extraneous().get_cover_source(params["artist"], params["album"], params["check"])
         now = HTML % (params["title"], params["artist"], params["album"], 
                                 cover, params["artist"], self.__gen_albs(params["artist"], albs))
         return now
