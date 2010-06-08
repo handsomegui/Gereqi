@@ -24,7 +24,7 @@ class Webinfo:
     def __init__(self):
         return
         
-    def __create_url(self, site, *params):
+    def __create_url(self, site=None, *params):
         # Cleans up the string
         things = []
         exc = '''!,.%%$&(){}[]'''
@@ -32,12 +32,12 @@ class Webinfo:
             result = filter(lambda x : x not in exc, item)
             things.append(result.replace(" ", "+"))
             
-        if "wikipedia" in site:
+        if site == "wikipedia.org":
             pre_url = "%s+music+OR+band+OR+artist" % "+".join(things)
             base_url = "http://www.google.com/search?hl=en&q=%s+%s&btnI=745"
             url = base_url % (site, pre_url)
             return url
-        else:
+        elif site == "albumart.org":
             base_url = "http://www.albumart.org/index.php?srchkey=%s&itempage=1&newsearch=1&searchindex=Music"
             url = base_url % "+".join(things)
             print url
@@ -93,7 +93,7 @@ class Webinfo:
         Where everything starts from
         """
         if thing == "info":
-            site = "wikipedia"
+            site = "wikipedia.org"
             url = self.__create_url(site, *params)
             pre_html = self.__fetch(url)
             if pre_html is not None:
@@ -129,7 +129,7 @@ class Webinfo:
                     return final.encode("utf-8")       
         
         elif thing == "cover":    
-            site = "amazon.com"
+            site = "albumart.org"
             url = self.__create_url(site, *params)
             pre_html = self.__fetch(url)
             if pre_html is not None:
