@@ -29,7 +29,7 @@ import time
 from settings import Setting_Dialog
 from database import Media
 from tagging import Tagging
-from threads import Getcover, Getwiki, Builddb, Finishers, \
+from threads import Getinfo, Getwiki, Builddb, Finishers, \
 Watcher, DeleteFiles
 
 from Ui_interface import Ui_MainWindow
@@ -40,7 +40,6 @@ from extraneous import Extraneous
 from extrawidgets import SetupExtraWidgets, WidgetManips
 from audiocd import AudioCD
 from backend import AudioBackend
-from infopage import InfoPage
 
 
 class Playlist:
@@ -143,7 +142,7 @@ class Playlist:
         rows = self.ui_main.track_tbl.rowCount() 
         column = self.header_search("FileName")
         file_list = [unicode(self.ui_main.track_tbl.item(row, column).text())
-                                                                          for row in range(rows)]
+                        for row in range(rows)]
         return file_list           
         
     def del_track(self):
@@ -369,7 +368,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # TODO: change ui settings based on saved states/options
         self.setupUi(self)
        
-        self.cover_thread = Getcover()        
+        self.info_thread = Getinfo()        
         self.html_thread = Getwiki()
         self.build_db_thread = Builddb(self)
         self.del_thread = DeleteFiles(self)
@@ -386,8 +385,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.__setup_watcher()
         
         self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.finishes.db_build)
-        self.connect(self.cover_thread, SIGNAL("got-image ( QString ) "), self.__set_info_page) 
         self.connect(self.html_thread, SIGNAL("got-wiki ( QString ) "), self.finishes.set_wiki)
+        self.connect(self.info_thread, SIGNAL("got-info ( QString ) "), self.info_view.setHtml)
         self.connect(self.build_db_thread, SIGNAL("progress ( int ) "), self.stat_prog, SLOT("setValue(int)"))
         self.connect(self.filesystem_tree, SIGNAL("expanded (const QModelIndex&)"), self.__resize_filesystem_tree) 
         self.connect(self.filesystem_tree, SIGNAL("doubleClicked (const QModelIndex&)"), self.__filesystem_tree_item)
@@ -403,14 +402,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # Make the collection search line-edit have the keyboard focus on startup.
         self.search_collect_edit.setFocus()
         self.wdgt_manip.setup_db_tree()
-        self.wdgt_manip.pop_playlist_view()
-        
-    def __set_info_page(self, img):
-        pager = InfoPage(self)
-        info = {"title": self.art_alb["title"],  "artist": self.art_alb["nowart"],  
-                    "album": self.art_alb["nowalb"], "cover": img}
-        pager.set_info(info)
-        
+        self.wdgt_manip.pop_playlist_view()        
         
     def __setup_watcher(self):
         if self.media_dir is not None:
@@ -1139,10 +1131,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         alb_change = self.art_alb["nowalb"] != self.art_alb["oldalb"]
         # Album art
         if (alb_change is True) and (self.art_alb["nowalb"] is not None):
-            album = self.art_alb["nowalb"]
-            artist = self.art_alb["nowart"]
-            self.cover_thread.set_values(album, artist)
-            self.cover_thread.start()
+            self.info_thread.set_values(artist=self.art_alb["nowart"],  album=self.art_alb["nowalb"], 
+                                                    title=self.art_alb["title"])
+            self.info_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
 
     def tray_event(self, event):

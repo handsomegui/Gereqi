@@ -15,12 +15,23 @@
 # You should have received a copy of the GNU General Public License
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
-
+from extraneous import Extraneous
+from database import Media
 
 HTML = '''
             <html>
             <head>
+            
             <style type="text/css">
+            img.cover{
+                width: 240px;
+                border: 0;
+            }
+            img.mini{
+                width: 48px;
+                height: 48px;
+                border: 0;
+            }
             h1{
                 text-align: left;
                 font-size: 1em;
@@ -30,42 +41,43 @@ HTML = '''
                 text-align: left;
                 font-size: 0.9em;
             }
-            ul{list-style-type: none;}
+            ul{
+                list-style-type: none;
+            }
             </style>
             </head>
             
             <body>
             <h1>%s - %s</h1>
             <h2>%s</h2>
-            <img border="0" src="%s" width="240" />
+            <img class="cover" src="%s"/>
             <h1>Albums by %s</h1>
-            <p>%s</p>
+            %s
             </body>
             </html>
             '''
             
 class InfoPage:
-    def __init__(self, parent):
-        self.ui_main = parent
-        
+    def __init__(self, parent=None):
+        return
     def __gen_info(self):
         return
         
-    def __gen_albs(self, albums):
-        tmpl = '''<li>%s</li>'''
-        thing = "<ul>"
+    def __gen_albs(self, artist, albums):
+        tmpl = '''<img class="mini" src="%s" /> %s<br>\n'''
+        thing = ""
         for alb in albums:
-            thing += tmpl % alb
-        return thing
+            cover = Extraneous().get_cover_source(artist, alb)
+            thing += tmpl % (cover, alb)
+        return "<p>%s</p>" % thing
         
         
-    def set_info(self, info):
-        albs = self.ui_main.media_db.get_albums(info["artist"])
-        
-        now = HTML % (info["title"], info["artist"], info["album"], 
-                                info["cover"], info["artist"], self.__gen_albs(albs))
-        print now
-        self.ui_main.info_view.setHtml(now)
+    def gen_info(self, **params):
+        albs = Media().get_albums(params["artist"])
+        cover = Extraneous().get_cover_source(params["artist"], params["album"])
+        now = HTML % (params["title"], params["artist"], params["album"], 
+                                cover, params["artist"], self.__gen_albs(params["artist"], albs))
+        return now
         
         
         

@@ -137,10 +137,10 @@ class Webinfo:
                 html = pre_html.read().split("\n")
                 html = filter(lambda x: srch in x,  html)
                 images = [line.partition('</a><a href="')[2].partition('"')[0] for line in html]
-                        
                 if len(images) > 0:
-                    img = self.__fetch(images[0]).read()
-                    return img
+                    img = self.__fetch(images[0])
+                    if img is not None:
+                        return img.read()
                     
                 else:
                     return ""

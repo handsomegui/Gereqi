@@ -32,7 +32,7 @@ import pyinotify
 from webinfo import Webinfo
 from database import Media
 from tagging import Tagging
-from extraneous import Extraneous
+from infopage import InfoPage
 
 build_lock = delete_lock = False
 
@@ -45,23 +45,20 @@ def cleanup_encodings(before):
 
 
 
-class Getcover(QThread):
+class Getinfo(QThread):
     """
     Retrieves the cover for an album
     from Amazon
     """
     def __init__(self, parent=None):
-        QThread.__init__(self, parent)
+        QThread.__init__(self, parent = None)
         
-    def set_values(self, art, alb):
-        self.artist = art
-        self.album = alb
-      
+    def set_values(self, **params):
+        self.info = params
     def run(self):
-        cover = Extraneous().get_cover_source(self.artist, self.album)
-        if cover is not None:
-            self.emit(SIGNAL("got-image ( QString )"), "file://%s" % cover) 
-        
+        html = InfoPage().gen_info(**self.info)
+        print html
+        self.emit(SIGNAL("got-info ( QString )"), html)
         
 class Getwiki(QThread):
     """

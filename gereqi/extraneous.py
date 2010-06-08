@@ -55,15 +55,14 @@ class Extraneous:
     def get_cover_source(self, artist, album):
         cover_dir = "%s/.gereqi/album-art/" % os.environ["HOME"]
         cover = "%s%s.jpg" % (cover_dir, self.__filenamer(artist, album))
-        print cover
         if os.path.exists(cover_dir) is False:
             os.mkdir(cover_dir)
         elif os.path.exists(cover) is True:
-            return cover
+            return "file://%s" % cover
         else:                        
             info = Webinfo()
             img = info.get_info("cover", artist, album)            
             if img is not None:
                 now = open(cover, "wb")
                 now.write(img)
-                return cover
+                return "file://%s" % cover
