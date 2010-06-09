@@ -43,7 +43,7 @@ HTML = '''
             }
             ul{
                 list-style-type: none;
-                font-size: 0.9em;
+                font-size: 0.8em;
             }
             </style>
             </head>
