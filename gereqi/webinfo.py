@@ -64,7 +64,9 @@ class Webinfo:
         url_now = "http://en.wikipedia.org/w/index.php?title=%s&printable=yes" % title
         html = self.__fetch(url_now)
         if html is not None:
-            return html.read()
+            splitter = '''<h2><span class="mw-headline" id="References">References</span></h2>'''
+            html = html.read().partition("<!-- content -->")[2].partition(splitter)[0]
+            return html
         
     def get_info(self, thing, *params):
         """
@@ -101,10 +103,7 @@ class Webinfo:
                         </body>
                         </html>
                         '''
-                    # Cuts out everything from References down
-                    splitter = '''<h2><span class="mw-headline" id="References">References</span></h2>'''
-                    final = base_html % result.split(splitter)[0] 
-                    return final.encode("utf-8")       
+                    return base_html % result     
         
         elif thing == "cover":    
             site = "albumart.org"
