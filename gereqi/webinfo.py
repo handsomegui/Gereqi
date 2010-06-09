@@ -17,7 +17,6 @@
 
 
 from urllib2 import Request, urlopen, URLError
-from lxml.html import fromstring, tostring
 
 
 class Webinfo:
@@ -55,27 +54,6 @@ class Webinfo:
             return urlopen(req, None, 10)
         except URLError, err:
             print(err)
-
-    def __treat(self, site, html):
-        """
-        Goes through, hopefully, a wikipedia page looking for data
-        between div tags with id 'bodyContent'
-        """
-        if site == "wikipedia":
-            tag = "bodyContent"
-        elif site == "amazon.com":
-            tag = "prodImage" # album art
-        else:
-            return
-            
-        tree = fromstring(html) # loads html into lxml        
-        try:
-            tree = tree.get_element_by_id(tag) #the html enclosed by the tag
-            tree  = tostring(tree)
-        except KeyError, err:
-            print(err)
-            tree = None     
-        return tree
         
     def __printable_wiki(self, url):
         """
