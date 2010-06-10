@@ -26,7 +26,6 @@ SLOT, QDir, pyqtSignature
 from random import randrange
 import time
 
-from settings import Setting_Dialog
 from database import Media
 from tagging import Tagging
 from threads import Getinfo, Getwiki, Builddb, Finishers, \
@@ -616,41 +615,22 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
        Brings up the configuration Dialog
         """
-        # Using this 'register' as the old settings dialog
-        # works to an extent
-        test = True
-        if test is True:
-            config = configuration.Configuration(self)
-            config.show()        
-            if config.exec_():
-                dirs =  config.dir_list()
-                chkd = (";;".join(dirs[0]),  ";;".join(dirs[1]))
-                if len(dirs[1]) > 0:
-                    for_db = "%s||%s" % (chkd[0], chkd[1])
-                elif len(dirs[0]) > 0:
-                    for_db = chkd[0]
-                else:
-                    return
-                print for_db
-                self.media_db.setting_save("media_dir", for_db)
-                self.media_dir = config.dir_list()
-                self.__setup_watcher() 
+        config = configuration.Configuration(self)
+        config.show()        
+        if config.exec_():
+            dirs =  config.dir_list()
+            chkd = (";;".join(dirs[0]),  ";;".join(dirs[1]))
+            if len(dirs[1]) > 0:
+                for_db = "%s||%s" % (chkd[0], chkd[1])
+            elif len(dirs[0]) > 0:
+                for_db = chkd[0]
+            else:
+                return
+            print for_db
+            self.media_db.setting_save("media_dir", for_db)
+            self.media_dir = config.dir_list()
+            self.__setup_watcher() 
         
-        else:
-            params = {"dir": self.media_dir, "msg": self.show_messages}
-            dialog = Setting_Dialog(params)
-            if dialog.exec_():
-                results = dialog.finished()
-                self.media_dir = unicode(results["dir"])
-                self.show_messages = results["msg"]
-                del results
-                
-                self.media_db.setting_save("media_dir", self.media_dir)            
-                state = "false"
-                if self.show_messages is True:
-                    state = "true"                
-                self.media_db.setting_save("messages", state)
-                self.__setup_watcher()       
         
             
     @pyqtSignature("")
