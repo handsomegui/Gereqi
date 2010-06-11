@@ -434,13 +434,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         print db_type, self.media_dir
         if db_type is None :
             self.media_db = SqliteDb()
-        elif db_type[0] == "SQLITE":
+        elif db_type == "SQLITE":
             self.media_db = SqliteDb()
-        elif db_type[0] == "MYSQL":
-            args = {"hostname": sets_db.get_database_setting("hostname")[0], 
-                            "username":  sets_db.get_database_setting("username")[0], 
-                            "password": sets_db.get_database_setting("password")[0], 
-                            "dbname": sets_db.get_database_setting("dbname")[0] }
+        elif db_type == "MYSQL":
+            print"MYSQL db"
+            args = {"hostname": sets_db.get_database_setting("hostname"), 
+                            "username":  sets_db.get_database_setting("username"), 
+                            "password": sets_db.get_database_setting("password"), 
+                            "dbname": sets_db.get_database_setting("dbname") }
             self.media_db = MysqlDb(args)
             
     @pyqtSignature("QString")  
