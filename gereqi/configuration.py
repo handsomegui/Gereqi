@@ -162,3 +162,13 @@ class Configuration(QDialog, Ui_settings_dialog):
         checked = [str(chk) for chk in MyQDirModel.check_list[0] ]
         unchecked = [str(chk) for chk in MyQDirModel.check_list[1] ]
         return checked, unchecked
+    
+    @pyqtSignature("QString")
+    def on_database_type_currentIndexChanged(self, val):
+        """
+        Slot documentation goes here.
+        """
+        if val == "SQLITE":
+            self.mysql_config.setEnabled(False)
+        else:
+            self.mysql_config.setEnabled(True)

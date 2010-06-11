@@ -389,7 +389,10 @@
            </layout>
           </item>
           <item>
-           <widget class="QGroupBox" name="groupBox_6">
+           <widget class="QGroupBox" name="mysql_config">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="title">
              <string>MySql Configuration</string>
             </property>
@@ -416,7 +419,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit">
+                <widget class="QLineEdit" name="mysql_host">
                  <property name="minimumSize">
                   <size>
                    <width>200</width>
@@ -455,7 +458,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox">
+                <widget class="QSpinBox" name="mysql_port">
                  <property name="minimum">
                   <number>3306</number>
                  </property>
@@ -488,7 +491,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_2">
+                <widget class="QLineEdit" name="mysql_dbname">
                  <property name="minimumSize">
                   <size>
                    <width>200</width>
@@ -538,7 +541,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_3">
+                <widget class="QLineEdit" name="mysql_user">
                  <property name="maximumSize">
                   <size>
                    <width>200</width>
@@ -555,7 +558,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_4">
+                <widget class="QLineEdit" name="mysql_password">
                  <property name="maximumSize">
                   <size>
                    <width>200</width>
