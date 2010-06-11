@@ -39,6 +39,7 @@ from extraneous import Extraneous
 from extrawidgets import SetupExtraWidgets, WidgetManips
 from audiocd import AudioCD
 from backend import AudioBackend
+from settings import Settings
 
 
 class Playlist:
@@ -361,7 +362,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Ui_MainWindow.__init__(self)
         # TODO: change ui settings based on saved states/options
         self.setupUi(self)
-       
+        
+        self.media_db = Media()       
         self.info_thread = Getinfo()        
         self.html_thread = Getwiki()
         self.build_db_thread = Builddb(self)
@@ -422,24 +424,17 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.build_db_thread.start()
             
     def __settings_init(self):
-        self.media_db = Media()
-        msg = self.media_db.setting_get("messages")
-        if (msg is None) or (msg == "true"):
-            self.show_messages = True
-        else :
-            self.show_messages = False            
+        sets_db = Settings()
         
-        dir = self.media_db.setting_get("media_dir")
-        if dir is not None:
-            now = dir[0].split("||")
-            chk = now[0].split(";;")
-            chk = map(lambda x : str(x), chk)
-            unchk = []
-            if len(now) > 1:
-                unchk = now[1].split(";;")
-            self.media_dir = (chk, unchk)
-        else:
-            self.media_dir = None        
+        includes = sets_db.get_collection_setting("include")
+        excludes = sets_db.get_collection_setting("exclude")
+        self.media_dir = (includes, excludes)     
+          
+        sets_db = Settings()
+        includes = sets_db.get_collection_setting("include")
+        excludes = sets_db.get_collection_setting("exclude")
+        self.media_dir = (includes, excludes)
+        print self.media_dir
             
     @pyqtSignature("QString")  
     def on_search_collect_edit_textChanged(self, srch_str):
@@ -613,20 +608,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         config = configuration.Configuration(self)
         config.show()        
         if config.exec_():
-            dirs =  config.dir_list()
-            chkd = (";;".join(dirs[0]),  ";;".join(dirs[1]))
-            if len(dirs[1]) > 0:
-                for_db = "%s||%s" % (chkd[0], chkd[1])
-            elif len(dirs[0]) > 0:
-                for_db = chkd[0]
-            else:
-                return
-            print for_db
-            self.media_db.setting_save("media_dir", for_db)
-            self.media_dir = config.dir_list()
+            self.media_dir = config.settings["collection"]
+            sets_db = Settings()
+            sets_db.drop_collection()
+            for incl in self.media_dir [0]:
+                sets_db.add_collection_setting("include", incl)
+            for excl in self.media_dir [1]:
+                sets_db.add_collection_setting("exclude", excl)
+        
             self.__setup_watcher() 
-        
-        
             
     @pyqtSignature("")
     def on_actionRescan_Collection_triggered(self):

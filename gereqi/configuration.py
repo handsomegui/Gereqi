@@ -56,18 +56,18 @@ class MyQDirModel(QDirModel):
                 try:
                     tmp_list = []
                     for thing in MyQDirModel.check_list[1]:
-                        if dir_now in thing:
-                            thing.append(tmp_list)
+                        if str(dir_now) in thing:
+#                            thing.append(tmp_list)
+                            tmp_list.append(str(thing))
                     for thing in tmp_list:
                         MyQDirModel.check_list[1].remove(thing)   
-#                    MyQDirModel.check_list[1].remove(self.filePath(index))
 
                 except ValueError:
                     # Doesn't exist yet
                     pass
                     
                 if there is False:
-                    MyQDirModel.check_list[0].append(self.filePath(index))
+                    MyQDirModel.check_list[0].append(str(self.filePath(index)))
                 self.emit(SIGNAL("needsRefresh( QModelIndex )"), index)
                 return True
                 
@@ -79,7 +79,7 @@ class MyQDirModel(QDirModel):
                 
                 for item in tmp_list[0]:
                     # removes if we've already checked it
-                    if dir_now in item:
+                    if str(dir_now) in item:
                         MyQDirModel.check_list[0].remove(item)            
                  
                 # Only add to unchecked if anything above is checked
@@ -87,7 +87,7 @@ class MyQDirModel(QDirModel):
                 for val in range(len(checker)):
                     thing = checker[:val+1].join("/")
                     if thing in MyQDirModel.check_list[0]:
-                        MyQDirModel.check_list[1].append(dir_now)                             
+                        MyQDirModel.check_list[1].append(str(dir_now))
                 
                 self.emit(SIGNAL("needsRefresh( QModelIndex )"), index)
                 return True
@@ -144,8 +144,9 @@ class Configuration(QDialog, Ui_settings_dialog):
         """
         Slot documentation goes here.
         """
-        # TODO: not implemented yet
-        print "ACCEPT"
+        # TODO: create a dict of settings
+        self.settings = {}
+        self.settings["collection"] = MyQDirModel.check_list
         QDialog.accept(self)
     
     @pyqtSignature("")

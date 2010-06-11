@@ -21,7 +21,6 @@ from sqlite3 import dbapi2 as sqlite
 import os
 
 # TODO: stats database
-# TODO: cover-art db
 #FIXME: fix this horrible mess
 class Media:
     def __init__(self):
@@ -62,12 +61,6 @@ class Media:
                 '''CREATE TABLE IF NOT EXISTS playlist (
                 name TEXT,
                 file_name TEXT
-                )'''
-                , 
-                '''CREATE TABLE IF NOT EXISTS settings (
-                setting   TEXT,
-                value   TEXT,
-                PRIMARY KEY (setting) ON CONFLICT  REPLACE
                 )'''
                 , 
                 '''CREATE TABLE IF NOT EXISTS local_list (

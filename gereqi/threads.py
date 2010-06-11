@@ -264,7 +264,6 @@ class Watcher(QThread, pyinotify.ProcessEvent):
         mask = pyinotify.IN_DELETE | pyinotify.IN_CREATE
         notifier = pyinotify.Notifier(wm, self,  read_freq=3, timeout=10)
         exclusions = self.__gen_exc_list(self.directory[1])
-        print exclusions
         excl = pyinotify.ExcludeFilter(exclusions)
         wdd = wm.add_watch(self.directory[0], mask, rec=True, auto_add=True,
                             exclude_filter=excl)
