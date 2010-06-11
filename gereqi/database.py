@@ -511,5 +511,4 @@ class SqliteDb:
                         AND title=?'''        
         files = [fi[0] for fi in self.__query_fetchall(query, (art, tit))]
         return files
-
-    
+   

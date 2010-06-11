@@ -112,6 +112,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.__get_settings()
 
         self.__fileview_setup()
+        self.__database_setup()
         
     def __get_settings(self):
         MyQDirModel.check_list = [self.sets_db.get_collection_setting("include"), 
@@ -136,6 +137,17 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.collection_view.setColumnHidden(3, True)
         self.collection_view.expandToDepth(0)
         
+    def __database_setup(self):
+        db_type = self.sets_db.get_database_setting("type")
+        if db_type == "MYSQL":
+            index = self.database_type.findText("MYSQL")
+            self.database_type.setCurrentIndex(index)
+            self.mysql_host.setText(self.sets_db.get_database_setting("hostname"))
+            self.mysql_user.setText(self.sets_db.get_database_setting("username"))
+            self.mysql_password.setText(self.sets_db.get_database_setting("password"))
+            self.mysql_dbname.setText(self.sets_db.get_database_setting("dbname"))
+            self.mysql_port.setValue(int(self.sets_db.get_database_setting("port")))
+        
     def __set_collections(self):
         self.sets_db.drop_collection()
         for incl in MyQDirModel.check_list [0]:
@@ -149,7 +161,6 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.sets_db.add_database_setting("type", db_type)
         
         if db_type == "MYSQL":
-            print("MYSQL selected")
             self.sets_db.add_database_setting("hostname", unicode(self.mysql_host.text()) )
             self.sets_db.add_database_setting("username", unicode(self.mysql_user.text()) )
             self.sets_db.add_database_setting("password", unicode(self.mysql_password.text()) )

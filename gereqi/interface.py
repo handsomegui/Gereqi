@@ -33,7 +33,7 @@ Watcher, DeleteFiles
 
 from Ui_interface import Ui_MainWindow
 from equaliser import Equaliser
-import configuration
+from configuration import Configuration
 
 from extraneous import Extraneous
 from extrawidgets import SetupExtraWidgets, WidgetManips
@@ -613,10 +613,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
        Brings up the configuration Dialog
         """
-        config = configuration.Configuration(self)
+        config = Configuration(self)
         config.show()        
         if config.exec_():
-            sets_db = Settings()
             self.__setup_watcher() 
             
     @pyqtSignature("")
