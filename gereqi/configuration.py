@@ -130,7 +130,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.collection_view.setColumnHidden(2, True)
         self.collection_view.setColumnHidden(3, True)
         self.collection_view.expandToDepth(0)
-    
+        
     @pyqtSignature("QAbstractButton*")
     def on_buttonBox_clicked(self, button):
         """
@@ -151,22 +151,14 @@ class Configuration(QDialog, Ui_settings_dialog):
     
     @pyqtSignature("")
     def on_buttonBox_rejected(self):
-        """
-        Slot documentation goes here.
-        """
-        # TODO: not implemented yet
-        print "REJECTED"
         QDialog.reject(self)
         
-    def dir_list(self):
-        checked = [str(chk) for chk in MyQDirModel.check_list[0] ]
-        unchecked = [str(chk) for chk in MyQDirModel.check_list[1] ]
-        return checked, unchecked
+
     
     @pyqtSignature("QString")
     def on_database_type_currentIndexChanged(self, val):
         """
-        Slot documentation goes here.
+        Prevent mysql info entry if sqlite dbtype is selected
         """
         if val == "SQLITE":
             self.mysql_config.setEnabled(False)
