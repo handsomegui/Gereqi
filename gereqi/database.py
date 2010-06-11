@@ -61,11 +61,6 @@ class Media:
                 '''CREATE TABLE IF NOT EXISTS playlist (
                 name TEXT,
                 file_name TEXT
-                )'''
-                , 
-                '''CREATE TABLE IF NOT EXISTS local_list (
-                filename TEXT,
-                list UNSIGNED SMALLINT(3)
                 )''']      
         
         for table in tables:
