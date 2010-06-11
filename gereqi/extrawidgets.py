@@ -22,7 +22,6 @@ QToolButton, QAction, QSystemTrayIcon, qApp, QDirModel, QMenu
 from PyQt4.QtCore import QString, SIGNAL, SLOT, QDir, QSize, QObject
 
 import time
-from database import Media
 
 
 class SetupExtraWidgets:
@@ -195,7 +194,7 @@ class WidgetManips:
         """
         viewing the media database in the QTreeView
         """
-        media_db = Media()
+        media_db = self.ui_main.media_db
         self.ui_main.collect_tree.clear()
         # This gives multiples of the same thing i.e albums
         filt = unicode(self.ui_main.search_collect_edit.text())        

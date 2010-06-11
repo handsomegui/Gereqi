@@ -26,7 +26,7 @@ SLOT, QDir, pyqtSignature
 from random import randrange
 import time
 
-from database import Media
+from database import MysqlDb, SqliteDb
 from tagging import Tagging
 from threads import Getinfo, Getwiki, Builddb, Finishers, \
 Watcher, DeleteFiles
@@ -364,7 +364,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.setupUi(self)
         
      
-        self.info_thread = Getinfo()        
+        self.info_thread = Getinfo(self)
         self.html_thread = Getwiki()
         self.build_db_thread = Builddb(self)
         self.del_thread = DeleteFiles(self)
@@ -428,20 +428,21 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         includes = sets_db.get_collection_setting("include")
         excludes = sets_db.get_collection_setting("exclude")
-        self.media_dir = (includes, excludes)     
-          
-        sets_db = Settings()
-        includes = sets_db.get_collection_setting("include")
-        excludes = sets_db.get_collection_setting("exclude")
         self.media_dir = (includes, excludes)
-        
         db_type = sets_db.get_database_setting("type")
-        print db_type
-        if (len(db_type) < 1) or (db_type == "SQLITE"):
-            self.media_db = Media("SQLITE")
+        
+        print db_type, self.media_dir
+        if db_type is None :
+            self.media_db = SqliteDb()
+        elif db_type[0] == "SQLITE":
+            self.media_db = SqliteDb()
+        elif db_type[0] == "MYSQL":
+            args = {"hostname": sets_db.get_database_setting("hostname")[0], 
+                            "username":  sets_db.get_database_setting("username")[0], 
+                            "password": sets_db.get_database_setting("password")[0], 
+                            "dbname": sets_db.get_database_setting("dbname")[0] }
+            self.media_db = MysqlDb(args)
             
-        
-        
     @pyqtSignature("QString")  
     def on_search_collect_edit_textChanged(self, srch_str):
         """
@@ -614,14 +615,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         config = configuration.Configuration(self)
         config.show()        
         if config.exec_():
-            self.media_dir = config.settings["collection"]
             sets_db = Settings()
-            sets_db.drop_collection()
-            for incl in self.media_dir [0]:
-                sets_db.add_collection_setting("include", incl)
-            for excl in self.media_dir [1]:
-                sets_db.add_collection_setting("exclude", excl)
-        
             self.__setup_watcher() 
             
     @pyqtSignature("")

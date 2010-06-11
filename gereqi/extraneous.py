@@ -17,7 +17,6 @@
 
 
 import os
-from database import Media
 
 from webinfo import Webinfo
 

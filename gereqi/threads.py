@@ -30,7 +30,6 @@ import time
 import pyinotify
 
 from webinfo import Webinfo
-from database import Media
 from tagging import Tagging
 from infopage import InfoPage
 
@@ -52,11 +51,12 @@ class Getinfo(QThread):
     """
     def __init__(self, parent=None):
         QThread.__init__(self, parent = None)
+        self.ui_main = parent
         
     def set_values(self, **params):
         self.info = params
     def run(self):
-        html = InfoPage().gen_info(**self.info)
+        html = InfoPage(self.ui_main).gen_info(**self.info)
         print html
         self.emit(SIGNAL("got-info ( QString )"), html)
         
@@ -138,7 +138,7 @@ class Builddb(QThread):
             
         old_prog = 0    
         meta = Tagging(self.a_formats)
-        media_db = Media()
+        media_db = self.ui_main.media_db
         
         if self.file_list is None:
             tracks = []

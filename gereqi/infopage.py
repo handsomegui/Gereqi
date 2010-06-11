@@ -16,7 +16,6 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 from extraneous import Extraneous
-from database import Media
 
 HTML = '''
             <html>
@@ -60,10 +59,8 @@ HTML = '''
             
 class InfoPage:
     def __init__(self, parent=None):
-        return
-    def __gen_info(self):
-        return
-        
+        self.ui_main = parent
+
     def __gen_albs(self, artist, albums):
         tmpl = '''<img class="mini" src="%s" /> %s<br>\n'''
         thing = ""
@@ -74,7 +71,7 @@ class InfoPage:
         
         
     def gen_info(self, **params):
-        albs = Media().get_albums(params["artist"])
+        albs = self.ui_main.media_db.get_albums(params["artist"])
         cover = Extraneous().get_cover_source(params["artist"], params["album"], params["check"])
         now = HTML % (params["title"], params["artist"], params["album"], 
                                 cover, params["artist"], self.__gen_albs(params["artist"], albs))

@@ -19,13 +19,12 @@ from PyQt4.QtGui import QPixmap
 from PyQt4.QtCore import QObject, QTime, SIGNAL, QString
 
 
-from database import Media
 from gstbe import Gstbe
 
 class AudioBackend:
     def __init__(self, parent):
         self.ui_main = parent
-        self.media_db = Media()
+        self.media_db = parent.media_db
         self.just_finished = False
         self.__gstreamer_init()
             
@@ -58,6 +57,7 @@ class AudioBackend:
         """
         t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
         now = t_now.toString('mm:ss')
+        max_time = self.ui_main.t_length.toString('mm:ss')
         max_time = self.ui_main.t_length.toString('mm:ss')
         self.ui_main.progress_lbl.setText("%s | %s" % (now, max_time))            
         # Allows normal playback whilst slider still grabbed

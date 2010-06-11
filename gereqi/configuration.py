@@ -8,6 +8,7 @@ from PyQt4.QtGui import QDialog, QDirModel
 from PyQt4.QtCore import pyqtSignature, QDir, Qt, QAbstractItemModel, \
 SIGNAL
 
+from settings import Settings
 from Ui_configuration import Ui_settings_dialog
 
 class MyQDirModel(QDirModel):
@@ -57,7 +58,6 @@ class MyQDirModel(QDirModel):
                     tmp_list = []
                     for thing in MyQDirModel.check_list[1]:
                         if str(dir_now) in thing:
-#                            thing.append(tmp_list)
                             tmp_list.append(str(thing))
                     for thing in tmp_list:
                         MyQDirModel.check_list[1].remove(thing)   
@@ -100,7 +100,7 @@ class Configuration(QDialog, Ui_settings_dialog):
     """
     Class documentation goes here.
     """
-    def __init__(self, parent = None):
+    def __init__(self, parent = None, **args):
         """
         Constructor
         """
@@ -108,9 +108,14 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.setupUi(self)
         self.dir_model = MyQDirModel()        
         self.connect(self.dir_model, SIGNAL("needsRefresh( QModelIndex )"), self.__refreshing)
-        if parent.media_dir is not None:
-            MyQDirModel.check_list = list(parent.media_dir)
+        self.sets_db = Settings()
+        self.__get_settings()
+
         self.__fileview_setup()
+        
+    def __get_settings(self):
+        MyQDirModel.check_list = [self.sets_db.get_collection_setting("include"), 
+                                                self.sets_db.get_collection_setting("exclude")]
         
     def __refreshing(self, index):
         if self.collection_view.isExpanded(index):
@@ -131,6 +136,27 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.collection_view.setColumnHidden(3, True)
         self.collection_view.expandToDepth(0)
         
+    def __set_collections(self):
+        self.sets_db.drop_collection()
+        for incl in MyQDirModel.check_list [0]:
+            self.sets_db.add_collection_setting("include", incl)
+        for excl in MyQDirModel.check_list[1]:
+            self.sets_db.add_collection_setting("exclude", excl)
+            
+    def __set_database(self):
+        db_type = unicode(self.database_type.currentText())
+        self.sets_db.drop_database()
+        self.sets_db.add_database_setting("type", db_type)
+        
+        if db_type == "MYSQL":
+            print("MYSQL selected")
+            self.sets_db.add_database_setting("hostname", unicode(self.mysql_host.text()) )
+            self.sets_db.add_database_setting("username", unicode(self.mysql_user.text()) )
+            self.sets_db.add_database_setting("password", unicode(self.mysql_password.text()) )
+            self.sets_db.add_database_setting("dbname", unicode(self.mysql_dbname.text()) )
+            self.sets_db.add_database_setting("port", unicode(self.mysql_port.value()) )
+            
+        
     @pyqtSignature("QAbstractButton*")
     def on_buttonBox_clicked(self, button):
         """
@@ -145,8 +171,8 @@ class Configuration(QDialog, Ui_settings_dialog):
         Slot documentation goes here.
         """
         # TODO: create a dict of settings
-        self.settings = {}
-        self.settings["collection"] = MyQDirModel.check_list
+        self.__set_collections()
+        self.__set_database()
         QDialog.accept(self)
     
     @pyqtSignature("")
