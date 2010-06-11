@@ -363,7 +363,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # TODO: change ui settings based on saved states/options
         self.setupUi(self)
         
-        self.media_db = Media()       
+     
         self.info_thread = Getinfo()        
         self.html_thread = Getwiki()
         self.build_db_thread = Builddb(self)
@@ -434,8 +434,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         includes = sets_db.get_collection_setting("include")
         excludes = sets_db.get_collection_setting("exclude")
         self.media_dir = (includes, excludes)
-        print self.media_dir
+        
+        db_type = sets_db.get_database_setting("type")
+        print db_type
+        if (len(db_type) < 1) or (db_type == "SQLITE"):
+            self.media_db = Media("SQLITE")
             
+        
+        
     @pyqtSignature("QString")  
     def on_search_collect_edit_textChanged(self, srch_str):
         """

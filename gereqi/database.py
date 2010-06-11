@@ -20,10 +20,11 @@
 from sqlite3 import dbapi2 as sqlite
 import os
 
-# TODO: stats database
+
+
 #FIXME: fix this horrible mess
-class Media:
-    def __init__(self):
+class SqliteDb:
+    def __init__(self, parent=None):
         """
         The table creations perform every class instance(?)
         but only creates them if they don't already exist. This means 
@@ -288,3 +289,11 @@ class Media:
                         WHERE setting=?'''
         return self.__query_fetchone(query, (setting, ))
                         
+
+class Media(SqliteDb):
+    def __init__(self, db_type="SQLITE"):
+        if db_type == "SQLITE":
+            SqliteDb.__init__(self)
+        elif db_type == "MYSQL":
+            print "NOT DONE"
+    
