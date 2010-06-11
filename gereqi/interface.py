@@ -26,7 +26,6 @@ SLOT, QDir, pyqtSignature
 from random import randrange
 import time
 
-from database import MysqlDb, SqliteDb
 from tagging import Tagging
 from threads import Getinfo, Getwiki, Builddb, Finishers, \
 Watcher, DeleteFiles
@@ -40,6 +39,7 @@ from extrawidgets import SetupExtraWidgets, WidgetManips
 from audiocd import AudioCD
 from backend import AudioBackend
 from settings import Settings
+from collection import CollectionDb
 
 
 class Playlist:
@@ -433,16 +433,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         print db_type, self.media_dir
         if db_type is None :
-            self.media_db = SqliteDb()
+            self.media_db = CollectionDb(mode="SQLITE")
         elif db_type == "SQLITE":
-            self.media_db = SqliteDb()
+            self.media_db = CollectionDb(mode="SQLITE")
         elif db_type == "MYSQL":
-            print"MYSQL db"
             args = {"hostname": sets_db.get_database_setting("hostname"), 
                             "username":  sets_db.get_database_setting("username"), 
                             "password": sets_db.get_database_setting("password"), 
                             "dbname": sets_db.get_database_setting("dbname") }
-            self.media_db = MysqlDb(args)
+            self.media_db = CollectionDb("MYSQL", args)
             
     @pyqtSignature("QString")  
     def on_search_collect_edit_textChanged(self, srch_str):

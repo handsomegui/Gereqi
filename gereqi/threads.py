@@ -291,7 +291,7 @@ class DeleteFiles(QThread):
             print("WAITING: deletion")
             time.sleep(1)     
         
-        media_db = Media()
+        media_db = self.ui_main.media_db
         for trk in self.file_list:
             media_db.delete_track(unicode(trk))
             

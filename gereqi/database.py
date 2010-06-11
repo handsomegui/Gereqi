@@ -17,8 +17,6 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-
-
 class MysqlDb:
     def __init__(self, args):
         import MySQLdb
@@ -84,11 +82,12 @@ class MysqlDb:
         artists = [art[0] for art in self.__query_fetchall(query)]
         return artists
         
-    def get_artists_timed(self, time):
+    def get_artists_timed(self, filt):
+        print filt, type(filt)
         query = '''SELECT DISTINCT artist 
                             FROM media
-                            WHERE added>%s'''
-        artists = [art[0] for art  in self.__query_fetchall(query, (time, ))]
+                            WHERE added>%d'''
+        artists = [art[0] for art  in self.__query_fetchall(query, (filt, ))]
         return artists
         
     def get_albums(self, artist):
@@ -100,12 +99,12 @@ class MysqlDb:
         albums = [alb[0] for alb in self.__query_fetchall(query, args)]
         return albums
         
-    def get_albums_timed(self, artist, time):
-        args = (artist, time)
+    def get_albums_timed(self, artist, filt):
+        args = (artist, filt)
         query = '''SELECT DISTINCT album   
                             FROM media
                             WHERE artist=%s
-                            AND added>%s'''
+                            AND added>%d'''
         albums = [alb[0] for alb in self.__query_fetchall(query, args)]
         return albums
         
@@ -115,12 +114,11 @@ class MysqlDb:
                     '''
         return [alb[0] for alb in self.__query_fetchall(query)]
 
-    def get_albums_all_timed(self, time):
+    def get_albums_all_timed(self, filt):
         query = '''SELECT DISTINCT album
                         FROM media   
-                        WHERE added>%s
-                    '''
-        return [alb[0] for alb in self.__query_fetchall(query, (time, ))]
+                        WHERE added>%d'''
+        return [alb[0] for alb in self.__query_fetchall(query, (filt, ))]
         
     def get_files(self, artist, album):
         args = (artist, album)
@@ -155,12 +153,12 @@ class MysqlDb:
                         WHERE album=%s'''
         return [title[0] for title in self.__query_fetchall(query, args)]
         
-    def get_album_files_timed(self, album, time):
-        args = (album, time)
+    def get_album_files_timed(self, album, filt):
+        args = (album, filt)
         query = '''SELECT DISTINCT file_name
                         FROM media
                         WHERE album=%s
-                        AND added>%s'''
+                        AND added>%d'''
         return [title[0] for title in self.__query_fetchall(query, args)]
         
     def get_artists_files(self, artist):
@@ -179,13 +177,13 @@ class MysqlDb:
                         AND album=%s'''
         return self.__query_fetchall(query, args)
 
-    def get_titles_timed(self, artist, album, time):
-        args = (artist, album, time)
+    def get_titles_timed(self, artist, album, filt):
+        args = (artist, album, filt)
         query = '''SELECT DISTINCT title,track 
                         FROM media 
                         WHERE artist=%s
                         AND album=%s
-                        AND added>%s'''
+                        AND added>%d'''
         return self.__query_fetchall(query, args)
         
     def get_album_titles(self, album):
@@ -195,12 +193,12 @@ class MysqlDb:
                         WHERE album=%s'''
         return [title[0] for title in self.__query_fetchall(query, args)]
         
-    def get_album_files_timed(self, album, time):
-        args = (album, time)
+    def get_album_files_timed(self, album, filt):
+        args = (album, filt)
         query = '''SELECT DISTINCT title
                         FROM media
                         WHERE album=%s
-                        AND added>%s'''
+                        AND added>%d'''
         return [title[0] for title in self.__query_fetchall(query, args)]
         
     def get_info(self, file_name):
@@ -342,11 +340,11 @@ class SqliteDb:
         artists = [art[0] for art in self.__query_fetchall(query)]
         return artists
         
-    def get_artists_timed(self, time):
+    def get_artists_timed(self, filt):
         query = '''SELECT DISTINCT artist 
                             FROM media
                             WHERE added>?'''
-        artists = [art[0] for art  in self.__query_fetchall(query, (time, ))]
+        artists = [art[0] for art  in self.__query_fetchall(query, (filt, ))]
         return artists
         
     def get_albums(self, artist):
@@ -358,8 +356,8 @@ class SqliteDb:
         albums = [alb[0] for alb in self.__query_fetchall(query, args)]
         return albums
         
-    def get_albums_timed(self, artist, time):
-        args = (artist, time)
+    def get_albums_timed(self, artist, filt):
+        args = (artist, filt)
         query = '''SELECT DISTINCT album   
                             FROM media
                             WHERE artist=?
@@ -369,16 +367,15 @@ class SqliteDb:
         
     def get_albums_all(self):
         query = '''SELECT DISTINCT album
-                        FROM media                  
-                    '''
+                        FROM media'''
         return [alb[0] for alb in self.__query_fetchall(query)]
 
-    def get_albums_all_timed(self, time):
+    def get_albums_all_timed(self, filt):
         query = '''SELECT DISTINCT album
                         FROM media   
                         WHERE added>?
                     '''
-        return [alb[0] for alb in self.__query_fetchall(query, (time, ))]
+        return [alb[0] for alb in self.__query_fetchall(query, (filt, ))]
         
     def get_files(self, artist, album):
         args = (artist, album)
@@ -413,8 +410,8 @@ class SqliteDb:
                         WHERE album=?'''
         return [title[0] for title in self.__query_fetchall(query, args)]
         
-    def get_album_files_timed(self, album, time):
-        args = (album, time)
+    def get_album_files_timed(self, album, filt):
+        args = (album, filt)
         query = '''SELECT DISTINCT file_name
                         FROM media
                         WHERE album=?
@@ -437,8 +434,8 @@ class SqliteDb:
                         AND album=?'''
         return self.__query_fetchall(query, args)
 
-    def get_titles_timed(self, artist, album, time):
-        args = (artist, album, time)
+    def get_titles_timed(self, artist, album, filt):
+        args = (artist, album, filt)
         query = '''SELECT DISTINCT title,track 
                         FROM media 
                         WHERE artist=?
@@ -453,8 +450,8 @@ class SqliteDb:
                         WHERE album=?'''
         return [title[0] for title in self.__query_fetchall(query, args)]
         
-    def get_album_files_timed(self, album, time):
-        args = (album, time)
+    def get_album_files_timed(self, album, filt):
+        args = (album, filt)
         query = '''SELECT DISTINCT title
                         FROM media
                         WHERE album=?
