@@ -323,11 +323,6 @@ class Track:
         minu, sec = self.ui_main.track_tbl.item(row, hdr("Length")).text().split(":")
         self.play_time = 1000 * ((int(minu) * 60) + int(sec))
         
-        msg_header = QString("Now Playing")
-        msg_main = QString("%s by %s" % (title, artist))
-        if self.ui_main.show_messages and self.ui_main.play_bttn.isChecked():
-            self.ui_main.tray_icon.showMessage(msg_header, msg_main, QSystemTrayIcon.NoIcon, 3000)
-        self.ui_main.tray_icon.setToolTip(msg_main)
         self.msg_status = "Playing: %s by %s on %s" % (title, artist, album)
         self.ui_main.stat_lbl.setText(self.msg_status)
         self.ui_main.playlisting.tracknow_colourise(row)
