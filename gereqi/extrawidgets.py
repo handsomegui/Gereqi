@@ -197,7 +197,7 @@ class WidgetManips:
         media_db = self.ui_main.media_db
         self.ui_main.collect_tree.clear()
         # This gives multiples of the same thing i.e albums
-        filt = unicode(self.ui_main.search_collect_edit.text())        
+        filt = unicode(self.ui_main.search_collect_edit.text())
         time_filt = self.__time_filt_now()
         
         text_now = unicode(self.ui_main.collect_tree.headerItem().text(0))
@@ -223,7 +223,7 @@ class WidgetManips:
         font = QFont()
         font.setBold(True)
         for cnt in range(len(things)):
-            thing = things[cnt]
+            thing = things[cnt].decode("utf-8")
             # When creating collection tree only 
             #  allow certain things based on the filter.
             if (filt is not None) and (filt.lower() not in thing.lower()):
