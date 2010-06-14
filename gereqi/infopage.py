@@ -71,7 +71,7 @@ class InfoPage:
         
         
     def gen_info(self, **params):
-        albs = self.ui_main.media_db.get_albums(params["artist"])
+        albs = params["albums"]
         cover = Extraneous().get_cover_source(params["artist"], params["album"], params["check"])
         now = HTML % (params["title"], params["artist"], params["album"], 
                                 cover, params["artist"], self.__gen_albs(params["artist"], albs))

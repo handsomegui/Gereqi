@@ -1098,8 +1098,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
 
         # Album art
         if (alb_change is True) and (self.art_alb["nowalb"] is not None):
+            albs = self.media_db.get_albums(self.art_alb["nowart"])
             self.info_thread.set_values(artist=self.art_alb["nowart"],  album=self.art_alb["nowalb"], 
-                                                    title=self.art_alb["title"], check=True)
+                                                    title=self.art_alb["title"], check=True, albums=albs)
             self.info_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
             
