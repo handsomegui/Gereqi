@@ -37,7 +37,8 @@ class CollectionDb:
 #            self.__pragma()
         
         elif mode == "MYSQL":
-            import MySQLdb      
+            import MySQLdb
+
             self.media_db = MySQLdb.connect(host=args["hostname"],
                                     user=args["username"],
                                     passwd=args["password"],
@@ -74,14 +75,14 @@ class CollectionDb:
                                 title   VARCHAR(50),
                                 artist  VARCHAR(50),
                                 album   VARCHAR(50),
-                                year   SMALLINT(4),
+                                year   SMALLINT(4) UNSIGNED,
                                 genre  VARCHAR(20),
                                 track  TINYINT(2) UNSIGNED,
                                 length  VARCHAR(5),
-                                bitrate SMALLINT(4),
+                                bitrate SMALLINT(4) UNSIGNED,
                                 added INT(10) UNSIGNED ,
-                                playcount SMALLINT(5),
-                                rating TINYINT(1),
+                                playcount SMALLINT(5) UNSIGNED,
+                                rating TINYINT(1) UNSIGNED,
                                 PRIMARY KEY (file_name)
                                 ) DEFAULT CHARSET=utf8''', 
                             '''CREATE TABLE IF NOT EXISTS playlist (
@@ -94,13 +95,11 @@ class CollectionDb:
             
     def __query_process(self, query, args):
         if self.db_type == "MYSQL":
-            now =  query.replace("?", ''' "%s" ''')
+            now =  query.replace("?", '''"%s"''')
             if args is None:
                 return now
             else:
-                print "a", now, args
                 fin = now % args
-                print "b", fin
                 return fin
         elif self.db_type == "SQLITE":
             return query
@@ -128,11 +127,8 @@ class CollectionDb:
                 # The execute() doesn't accept NoneTypes
                 self.media_curs.execute(query)                 
         elif self.db_type == "MYSQL":
-            # FIXME: works with either read write, not both
-#                self.media_db.query(self.__query_process(query, args) )
                 self.media_db.query(query)
     
-        # Not sure to use this on reads   
         
     def __pragma(self):
         """
@@ -152,9 +148,10 @@ class CollectionDb:
                             VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''
             self.__query_execute(query, meta)
         elif self.db_type == "MYSQL":
-            query = '''INSERT IGNORE INTO media 
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''
-            self.media_db.query(self.__query_process(query, meta) )
+            query = '''INSERT IGNORE INTO media
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''
+            # FIXME: problem if any entry in meta has an "
+            self.media_db.query(self.__query_process(query, tuple(meta)))
         self.media_db.commit()
         
     def inc_count(self, cnt, fname):
