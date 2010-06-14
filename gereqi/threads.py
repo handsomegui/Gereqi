@@ -32,6 +32,7 @@ import pyinotify
 from webinfo import Webinfo
 from tagging import Tagging
 from infopage import InfoPage
+from collection import CollectionDb
 
 build_lock = delete_lock = False
 
@@ -130,6 +131,12 @@ class Builddb(QThread):
                     tracks.append(file_now)
         return tracks
         
+    def __db_choice(self):
+        if self.ui_main.db_type == "SQLITE":
+            return CollectionDb(mode="SQLITE")
+        elif self.ui_main.db_type == "MYSQL":
+            return CollectionDb("MYSQL", self.ui_main.mysql_args)
+        
     def run(self):
         self.ui_main.build_lock = True
         while self.ui_main.delete_lock is True:
@@ -138,7 +145,8 @@ class Builddb(QThread):
             
         old_prog = 0    
         meta = Tagging(self.a_formats)
-        media_db = self.ui_main.media_db
+        
+        media_db = self.__db_choice()
         
         if self.file_list is None:
             tracks = []

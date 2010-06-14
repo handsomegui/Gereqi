@@ -32,8 +32,9 @@ class CollectionDb:
             db_loc = "%sgereqi.db" % app_dir
             if os.path.exists(app_dir) is False:
                 os.mkdir(app_dir)
-            self.media_db = sqlite.connect(db_loc)            
-            self.__pragma()
+            self.media_db = sqlite.connect(db_loc)
+            self.media_curs = self.media_db.cursor()        
+#            self.__pragma()
         
         elif mode == "MYSQL":
             import MySQLdb      
@@ -42,7 +43,6 @@ class CollectionDb:
                                     passwd=args["password"],
                                     db=args["dbname"])
         
-        self.media_curs = self.media_db.cursor() 
         self.__setup_tables()
         
     def __setup_tables(self):
@@ -61,7 +61,7 @@ class CollectionDb:
                     added UNSIGNED INT(10),
                     playcount SMALLINT(5),
                     rating TINYINT(1),
-                    PRIMARY KEY (file_name) ON CONFLICT IGNORE
+                    PRIMARY KEY (file_name)
                     )'''
                     , 
                     '''CREATE TABLE IF NOT EXISTS playlist (
@@ -92,28 +92,47 @@ class CollectionDb:
         for table in tables:
             self.__query_execute(table)
             
-    def __query_process(self, query):
+    def __query_process(self, query, args):
         if self.db_type == "MYSQL":
-            return query.replace("?", "%s")
+            now =  query.replace("?", ''' "%s" ''')
+            if args is None:
+                return now
+            else:
+                print "a", now, args
+                fin = now % args
+                print "b", fin
+                return fin
         elif self.db_type == "SQLITE":
             return query
             
     def __query_fetchone(self, query, args=None):
-        self.__query_execute(self.__query_process(query), args)
+        result = self.__query_execute(self.__query_process(query, args), args)
+        if self.db_type == "MYSQL":
+            r = self.media_db.store_result().fetch_row()
+            return r.fetch_row()
         return self.media_curs.fetchone()
             
     def __query_fetchall(self, query, args=None):
-        self.__query_execute(self.__query_process(query), args)
+        result = self.__query_execute(self.__query_process(query, args), args)
+        if self.db_type == "MYSQL":
+            r = self.media_db.store_result()
+            return r.fetch_row(maxrows=0)
         return self.media_curs.fetchall()
         
     def __query_execute(self, query, args=None):
-        if args is not None:
-            self.media_curs.execute(self.__query_process(query), args)
-        else:
-            # The execute() doesn't accept NoneTypes
-            self.media_curs.execute(self.__query_process(query)) 
+        if self.db_type == "SQLITE":
+            if args is not None:
+                print query, args
+                self.media_curs.execute(query, args)
+            else:
+                # The execute() doesn't accept NoneTypes
+                self.media_curs.execute(query)                 
+        elif self.db_type == "MYSQL":
+            # FIXME: works with either read write, not both
+#                self.media_db.query(self.__query_process(query, args) )
+                self.media_db.query(query)
+    
         # Not sure to use this on reads   
-        self.media_db.commit()
         
     def __pragma(self):
         """
@@ -129,12 +148,40 @@ class CollectionDb:
         Here we add data into the media database
         """
         if self.db_type == "SQLITE":
-            query = '''INSERT INTO media 
+            query = '''INSERT OR IGNORE INTO media 
                             VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''
+            self.__query_execute(query, meta)
         elif self.db_type == "MYSQL":
             query = '''INSERT IGNORE INTO media 
                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''
-                            
+            self.media_db.query(self.__query_process(query, meta) )
+        self.media_db.commit()
+        
+    def inc_count(self, cnt, fname):
+        args = (cnt, fname)
+        query = '''UPDATE media
+                        SET playcount=?
+                        WHERE file_name=?'''
+        if self.db_type == "SQLITE":
+            self.__query_execute(query, args)
+        elif self.db_type == "MYSQL":
+            self.media_db.query(self.__query_process(query, args))
+        self.media_db.commit()
+        
+    def delete_track(self, fname):
+        args = (fname, )
+        query = '''DELETE FROM media
+                        WHERE file_name=?'''
+        self.media_db.query(self.__query_process(query, args) )
+        self.media_db.commit()
+        
+    def replace_media(self, meta):
+        if self.db_type == "SQLITE":
+            query = '''INSERT OR REPLACE INTO media 
+                            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''
+        elif self.db_type == "MYSQL":
+            query = '''INSERT REPLACE INTO media 
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''                            
         self.__query_execute(query, meta)
         
     def get_artists(self):
@@ -267,12 +314,6 @@ class CollectionDb:
         if len(result) > 0:
             return result[0]
         
-    def delete_track(self, fname):
-        args = (fname, )
-        query = '''DELETE FROM media
-                        WHERE file_name=?'''
-        self.__query_execute(query, args)
-    
     def playlist_add(self, *params):
         query = '''INSERT INTO playlist 
                             VALUES (?,?)'''
@@ -296,11 +337,7 @@ class CollectionDb:
                         WHERE name=?'''
         self.__query_execute(query, (name, ))
 
-    def inc_count(self, cnt, fname):
-        query = '''UPDATE media
-                        SET playcount=?
-                        WHERE file_name=?'''
-        self.__query_execute(query, (cnt, fname))
+
         
     def search_by_titandart(self, art, tit):
         query = '''SELECT DISTINCT file_name   

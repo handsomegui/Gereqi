@@ -429,19 +429,18 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         includes = sets_db.get_collection_setting("include")
         excludes = sets_db.get_collection_setting("exclude")
         self.media_dir = (includes, excludes)
-        db_type = sets_db.get_database_setting("type")
+        self.db_type = sets_db.get_database_setting("type")
         
-        print db_type, self.media_dir
-        if db_type is None :
+        if self.db_type is None :
             self.media_db = CollectionDb(mode="SQLITE")
-        elif db_type == "SQLITE":
+        elif self.db_type == "SQLITE":
             self.media_db = CollectionDb(mode="SQLITE")
-        elif db_type == "MYSQL":
-            args = {"hostname": sets_db.get_database_setting("hostname"), 
+        elif self.db_type == "MYSQL":
+            self.mysql_args = {"hostname": sets_db.get_database_setting("hostname"), 
                             "username":  sets_db.get_database_setting("username"), 
                             "password": sets_db.get_database_setting("password"), 
                             "dbname": sets_db.get_database_setting("dbname") }
-            self.media_db = CollectionDb("MYSQL", args)
+            self.media_db = CollectionDb("MYSQL", self.mysql_args)
             
     @pyqtSignature("QString")  
     def on_search_collect_edit_textChanged(self, srch_str):
@@ -1087,6 +1086,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         art_change = self.art_alb["nowart"] != self.art_alb["oldart"] 
         alb_change = self.art_alb["nowalb"] != self.art_alb["oldalb"]
         tit_change = self.art_alb["title"] != self.art_alb["oldtit"]
+        albs = self.media_db.get_albums(self.art_alb["nowart"])
         
         # Wikipedia info
         if (art_change is True) and (self.art_alb["nowart"] is not None):
@@ -1098,7 +1098,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
 
         # Album art
         if (alb_change is True) and (self.art_alb["nowalb"] is not None):
-            albs = self.media_db.get_albums(self.art_alb["nowart"])
+            
             self.info_thread.set_values(artist=self.art_alb["nowart"],  album=self.art_alb["nowalb"], 
                                                     title=self.art_alb["title"], check=True, albums=albs)
             self.info_thread.start()
@@ -1107,7 +1107,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # TODO: maybe tell to not check for covers as we should have them by now
         elif (tit_change is True) and (self.art_alb["title"] is not None):
             self.info_thread.set_values(artist=self.art_alb["nowart"],  album=self.art_alb["nowalb"], 
-                                                    title=self.art_alb["title"], check=False)
+                                                    title=self.art_alb["title"], check=False, albums=albs)
             self.info_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
 
