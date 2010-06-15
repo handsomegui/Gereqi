@@ -1040,6 +1040,17 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         dialog = Equaliser(self)
         dialog.show()
         
+    @pyqtSignature("")
+    def on_menuTools_aboutToShow(self):
+        """
+        Disables the db interaction actions if in useless state
+        """
+        if self.media_dir[0] is None:
+            self.actionUpdate_Collection.setEnabled(False)
+            self.actionRescan_Collection.setEnabled(False)
+        else:
+            self.actionUpdate_Collection.setEnabled(True)
+            self.actionRescan_Collection.setEnabled(True)
             
 #######################################
 #######################################
