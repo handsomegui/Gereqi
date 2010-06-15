@@ -23,13 +23,21 @@ from PyQt4.QtCore import QString, SIGNAL, SLOT, QDir, QSize, QObject
 
 import time
 
+from settings import Settings
+
 
 class SetupExtraWidgets:
     def __init__(self, parent):
-        # Basically,the parent
         self.ui_main = parent
+        set_db = Settings()
+        
         self.__setup_filesystem_tree()
-        self.__create_tray_menu()
+        tray = set_db.get_interface_setting("trayicon")
+        if tray == "True":
+            self.__create_tray_menu(show=True)
+        else:
+            self.__create_tray_menu()
+            
         self.__playlist_add_menu()
         self.__disable_tabs()
         self.__setup_misc()
@@ -51,7 +59,7 @@ class SetupExtraWidgets:
         self.ui_main.filesystem_tree.setColumnHidden(3, True)
         self.ui_main.filesystem_tree.expandToDepth(0)
         
-    def __create_tray_menu(self):
+    def __create_tray_menu(self, show=False):
         """
         The tray menu contains shortcuts to features
         in the main UI
@@ -80,7 +88,8 @@ class SetupExtraWidgets:
         icon_stopped = QIcon(QPixmap(":/Icons/app-paused.png"))
         self.ui_main.tray_icon.setIcon(icon_stopped)
         self.ui_main.tray_icon.setContextMenu(tray_icon_menu)
-        self.ui_main.tray_icon.show()
+        if show is True:
+            self.ui_main.tray_icon.show()
         self.ui_main.tray_icon.setToolTip("Stopped")    
         
         QObject.connect(self.ui_main.play_action, SIGNAL("toggled(bool)"), 

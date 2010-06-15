@@ -68,7 +68,7 @@ class Settings:
                         VALUES (?,?)'''
         self.__query_execute(query, args)        
         
-    def add_interface_setting(self, args):
+    def add_interface_setting(self, *args):
         query = '''INSERT INTO interface 
                         VALUES (?,?)'''
         self.__query_execute(query, args)
@@ -126,6 +126,15 @@ class Settings:
     def drop_database(self):
         queries= ['''DROP TABLE database''', 
                         '''CREATE TABLE database (
+                            tag TEXT,
+                            value TEXT)''']
+                    
+        for query in queries:
+            self.__query_execute(query)
+            
+    def drop_interface(self):
+        queries= ['''DROP TABLE interface''', 
+                        '''CREATE TABLE interface (
                             tag TEXT,
                             value TEXT)''']
                     

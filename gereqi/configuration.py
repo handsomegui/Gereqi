@@ -42,7 +42,6 @@ class MyQDirModel(QDirModel):
     def setData(self, index, value, role = Qt.EditRole):
         if index.isValid() and (index.column() == 0) and role == Qt.CheckStateRole:
             # store checked paths, remove unchecked paths
-            # FIXME: no need to append if it's par_dir is there
             if (value == Qt.Checked):
                 dir_now = self.filePath(index)
                 # No point adding if it's root dir is already there
@@ -123,7 +122,6 @@ class Configuration(QDialog, Ui_settings_dialog):
             self.collection_view.collapse(index)
             self.collection_view.expand(index)
         
-        
     def __fileview_setup(self):
         """
         Make the fileview the correct type
@@ -147,9 +145,19 @@ class Configuration(QDialog, Ui_settings_dialog):
             self.mysql_password.setText(self.sets_db.get_database_setting("password"))
             self.mysql_dbname.setText(self.sets_db.get_database_setting("dbname"))
             self.mysql_port.setValue(int(self.sets_db.get_database_setting("port")))
+            
+    def __save_settings(self):
+        true_false = lambda x : x is True and "True" or "False"
+        
+        recursive_dirs = true_false(self.scan_recursively.isChecked())
+        watch_dirs = true_false(self.watch_folders.isChecked())
+        show_tray = true_false(self.tray_icon.isChecked())
+        
+        self.sets_db.add_interface_setting("trayicon", show_tray)
+        self.sets_db.add_collection_setting("watch", watch_dirs)
+        self.sets_db.add_collection_setting("recursive", recursive_dirs)
         
     def __set_collections(self):
-        self.sets_db.drop_collection()
         for incl in MyQDirModel.check_list [0]:
             self.sets_db.add_collection_setting("include", incl)
         for excl in MyQDirModel.check_list[1]:
@@ -157,7 +165,6 @@ class Configuration(QDialog, Ui_settings_dialog):
             
     def __set_database(self):
         db_type = unicode(self.database_type.currentText())
-        self.sets_db.drop_database()
         self.sets_db.add_database_setting("type", db_type)
         
         if db_type == "MYSQL":
@@ -181,17 +188,19 @@ class Configuration(QDialog, Ui_settings_dialog):
         """
         Slot documentation goes here.
         """
-        # TODO: create a dict of settings
+        self.sets_db.drop_interface()
+        self.sets_db.drop_database()
+        self.sets_db.drop_collection()
+        
         self.__set_collections()
         self.__set_database()
+        self.__save_settings()
         QDialog.accept(self)
     
     @pyqtSignature("")
     def on_buttonBox_rejected(self):
         QDialog.reject(self)
         
-
-    
     @pyqtSignature("QString")
     def on_database_type_currentIndexChanged(self, val):
         """
@@ -199,5 +208,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         """
         if val == "SQLITE":
             self.mysql_config.setEnabled(False)
-        else:
+        elif val == "MYSQL":
             self.mysql_config.setEnabled(True)
+            
+
