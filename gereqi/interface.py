@@ -378,8 +378,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.finishes = Finishers(self)
         self.play_hist = PlaylistHistory()
 
-        self.__setup_watcher()
-        
         self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.finishes.db_build)
         self.connect(self.html_thread, SIGNAL("got-wiki ( QString ) "), self.finishes.set_wiki)
         self.connect(self.info_thread, SIGNAL("got-info ( QString ) "), self.info_view.setHtml)
@@ -422,25 +420,33 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.stat_lbl.setText("Auto-Scanning")
         self.stat_prog.setValue(0)
         self.build_db_thread.start()
+        
+    def __db_setup(self):
+        try:
+            del self.media_db
+        except AttributeError:
+            pass
             
-    def __settings_init(self):
-        sets_db = Settings()
-        
-        includes = sets_db.get_collection_setting("include")
-        excludes = sets_db.get_collection_setting("exclude")
-        self.media_dir = (includes, excludes)
-        self.db_type = sets_db.get_database_setting("type")
-        
+        self.db_type = self.sets_db.get_database_setting("type")        
         if self.db_type is None :
             self.media_db = CollectionDb(mode="SQLITE")
         elif self.db_type == "SQLITE":
             self.media_db = CollectionDb(mode="SQLITE")
         elif self.db_type == "MYSQL":
-            self.mysql_args = {"hostname": sets_db.get_database_setting("hostname"), 
-                            "username":  sets_db.get_database_setting("username"), 
-                            "password": sets_db.get_database_setting("password"), 
-                            "dbname": sets_db.get_database_setting("dbname") }
+            self.mysql_args = {"hostname": self.sets_db.get_database_setting("hostname"), 
+                            "username":  self.sets_db.get_database_setting("username"), 
+                            "password": self.sets_db.get_database_setting("password"), 
+                            "dbname": self.sets_db.get_database_setting("dbname") }
             self.media_db = CollectionDb("MYSQL", self.mysql_args)
+            
+    def __settings_init(self):
+        self.sets_db = Settings()
+        
+        includes = self.sets_db.get_collection_setting("include")
+        excludes = self.sets_db.get_collection_setting("exclude")
+        self.media_dir = (includes, excludes)        
+        self.__db_setup()
+        self.__setup_watcher()
             
     @pyqtSignature("QString")  
     def on_search_collect_edit_textChanged(self, srch_str):
@@ -615,6 +621,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         config.show()        
         if config.exec_():
             self.__setup_watcher() 
+            self.__db_setup()
+            self.wdgt_manip.setup_db_tree()
             
     @pyqtSignature("")
     def on_actionRescan_Collection_triggered(self):
