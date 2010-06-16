@@ -190,10 +190,10 @@ class CollectionDb:
         Here we add data into the media database
         """
         if self.db_type == "SQLITE":
-            query = '''INSERT OR IGNORE INTO media 
+            query = '''INSERT OR REPLACE INTO media 
                             VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''
         elif self.db_type == "MYSQL":
-            query = '''INSERT IGNORE INTO media
+            query = '''REPLACE INTO media
                         VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''
         self.__execute_write(query, tuple(meta))
         
@@ -210,15 +210,6 @@ class CollectionDb:
                         WHERE file_name=?'''
         print("DELETING FROM DB: %s" % fname)
         self.__execute_write(query, args)
-        
-    def replace_media(self, meta):
-        if self.db_type == "SQLITE":
-            query = '''INSERT OR REPLACE INTO media 
-                            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''
-        elif self.db_type == "MYSQL":
-            query = '''INSERT REPLACE INTO media 
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''                            
-        self.__execute_write(query, tuple(meta))
         
     def get_artists(self):
         query = '''SELECT DISTINCT artist
