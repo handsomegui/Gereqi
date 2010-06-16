@@ -428,7 +428,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.del_thread.start()
             
     def __files_created(self, creations):
-        self.build_db_thread.set_values(None, self.audio_formats, creations)
+        self.build_db_thread.set_values(None, self.audio_formats, False, creations)
         self.stat_lbl.setText("Auto-Scanning")
         self.stat_prog.setValue(0)
         self.build_db_thread.start()
