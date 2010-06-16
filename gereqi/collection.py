@@ -93,6 +93,47 @@ class CollectionDb:
         for table in tables:
             self.__query_execute(table)
             
+    # FIXME: HACK ALERT!!!!!!!!!!
+    def __setup_tables2(self):
+        """
+        For some reason you cannot use
+        IF NOT EXISTS after you've dropped 
+        the table and commited it
+        """
+        if self.db_type == "SQLITE":
+            table = '''CREATE TABLE media (
+                    file_name    TEXT ,
+                    title   VARCHAR(50),
+                    artist  VARCHAR(50),
+                    album   VARCHAR(50),
+                    year   SMALLINT(4),
+                    genre  VARCHAR(20),
+                    track UNSIGNED TINYINT(2),
+                    length  VARCHAR(5),
+                    bitrate SMALLINT(4),
+                    added UNSIGNED INT(10),
+                    playcount SMALLINT(5),
+                    rating TINYINT(1),
+                    PRIMARY KEY (file_name)
+                    )'''
+        elif self.db_type == "MYSQL":
+            table = '''CREATE TABLE media (
+                                file_name    VARCHAR(255) ,
+                                title   VARCHAR(50),
+                                artist  VARCHAR(50),
+                                album   VARCHAR(50),
+                                year   SMALLINT(4) UNSIGNED,
+                                genre  VARCHAR(20),
+                                track  TINYINT(2) UNSIGNED,
+                                length  VARCHAR(5),
+                                bitrate SMALLINT(4) UNSIGNED,
+                                added INT(10) UNSIGNED ,
+                                playcount SMALLINT(5) UNSIGNED,
+                                rating TINYINT(1) UNSIGNED,
+                                PRIMARY KEY (file_name)
+                                ) DEFAULT CHARSET=utf8'''
+        self.__query_execute(table)
+            
     def __query_process(self, query, args):
         if self.db_type == "MYSQL":
             now =  query.replace("?", '''"%s"''')
@@ -128,7 +169,7 @@ class CollectionDb:
         elif self.db_type == "MYSQL":
                 self.media_db.query(query)
     
-    def __execute_write(self, query,  args):
+    def __execute_write(self, query, args=None):
         if self.db_type == "SQLITE":
             self.__query_execute(query, args)
         elif self.db_type == "MYSQL":
@@ -332,8 +373,6 @@ class CollectionDb:
                         WHERE name=?'''
         self.__query_execute(query, (name, ))
 
-
-        
     def search_by_titandart(self, art, tit):
         query = '''SELECT DISTINCT file_name   
                         FROM media 
@@ -342,3 +381,8 @@ class CollectionDb:
         files = [fi[0] for fi in self.__query_fetchall(query, (art, tit))]
         return files
    
+    def drop_media(self):
+        query = '''DROP TABLE media'''
+        self.__execute_write(query)
+        self.__setup_tables2()
+        
