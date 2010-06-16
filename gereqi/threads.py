@@ -98,7 +98,7 @@ class Builddb(QThread):
     def stop_now(self):
         self.exiting = True
         
-    def set_values(self, dirs, formats, tracks=None):
+    def set_values(self, dirs, formats, fresh, tracks=None):
         """
         Required to put parameters into
         this thread from the outside
@@ -106,6 +106,7 @@ class Builddb(QThread):
         self.media_dir = dirs
         self.a_formats = formats
         self.file_list = tracks
+        self.redo = fresh
      
     def __track_list(self, dir, excl):
         """
@@ -144,6 +145,10 @@ class Builddb(QThread):
         old_prog = 0    
         meta = Tagging(self.a_formats)        
         media_db = db_choice(self.ui_main)
+        
+        if self.redo is True:
+            media_db.drop_media()
+            print("FROM SCRATCH")
         
         if self.file_list is None:
             tracks = []

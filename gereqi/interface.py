@@ -647,8 +647,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Really needs to be done in a separate thread as scan could
         take a while.
         """
-        print("Rebuild: Ensure the db is ON CONFLICT REPLACE")
-        self.create_collection()
+        print("Deleting media DB and rebuilding")        
+        self.create_collection(fresh=True)
     
     @pyqtSignature("")
     def on_actionQuit_triggered(self):
@@ -1100,7 +1100,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.view_action.setChecked(state)
         self.minimise_tray_actn.setChecked(state)
     
-    def create_collection(self):
+    def create_collection(self, fresh=False):
         """
         Either generates a new DB or adds new files to it
         Not finished
@@ -1108,7 +1108,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # If the dialog is cancelled in last if statement the below is ignored
         if self.media_dir is not None:
             self.stat_bttn.setEnabled(True)
-            self.build_db_thread.set_values(self.media_dir, self.audio_formats)
+            self.build_db_thread.set_values(self.media_dir, self.audio_formats, fresh)
             self.stat_lbl.setText("Scanning Media")
             self.stat_prog.setValue(0)
             self.build_db_thread.start()
