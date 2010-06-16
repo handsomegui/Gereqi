@@ -449,12 +449,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                             "dbname": self.sets_db.get_database_setting("dbname") }
             self.media_db = CollectionDb("MYSQL", self.mysql_args)
             
-    def __settings_init(self):
-        self.sets_db = Settings()
-        
+    def __dirs_setup(self):
         includes = self.sets_db.get_collection_setting("include")
         excludes = self.sets_db.get_collection_setting("exclude")
-        self.media_dir = (includes, excludes)        
+        self.media_dir = (includes, excludes)
+        
+    def __settings_init(self):
+        self.sets_db = Settings()
+        self.__dirs_setup()
         self.__db_setup()
         self.__setup_watcher()
             
@@ -630,6 +632,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         config = Configuration(self)
         config.show()        
         if config.exec_():
+            self.__dirs_setup()
             self.__setup_watcher() 
             self.__db_setup()
             self.wdgt_manip.setup_db_tree()
@@ -650,7 +653,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Closing Down. Maybe some database interaction.
         """
-#        self.watch_thread.stopstop()
+        self.watch_thread.exit()
         exit()
     
     @pyqtSignature("")

@@ -121,7 +121,6 @@ class CollectionDb:
     def __query_execute(self, query, args=None):
         if self.db_type == "SQLITE":
             if args is not None:
-                print query, args
                 self.media_curs.execute(query, args)
             else:
                 # The execute() doesn't accept NoneTypes
