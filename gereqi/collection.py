@@ -128,6 +128,12 @@ class CollectionDb:
         elif self.db_type == "MYSQL":
                 self.media_db.query(query)
     
+    def __execute_write(self, query,  args):
+        if self.db_type == "SQLITE":
+            self.__query_execute(query, args)
+        elif self.db_type == "MYSQL":
+            self.media_db.query(self.__query_process(query, args))
+        self.media_db.commit()
         
     def __pragma(self):
         """
@@ -145,31 +151,24 @@ class CollectionDb:
         if self.db_type == "SQLITE":
             query = '''INSERT OR IGNORE INTO media 
                             VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''
-            self.__query_execute(query, meta)
         elif self.db_type == "MYSQL":
             query = '''INSERT IGNORE INTO media
                         VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''
-            # FIXME: problem if any entry in meta has an "
-            self.media_db.query(self.__query_process(query, tuple(meta)))
-        self.media_db.commit()
+        self.__execute_write(query, tuple(meta))
         
     def inc_count(self, cnt, fname):
         args = (cnt, fname)
         query = '''UPDATE media
                         SET playcount=?
                         WHERE file_name=?'''
-        if self.db_type == "SQLITE":
-            self.__query_execute(query, args)
-        elif self.db_type == "MYSQL":
-            self.media_db.query(self.__query_process(query, args))
-        self.media_db.commit()
+        self.__execute_write(query, args)
         
     def delete_track(self, fname):
         args = (fname, )
         query = '''DELETE FROM media
                         WHERE file_name=?'''
-        self.media_db.query(self.__query_process(query, args) )
-        self.media_db.commit()
+        print("DELETING FROM DB: %s" % fname)
+        self.__execute_write(query, args)
         
     def replace_media(self, meta):
         if self.db_type == "SQLITE":
@@ -178,7 +177,7 @@ class CollectionDb:
         elif self.db_type == "MYSQL":
             query = '''INSERT REPLACE INTO media 
                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''                            
-        self.__query_execute(query, meta)
+        self.__execute_write(query, tuple(meta))
         
     def get_artists(self):
         query = '''SELECT DISTINCT artist
