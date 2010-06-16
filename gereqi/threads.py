@@ -47,7 +47,7 @@ def db_choice(parent):
     if parent.db_type == "SQLITE":
         return CollectionDb(mode="SQLITE")
     elif parent.db_type == "MYSQL":
-        return CollectionDb("MYSQL", self.ui_main.mysql_args)
+        return CollectionDb("MYSQL", parent.mysql_args)
         
 class Getinfo(QThread):
     """
