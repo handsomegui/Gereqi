@@ -29,7 +29,7 @@ class CollectionDb:
             import os
             
             app_dir = "%s/.gereqi/" % os.getenv("HOME")
-            db_loc = "%sgereqi.db" % app_dir
+            db_loc = "%smedia.db" % app_dir
             if os.path.exists(app_dir) is False:
                 os.mkdir(app_dir)
             self.media_db = sqlite.connect(db_loc)
