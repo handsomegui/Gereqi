@@ -42,9 +42,13 @@ def cleanup_encodings(before):
     except UnicodeDecodeError:
         # TODO: filename fixer
         print("WARNING!: Funny encoding for filename. Ignoring - ", repr(before))
-
-
-
+        
+def db_choice(parent):
+    if parent.db_type == "SQLITE":
+        return CollectionDb(mode="SQLITE")
+    elif parent.db_type == "MYSQL":
+        return CollectionDb("MYSQL", self.ui_main.mysql_args)
+        
 class Getinfo(QThread):
     """
     Retrieves the cover for an album
@@ -131,12 +135,6 @@ class Builddb(QThread):
                     tracks.append(file_now)
         return tracks
         
-    def __db_choice(self):
-        if self.ui_main.db_type == "SQLITE":
-            return CollectionDb(mode="SQLITE")
-        elif self.ui_main.db_type == "MYSQL":
-            return CollectionDb("MYSQL", self.ui_main.mysql_args)
-        
     def run(self):
         self.ui_main.build_lock = True
         while self.ui_main.delete_lock is True:
@@ -144,9 +142,8 @@ class Builddb(QThread):
             time.sleep(1)
             
         old_prog = 0    
-        meta = Tagging(self.a_formats)
-        
-        media_db = self.__db_choice()
+        meta = Tagging(self.a_formats)        
+        media_db = db_choice(self.ui_main)
         
         if self.file_list is None:
             tracks = []
@@ -300,11 +297,13 @@ class DeleteFiles(QThread):
             print("WAITING: deletion")
             time.sleep(1)     
         
-        media_db = self.ui_main.media_db
+        media_db = db_choice(self.ui_main)
         for trk in self.file_list:
             media_db.delete_track(unicode(trk))
-            
-        self.ui_main.wdgt_manip.setup_db_tree()  
+         
+        # Signals to indicate that items based on
+        # DB should probably update
+        self.emit(SIGNAL("deleted ( )"))
         self.ui_main.delete_lock = False
         self.exit()            
 

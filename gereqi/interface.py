@@ -378,6 +378,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.finishes = Finishers(self)
         self.play_hist = PlaylistHistory()
 
+        # TODO: use the new PyQt4 signal/slot convention
         self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.finishes.db_build)
         self.connect(self.html_thread, SIGNAL("got-wiki ( QString ) "), self.finishes.set_wiki)
         self.connect(self.info_thread, SIGNAL("got-info ( QString ) "), self.info_view.setHtml)
@@ -392,6 +393,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.connect(self.play_type_bttn, SIGNAL('toggled ( bool )'), self.wdgt_manip.set_play_type)
         self.connect(self.track_tbl.horizontalHeader(), SIGNAL('sectionClicked ( int )'), self.playlisting.change_sort)
         self.connect(self.collect_tree_hdr, SIGNAL('sectionClicked ( int )'), self.__collection_sort)
+        self.connect(self.del_thread, SIGNAL('deleted ( )'), self.wdgt_manip.setup_db_tree)
 
         # Make the collection search line-edit have the keyboard focus on startup.
         self.search_collect_edit.setFocus()
