@@ -399,9 +399,19 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.wdgt_manip.pop_playlist_view()        
         
     def __setup_watcher(self):
-        if self.media_dir is not None:
+        watch = self.sets_db.get_collection_setting("watch")[0]  == "True"
+        recur = self.sets_db.get_collection_setting("recursive")[0]  == "True"
+        
+        if (self.media_dir is not None) and watch is True:
+            try:
+                # To stop the possibly already running thread
+                self.watch_thread.exit()
+            except AttributeError:
+                pass
+                
+            print("WATCHING: ", self.media_dir[0])
             self.watch_thread = Watcher(self)
-            self.watch_thread.set_values(self.media_dir, 60)
+            self.watch_thread.set_values(self.media_dir, 60, recur)
             self.watch_thread.start()
             self.connect(self.watch_thread, SIGNAL('deletions ( QStringList )'), self.__files_deleted)
             self.connect(self.watch_thread, SIGNAL('creations ( QStringList )'), self.__files_created)

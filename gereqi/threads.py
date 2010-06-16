@@ -253,11 +253,12 @@ class Watcher(QThread, pyinotify.ProcessEvent):
             if file_name not in self.deleted:            
                 self.deleted.append(file_name)
 
-    def set_values(self, dirs, timer):
+    def set_values(self, dirs, timer, recursive):
         self.directory = dirs
         self.timer = timer
         self.gogogo = True
         self.checkers = [False, False]
+        self.recur = recursive
         
     def stopstop(self):
         """
@@ -273,7 +274,7 @@ class Watcher(QThread, pyinotify.ProcessEvent):
         notifier = pyinotify.Notifier(wm, self,  read_freq=3, timeout=10)
         exclusions = self.__gen_exc_list(self.directory[1])
         excl = pyinotify.ExcludeFilter(exclusions)
-        wdd = wm.add_watch(self.directory[0], mask, rec=True, auto_add=True,
+        wdd = wm.add_watch(self.directory[0], mask, rec=self.recur, auto_add=True,
                             exclude_filter=excl)
         
         while self.gogogo is True:
