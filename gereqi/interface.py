@@ -1055,7 +1055,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Disables the db interaction actions if in useless state
         """
-        if self.media_dir[0] is None:
+        self.media_dir[0]
+        if len(self.media_dir[0]) < 1:
             self.actionUpdate_Collection.setEnabled(False)
             self.actionRescan_Collection.setEnabled(False)
         else:
