@@ -46,7 +46,7 @@ class Playlist:
     def __init__(self, parent):
         self.ui_main = parent          
   
-    def __sort4add(self):
+    def __sort_custom(self, mode="FileName"):
         """
         Puts the playlist into a sorting order
         that works only for filename sorting (the only
@@ -55,7 +55,7 @@ class Playlist:
         # Finds the sorting status of the playlist
         self.sort_order = self.ui_main.track_tbl.horizontalHeader().sortIndicatorOrder()
         self.sort_pos = self.ui_main.track_tbl.horizontalHeader().sortIndicatorSection()
-        fname_pos = self.header_search("FileName")
+        fname_pos = self.header_search(mode)
         
         # Not the default FileName+ascending sort
         if (self.sort_pos != fname_pos) or (self.sort_order != 0) :
@@ -74,7 +74,7 @@ class Playlist:
         Takes a list of filenames and adds to the playlist
         whilst handling the sorting orders
         """
-        self.__sort4add()
+        self.__sort_custom()
         for trk in tracks:
             # This is for adding a track which has info attached in a tuple
             if isinstance(trk, tuple):
@@ -225,29 +225,15 @@ class Playlist:
             tracks.append(tmp_list)        
         return headers, tracks
      
-    # It's really rubbish so disabling for now
-    def change_sort(self, index):
-        return
+    def track_sorting(self, index):
+        """
+        A bit of a hack. The table is first sorted by track automatically
+        then manually sorting by album by telling the table to auto-sort
+        it that way
+        """
         hdrs, tracks = self.gen_full_list()
-        self.tracknow_colourise()
-        
         if hdrs[index] == "Track":
-            self.ui_main.track_tbl.setSortingEnabled(False)
-            new_list = sorted(tracks, key=lambda tracks: tracks[hdrs.index("Album")])
-            del tracks
-            self.clear()
-            for trk in new_list:
-                print trk
-                row = self.ui_main.track_tbl.rowCount()
-                self.ui_main.track_tbl.insertRow(row)
-                for cnt in range(len(trk)):
-                    tbl_wdgt = QTableWidgetItem(QString(trk[cnt]))
-                    self.ui_main.track_tbl.setItem(row, cnt, tbl_wdgt)
-            self.ui_main.track_tbl.resizeColumnsToContents()
-            self.tracknow_colourise()
-        else:
-            self.ui_main.track_tbl.setSortingEnabled(True)
-        
+            self.__sort_custom("Album")
         
 class PlaylistHistory:
     """
@@ -391,7 +377,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.connect(self.stop_actn, SIGNAL("triggered()"), self.stop_bttn, SLOT("click()"))
         self.connect(self.stat_bttn, SIGNAL("pressed()"), self.quit_build)
         self.connect(self.play_type_bttn, SIGNAL('toggled ( bool )'), self.wdgt_manip.set_play_type)
-        self.connect(self.track_tbl.horizontalHeader(), SIGNAL('sectionClicked ( int )'), self.playlisting.change_sort)
+        self.connect(self.track_tbl.horizontalHeader(), SIGNAL('sectionClicked ( int )'), self.playlisting.track_sorting)
         self.connect(self.collect_tree_hdr, SIGNAL('sectionClicked ( int )'), self.__collection_sort)
         self.connect(self.del_thread, SIGNAL('deleted ( )'), self.wdgt_manip.setup_db_tree)
 
