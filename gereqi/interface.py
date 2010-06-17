@@ -1164,9 +1164,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         When the 'X' button or alt-f4 is triggered
         """
-        if self.tray_icon.isVisible() is True:
-            self.hide()
-            event.ignore()
+        if self.sets_db.get_interface_setting("trayicon") == "True":
+            if self.tray_icon.isVisible() is True:
+                self.hide()
+                event.ignore()
             
     def __resize_filesystem_tree(self):
         """
