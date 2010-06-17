@@ -11,6 +11,8 @@ SIGNAL
 from settings import Settings
 from Ui_configuration import Ui_settings_dialog
 
+
+# TODO: make the checkboxes tristate
 class MyQDirModel(QDirModel):
     check_list = [[], []]
         
@@ -108,14 +110,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.dir_model = MyQDirModel()        
         self.connect(self.dir_model, SIGNAL("needsRefresh( QModelIndex )"), self.__refreshing)
         self.sets_db = Settings()
-        self.__get_settings()
-
-        self.__fileview_setup()
-        self.__database_setup()
-        
-    def __get_settings(self):
-        MyQDirModel.check_list = [self.sets_db.get_collection_setting("include"), 
-                                                self.sets_db.get_collection_setting("exclude")]
+        self.__interface_setup()        
         
     def __refreshing(self, index):
         if self.collection_view.isExpanded(index):
@@ -126,6 +121,8 @@ class Configuration(QDialog, Ui_settings_dialog):
         """
         Make the fileview the correct type
         """
+        MyQDirModel.check_list = [self.sets_db.get_collection_setting("include"), 
+                                                self.sets_db.get_collection_setting("exclude")]
         filters = QDir.AllDirs|QDir.Readable|QDir.NoDotAndDotDot
         self.dir_model.setFilter(filters)
         self.dir_model.setReadOnly(True)
@@ -146,6 +143,18 @@ class Configuration(QDialog, Ui_settings_dialog):
             self.mysql_dbname.setText(self.sets_db.get_database_setting("dbname"))
             self.mysql_port.setValue(int(self.sets_db.get_database_setting("port")))
             
+    def __interface_setup(self):
+        # General
+        func = lambda x : self.sets_db.get_interface_setting(x) == "True"
+        self.tray_icon.setChecked(func("trayicon"))
+        
+        #  Collection
+        func = lambda x : self.sets_db.get_collection_setting(x)[0] == "True"
+        self.scan_recursively.setChecked(func("recursive"))
+        self.watch_folders.setChecked(func("watch"))
+        self.__database_setup()
+        self.__fileview_setup()
+        
     def __save_settings(self):
         true_false = lambda x : x is True and "True" or "False"
         
@@ -174,27 +183,31 @@ class Configuration(QDialog, Ui_settings_dialog):
             self.sets_db.add_database_setting("dbname", unicode(self.mysql_dbname.text()) )
             self.sets_db.add_database_setting("port", unicode(self.mysql_port.value()) )
             
-        
+    def __apply_settings(self):
+        """
+        Apply all the settings to the db
+        """
+        self.sets_db.drop_interface()
+        self.sets_db.drop_database()
+        self.sets_db.drop_collection()        
+        self.__set_collections()
+        self.__set_database()
+        self.__save_settings()
+            
     @pyqtSignature("QAbstractButton*")
     def on_buttonBox_clicked(self, button):
         """
         Slot documentation goes here.
         """
         if button.text() == "Apply":
-            print "APPLY"
+            self.apply_settings()
     
     @pyqtSignature("")
     def on_buttonBox_accepted(self):
         """
         Slot documentation goes here.
         """
-        self.sets_db.drop_interface()
-        self.sets_db.drop_database()
-        self.sets_db.drop_collection()
-        
-        self.__set_collections()
-        self.__set_database()
-        self.__save_settings()
+        self.__apply_settings()
         QDialog.accept(self)
     
     @pyqtSignature("")
