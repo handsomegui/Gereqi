@@ -148,8 +148,7 @@ class CollectionDb:
     def __query_fetchone(self, query, args=None):
         result = self.__query_execute(self.__query_process(query, args), args)
         if self.db_type == "MYSQL":
-            r = self.media_db.store_result().fetch_row()
-            return r.fetch_row()
+            return self.media_db.store_result().fetch_row()
         return self.media_curs.fetchone()
             
     def __query_fetchall(self, query, args=None):

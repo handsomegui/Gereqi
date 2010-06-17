@@ -200,7 +200,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         Slot documentation goes here.
         """
         if button.text() == "Apply":
-            self.apply_settings()
+            self.__apply_settings()
     
     @pyqtSignature("")
     def on_buttonBox_accepted(self):
