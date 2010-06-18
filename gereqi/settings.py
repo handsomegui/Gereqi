@@ -92,6 +92,14 @@ class Settings:
         query = '''SELECT value
                         FROM collection
                         WHERE tag=?'''
+	result = self.__query_fetchone(query,(tag,))
+	if result is not None:
+	    return result
+
+    def get_collection_dirs(self, tag):
+        query = '''SELECT value
+                    FROM collection
+                    WHERE tag=?'''
         return [str(val[0]) for val in self.__query_fetchall(query, (tag, ))]
 
     def get_database_setting(self, tag):

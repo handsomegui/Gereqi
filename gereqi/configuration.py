@@ -14,7 +14,6 @@ from Ui_configuration import Ui_settings_dialog
 
 # TODO: make the checkboxes tristate
 class MyQDirModel(QDirModel):
-    check_list = [[], []]
         
     def data(self, index, role = Qt.DisplayRole):
         if index.isValid() and (index.column() == 0) and (role == Qt.CheckStateRole):
@@ -121,8 +120,8 @@ class Configuration(QDialog, Ui_settings_dialog):
         """
         Make the fileview the correct type
         """
-        MyQDirModel.check_list = [self.sets_db.get_collection_setting("include"), 
-                                                self.sets_db.get_collection_setting("exclude")]
+        MyQDirModel.check_list = [self.sets_db.get_collection_dirs("include"), 
+                                  self.sets_db.get_collection_dirs("exclude")]
         filters = QDir.AllDirs|QDir.Readable|QDir.NoDotAndDotDot
         self.dir_model.setFilter(filters)
         self.dir_model.setReadOnly(True)
@@ -149,7 +148,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.tray_icon.setChecked(func("trayicon"))
         
         #  Collection
-        func = lambda x : self.sets_db.get_collection_setting(x)[0] == "True"
+        func = lambda x : self.sets_db.get_collection_setting(x) == "True"
         self.scan_recursively.setChecked(func("recursive"))
         self.watch_folders.setChecked(func("watch"))
         self.__database_setup()
@@ -167,7 +166,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.sets_db.add_collection_setting("recursive", recursive_dirs)
         
     def __set_collections(self):
-        for incl in MyQDirModel.check_list [0]:
+        for incl in MyQDirModel.check_list[0]:
             self.sets_db.add_collection_setting("include", incl)
         for excl in MyQDirModel.check_list[1]:
             self.sets_db.add_collection_setting("exclude", excl)

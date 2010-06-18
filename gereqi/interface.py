@@ -387,8 +387,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.wdgt_manip.pop_playlist_view()        
         
     def __setup_watcher(self):
-        watch = self.sets_db.get_collection_setting("watch")[0]  == "True"
-        recur = self.sets_db.get_collection_setting("recursive")[0]  == "True"
+        watch = self.sets_db.get_collection_setting("watch")  == "True"
+        recur = self.sets_db.get_collection_setting("recursive")  == "True"
         
         if (self.media_dir is not None) and watch is True:
             try:
@@ -438,9 +438,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.media_db = CollectionDb("MYSQL", self.mysql_args)
             
     def __dirs_setup(self):
-        includes = self.sets_db.get_collection_setting("include")
-        excludes = self.sets_db.get_collection_setting("exclude")
-        self.media_dir = (includes, excludes)
+        func = lambda x : x if not None else []
+        includes = self.sets_db.get_collection_dirs("include")
+        excludes = self.sets_db.get_collection_dirs("exclude")
+        self.media_dir = (func(includes), func(excludes))
         
     def __settings_init(self):
         self.sets_db = Settings()
@@ -641,7 +642,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Closing Down. Maybe some database interaction.
         """
-        self.watch_thread.exit()
+        #self.watch_thread.exit()
         exit()
     
     @pyqtSignature("")
