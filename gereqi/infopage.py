@@ -16,6 +16,7 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 from extraneous import Extraneous
+from settings import Settings
 
 HTML = '''
             <html>
@@ -23,7 +24,7 @@ HTML = '''
             
             <style type="text/css">
             img.cover{
-                width: 240px;
+                width: %upx;
                 border: 0;
             }
             img.mini{
@@ -71,10 +72,13 @@ class InfoPage:
         
         
     def gen_info(self, **params):
+        sets_db = Settings()
+        coversize = sets_db.get_interface_setting("coversize")
+        coversize = int(coversize) if coversize is not None else 200
         albs = params["albums"]
         cover = Extraneous().get_cover_source(params["artist"], params["album"], params["check"])
-        now = HTML % (params["title"], params["artist"], params["album"], 
-                                cover, params["artist"], self.__gen_albs(params["artist"], albs))
+        now = HTML % (coversize, params["title"], params["artist"], params["album"], 
+                        cover, params["artist"], self.__gen_albs(params["artist"], albs))
         return now
         
         

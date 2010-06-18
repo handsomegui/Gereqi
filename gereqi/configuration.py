@@ -145,7 +145,10 @@ class Configuration(QDialog, Ui_settings_dialog):
     def __interface_setup(self):
         # General
         func = lambda x : self.sets_db.get_interface_setting(x) == "True"
+        coversize = self.sets_db.get_interface_setting("coversize")
         self.tray_icon.setChecked(func("trayicon"))
+        if coversize is not None:
+            self.cover_size.setValue(int(coversize))
         
         #  Collection
         func = lambda x : self.sets_db.get_collection_setting(x) == "True"
@@ -156,12 +159,15 @@ class Configuration(QDialog, Ui_settings_dialog):
         
     def __save_settings(self):
         true_false = lambda x : x is True and "True" or "False"
-        
+        # Interface
+        cover_size = self.cover_size.value()
+        show_tray = true_false(self.tray_icon.isChecked())
+        self.sets_db.add_interface_setting("trayicon", show_tray)
+        self.sets_db.add_interface_setting("coversize", cover_size)
+
         recursive_dirs = true_false(self.scan_recursively.isChecked())
         watch_dirs = true_false(self.watch_folders.isChecked())
-        show_tray = true_false(self.tray_icon.isChecked())
         
-        self.sets_db.add_interface_setting("trayicon", show_tray)
         self.sets_db.add_collection_setting("watch", watch_dirs)
         self.sets_db.add_collection_setting("recursive", recursive_dirs)
         
