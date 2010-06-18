@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/gereqi/configuration.ui'
+# Form implementation generated from reading ui file 'configuration.ui'
 #
-# Created: Fri Jun 11 13:38:52 2010
+# Created: Fri Jun 18 20:11:26 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -240,6 +240,7 @@ class Ui_settings_dialog(object):
         self.horizontalLayout_9.addWidget(self.label_9)
         self.mysql_password = QtGui.QLineEdit(self.mysql_config)
         self.mysql_password.setMaximumSize(QtCore.QSize(200, 16777215))
+        self.mysql_password.setEchoMode(QtGui.QLineEdit.PasswordEchoOnEdit)
         self.mysql_password.setObjectName("mysql_password")
         self.horizontalLayout_9.addWidget(self.mysql_password)
         self.verticalLayout_4.addLayout(self.horizontalLayout_9)
@@ -316,14 +317,4 @@ class Ui_settings_dialog(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_7), QtGui.QApplication.translate("settings_dialog", "last.fm", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_8), QtGui.QApplication.translate("settings_dialog", "Devices", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton.setText(QtGui.QApplication.translate("settings_dialog", "Defaults", None, QtGui.QApplication.UnicodeUTF8))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtGui.QApplication(sys.argv)
-    settings_dialog = QtGui.QDialog()
-    ui = Ui_settings_dialog()
-    ui.setupUi(settings_dialog)
-    settings_dialog.show()
-    sys.exit(app.exec_())
 
