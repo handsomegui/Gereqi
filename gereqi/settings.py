@@ -92,9 +92,14 @@ class Settings:
         query = '''SELECT value
                         FROM collection
                         WHERE tag=?'''
-	result = self.__query_fetchone(query,(tag,))
-	if result is not None:
-	    return result
+        result = self.__query_fetchone(query,(tag,))
+        
+       
+        if result is not None:
+            if tag != ("include" or "exclude"):
+                return result[0]
+            else:
+                return result
 
     def get_collection_dirs(self, tag):
         query = '''SELECT value
