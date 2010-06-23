@@ -21,7 +21,7 @@ This file contains all the necessary threads for the app
 to make it easier to manage
 """
 
-from PyQt4.QtCore import QThread, QString, SIGNAL, Qt, QStringList
+from PyQt4.QtCore import QThread, QString, SIGNAL, Qt, QStringList, pyqtSignal
 from PyQt4.QtGui import QImage, QPixmap
 from urllib import pathname2url
 
@@ -54,6 +54,8 @@ class Getinfo(QThread):
     Retrieves the cover for an album
     from Amazon
     """
+    got_info = pyqtSignal()
+    
     def __init__(self, parent=None):
         QThread.__init__(self, parent = None)
         self.ui_main = parent
@@ -62,13 +64,15 @@ class Getinfo(QThread):
         self.info = params
     def run(self):
         html = InfoPage(self.ui_main).gen_info(**self.info)
-        print html
         self.emit(SIGNAL("got-info ( QString )"), html)
+        self.got_info.emit(html)
         
 class Getwiki(QThread):
     """
     Retrieves the wiki info for an artist
     """
+    got_wiki = pyqtSignal(QString)
+    
     def __init__(self, parent=None):
         QThread.__init__(self, parent)
     
@@ -82,7 +86,8 @@ class Getwiki(QThread):
             result = QString(result)
         else:
             result = QString("None")
-        self.emit(SIGNAL("got-wiki ( QString )"), result)
+        
+        self.got_wiki.emit(result)
         self.exit()
         
         
@@ -91,6 +96,8 @@ class Builddb(QThread):
     Gets files from a directory and build's a 
     media database from the filtered files
     """
+    progress = pyqtSignal(int)
+    
     def __init__(self, parent):
         QThread.__init__(self, parent)
         self.ui_main = parent
@@ -175,6 +182,7 @@ class Builddb(QThread):
                 if prog > old_prog:
                     old_prog = prog
                     self.emit(SIGNAL("progress ( int )"), prog)
+                    self.progress.emit(prog)
                 
                 info = meta.extract(trk.encode("utf-8"))
                 if info is not None:
@@ -289,6 +297,8 @@ class Watcher(QThread, pyinotify.ProcessEvent):
 
 
 class DeleteFiles(QThread):
+    deleted = pyqtSignal()
+    
     def __init__(self, parent):
         self.ui_main = parent
         QThread.__init__(self)
@@ -308,7 +318,7 @@ class DeleteFiles(QThread):
          
         # Signals to indicate that items based on
         # DB should probably update
-        self.emit(SIGNAL("deleted ( )"))
+        self.deleted.emit()
         self.ui_main.delete_lock = False
         self.exit()            
 

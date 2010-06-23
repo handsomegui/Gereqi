@@ -365,22 +365,27 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.play_hist = PlaylistHistory()
 
         # TODO: use the new PyQt4 signal/slot convention
-        self.connect(self.build_db_thread, SIGNAL("finished ( QString ) "), self.finishes.db_build)
-        self.connect(self.html_thread, SIGNAL("got-wiki ( QString ) "), self.finishes.set_wiki)
+        
+        #new style signalling
+        self.build_db_thread.finished.connect(self.finishes.db_build)
+        self.filesystem_tree.expanded.connect(self.__resize_filesystem_tree)
+        self.filesystem_tree.doubleClicked.connect(self.__filesystem_tree_item)
+        self.play_actn.toggled.connect(self.play_bttn.setChecked)
+        self.actionNext_Track.triggered.connect(self.next_bttn.click)
+        self.prev_track_actn.triggered.connect(self.prev_bttn.click)
+        self.stop_actn.triggered.connect(self.prev_bttn.click)
+        self.stat_bttn.pressed.connect(self.quit_build)
+        self.play_type_bttn.toggled.connect(self.wdgt_manip.set_play_type)
+        self.track_tbl.horizontalHeader().sectionClicked.connect(self.playlisting.track_sorting)
+        self.collect_tree_hdr.sectionClicked.connect(self.__collection_sort)
+        self.html_thread.got_wiki.connect(self.finishes.set_wiki)
+        self.build_db_thread.progress.connect(self.stat_prog.setValue)
+        self.del_thread.deleted.connect(self.wdgt_manip.setup_db_tree)
+        
+        # Old style signalling
         self.connect(self.info_thread, SIGNAL("got-info ( QString ) "), self.info_view.setHtml)
-        self.connect(self.build_db_thread, SIGNAL("progress ( int ) "), self.stat_prog, SLOT("setValue(int)"))
-        self.connect(self.filesystem_tree, SIGNAL("expanded (const QModelIndex&)"), self.__resize_filesystem_tree) 
-        self.connect(self.filesystem_tree, SIGNAL("doubleClicked (const QModelIndex&)"), self.__filesystem_tree_item)
-        self.connect(self.play_actn, SIGNAL("toggled ( bool )"), self.play_bttn, SLOT("setChecked(bool)"))
-        self.connect(self.actionNext_Track, SIGNAL("triggered()"), self.next_bttn, SLOT("click()"))
-        self.connect(self.prev_track_actn, SIGNAL("triggered()"), self.prev_bttn, SLOT("click()"))  
-        self.connect(self.stop_actn, SIGNAL("triggered()"), self.stop_bttn, SLOT("click()"))
-        self.connect(self.stat_bttn, SIGNAL("pressed()"), self.quit_build)
-        self.connect(self.play_type_bttn, SIGNAL('toggled ( bool )'), self.wdgt_manip.set_play_type)
-        self.connect(self.track_tbl.horizontalHeader(), SIGNAL('sectionClicked ( int )'), self.playlisting.track_sorting)
-        self.connect(self.collect_tree_hdr, SIGNAL('sectionClicked ( int )'), self.__collection_sort)
-        self.connect(self.del_thread, SIGNAL('deleted ( )'), self.wdgt_manip.setup_db_tree)
-
+        
+        
         # Make the collection search line-edit have the keyboard focus on startup.
         self.search_collect_edit.setFocus()
         self.wdgt_manip.setup_db_tree()
