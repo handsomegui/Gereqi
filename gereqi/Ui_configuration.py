@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'configuration.ui'
+# Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/gereqi/configuration.ui'
 #
-# Created: Fri Jun 18 20:11:26 2010
+# Created: Thu Jun 24 10:05:35 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -66,7 +66,8 @@ class Ui_settings_dialog(object):
         self.horizontalLayout_4.addWidget(self.label)
         self.cover_size = QtGui.QSpinBox(self.groupBox)
         self.cover_size.setMinimum(24)
-        self.cover_size.setMaximum(400)
+        self.cover_size.setMaximum(480)
+        self.cover_size.setSingleStep(10)
         self.cover_size.setProperty("value", 200)
         self.cover_size.setObjectName("cover_size")
         self.horizontalLayout_4.addWidget(self.cover_size)
@@ -317,4 +318,14 @@ class Ui_settings_dialog(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_7), QtGui.QApplication.translate("settings_dialog", "last.fm", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_8), QtGui.QApplication.translate("settings_dialog", "Devices", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton.setText(QtGui.QApplication.translate("settings_dialog", "Defaults", None, QtGui.QApplication.UnicodeUTF8))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtGui.QApplication(sys.argv)
+    settings_dialog = QtGui.QDialog()
+    ui = Ui_settings_dialog()
+    ui.setupUi(settings_dialog)
+    settings_dialog.show()
+    sys.exit(app.exec_())
 
