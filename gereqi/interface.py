@@ -381,6 +381,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.html_thread.got_wiki.connect(self.finishes.set_wiki)
         self.build_db_thread.progress.connect(self.stat_prog.setValue)
         self.del_thread.deleted.connect(self.wdgt_manip.setup_db_tree)
+#        self.info_thread.got_info.connect(self.info_view.setHtml)
         
         # Old style signalling
         self.connect(self.info_thread, SIGNAL("got-info ( QString ) "), self.info_view.setHtml)
@@ -406,8 +407,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.watch_thread = Watcher(self)
             self.watch_thread.set_values(self.media_dir, 60, recur)
             self.watch_thread.start()
-            self.connect(self.watch_thread, SIGNAL('deletions ( QStringList )'), self.__files_deleted)
-            self.connect(self.watch_thread, SIGNAL('creations ( QStringList )'), self.__files_created)
+            self.watch_thread.creations.connect(self.__files_created)
+            self.watch_thread.deletions.connect(self.__files_deleted)
         
     def __files_deleted(self, deletions):
         """
@@ -419,6 +420,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.del_thread.start()
             
     def __files_created(self, creations):
+        """
+        Via the watcher, newly created/changed files are sent
+        to the db to be added or updated
+        """
         self.build_db_thread.set_values(None, self.audio_formats, False, creations)
         self.stat_lbl.setText("Auto-Scanning")
         self.stat_prog.setValue(0)

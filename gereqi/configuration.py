@@ -5,8 +5,7 @@ Module implementing Configuration.
 """
 
 from PyQt4.QtGui import QDialog, QDirModel
-from PyQt4.QtCore import pyqtSignature, QDir, Qt, QAbstractItemModel, \
-SIGNAL
+from PyQt4.QtCore import pyqtSignature, QDir, Qt, QAbstractItemModel
 
 from settings import Settings
 from Ui_configuration import Ui_settings_dialog

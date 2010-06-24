@@ -23,7 +23,7 @@ import thread
 import gobject
 from os import path
 from time import sleep
-from PyQt4.QtCore import QObject, SIGNAL
+from PyQt4.QtCore import QObject, pyqtSignal
 from urllib import pathname2url
 
 
@@ -52,6 +52,11 @@ class Utilities:
             
             
 class Gstbe(QObject):
+    finished = pyqtSignal()
+    tick = pyqtSignal(int)
+    track_changed = pyqtSignal()
+    
+    
     def __init__(self):
         QObject.__init__(self)
         gobject.threads_init() # V.Important
@@ -67,7 +72,7 @@ class Gstbe(QObject):
         self.pipe_source = self.play_thread_id = None
 
     def __audio_changed(self, pipeline):
-        self.emit(SIGNAL("track_changed()"))
+        self.track_changed.emit()
 
     def __on_message(self, bus, msg):
         """
@@ -77,7 +82,7 @@ class Gstbe(QObject):
         if mtype == gst.MESSAGE_EOS:
             self.play_thread_id = None            
             self.pipe_line.set_state(gst.STATE_NULL)
-            self.emit(SIGNAL("finished()"))
+            self.finished.emit()
         
         elif mtype == gst.MESSAGE_ERROR:
             self.pipe_line.set_state(gst.STATE_NULL)
@@ -99,7 +104,7 @@ class Gstbe(QObject):
             try:
                 pos_int = self.pipe_line.query_position(gst.FORMAT_TIME)[0]
                 val = int(round(pos_int / 1000000))
-                self.emit(SIGNAL("tick ( int )"), val)
+                self.tick.emit(val)
             except gst.QueryError:
                 pass
             sleep(1)
@@ -134,7 +139,7 @@ class Gstbe(QObject):
             self.play_thread_id = thread.start_new_thread(
                                     self.__whilst_playing, ())
         else:
-            self.emit(SIGNAL("finished()"))
+            self.finished.emit()
         
     def pause(self):
         self.pipe_line.set_state(gst.STATE_PAUSED)

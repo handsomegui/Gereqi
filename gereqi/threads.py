@@ -54,7 +54,7 @@ class Getinfo(QThread):
     Retrieves the cover for an album
     from Amazon
     """
-    got_info = pyqtSignal()
+#    got_info = pyqtSignal(QString)
     
     def __init__(self, parent=None):
         QThread.__init__(self, parent = None)
@@ -65,7 +65,7 @@ class Getinfo(QThread):
     def run(self):
         html = InfoPage(self.ui_main).gen_info(**self.info)
         self.emit(SIGNAL("got-info ( QString )"), html)
-        self.got_info.emit(html)
+#        self.got_info.emit(QString(html))
         
 class Getwiki(QThread):
     """
@@ -97,6 +97,7 @@ class Builddb(QThread):
     media database from the filtered files
     """
     progress = pyqtSignal(int)
+    finished = pyqtSignal(QString)
     
     def __init__(self, parent):
         QThread.__init__(self, parent)
@@ -181,7 +182,6 @@ class Builddb(QThread):
                 prog = int(round(100 * ratio))
                 if prog > old_prog:
                     old_prog = prog
-                    self.emit(SIGNAL("progress ( int )"), prog)
                     self.progress.emit(prog)
                 
                 info = meta.extract(trk.encode("utf-8"))
@@ -198,13 +198,13 @@ class Builddb(QThread):
                     cnt += 1
             else:
                 print("User terminated scan.")
-                self.emit(SIGNAL("finished( QString )"), QString("cancelled"))
+                self.finished.emit(QString("cancelled"))
                 self.ui_main.build_lock = False
                 self.exit()
                 return
             
         print("%u of %u tracks scanned in: %0.1f seconds" % (cnt, tracks_total,  (time.time() - strt)))
-        self.emit(SIGNAL("finished ( QString )"), QString("complete"))
+        self.finished.emit(QString("complete"))
         self.ui_main.build_lock = False
         self.exit()
         
@@ -213,6 +213,9 @@ class Watcher(QThread, pyinotify.ProcessEvent):
     """
     Watches a directory periodically for file changes
     """
+    deletions = pyqtSignal(QStringList)
+    creations = pyqtSignal(QStringList)
+    
     def __init__(self, parent):
         QThread.__init__(self)
         pyinotify.ProcessEvent.__init__(self)       
@@ -231,14 +234,14 @@ class Watcher(QThread, pyinotify.ProcessEvent):
         """
         if self.deleted.count() > 0:
             if self.ui_main.delete_lock is False:
-                self.emit(SIGNAL("deletions ( QStringList )"), self.deleted)            
+                self.deletions.emit(self.deleted)
                 self.deleted.clear()
             else:
                 print("WAITING: deletion list")
                 
         if self.created.count() > 0:
             if self.ui_main.build_lock is False:
-                self.emit(SIGNAL("creations ( QStringList )"), self.created)
+                self.creations.emit(self.created)
                 self.created.clear()
             else:
                 print("WAITING: creation list")

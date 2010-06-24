@@ -16,7 +16,7 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt4.QtGui import QPixmap
-from PyQt4.QtCore import QObject, QTime, SIGNAL, QString
+from PyQt4.QtCore import QObject, QTime,  QString
 
 
 from gstbe import Gstbe
@@ -34,11 +34,13 @@ class AudioBackend:
         backend initialisation
         """
         self.audio_object = Gstbe()
-        QObject.connect(self.audio_object, SIGNAL("tick ( int )"), self.__prog_tick)
+        
+        # signal/slots
+        self.audio_object.tick.connect(self.__prog_tick)
+        self.audio_object.track_changed.connect(self.__track_changed)
+        self.audio_object.finished.connect(self.__finished_playing)
+        self.ui_main.stop_bttn.pressed.connect(self.__finished_playing)       
         self.audio_object.pipe_line.connect("about-to-finish", self.__about_to_finish)
-        QObject.connect(self.audio_object, SIGNAL("track_changed()"), self.__track_changed)
-        QObject.connect(self.audio_object, SIGNAL("finished()"), self.__finished_playing)
-        QObject.connect(self.ui_main.stop_bttn, SIGNAL("pressed()"), self.__finished_playing)
         
     def __about_to_finish(self, pipeline):
         """
