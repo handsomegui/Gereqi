@@ -5,7 +5,8 @@ Module implementing Configuration.
 """
 
 from PyQt4.QtGui import QDialog, QDirModel
-from PyQt4.QtCore import pyqtSignature, QDir, Qt, QAbstractItemModel
+from PyQt4.QtCore import pyqtSignature, QDir, Qt, QAbstractItemModel, \
+pyqtSignal, QModelIndex
 
 from settings import Settings
 from Ui_configuration import Ui_settings_dialog
@@ -13,6 +14,8 @@ from Ui_configuration import Ui_settings_dialog
 
 # TODO: make the checkboxes tristate
 class MyQDirModel(QDirModel):
+    needsRefresh = pyqtSignal(QModelIndex)
+    
         
     def data(self, index, role = Qt.DisplayRole):
         if index.isValid() and (index.column() == 0) and (role == Qt.CheckStateRole):
@@ -67,7 +70,8 @@ class MyQDirModel(QDirModel):
                     
                 if there is False:
                     MyQDirModel.check_list[0].append(str(self.filePath(index)))
-                self.emit(SIGNAL("needsRefresh( QModelIndex )"), index)
+                print 1
+                self.needsRefresh.emit(index)
                 return True
                 
             # Want to exclude dir
@@ -87,8 +91,8 @@ class MyQDirModel(QDirModel):
                     thing = checker[:val+1].join("/")
                     if thing in MyQDirModel.check_list[0]:
                         MyQDirModel.check_list[1].append(str(dir_now))
-                
-                self.emit(SIGNAL("needsRefresh( QModelIndex )"), index)
+                print 2
+                self.needsRefresh.emit(index)
                 return True
                 
         else:
@@ -106,11 +110,12 @@ class Configuration(QDialog, Ui_settings_dialog):
         QDialog.__init__(self, parent)
         self.setupUi(self)
         self.dir_model = MyQDirModel()        
-        self.connect(self.dir_model, SIGNAL("needsRefresh( QModelIndex )"), self.__refreshing)
+        self.dir_model.needsRefresh.connect(self.__refreshing)
         self.sets_db = Settings()
         self.__interface_setup()        
         
     def __refreshing(self, index):
+        print index
         if self.collection_view.isExpanded(index):
             self.collection_view.collapse(index)
             self.collection_view.expand(index)
