@@ -57,6 +57,8 @@ class Playlist:
         if (self.sort_pos != fname_pos) or (self.sort_order != 0) :
             self.ui_main.track_tbl.horizontalHeader().setSortIndicator(fname_pos, 0)
             
+        
+            
     def __unsort(self):
         """
         Puts the playlist sorting back to what it was 
@@ -151,8 +153,8 @@ class Playlist:
         for item in items:
             try:
                 row = item.row()
-                self.ui_main.track_tbl.removeRow(row)
-                self.tracknow_colourise()
+                self.ui_main.track_tbl.removeRow(row)                
+                self.tracknow_colourise(self.current_row())
             except RuntimeError:
                 # likely deleted already i.e selected same row but multiple columns
                 return 
@@ -232,6 +234,8 @@ class Playlist:
         hdrs, tracks = self.gen_full_list()
         if hdrs[index] == "Track":
             self.__sort_custom("Album")
+        self.tracknow_colourise(self.current_row())
+        
         
 class PlaylistHistory:
     """
