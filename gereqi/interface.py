@@ -39,7 +39,7 @@ from extrawidgets import SetupExtraWidgets, WidgetManips
 from audiocd import AudioCD
 from backend import AudioBackend
 from settings import Settings
-from collection import CollectionDb
+from collection2 import CollectionDb
 
 
 class Playlist:

@@ -232,7 +232,8 @@ class WidgetManips:
         font = QFont()
         font.setBold(True)
         for cnt in range(len(things)):
-            thing = things[cnt].decode("utf-8")
+            # with sqlite, don't want
+            thing = things[cnt]#.decode("utf-8")
             # When creating collection tree only 
             #  allow certain things based on the filter.
             if (filt is not None) and (filt.lower() not in thing.lower()):

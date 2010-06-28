@@ -34,7 +34,7 @@ class CollectionDb:
                 os.mkdir(app_dir)
             self.media_db = sqlite.connect(db_loc)
             self.media_curs = self.media_db.cursor()        
-#            self.__pragma()
+            self.__pragma()
         
         elif mode == "MYSQL":
             import MySQLdb
