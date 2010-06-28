@@ -217,14 +217,11 @@ class Tagging:
         tags.append(bitrate)
         return tags
         
-    def extract(self, fname, mode="playlist"):
+    def extract(self, fname):
         """
         Based on the file-format extract info
         """
-        if mode == "playlist":
-            if not self.extras.check_source_exists(fname):
-                return
-            
+           
         ext = fname.split(".")[-1].lower()
         if ext in self.a_formats:
             if ext == "flac":
