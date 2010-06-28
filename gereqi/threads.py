@@ -43,19 +43,13 @@ def cleanup_encodings(before):
         # TODO: filename fixer
         print("WARNING!: Funny encoding for filename. Ignoring - ", repr(before))
         
-def db_choice(parent):
-    if parent.db_type == "SQLITE":
-        return CollectionDb(mode="SQLITE")
-    elif parent.db_type == "MYSQL":
-        return CollectionDb("MYSQL", parent.mysql_args)
         
+# TODO: create a pyqtSignal
 class Getinfo(QThread):
     """
     Retrieves the cover for an album
     from Amazon
     """
-#    got_info = pyqtSignal(QString)
-    
     def __init__(self, parent=None):
         QThread.__init__(self, parent = None)
         self.ui_main = parent
@@ -65,7 +59,6 @@ class Getinfo(QThread):
     def run(self):
         html = InfoPage(self.ui_main).gen_info(**self.info)
         self.emit(SIGNAL("got-info ( QString )"), html)
-#        self.got_info.emit(QString(html))
         
 class Getwiki(QThread):
     """
@@ -152,10 +145,10 @@ class Builddb(QThread):
             
         old_prog = 0    
         meta = Tagging(self.a_formats)        
-        media_db = db_choice(self.ui_main)
+
         
         if self.redo is True:
-            media_db.drop_media()
+            self.ui_main.media_db.drop_media()
             print("FROM SCRATCH")
         
         if self.file_list is None:
@@ -194,7 +187,7 @@ class Builddb(QThread):
                     # The playcount and rating
                     info.append(0)
                     info.append(0)
-                    media_db.add_media(info)
+                    self.ui_main.media_db.add_media(info)
                     cnt += 1
             else:
                 print("User terminated scan.")
