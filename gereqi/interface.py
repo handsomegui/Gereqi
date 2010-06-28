@@ -16,12 +16,8 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from PyQt4.QtGui import QMainWindow, QFileDialog, \
-QTableWidgetItem, QDesktopServices, QSystemTrayIcon, \
-QIcon, QTreeWidgetItem, QPixmap, QMessageBox, QColor, \
-QSystemTrayIcon, QInputDialog, QLineEdit, QDialog
-from PyQt4.QtCore import QString, Qt, QTime, SIGNAL, \
-SLOT, QDir, pyqtSignature
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 
 from random import randrange
 import time
@@ -100,19 +96,21 @@ class Playlist:
                 if info is None:
                     return
                 else:       
-                    metadata = {"Track": ("%02u" % info[5]), "Title": info[0], "Artist": info[1], 
-                                        "Album": info[2], "Year": unicode(info[3]), "Genre": info[4], "Length": info[6],
-                                        "Bitrate": unicode(info[7]), "FileName": file_name}
+                    trk = QString("%1").arg(info[5].toInt()[0], 2, 10, QChar('0'))
+                    metadata = {"Track": trk,  "Title": info[0], "Artist": info[1], 
+                                        "Album": info[2], "Year":info[3], "Genre": info[4], "Length": info[6],
+                                        "Bitrate": info[7], "FileName": file_name}
             else:
-                metadata = {'Track': ("%02u" % info[6]), "Title": info[1], "Artist": info[2], "Album": info[3], 
-                                    "Year": unicode(info[4]), "Genre": info[5], "Length": info[7], 
-                                    "Bitrate": unicode(info[8]), "FileName": file_name}
+                trk = QString("%1").arg(info[6].toInt()[0], 2,10, QChar('0'))
+                metadata = {'Track': trk, "Title": info[1], "Artist": info[2], "Album": info[3], 
+                                    "Year": info[4], "Genre": info[5], "Length": info[7], 
+                                    "Bitrate": info[8], "FileName": file_name}
                                     
         row = self.ui_main.track_tbl.rowCount()
         self.ui_main.track_tbl.insertRow(row)
         # Creates each cell for a track based on info
         for key in metadata:
-            tbl_wdgt = QTableWidgetItem(QString(metadata[key]))
+            tbl_wdgt = QTableWidgetItem(metadata[key])
             column = self.header_search(key)
             self.ui_main.track_tbl.setItem(row, column, tbl_wdgt)
         self.ui_main.track_tbl.resizeColumnsToContents()   
@@ -313,9 +311,9 @@ class Track:
         self.msg_status = "Playing: %s by %s on %s" % (title, artist, album)
         self.ui_main.stat_lbl.setText(self.msg_status)
         self.ui_main.playlisting.tracknow_colourise(row)
-        self.ui_main.art_alb["nowart"] = unicode(artist)
-        self.ui_main.art_alb["nowalb"] = unicode(album)
-        self.ui_main.art_alb["title"] = unicode(title)
+        self.ui_main.art_alb["nowart"] = artist
+        self.ui_main.art_alb["nowalb"] = album
+        self.ui_main.art_alb["title"] = title
         
 
 class MainWindow(Ui_MainWindow, QMainWindow): 
@@ -499,8 +497,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 self.playlisting.add_list_to_playlist(tracks)
 
             elif track is not None:
-                file_name = self.media_db.get_file(artist, album, track)
+                file_name = unicode(self.media_db.get_file(artist, album, track))
+                print file_name
                 self.playlisting.add_to_playlist(file_name)
+                
             elif album is not None:
                 tracks = self.media_db.get_files(artist, album)
                 self.playlisting.add_list_to_playlist(tracks)

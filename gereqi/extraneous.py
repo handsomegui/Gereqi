@@ -32,9 +32,10 @@ class Extraneous:
         things = []
         exc = '''!,.%%$&(){}[]/"'''
         for item in params:
-            result = filter(lambda x : x not in exc, item.lower())
+            result = filter(lambda x : x not in exc, unicode(item).lower())
             result = result.replace(" ", "_")
             things.append(result)
+
         return "%s-%s" % tuple(things)
         
        

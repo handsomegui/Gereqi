@@ -32,7 +32,7 @@ import pyinotify
 from webinfo import Webinfo
 from tagging import Tagging
 from infopage import InfoPage
-from collection import CollectionDb
+from collection2 import CollectionDb
 
 build_lock = delete_lock = False
 

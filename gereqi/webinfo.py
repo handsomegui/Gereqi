@@ -28,7 +28,7 @@ class Webinfo:
         things = []
         exc = '''!,.%%$&(){}[]'''
         for item in params:
-            result = filter(lambda x : x not in exc, item)
+            result = filter(lambda x : x not in exc, unicode(item))
             things.append(result.replace(" ", "+"))
             
         if site == "wikipedia.org":
