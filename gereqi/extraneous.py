@@ -16,7 +16,8 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import os
+from os import environ as getenv
+from PyQt4.QtCore import QDir, QString, QFile, QIODevice
 
 from webinfo import Webinfo
 
@@ -30,13 +31,14 @@ class Extraneous:
         
     def __filenamer(self, *params):
         things = []
-        exc = '''!,.%%$&(){}[]/"'''
+        excludes = '''!,.%%$&(){}[]/"'''
         for item in params:
-            result = filter(lambda x : x not in exc, unicode(item).lower())
-            result = result.replace(" ", "_")
-            things.append(result)
-
-        return "%s-%s" % tuple(things)
+            for ch in excludes:
+                item.remove(ch)
+            item.replace(" ", "_")
+            things.append(item)
+        result = QString("%1-%2").arg(things[0]).arg(things[1])
+        return result
         
        
     def check_source_exists(self, fname):
@@ -44,7 +46,7 @@ class Extraneous:
         Checks whether if a track exists on drives.
         If not, it removes the track from the database.
         """
-        if os.path.exists(fname) is True:
+        if QDir(fname).exists() is True:
             return True
         else:
             database = Media()
@@ -53,21 +55,22 @@ class Extraneous:
             
 
     def get_cover_source(self, artist, album, check=True):
-        cover_dir = "%s/.gereqi/album-art/" % os.environ["HOME"]
-        cover = "%s%s.jpg" % (cover_dir, self.__filenamer(artist, album))
+        cover_dir = QString("%1/.gereqi/album-art/").arg(getenv["HOME"])
+        cover = QString("%1%2.jpg").arg(cover_dir).arg(self.__filenamer(artist, album))
         
         if check is True:
-            if os.path.exists(cover_dir) is False:
-                os.mkdir(cover_dir)
-            elif os.path.exists(cover) is True:
-                return "file://%s" % cover
+            if QDir(cover_dir).exists() is False:
+                QDir().mkdir(cover_dir)
+            elif QFile(cover).exists() is True:
+                return QString("file://%1").arg(cover)
             else:                        
                 info = Webinfo()
                 img = info.get_info("cover", artist, album)            
                 if img is not None:
-                    now = open(cover, "wb")
-                    now.write(img)
-                    return "file://%s" % cover
-                    
+                    now = QFile(cover)
+                    now.open(QIODevice.WriteOnly)
+                    now.writeData(img)
+                    now.close()
+                    return QString("file://%1").arg(cover)
         else:
-            return "file://%s" % cover
+            return QString("file://%1").arg(cover)
