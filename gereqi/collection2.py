@@ -48,6 +48,8 @@ class CollectionDb:
         if ok is True:
             print "DATABASE OK"
             self.query = QSqlQuery(self.media_db)
+            if mode == "SQLITE":
+                self.__pragma()
             self.__setup_tables()
         else:
             print "DATABASE ERROR"
@@ -173,6 +175,14 @@ class CollectionDb:
         self.__query_execute(query, args)
         self.media_db.commit()
         
+    def __pragma(self):
+        """
+        This command will cause SQLite to not wait on data to reach the disk surface, 
+        which will make write operations appear to be much faster. 
+        But if you lose power in the middle of a transaction, your database file might corrupt.
+        """
+        query = '''PRAGMA synchronous = OFF'''
+        self.__query_execute(query)
         
 
     def add_media(self, meta):
