@@ -103,7 +103,7 @@ class Webinfo:
                         </body>
                         </html>
                         '''
-                    return base_html % result     
+                    return base_html % unicode(result , "utf-8")
         
         elif thing == "cover":    
             site = "albumart.org"
