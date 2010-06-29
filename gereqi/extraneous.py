@@ -37,6 +37,7 @@ class Extraneous:
                 item.remove(ch)
             item.replace(" ", "_")
             things.append(item)
+        # FIXME: funny unicode characters should have been removed/encoded by now
         result = QString("%1-%2").arg(things[0]).arg(things[1])
         return result
         
@@ -64,8 +65,8 @@ class Extraneous:
             elif QFile(cover).exists() is True:
                 return QString("file://%1").arg(cover)
             else:                        
-                info = Webinfo()
-                img = info.get_info("cover", artist, album)            
+                web_info = Webinfo()
+                img = web_info.get_info("cover", artist, album)
                 if img is not None:
                     now = QFile(cover)
                     now.open(QIODevice.WriteOnly)

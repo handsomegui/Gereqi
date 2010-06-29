@@ -263,6 +263,7 @@ class PlaylistHistory:
             first = PlaylistHistory.position == (len(PlaylistHistory.stack) - 1)
             return PlaylistHistory.stack[PlaylistHistory.position], first
 
+
 class Track:
     def __init__(self, parent):
         self.ui_main = parent

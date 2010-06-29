@@ -237,7 +237,7 @@ class WidgetManips:
                 #  allow certain things based on the filter.
                 if (filt is not None) and (filt.lower() not in thing.toLower()):
                     continue
-                thing = QTreeWidgetItem([QString(thing)])
+                thing = QTreeWidgetItem([thing])
                 thing.setChildIndicatorPolicy(0)
                 self.ui_main.collect_tree.addTopLevelItem(thing)
             
