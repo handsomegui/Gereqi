@@ -47,6 +47,7 @@ class Webinfo:
         Using urllib2 the html is retrieved via an url
         generated via create_url.
         """
+        url = url.encode("utf-8")
         try:
             user_agent = "Googlebot/2.1 (+http://www.google.com/bot.html)"
             headers = { 'User-Agent' : user_agent }
