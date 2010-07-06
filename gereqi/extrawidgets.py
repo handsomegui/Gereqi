@@ -37,8 +37,7 @@ class SetupExtraWidgets:
             self.__create_tray_menu(show=True)
         else:
             self.__create_tray_menu()
-            
-        self.__playlist_add_menu()
+
         self.__disable_tabs()
         self.__setup_misc()
         self.__key_shortcuts()
@@ -108,28 +107,6 @@ class SetupExtraWidgets:
                         SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), 
                         self.ui_main.tray_event)
      
-    def __playlist_add_menu(self):
-        """
-        In the 'playlist' tab a menu is required for
-        the 'add' button
-        """
-        menu = QMenu(self.ui_main)
-        playlist_menu = QMenu(self.ui_main)
-        playlist_menu.setTitle(QString("Playlist"))
-        new = QAction(QString("New..."), self.ui_main)
-        existing = QAction(QString("Import Existing..."), self.ui_main)
-        playlist_menu.addAction(new)
-        playlist_menu.addAction(existing)        
-        menu.addMenu(playlist_menu)
-        smart = QAction(QString("Smart Playlist..."), self.ui_main)
-        dynamic = QAction(QString("Dynamic Playlist..."), self.ui_main)
-        radio = QAction(QString("Radio Stream..."), self.ui_main)
-        podcast = QAction(QString("Podcast..."), self.ui_main)
-        menu.addAction(smart)
-        menu.addAction(dynamic)
-        menu.addAction(radio)
-        menu.addAction(podcast)
-        self.ui_main.add_playlist_bttn.setMenu(menu)
         
     def __disable_tabs(self):
         self.ui_main.horizontal_tabs.setTabEnabled(1, False)
