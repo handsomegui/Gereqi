@@ -28,7 +28,7 @@ class Webinfo:
         things = []
         exc = '''!,.%%$&(){}[]'''
         for item in params:
-            result = filter(lambda x : x not in exc, item)
+            result = filter(lambda x : x not in exc, unicode(item))
             things.append(result.replace(" ", "+"))
             
         if site == "wikipedia.org":
@@ -47,6 +47,7 @@ class Webinfo:
         Using urllib2 the html is retrieved via an url
         generated via create_url.
         """
+        url = url.encode("utf-8")
         try:
             user_agent = "Googlebot/2.1 (+http://www.google.com/bot.html)"
             headers = { 'User-Agent' : user_agent }
@@ -103,7 +104,7 @@ class Webinfo:
                         </body>
                         </html>
                         '''
-                    return base_html % result     
+                    return base_html % unicode(result , "utf-8")
         
         elif thing == "cover":    
             site = "albumart.org"

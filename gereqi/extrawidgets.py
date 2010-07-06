@@ -16,10 +16,8 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from PyQt4.QtGui import QSystemTrayIcon, QIcon, QTreeWidgetItem, \
-QPixmap, QFont, QShortcut, QKeySequence, QLabel, QProgressBar, \
-QToolButton, QAction, QSystemTrayIcon, qApp, QDirModel, QMenu
-from PyQt4.QtCore import QString, SIGNAL, SLOT, QDir, QSize, QObject
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 
 import time
 
@@ -203,21 +201,22 @@ class WidgetManips:
             elif mode == "album":
                 things = media_db.get_albums_all_timed(time_filt)
                 
-        things = sorted(things)
-        old_char = None
-        char = None
-        font = QFont()
-        font.setBold(True)
-        for cnt in range(len(things)):
-            # with sqlite, don't want
-            thing = things[cnt]#.decode("utf-8")
-            # When creating collection tree only 
-            #  allow certain things based on the filter.
-            if (filt is not None) and (filt.lower() not in thing.lower()):
-                continue
-            thing = QTreeWidgetItem([QString(thing)])
-            thing.setChildIndicatorPolicy(0)
-            self.ui_main.collect_tree.addTopLevelItem(thing)
+        if things is not None:
+            things = sorted(things)
+            old_char = None
+            char = None
+            font = QFont()
+            font.setBold(True)
+            for cnt in range(len(things)):
+                # with sqlite, don't want
+                thing = things[cnt]#.decode("utf-8")
+                # When creating collection tree only 
+                #  allow certain things based on the filter.
+                if (filt is not None) and (filt.lower() not in thing.toLower()):
+                    continue
+                thing = QTreeWidgetItem([thing])
+                thing.setChildIndicatorPolicy(0)
+                self.ui_main.collect_tree.addTopLevelItem(thing)
             
     def set_play_type(self, checked):
         if checked is True:

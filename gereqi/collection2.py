@@ -16,6 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
+from PyQt4.QtCore import *
+from PyQt4.QtSql import *
+import os
 
 class CollectionDb:
     def __init__(self, mode="SQLITE", args=None):
@@ -25,26 +28,32 @@ class CollectionDb:
         """
         self.db_type = mode
         if mode == "SQLITE":
-            from sqlite3 import dbapi2 as sqlite
-            import os
             
             app_dir = "%s/.gereqi/" % os.getenv("HOME")
             db_loc = "%smedia.db" % app_dir
-            if os.path.exists(app_dir) is False:
-                os.mkdir(app_dir)
-            self.media_db = sqlite.connect(db_loc)
-            self.media_curs = self.media_db.cursor()        
-            self.__pragma()
+            if QDir(app_dir).exists is False:
+                QDir().mkdir(app_dir)
+                
+            self.media_db = QSqlDatabase.addDatabase("QSQLITE");
+            self.media_db.setDatabaseName(db_loc)
         
         elif mode == "MYSQL":
-            import MySQLdb
-
-            self.media_db = MySQLdb.connect(host=args["hostname"],
-                                    user=args["username"],
-                                    passwd=args["password"],
-                                    db=args["dbname"])
+            self.media_db = QSqlDatabase.addDatabase("QMYSQL");
+            self.media_db.setHostName(args["hostname"])
+            self.media_db.setDatabaseName(args["dbname"])
+            self.media_db.setUserName(args["username"])
+            self.media_db.setPassword(args["password"])
         
-        self.__setup_tables()
+        ok = self.media_db.open()
+        if ok is True:
+            print "DATABASE OK"
+            self.query = QSqlQuery(self.media_db)
+            if mode == "SQLITE":
+                self.__pragma()
+            self.__setup_tables()
+        else:
+            print "DATABASE ERROR"
+            return        
         
     def __setup_tables(self):
         print self.db_type
@@ -134,45 +143,36 @@ class CollectionDb:
                                 ) DEFAULT CHARSET=utf8'''
         self.__query_execute(table)
             
-    def __query_process(self, query, args):
-        if self.db_type == "MYSQL":
-            now =  query.replace("?", '''"%s"''')
-            if args is None:
-                return now
-            else:
-                fin = now % args
-                return fin
-        elif self.db_type == "SQLITE":
-            return query
             
     def __query_fetchone(self, query, args=None):
         result = self.__query_execute(self.__query_process(query, args), args)
-        if self.db_type == "MYSQL":
-            return self.media_db.store_result().fetch_row()
-        return self.media_curs.fetchone()
+        return self.query.result()
             
-    def __query_fetchall(self, query, args=None):
-        result = self.__query_execute(self.__query_process(query, args), args)
-        if self.db_type == "MYSQL":
-            r = self.media_db.store_result()
-            return r.fetch_row(maxrows=0)
-        return self.media_curs.fetchall()
+    def __query_fetchall(self, field_num):
+        output = []
+        while self.query.next() is True:
+            if field_num <=1:
+                output.append(self.query.value(0).toString())
+            else:
+                tmp = []
+                for  n in range(field_num):
+                    r = self.query.value(n).toString()
+                    tmp.append(r)
+                output.append(tmp)
+        return output
         
     def __query_execute(self, query, args=None):
-        if self.db_type == "SQLITE":
             if args is not None:
-                self.media_curs.execute(query, args)
+                self.query.prepare(query)
+                for arg in args:
+                    self.query.addBindValue(arg)
+                self.query.exec_()
             else:
                 # The execute() doesn't accept NoneTypes
-                self.media_curs.execute(query)                 
-        elif self.db_type == "MYSQL":
-                self.media_db.query(query)
+                self.query.exec_(query)                 
     
     def __execute_write(self, query, args=None):
-        if self.db_type == "SQLITE":
-            self.__query_execute(query, args)
-        elif self.db_type == "MYSQL":
-            self.media_db.query(self.__query_process(query, args))
+        self.__query_execute(query, args)
         self.media_db.commit()
         
     def __pragma(self):
@@ -183,6 +183,7 @@ class CollectionDb:
         """
         query = '''PRAGMA synchronous = OFF'''
         self.__query_execute(query)
+        
 
     def add_media(self, meta):
         """
@@ -212,25 +213,26 @@ class CollectionDb:
         
     def get_artists(self):
         query = '''SELECT DISTINCT artist
-                        FROM media'''
-        artists = [art[0] for art in self.__query_fetchall(query)]
-        return artists
-        
+                        FROM media'''  
+        self.__query_execute(query)
+        result = self.__query_fetchall(1)
+        return result
+
     def get_artists_timed(self, filt):
         query = '''SELECT DISTINCT artist 
                             FROM media
                             WHERE added>?'''
-        artists = [art[0] for art  in self.__query_fetchall(query, (filt, ))]
-        return artists
+        self.__query_execute(query, (filt, ))
+        result = self.__query_fetchall(1)
+        return result
         
     def get_albums(self, artist):
-        args = (artist, )
         query = '''SELECT DISTINCT album 
                             FROM media
                             WHERE artist=?'''
-                            
-        albums = [alb[0] for alb in self.__query_fetchall(query, args)]
-        return albums
+        self.__query_execute(query, (artist, ))
+        result = self.__query_fetchall(1)
+        return result
         
     def get_albums_timed(self, artist, filt):
         args = (artist, filt)
@@ -238,19 +240,24 @@ class CollectionDb:
                             FROM media
                             WHERE artist=?
                             AND added>?'''
-        albums = [alb[0] for alb in self.__query_fetchall(query, args)]
-        return albums
+        self.__query_execute(query, args)
+        result = self.__query_fetchall(1)
+        return result
         
     def get_albums_all(self):
         query = '''SELECT DISTINCT album
                         FROM media'''
-        return [alb[0] for alb in self.__query_fetchall(query)]
+        self.__query_execute(query)
+        result = self.__query_fetchall(1)
+        return result        
 
     def get_albums_all_timed(self, filt):
         query = '''SELECT DISTINCT album
                         FROM media   
                         WHERE added>?'''
-        return [alb[0] for alb in self.__query_fetchall(query, (filt, ))]
+        self.__query_execute(query, (filt, ))
+        result = self.__query_fetchall(1)
+        return result
         
     def get_files(self, artist, album):
         args = (artist, album)
@@ -258,8 +265,9 @@ class CollectionDb:
                         FROM media 
                         WHERE artist=?
                         AND album=?'''
-        files = [fnow[0] for fnow in self.__query_fetchall(query, args)]
-        return files
+        self.__query_execute(query, args)
+        result = self.__query_fetchall(1)
+        return result
         
     def get_file(self, artist, album, title):
         args = (artist, album, title)
@@ -268,7 +276,9 @@ class CollectionDb:
                         WHERE artist=?
                         AND album=?
                         AND title=?'''
-        return self.__query_fetchall(query, args)[0][0]
+        self.__query_execute(query, args)
+        result = self.__query_fetchall(1)[0]
+        return result
         
     def get_album_file(self, album, title):
         args = (album, title)
@@ -276,14 +286,17 @@ class CollectionDb:
                         FROM media
                         WHERE album=?
                         AND title=?'''
-        return self.__query_fetchall(query, args)[0][0]
+        self.__query_execute(query, args)
+        result = self.__query_fetchall(1)[0]
+        return result
         
     def get_album_files(self, album):
-        args = (album, )
         query = '''SELECT DISTINCT file_name
                         FROM media
                         WHERE album=?'''
-        return [title[0] for title in self.__query_fetchall(query, args)]
+        self.__query_execute(query, (album, ))
+        result = self.__query_fetchall(1)
+        return result
         
     def get_album_files_timed(self, album, filt):
         args = (album, filt)
@@ -291,14 +304,17 @@ class CollectionDb:
                         FROM media
                         WHERE album=?
                         AND added>?'''
-        return [title[0] for title in self.__query_fetchall(query, args)]
+        self.__query_execute(query, args)
+        result = self.__query_fetchall(1)
+        return result
         
     def get_artists_files(self, artist):
-        args = (artist, )
         query = '''SELECT DISTINCT file_name 
                             FROM media
                             WHERE artist=?'''
-        return [trk[0] for trk in self.__query_fetchall(query, args)]
+        self.__query_execute(query, (artist, ))
+        result = self.__query_fetchall(1)
+        return result
                         
     def get_titles(self, artist, album):
         args = (artist, album)
@@ -306,7 +322,9 @@ class CollectionDb:
                         FROM media 
                         WHERE artist=?
                         AND album=?'''
-        return self.__query_fetchall(query, args)
+        self.__query_execute(query, args)
+        result = self.__query_fetchall(2)
+        return result
 
     def get_titles_timed(self, artist, album, filt):
         args = (artist, album, filt)
@@ -315,14 +333,17 @@ class CollectionDb:
                         WHERE artist=?
                         AND album=?
                         AND added>?'''
-        return self.__query_fetchall(query, args)
+        self.__query_execute(query, args)
+        result = self.__query_fetchall(2)
+        return result
         
     def get_album_titles(self, album):
-        args = (album, )
         query = '''SELECT DISTINCT title
                         FROM media
                         WHERE album=?'''
-        return [title[0] for title in self.__query_fetchall(query, args)]
+        self.__query_execute(query,(album, ))
+        result = self.__query_fetchall(1)
+        return result
         
     def get_album_files_timed(self, album, filt):
         args = (album, filt)
@@ -330,49 +351,56 @@ class CollectionDb:
                         FROM media
                         WHERE album=?
                         AND added>?'''
-        return [title[0] for title in self.__query_fetchall(query, args)]
+        self.__query_execute(query, args)
+        result = self.__query_fetchall(1)
+        return result
         
     def get_info(self, file_name):
-        query = '''SELECT * 
+        query = '''SELECT
+                        file_name, title,artist,album,year,genre,
+                        track,length,bitrate,added,playcount,rating
                         FROM media 
                         WHERE file_name=?'''
-        result = self.__query_fetchall(query, (file_name, ))
-        if len(result) > 0:
-            return result[0]
+        self.__query_execute(query, (file_name, ))
+        result = self.__query_fetchall(12)[0]
+        return result
         
     def playlist_add(self, *params):
         query = '''INSERT INTO playlist 
                             VALUES (?,?)'''
-        self.__query_execute(query, params)
+        self.__execute_write(query, params)
         
     def playlist_list(self):
         query = '''SELECT DISTINCT name 
                             FROM playlist'''
-        playlists = [play[0] for play in self.__query_fetchall(query)]
-        return playlists
+        self.__query_execute(query)
+        result = self.__query_fetchall(1)
+        return result
         
     def playlist_tracks(self, name):
         query = '''SELECT file_name 
                             FROM playlist
                             WHERE name=?'''
-        tracks = [track[0] for track in self.__query_fetchall(query, (name, ))]
-        return tracks
-    
+        self.__query_execute(query, (name, ))
+        result = self.__query_fetchall(1)
+        return result
+        
     def playlist_delete(self, name):
         query = '''DELETE FROM playlist
                         WHERE name=?'''
-        self.__query_execute(query, (name, ))
+        self. __execute_write(query, (name, ))
 
     def search_by_titandart(self, art, tit):
+        args = (art, tit)
         query = '''SELECT DISTINCT file_name   
                         FROM media 
                         WHERE artist=?
                         AND title=?'''        
-        files = [fi[0] for fi in self.__query_fetchall(query, (art, tit))]
-        return files
+        self.__query_execute(query, args)
+        result = self.__query_fetchall(1)
+        return result
    
     def drop_media(self):
         query = '''DROP TABLE media'''
         self.__execute_write(query)
         self.__setup_tables2()
-        
