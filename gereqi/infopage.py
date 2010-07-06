@@ -60,25 +60,28 @@ HTML = '''
             
 class InfoPage:
     def __init__(self, parent=None):
-        self.ui_main = parent
+        return
 
     def __gen_albs(self, artist, albums):
         tmpl = '''<img class="mini" src="%s" /> %s<br>\n'''
         thing = ""
+#        albums = [unicode(alb.toUtf8()) for alb in albums]
         for alb in albums:
             cover = Extraneous().get_cover_source(artist, alb)
             thing += tmpl % (cover, alb)
-        return "<p>%s</p>" % thing
+        html = "<p>%s</p>" % thing
+        return html
         
         
     def gen_info(self, **params):
         sets_db = Settings()
         coversize = sets_db.get_interface_setting("coversize")
         coversize = int(coversize) if coversize is not None else 200
-        albs = params["albums"]
+        artist = unicode(params["artist"].toUtf8())
+        album = unicode(params["album"].toUtf8())
         cover = Extraneous().get_cover_source(params["artist"], params["album"], params["check"])
-        now = HTML % (coversize, params["title"], params["artist"], params["album"], 
-                        cover, params["artist"], self.__gen_albs(params["artist"], albs))
+        now = HTML % (coversize, params["title"], artist, album, 
+                        cover, artist, self.__gen_albs(params["artist"], params["albums"]))
         return now
         
         
