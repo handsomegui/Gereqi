@@ -36,7 +36,6 @@ class SetupExtraWidgets:
         else:
             self.__create_tray_menu()
 
-        self.__disable_tabs()
         self.__setup_misc()
         self.__key_shortcuts()
         
@@ -105,12 +104,7 @@ class SetupExtraWidgets:
                         SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), 
                         self.ui_main.tray_event)
      
-        
-    def __disable_tabs(self):
-        self.ui_main.horizontal_tabs.setTabEnabled(1, False)
-        self.ui_main.horizontal_tabs.setTabEnabled(2, False)
-        self.ui_main.vertical_tabs.setTabEnabled(3, False)
-        
+       
     def __setup_misc(self):
         """
         Extra __init__ things to add to the UI
