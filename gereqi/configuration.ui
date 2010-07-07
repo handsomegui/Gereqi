@@ -56,7 +56,7 @@
       <enum>QTabWidget::West</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -346,7 +346,7 @@
                </size>
               </property>
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <property name="maxVisibleItems">
                <number>5</number>
@@ -357,11 +357,6 @@
               <property name="modelColumn">
                <number>0</number>
               </property>
-              <item>
-               <property name="text">
-                <string>MYSQL</string>
-               </property>
-              </item>
               <item>
                <property name="text">
                 <string>SQLITE</string>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/gereqi/configuration.ui'
 #
-# Created: Wed Jul  7 22:11:00 2010
+# Created: Wed Jul  7 23:49:44 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -164,7 +164,6 @@ class Ui_settings_dialog(object):
         self.database_type.setModelColumn(0)
         self.database_type.setObjectName("database_type")
         self.database_type.addItem("")
-        self.database_type.addItem("")
         self.horizontalLayout_6.addWidget(self.database_type)
         self.verticalLayout_8.addLayout(self.horizontalLayout_6)
         self.mysql_config = QtGui.QGroupBox(self.groupBox_5)
@@ -297,8 +296,8 @@ class Ui_settings_dialog(object):
         self.verticalLayout_5.addLayout(self.horizontalLayout)
 
         self.retranslateUi(settings_dialog)
-        self.tabWidget.setCurrentIndex(0)
-        self.database_type.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(1)
+        self.database_type.setCurrentIndex(0)
         QtCore.QObject.connect(self.other_browser, QtCore.SIGNAL("toggled(bool)"), self.other_browser_edit.setEnabled)
         QtCore.QMetaObject.connectSlotsByName(settings_dialog)
 
@@ -327,8 +326,7 @@ class Ui_settings_dialog(object):
         self.watch_folders.setText(QtGui.QApplication.translate("settings_dialog", "Watch folders for change", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_5.setTitle(QtGui.QApplication.translate("settings_dialog", "Collection Database", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("settings_dialog", "Database: ", None, QtGui.QApplication.UnicodeUTF8))
-        self.database_type.setItemText(0, QtGui.QApplication.translate("settings_dialog", "MYSQL", None, QtGui.QApplication.UnicodeUTF8))
-        self.database_type.setItemText(1, QtGui.QApplication.translate("settings_dialog", "SQLITE", None, QtGui.QApplication.UnicodeUTF8))
+        self.database_type.setItemText(0, QtGui.QApplication.translate("settings_dialog", "SQLITE", None, QtGui.QApplication.UnicodeUTF8))
         self.mysql_config.setTitle(QtGui.QApplication.translate("settings_dialog", "MySql Configuration", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("settings_dialog", "Hostname:", None, QtGui.QApplication.UnicodeUTF8))
         self.mysql_host.setText(QtGui.QApplication.translate("settings_dialog", "localhost", None, QtGui.QApplication.UnicodeUTF8))

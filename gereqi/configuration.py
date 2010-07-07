@@ -14,8 +14,7 @@ from Ui_configuration import Ui_settings_dialog
 
 # TODO: make the checkboxes tristate
 class MyQDirModel(QDirModel):
-    needsRefresh = pyqtSignal(QModelIndex)
-    
+    needsRefresh = pyqtSignal(QModelIndex)    
         
     def data(self, index, role = Qt.DisplayRole):
         if index.isValid() and (index.column() == 0) and (role == Qt.CheckStateRole):
@@ -108,11 +107,23 @@ class Configuration(QDialog, Ui_settings_dialog):
         Constructor
         """
         QDialog.__init__(self, parent)
+        
         self.setupUi(self)
+        self.__mysql_avail()
         self.dir_model = MyQDirModel()        
         self.dir_model.needsRefresh.connect(self.__refreshing)
         self.sets_db = Settings()
-        self.__interface_setup()        
+        self.__interface_setup()
+        
+    def __mysql_avail(self):
+        """
+        If mysql support was built into QSql then allow
+        the backend to be used
+        """
+        from PyQt4.QtSql import QSqlDatabase
+        avails = QSqlDatabase.drivers()
+        if "QMYSQL" in avails:
+            self.database_type.addItem("MYSQL")
         
     def __refreshing(self, index):
         print index
