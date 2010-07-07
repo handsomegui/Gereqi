@@ -367,7 +367,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.wdgt_manip = WidgetManips(self)
         self.finishes = Finishers(self)
         self.play_hist = PlaylistHistory()
-        # TODO: use the new PyQt4 signal/slot convention
         
         #new style signalling
         self.build_db_thread.finished.connect(self.finishes.db_build)
@@ -384,7 +383,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.html_thread.got_wiki.connect(self.finishes.set_wiki)
         self.build_db_thread.progress.connect(self.stat_prog.setValue)
         self.del_thread.deleted.connect(self.wdgt_manip.setup_db_tree)
-#        self.info_thread.got_info.connect(self.info_view.setHtml)
         
         # Old style signalling
         self.connect(self.info_thread, SIGNAL("got-info ( QString ) "), self.info_view.setHtml)

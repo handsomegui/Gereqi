@@ -17,14 +17,15 @@
 
 from extraneous import Extraneous
 from settings import Settings
+from PyQt4.QtCore import QString
 
-HTML = '''
+HTML = QString('''
             <html>
             <head>
             
             <style type="text/css">
             img.cover{
-                width: %upx;
+                width: %1px;
                 border: 0;
             }
             img.mini{
@@ -49,27 +50,32 @@ HTML = '''
             </head>
             
             <body>
-            <h1>%s - %s</h1>
-            <h2>%s</h2>
-            <img class="cover" src="%s"/>
-            <h1>Albums by %s</h1>
-            %s
+            <h1>%2 - %3</h1>
+            <h2>%4</h2>
+            <img class="cover" src="%5"/>
+            <h1>Albums by %3</h1>
+            %6
             </body>
             </html>
-            '''
+            ''')
             
 class InfoPage:
     def __init__(self, parent=None):
         return
 
     def __gen_albs(self, artist, albums):
-        tmpl = '''<img class="mini" src="%s" /> %s<br>\n'''
-        thing = ""
-#        albums = [unicode(alb.toUtf8()) for alb in albums]
+        tmpl = QString('''<img class="mini" src="%1" /> %2<br>\n''')
+        thing = QString()
+        # Have to create a new qstring as passing a qstring into
+        # a function seems to be passing a pointer thus changes are
+        # carried back through to its sort. Very unpythonic.
+        artist = QString(artist)
+        extra = Extraneous()        
+        
         for alb in albums:
-            cover = Extraneous().get_cover_source(artist, alb)
-            thing += tmpl % (cover, alb)
-        html = "<p>%s</p>" % thing
+            cover = extra.get_cover_source(artist, QString(alb))
+            thing = thing.append(tmpl.arg(cover, alb))
+        html = QString("<p>%1</p>").arg(thing)
         return html
         
         
@@ -77,11 +83,14 @@ class InfoPage:
         sets_db = Settings()
         coversize = sets_db.get_interface_setting("coversize")
         coversize = int(coversize) if coversize is not None else 200
-        artist = unicode(params["artist"].toUtf8())
-        album = unicode(params["album"].toUtf8())
-        cover = Extraneous().get_cover_source(params["artist"], params["album"], params["check"])
-        now = HTML % (coversize, params["title"], artist, album, 
-                        cover, artist, self.__gen_albs(params["artist"], params["albums"]))
+        extra = Extraneous()
+        cover = extra.get_cover_source(QString(params["artist"]), QString(params["album"]), params["check"])
+        now = HTML.arg("%1").arg(coversize)
+        now = now.arg("%2").arg(params["title"])
+        now = now.arg("%3").arg(params["artist"])
+        now = now.arg("%4").arg(params["album"])
+        now = now.arg("%5").arg(cover)
+        now = now.arg("%6").arg(self.__gen_albs(params["artist"], params["albums"]))
         return now
         
         
