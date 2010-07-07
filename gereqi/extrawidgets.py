@@ -88,22 +88,13 @@ class SetupExtraWidgets:
             self.ui_main.tray_icon.show()
         self.ui_main.tray_icon.setToolTip("Stopped")    
         
-        QObject.connect(self.ui_main.play_action, SIGNAL("toggled(bool)"), 
-                        self.ui_main.play_bttn, SLOT("setChecked(bool)"))
-        QObject.connect(next_action, SIGNAL("triggered()"),
-                        self.ui_main.next_bttn, SLOT("click()"))
-        QObject.connect(prev_action, SIGNAL("triggered()"), 
-                        self.ui_main.prev_bttn, SLOT("click()"))
-        QObject.connect(stop_action, SIGNAL("triggered()"), 
-                        self.ui_main.stop_bttn, SLOT("click()"))
-        QObject.connect(self.ui_main.view_action, SIGNAL("toggled(bool)"), 
-                        self.ui_main.minimise_to_tray)  
-        QObject.connect(quit_action, SIGNAL("triggered()"), 
-                        qApp, SLOT("quit()"))
-        QObject.connect(self.ui_main.tray_icon, 
-                        SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), 
-                        self.ui_main.tray_event)
-     
+        self.ui_main.play_action.toggled.connect(self.ui_main.play_bttn.setChecked)
+        self.ui_main.view_action.toggled.connect(self.ui_main.minimise_to_tray)
+        self.ui_main.tray_icon.activated.connect(self.ui_main.tray_event)
+        next_action.triggered.connect(self.ui_main.next_bttn.click)
+        prev_action.triggered.connect(self.ui_main.prev_bttn.click)
+        stop_action.triggered.connect(self.ui_main.stop_bttn.click)
+        quit_action.triggered.connect(qApp.quit)     
        
     def __setup_misc(self):
         """
@@ -148,8 +139,7 @@ class SetupExtraWidgets:
 
     def __key_shortcuts(self):
         delete = QShortcut(QKeySequence(QString("Del")), self.ui_main)
-        QObject.connect(delete, SIGNAL("activated()"), 
-                        self.ui_main.playlisting.del_track)   
+        delete.activated.connect(self.ui_main.playlisting.del_track)
         
         
 class WidgetManips:

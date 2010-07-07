@@ -352,7 +352,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # TODO: change ui settings based on saved states/options
         self.setupUi(self)
         
-     
+        
+        
         self.info_thread = Getinfo(self)
         self.html_thread = Getwiki()
         self.build_db_thread = Builddb(self)
@@ -366,7 +367,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.wdgt_manip = WidgetManips(self)
         self.finishes = Finishers(self)
         self.play_hist = PlaylistHistory()
-
         # TODO: use the new PyQt4 signal/slot convention
         
         #new style signalling
