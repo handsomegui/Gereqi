@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/gereqi/configuration.ui'
 #
-# Created: Thu Jun 24 10:05:35 2010
+# Created: Wed Jul  7 21:42:09 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -122,18 +122,6 @@ class Ui_settings_dialog(object):
         self.verticalLayout_2.addWidget(self.context_browser_change)
         self.verticalLayout_3.addWidget(self.groupBox_3)
         self.tabWidget.addTab(self.tab, "")
-        self.tab_2 = QtGui.QWidget()
-        self.tab_2.setObjectName("tab_2")
-        self.tabWidget.addTab(self.tab_2, "")
-        self.tab_3 = QtGui.QWidget()
-        self.tab_3.setObjectName("tab_3")
-        self.tabWidget.addTab(self.tab_3, "")
-        self.tab_4 = QtGui.QWidget()
-        self.tab_4.setObjectName("tab_4")
-        self.tabWidget.addTab(self.tab_4, "")
-        self.tab_5 = QtGui.QWidget()
-        self.tab_5.setObjectName("tab_5")
-        self.tabWidget.addTab(self.tab_5, "")
         self.tab_6 = QtGui.QWidget()
         self.tab_6.setObjectName("tab_6")
         self.verticalLayout_6 = QtGui.QVBoxLayout(self.tab_6)
@@ -251,9 +239,6 @@ class Ui_settings_dialog(object):
         self.tab_7 = QtGui.QWidget()
         self.tab_7.setObjectName("tab_7")
         self.tabWidget.addTab(self.tab_7, "")
-        self.tab_8 = QtGui.QWidget()
-        self.tab_8.setObjectName("tab_8")
-        self.tabWidget.addTab(self.tab_8, "")
         self.verticalLayout_5.addWidget(self.tabWidget)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -270,7 +255,7 @@ class Ui_settings_dialog(object):
         self.verticalLayout_5.addLayout(self.horizontalLayout)
 
         self.retranslateUi(settings_dialog)
-        self.tabWidget.setCurrentIndex(5)
+        self.tabWidget.setCurrentIndex(1)
         self.database_type.setCurrentIndex(1)
         QtCore.QObject.connect(self.other_browser, QtCore.SIGNAL("toggled(bool)"), self.other_browser_edit.setEnabled)
         QtCore.QMetaObject.connectSlotsByName(settings_dialog)
@@ -294,10 +279,6 @@ class Ui_settings_dialog(object):
         self.playlist_relative.setText(QtGui.QApplication.translate("settings_dialog", "Manually saved playlists use relative path", None, QtGui.QApplication.UnicodeUTF8))
         self.context_browser_change.setText(QtGui.QApplication.translate("settings_dialog", "Switch to context browser on track change", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("settings_dialog", "General", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("settings_dialog", "Appearance", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QtGui.QApplication.translate("settings_dialog", "Playback", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), QtGui.QApplication.translate("settings_dialog", "OSD", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), QtGui.QApplication.translate("settings_dialog", "Engine", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_4.setTitle(QtGui.QApplication.translate("settings_dialog", "Collection Folders", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("settings_dialog", "These folders will be scanned for media to make up your collection:", None, QtGui.QApplication.UnicodeUTF8))
         self.scan_recursively.setText(QtGui.QApplication.translate("settings_dialog", "Scan folders recursively", None, QtGui.QApplication.UnicodeUTF8))
@@ -316,7 +297,6 @@ class Ui_settings_dialog(object):
         self.label_9.setText(QtGui.QApplication.translate("settings_dialog", "Password:", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_6), QtGui.QApplication.translate("settings_dialog", "Collection", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_7), QtGui.QApplication.translate("settings_dialog", "last.fm", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_8), QtGui.QApplication.translate("settings_dialog", "Devices", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton.setText(QtGui.QApplication.translate("settings_dialog", "Defaults", None, QtGui.QApplication.UnicodeUTF8))
 
 
