@@ -117,6 +117,7 @@ class Builddb(QThread):
         not_need = [u"%s" % now for now in excl 
                     if dir in now]
         # No point trying to speed this up. os.walk is a generator function
+        # TODO: use qt's dirgenerator
         for dirpath, dirnames, filenames in os.walk(dir):
             # The exclusion part
             if dirpath in not_need:
