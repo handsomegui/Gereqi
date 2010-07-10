@@ -635,7 +635,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         config.show()        
         if config.exec_():
             self.__dirs_setup()
-            self.__setup_watcher() 
+            self.__setup_watcher()
             self.__db_setup()
             self.wdgt_manip.setup_db_tree()
             

@@ -69,7 +69,6 @@ class MyQDirModel(QDirModel):
                     
                 if there is False:
                     MyQDirModel.check_list[0].append(str(self.filePath(index)))
-                print 1
                 self.needsRefresh.emit(index)
                 return True
                 
@@ -90,7 +89,6 @@ class MyQDirModel(QDirModel):
                     thing = checker[:val+1].join("/")
                     if thing in MyQDirModel.check_list[0]:
                         MyQDirModel.check_list[1].append(str(dir_now))
-                print 2
                 self.needsRefresh.emit(index)
                 return True
                 
@@ -126,7 +124,6 @@ class Configuration(QDialog, Ui_settings_dialog):
             self.database_type.addItem("MYSQL")
         
     def __refreshing(self, index):
-        print index
         if self.collection_view.isExpanded(index):
             self.collection_view.collapse(index)
             self.collection_view.expand(index)

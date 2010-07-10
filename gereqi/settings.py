@@ -123,6 +123,7 @@ class Settings:
         if result is not None:
             return result[0]
         
+    #FIXME: fix this ungodly mess
 
     def drop_collection(self):
         # If I use the IF NOT EXIST in the CREATE the collection TABLE
