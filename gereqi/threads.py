@@ -22,7 +22,6 @@ to make it easier to manage
 """
 
 from PyQt4.QtCore import QThread, QString, SIGNAL, Qt, QStringList, pyqtSignal
-from PyQt4.QtGui import QImage, QPixmap
 from urllib import pathname2url
 
 import os
@@ -36,14 +35,7 @@ from collection2 import CollectionDb
 
 build_lock = delete_lock = False
 
-def cleanup_encodings(before):
-    try:
-        return before.decode("utf-8")
-    except UnicodeDecodeError:
-        # TODO: filename fixer
-        print("WARNING!: Funny encoding for filename. Ignoring - ", repr(before))
-        
-        
+
 # TODO: create a pyqtSignal
 class Getinfo(QThread):
     """
@@ -59,6 +51,7 @@ class Getinfo(QThread):
     def run(self):
         html = InfoPage(self.ui_main).gen_info(**self.info)
         self.emit(SIGNAL("got-info ( QString )"), html)
+        
         
 class Getwiki(QThread):
     """
@@ -105,37 +98,32 @@ class Builddb(QThread):
         this thread from the outside
         """
         self.media_dir = dirs
-        self.a_formats = formats
         self.file_list = tracks
         self.redo = fresh
+        self.meta = Tagging(formats)  
+        self.a_formats = formats
      
     def __track_list(self, dir, excl):
         """
         Generates a list of compatible files
         """
         tracks = []
-        not_need = [u"%s" % now for now in excl 
-                    if dir in now]
+        not_need = [now for now in excl 
+                            if dir in now]
         # No point trying to speed this up. os.walk is a generator function
-        # TODO: use qt's dirgenerator
         for dirpath, dirnames, filenames in os.walk(dir):
             # The exclusion part
-            if dirpath in not_need:
-                continue
-                    
-            for name in filenames:
-                now = os.path.join(dirpath, name)
-                file_now = cleanup_encodings(now)
-                if file_now is None:
-                    continue
-                    
-                ender = os.path.splitext(now)[-1].strip(".")
-                ender = ender.lower()
-                # We only want to get tags for certain file formats
-                if ender in self.a_formats:
-                    # No point doing DB interaction per item. We need to
-                    # Need to know how many tracks for progress bar
-                    tracks.append(file_now)
+            #FIXME: although this means you exclude the dirpath you don't exclude it's subdirs
+            if dirpath not in not_need:
+                for name in filenames:
+                    now = os.path.join(dirpath, name)
+                    ender = os.path.splitext(now)[-1].strip(".")
+                    ender = ender.lower()
+                    # We only want to get tags for certain file formats
+                    if ender in self.a_formats:
+                        # No point doing DB interaction per item. We need to
+                        # Need to know how many tracks for progress bar
+                        tracks.append(now)
         return tracks
         
     def run(self):
@@ -144,9 +132,7 @@ class Builddb(QThread):
             print("WAITING: creation")
             time.sleep(1)
             
-        old_prog = 0    
-        meta = Tagging(self.a_formats)        
-
+        old_prog = 0        
         
         if self.redo is True:
             self.ui_main.media_db.drop_media()
@@ -177,8 +163,8 @@ class Builddb(QThread):
                 if prog > old_prog:
                     old_prog = prog
                     self.progress.emit(prog)
-                
-                info = meta.extract(trk.encode("utf-8"))
+
+                info = self.meta.extract(trk)
                 if info is not None:
                     # prepends the fileName as the DB function expects
                     # a certain order to the args passed
