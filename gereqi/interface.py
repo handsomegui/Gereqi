@@ -1008,7 +1008,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         try:
             par = unicode(playlist[0].parent().text(0))
         except  AttributeError:
-            return        
+            return
+        except IndexError:
+            return
             
         if (len(playlist) > 0) and (par in ["Podcasts", "Radio Streams",  "Playlists"]):
             new_name = QInputDialog.getText(\
