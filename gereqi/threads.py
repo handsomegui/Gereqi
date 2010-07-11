@@ -273,7 +273,16 @@ class Watcher(QThread, pyinotify.ProcessEvent):
         while self.gogogo is True:
             notifier.process_events()
             if notifier.check_events():
-                notifier.read_events()                
+                notifier.read_events()           
+           
+            # FIXME: god knows why time() is a Nonetype (low-priority)
+            # Appears to be on close so it could be due to this being a thread
+            """
+            Traceback (most recent call last):
+            File "gereqi/threads.py", line 277, in run
+                if int(time() - self.start_time) > self.timer:
+            TypeError: 'NoneType' object is not callable
+            """
             if int(time() - self.start_time) > self.timer:
                 self.__poller()         
         self.exit()
