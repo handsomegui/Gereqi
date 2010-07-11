@@ -352,8 +352,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # TODO: change ui settings based on saved states/options
         self.setupUi(self)
         
-        
-        
         self.info_thread = Getinfo(self)
         self.html_thread = Getwiki()
         self.build_db_thread = Builddb(self)
@@ -370,7 +368,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         #new style signalling
         self.build_db_thread.finished.connect(self.finishes.db_build)
-        self.filesystem_tree.expanded.connect(self.__resize_filesystem_tree)
         self.play_actn.toggled.connect(self.play_bttn.setChecked)
         self.actionNext_Track.triggered.connect(self.next_bttn.click)
         self.prev_track_actn.triggered.connect(self.prev_bttn.click)
@@ -1089,6 +1086,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.playlisting.add_to_playlist(unicode(fname))
             self.clear_trktbl_bttn.setEnabled(True)
             
+    @pyqtSignature("QModelIndex")
+    def on_filesystem_tree_expanded(self):
+        """
+        Resizes the filesystem_tree to it's contents.
+        Because of the '0' this seperate method is needed
+        """
+        self.filesystem_tree.resizeColumnToContents(0)
+            
 #######################################
 #######################################
         
@@ -1189,13 +1194,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             if self.tray_icon.isVisible() is True:
                 self.hide()
                 event.ignore()
-            
-    def __resize_filesystem_tree(self):
-        """
-        Resizes the filesystem_tree to it's contents.
-        Because of the '0' this seperate method is needed
-        """
-        self.filesystem_tree.resizeColumnToContents(0)
 
     def __time_filt_now(self):
         """
