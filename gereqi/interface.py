@@ -1076,7 +1076,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             fname = self.dir_model.filePath(index)
             searcher = QDir(fname)
             searcher.setFilter(QDir.Files)
-            searcher.setFilter(QDir.Files)
             searcher.setNameFilters(self.format_filter)
             tracks = [item.absoluteFilePath() for item in searcher.entryInfoList()]
             self.playlisting.add_list_to_playlist(tracks)
