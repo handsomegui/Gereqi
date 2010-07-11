@@ -371,7 +371,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         #new style signalling
         self.build_db_thread.finished.connect(self.finishes.db_build)
         self.filesystem_tree.expanded.connect(self.__resize_filesystem_tree)
-        self.filesystem_tree.doubleClicked.connect(self.__filesystem_tree_item)
         self.play_actn.toggled.connect(self.play_bttn.setChecked)
         self.actionNext_Track.triggered.connect(self.next_bttn.click)
         self.prev_track_actn.triggered.connect(self.prev_bttn.click)
@@ -1068,6 +1067,28 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.actionUpdate_Collection.setEnabled(True)
             self.actionRescan_Collection.setEnabled(True)
             
+        
+    @pyqtSignature("QModelIndex")
+    def on_filesystem_tree_doubleClicked(self, index):
+        """
+        This takes the filesystem_tree item and deduces whether
+        it's a file or directory and populates playlist if possible
+        """
+        #TODO: check to see if it's avail in db 1st otherwise if it isn't exceptions occur
+        if self.dir_model.isDir(index) is True:
+            fname = self.dir_model.filePath(index)
+            searcher = QDir(fname)
+            searcher.setFilter(QDir.Files)
+            searcher.setFilter(QDir.Files)
+            searcher.setNameFilters(self.format_filter)
+            tracks = [item.absoluteFilePath() for item in searcher.entryInfoList()]
+            self.playlisting.add_list_to_playlist(tracks)
+            self.clear_trktbl_bttn.setEnabled(True)
+        else:
+            fname = self.dir_model.filePath(index)
+            self.playlisting.add_to_playlist(unicode(fname))
+            self.clear_trktbl_bttn.setEnabled(True)
+            
 #######################################
 #######################################
         
@@ -1175,27 +1196,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Because of the '0' this seperate method is needed
         """
         self.filesystem_tree.resizeColumnToContents(0)
-        
-    def __filesystem_tree_item(self, index):
-        """
-        This takes the filesystem_tree item and deduces whether
-        it's a file or directory and populates playlist if possible
-        """
-        #TODO: check to see if it's avail in db 1st otherwise if it isn't exceptions occur
-        if self.dir_model.isDir(index) is True:
-            fname = self.dir_model.filePath(index)
-            searcher = QDir(fname)
-            searcher.setFilter(QDir.Files)
-            searcher.setFilter(QDir.Files)
-            searcher.setNameFilters(self.format_filter)
-            tracks = [item.absoluteFilePath() for item in searcher.entryInfoList()]
-            self.playlisting.add_list_to_playlist(tracks)
-            self.clear_trktbl_bttn.setEnabled(True)
-        else:
-            fname = self.dir_model.filePath(index)
-            self.playlisting.add_to_playlist(unicode(fname))
-            self.clear_trktbl_bttn.setEnabled(True)
-            
+
     def __time_filt_now(self):
         """
         Based on the combobox selection, the collection
