@@ -441,7 +441,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.mysql_args = {"hostname": self.sets_db.get_database_setting("hostname"), 
                             "username":  self.sets_db.get_database_setting("username"), 
                             "password": self.sets_db.get_database_setting("password"), 
-                            "dbname": self.sets_db.get_database_setting("dbname") }
+                            "dbname": self.sets_db.get_database_setting("dbname"), 
+                            "port": self.sets_db.get_database_setting("port")}
             self.media_db = CollectionDb("MYSQL", self.mysql_args)
             
     def __dirs_setup(self):

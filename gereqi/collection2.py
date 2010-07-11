@@ -43,6 +43,8 @@ class CollectionDb:
             self.media_db.setDatabaseName(args["dbname"])
             self.media_db.setUserName(args["username"])
             self.media_db.setPassword(args["password"])
+            # FIXME: this clearly does nothing
+            self.media_db.setPort(int(args["port"]))
         
         ok = self.media_db.open()
         if ok is True:
