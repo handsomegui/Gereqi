@@ -70,7 +70,7 @@ Fixing this issue is an irreversible process, would you like to continue and fix
                 subprocess.call(cmd, shell=True)
         
 class Manipulations:
-    def treat_tracknum(self, track):
+    def __treat_tracknum(self, track):
         """
         Turns the track tag into an integer
         """
@@ -97,7 +97,7 @@ class Manipulations:
         for hdr in headers:
             try:
                 if hdr in ["tracknumber", "trkn"]:
-                    val = self.treat_tracknum(item[hdr][0])
+                    val = self.__treat_tracknum(item[hdr][0])
                 else:
                     val = item[hdr][0]
             # Used to use KeyError exception but got very odd  list-index error about 'val'
