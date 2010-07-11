@@ -19,7 +19,7 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-from random import randrange
+from random import choice
 import time
 
 from tagging import Tagging
@@ -236,6 +236,14 @@ class Playlist:
             self.__sort_custom("Album")
         self.tracknow_colourise(self.current_row())
         
+    def gen_track_list(self):
+        rows = self.ui_main.track_tbl.rowCount()
+        trk_col = self.header_search("FileName")
+        tracks = []
+        for row in range(rows):
+            tracks.append(self.ui_main.track_tbl.item(row, trk_col).text())
+        return tracks
+        
         
 class PlaylistHistory:
     """
@@ -289,11 +297,15 @@ class Track:
                             track = self.ui_main.track_tbl.item(row_now - 1 , column)
                             track = track.text()
                     elif mode == "next":
+                        # Random playback mode selected
                         if self.ui_main.play_type_bttn.isChecked() is True:
-                            # Here we need to randomly choose the next track
-                            row = randrange(0, rows)
-                            track = self.ui_main.track_tbl.item(row, column)
-                            track = track.text()
+                            file_list = self.ui_main.playlisting.gen_track_list()
+                            track = [trk for trk in file_list
+                                            if trk not in self.ui_main.player.recently_played]
+                            if len(track) > 0:
+                                track = choice(track)
+                                print track, self.ui_main.player.recently_played
+                                
                         elif (row_now + 1) < rows:
                             track = self.ui_main.track_tbl.item(row_now + 1, column)
                             track = track.text()
@@ -698,6 +710,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.on_actionClear_triggered()
         self.search_trktbl_edit.setFocus()
         self.next_trktbl_bttn.setEnabled(False)
+        self.player.recently_played = []
     
     @pyqtSignature("QString")
     def on_search_trktbl_edit_textChanged(self, srch_str):

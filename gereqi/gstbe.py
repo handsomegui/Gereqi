@@ -191,7 +191,7 @@ class Gstbe(QObject):
         is in a PLAYING_STATE
         """
         dur = self.pipe_line.query_duration(gst.FORMAT_TIME)[0]
-        return int(round(dur/ 1000000))
+        return int(round( dur/1000000 ))
         
     def is_playing(self):
         return self.state() == gst.STATE_PLAYING

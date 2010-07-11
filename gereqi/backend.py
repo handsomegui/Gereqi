@@ -22,6 +22,8 @@ from PyQt4.QtCore import QObject, QTime,  QString
 from gstbe import Gstbe
 
 class AudioBackend:
+    recently_played = []
+    
     def __init__(self, parent):
         self.ui_main = parent
         self.media_db = parent.media_db
@@ -47,6 +49,7 @@ class AudioBackend:
         Generates a track to go into queue
         before playback stops
         """
+        self.recently_played.append(self.audio_object.current_source())
         self.just_finished = True
         track = self.ui_main.tracking.generate_track("next")
         #Not at end of  playlist
@@ -88,6 +91,7 @@ class AudioBackend:
         Things to be performed when the playback finishes
         """
         self.just_finished = False
+        self.recently_played = []
         self.ui_main.horizontal_tabs.setTabEnabled(1, False)
         self.ui_main.horizontal_tabs.setTabEnabled(2, False)
         self.ui_main.play_bttn.setChecked(False)
