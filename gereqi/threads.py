@@ -23,9 +23,9 @@ to make it easier to manage
 
 from PyQt4.QtCore import QThread, QString, SIGNAL, Qt, QStringList, pyqtSignal
 from urllib import pathname2url
+from time import time, sleep
 
 import os
-import time
 import pyinotify
 
 from webinfo import Webinfo
@@ -130,7 +130,7 @@ class Builddb(QThread):
         self.ui_main.build_lock = True
         while self.ui_main.delete_lock is True:
             print("WAITING: creation")
-            time.sleep(1)
+            sleep(1)
             
         old_prog = 0        
         
@@ -153,7 +153,7 @@ class Builddb(QThread):
         
         #TODO:maybe put in a check to not bother getting tags for
         # an existing file and skipping anyway
-        strt = time.time()
+        strt = time()
         cnt = 0
         #TODO: performance tuning
         for trk in tracks:
@@ -169,7 +169,7 @@ class Builddb(QThread):
                     # prepends the fileName as the DB function expects
                     # a certain order to the args passed
                     info.insert(0, trk) 
-                    info.append(int(round(time.time())))
+                    info.append(int(round(time())))
                     
                     # The playcount and rating
                     info.append(0)
@@ -183,7 +183,7 @@ class Builddb(QThread):
                 self.exit()
                 return
             
-        print("%u of %u tracks scanned in: %0.1f seconds" % (cnt, tracks_total,  (time.time() - strt)))
+        print("%u of %u tracks scanned in: %0.1f seconds" % (cnt, tracks_total,  (time() - strt)))
         self.finished.emit(QString("complete"))
         self.ui_main.build_lock = False
         self.exit()
@@ -200,7 +200,7 @@ class Watcher(QThread, pyinotify.ProcessEvent):
         QThread.__init__(self)
         pyinotify.ProcessEvent.__init__(self)       
         self.ui_main = parent
-        self.start_time = time.time()
+        self.start_time = time()
         self.created = QStringList()
         self.deleted = QStringList()
         
@@ -226,7 +226,7 @@ class Watcher(QThread, pyinotify.ProcessEvent):
             else:
                 print("WAITING: creation list")
             
-        self.start_time = time.time()
+        self.start_time = time()
         
     def __gen_exc_list(self, dirs):
         if dirs is not None:
@@ -274,7 +274,7 @@ class Watcher(QThread, pyinotify.ProcessEvent):
             notifier.process_events()
             if notifier.check_events():
                 notifier.read_events()                
-            if int(time.time() - self.start_time) > self.timer:
+            if int(time() - self.start_time) > self.timer:
                 self.__poller()         
         self.exit()
 
@@ -293,7 +293,7 @@ class DeleteFiles(QThread):
         self.ui_main.delete_lock = True
         while self.ui_main.build_lock is True:
             print("WAITING: deletion")
-            time.sleep(1)     
+            sleep(1)     
         
         media_db = db_choice(self.ui_main)
         for trk in self.file_list:
