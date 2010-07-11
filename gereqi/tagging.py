@@ -233,7 +233,6 @@ class Tagging:
             elif ext == "m4a":
                 tags = self.__m4a_extract(fname)
             
-            fixed = []
             if tags is not None:
                 year = tags[3]                
                 if isinstance(year, str):
@@ -242,11 +241,5 @@ class Tagging:
                         year.sort()
                         year = int(year[0])
                 tags[3] = year
-            
-                for tag in tags:
-                    if isinstance(tag, unicode):
-                        fixed.append(tag.replace('''"''', "'"))
-                    else:
-                        fixed.append(tag)
-                        
-            return fixed if tags is not None else None
+                
+                return tags
