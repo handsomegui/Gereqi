@@ -100,49 +100,7 @@ class CollectionDb:
                                 PRIMARY KEY (name)
                                 ) DEFAULT CHARSET=utf8''']  
         for table in tables:
-            self.__query_execute(table)
-            
-    # FIXME: HACK ALERT!!!!!!!!!!
-    def __setup_tables2(self):
-        """
-        For some reason you cannot use
-        IF NOT EXISTS after you've dropped 
-        the table and commited it
-        """
-        if self.db_type == "SQLITE":
-            table = '''CREATE TABLE media (
-                    file_name    TEXT ,
-                    title   VARCHAR(50),
-                    artist  VARCHAR(50),
-                    album   VARCHAR(50),
-                    year   SMALLINT(4),
-                    genre  VARCHAR(20),
-                    track UNSIGNED TINYINT(2),
-                    length  VARCHAR(5),
-                    bitrate SMALLINT(4),
-                    added UNSIGNED INT(10),
-                    playcount SMALLINT(5),
-                    rating TINYINT(1),
-                    PRIMARY KEY (file_name)
-                    )'''
-        elif self.db_type == "MYSQL":
-            table = '''CREATE TABLE media (
-                                file_name    VARCHAR(255) ,
-                                title   VARCHAR(50),
-                                artist  VARCHAR(50),
-                                album   VARCHAR(50),
-                                year   SMALLINT(4) UNSIGNED,
-                                genre  VARCHAR(20),
-                                track  TINYINT(2) UNSIGNED,
-                                length  VARCHAR(5),
-                                bitrate SMALLINT(4) UNSIGNED,
-                                added INT(10) UNSIGNED ,
-                                playcount SMALLINT(5) UNSIGNED,
-                                rating TINYINT(1) UNSIGNED,
-                                PRIMARY KEY (file_name)
-                                ) DEFAULT CHARSET=utf8'''
-        self.__query_execute(table)
-            
+            self.__query_execute(table)            
             
     def __query_fetchone(self, query, args=None):
         result = self.__query_execute(self.__query_process(query, args), args)
@@ -403,4 +361,4 @@ class CollectionDb:
     def drop_media(self):
         query = '''DROP TABLE media'''
         self.__execute_write(query)
-        self.__setup_tables2()
+        self.__setup_tables()
