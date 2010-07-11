@@ -130,7 +130,7 @@ class Playlist:
         
         if current_file is None:
             return self.ui_main.track_tbl.currentRow()
-        else:
+        elif current_file in file_list:
             return file_list.index(current_file)
         
         
