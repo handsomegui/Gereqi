@@ -320,8 +320,11 @@ class CollectionDb:
                         FROM media 
                         WHERE file_name=?'''
         self.__query_execute(query, (file_name, ))
-        result = self.__query_fetchall(12)[0]
-        return result
+        try:
+            result = self.__query_fetchall(12)[0]
+            return result
+        except IndexError:
+            return
         
     def playlist_add(self, *params):
         query = '''INSERT INTO playlist 

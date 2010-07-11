@@ -221,7 +221,6 @@ class Tagging:
         """
         Based on the file-format extract info
         """
-           
         ext = fname.split(".")[-1].lower()
         if ext in self.a_formats:
             if ext == "flac":
@@ -242,4 +241,5 @@ class Tagging:
                         year = int(year[0])
                 tags[3] = year
                 
-                return tags
+                final = [QString("%s" % tag) for tag in tags]
+                return final

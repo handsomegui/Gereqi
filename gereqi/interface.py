@@ -57,8 +57,6 @@ class Playlist:
         if (self.sort_pos != fname_pos) or (self.sort_order != 0) :
             self.ui_main.track_tbl.horizontalHeader().setSortIndicator(fname_pos, 0)
             
-        
-            
     def __unsort(self):
         """
         Puts the playlist sorting back to what it was 
@@ -92,9 +90,11 @@ class Playlist:
         # mutagen cannot handle things like urls for podcasts
         self.ui_main.clear_trktbl_bttn.setEnabled(True)
         if info is None:
+            # see if the track is already in db
             info = self.ui_main.media_db.get_info(file_name)
             if info is None:
-                info = self.ui_main.meta.extract(file_name)
+                # get the info using the tag-extractor module
+                info = self.ui_main.meta.extract(str(file_name))
                 if info is None:
                     return
                 else:       
