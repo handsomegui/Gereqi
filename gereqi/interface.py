@@ -304,7 +304,6 @@ class Track:
                                             if trk not in self.ui_main.player.recently_played]
                             if len(track) > 0:
                                 track = choice(track)
-                                print track, self.ui_main.player.recently_played
                                 
                         elif (row_now + 1) < rows:
                             track = self.ui_main.track_tbl.item(row_now + 1, column)
@@ -700,6 +699,42 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.playlisting.clear()
         self.prev_trktbl_bttn.setEnabled(True)
         self.clear_trktbl_bttn.setEnabled(False)
+        
+    @pyqtSignature("")
+    def on_actionSave_2_triggered(self):
+        """
+        Save current playlist
+        """
+        play_name = QInputDialog.getText(\
+            None,
+            QString("Save Playlist"),
+            QString("Enter a name for the playlist:"),
+            QLineEdit.Normal)
+            
+        if play_name[1] is True:
+            check = self.media_db.playlist_tracks(unicode(play_name[0]))
+            if len(check) > 0:
+                msg = QMessageBox.warning(None,
+                    QString("Overwrite Playlist?"),
+                    QString("""A playlist named '%s' already exists. Do you want to overwrite it?"""  
+                                % unicode(play_name[0])),
+                    QMessageBox.StandardButtons(\
+                        QMessageBox.Cancel | \
+                        QMessageBox.No | \
+                        QMessageBox.Yes))
+                
+                if msg == QMessageBox.Yes:
+                    pass
+                elif msg == QMessageBox.Cancel:
+                    return
+                elif msg == QMessageBox.No:
+                    self.on_save_trktbl_bttn_clicked()
+                    
+            tracks = self.playlisting.gen_file_list()            
+            for track in tracks:
+                self.media_db.playlist_add(unicode(play_name[0]), track)
+            self.wdgt_manip.pop_playlist_view()
+    
     
     @pyqtSignature("")
     def on_clear_trktbl_bttn_clicked(self):
@@ -929,35 +964,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Based on what is in the playlist and chosen name, it'll
         get put into the database
         """
-        play_name = QInputDialog.getText(\
-            None,
-            QString("Save Playlist"),
-            QString("Enter a name for the playlist:"),
-            QLineEdit.Normal)
-            
-        if play_name[1] is True:
-            check = self.media_db.playlist_tracks(unicode(play_name[0]))
-            if len(check) > 0:
-                msg = QMessageBox.warning(None,
-                    QString("Overwrite Playlist?"),
-                    QString("""A playlist named '%s' already exists. Do you want to overwrite it?"""  
-                                % unicode(play_name[0])),
-                    QMessageBox.StandardButtons(\
-                        QMessageBox.Cancel | \
-                        QMessageBox.No | \
-                        QMessageBox.Yes))
-                
-                if msg == QMessageBox.Yes:
-                    pass
-                elif msg == QMessageBox.Cancel:
-                    return
-                elif msg == QMessageBox.No:
-                    self.on_save_trktbl_bttn_clicked()
-                    
-            tracks = self.playlisting.gen_file_list()            
-            for track in tracks:
-                self.media_db.playlist_add(unicode(play_name[0]), track)
-            self.wdgt_manip.pop_playlist_view()
+        self.on_actionSave_2_triggered()
             
     @pyqtSignature("QTreeWidgetItem*, int")
     def on_playlist_tree_itemDoubleClicked(self, item, column):
