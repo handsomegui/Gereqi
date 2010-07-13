@@ -723,9 +723,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                         QMessageBox.No | \
                         QMessageBox.Yes))
                 
-                if msg == QMessageBox.Yes:
-                    pass
-                elif msg == QMessageBox.Cancel:
+                if msg == QMessageBox.Cancel:
                     return
                 elif msg == QMessageBox.No:
                     self.on_save_trktbl_bttn_clicked()
