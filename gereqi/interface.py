@@ -144,7 +144,7 @@ class Playlist:
         """
         rows = self.ui_main.track_tbl.rowCount() 
         column = self.header_search("FileName")
-        file_list = [unicode(self.ui_main.track_tbl.item(row, column).text())
+        file_list = [self.ui_main.track_tbl.item(row, column).text()
                         for row in range(rows)]
         return file_list           
         
@@ -713,7 +713,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     
             tracks = self.playlisting.gen_file_list()            
             for track in tracks:
-                self.media_db.playlist_add(unicode(play_name[0]), track)
+                self.media_db.playlist_add(play_name[0], track)
             self.wdgt_manip.pop_playlist_view()
     
     
