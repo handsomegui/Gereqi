@@ -194,11 +194,11 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.sets_db.add_database_setting("type", db_type)
         
         if db_type == "MYSQL":
-            self.sets_db.add_database_setting("hostname", unicode(self.mysql_host.text()) )
-            self.sets_db.add_database_setting("username", unicode(self.mysql_user.text()) )
-            self.sets_db.add_database_setting("password", unicode(self.mysql_password.text()) )
-            self.sets_db.add_database_setting("dbname", unicode(self.mysql_dbname.text()) )
-            self.sets_db.add_database_setting("port", unicode(self.mysql_port.value()) )
+            self.sets_db.add_database_setting("hostname", str(self.mysql_host.text().toUtf8()) )
+            self.sets_db.add_database_setting("username", str(self.mysql_user.text().toUtf8()) )
+            self.sets_db.add_database_setting("password", str(self.mysql_password.text().toUtf8()) )
+            self.sets_db.add_database_setting("dbname", str(self.mysql_dbname.text().toUtf8()) )
+            self.sets_db.add_database_setting("port", str(self.mysql_port.value()) )
             
     def __apply_settings(self):
         """
@@ -241,4 +241,3 @@ class Configuration(QDialog, Ui_settings_dialog):
         elif val == "MYSQL":
             self.mysql_config.setEnabled(True)
             
-

@@ -362,7 +362,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Ui_MainWindow.__init__(self)
         # TODO: change ui settings based on saved states/options
         self.setupUi(self)
-        
+        self.media_db = CollectionDb("main")
         self.info_thread = Getinfo(self)
         self.html_thread = Getwiki()
         self.build_db_thread = Builddb(self)
@@ -437,25 +437,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.stat_prog.setValue(0)
         self.build_db_thread.start()
         
-    def __db_setup(self):
-        try:
-            del self.media_db
-        except AttributeError:
-            pass
-            
-        self.db_type = self.sets_db.get_database_setting("type")        
-        if self.db_type is None :
-            self.media_db = CollectionDb(mode="SQLITE")
-        elif self.db_type == "SQLITE":
-            self.media_db = CollectionDb(mode="SQLITE")
-        elif self.db_type == "MYSQL":
-            self.mysql_args = {"hostname": self.sets_db.get_database_setting("hostname"), 
-                            "username":  self.sets_db.get_database_setting("username"), 
-                            "password": self.sets_db.get_database_setting("password"), 
-                            "dbname": self.sets_db.get_database_setting("dbname"), 
-                            "port": self.sets_db.get_database_setting("port")}
-            self.media_db = CollectionDb("MYSQL", self.mysql_args)
-            
     def __dirs_setup(self):
         func = lambda x : x if not None else []
         includes = self.sets_db.get_collection_dirs("include")
@@ -465,7 +446,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def __settings_init(self):
         self.sets_db = Settings()
         self.__dirs_setup()
-        self.__db_setup()
         self.__setup_watcher()
             
     @pyqtSignature("QString")  
@@ -644,7 +624,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if config.exec_():
             self.__dirs_setup()
             self.__setup_watcher()
-            self.__db_setup()
+            self.media_db.restart_db()
             self.wdgt_manip.setup_db_tree()
             
     @pyqtSignature("")

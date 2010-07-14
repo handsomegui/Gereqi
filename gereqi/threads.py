@@ -132,10 +132,11 @@ class Builddb(QThread):
             print("WAITING: creation")
             sleep(1)
             
-        old_prog = 0        
+        old_prog = 0
+        media_db = CollectionDb("builder")
         
         if self.redo is True:
-            self.ui_main.media_db.drop_media()
+            media_db.drop_media()
             print("FROM SCRATCH")
         
         if self.file_list is None:
@@ -174,7 +175,7 @@ class Builddb(QThread):
                     # The playcount and rating
                     info.append(0)
                     info.append(0)
-                    self.ui_main.media_db.add_media(info)
+                    media_db.add_media(info)
                     cnt += 1
             else:
                 print("User terminated scan.")

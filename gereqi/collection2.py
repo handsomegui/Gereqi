@@ -18,44 +18,52 @@
 
 from PyQt4.QtCore import *
 from PyQt4.QtSql import *
+
+from settings import Settings
+
 import os
 
 class CollectionDb:
-    def __init__(self, mode="SQLITE", args=None):
+    def __init__(self, name):
         """
         Experimental. As sqlite and mysql are barely different trying to
         account for the differences
         """
-        self.db_type = mode
-        if mode == "SQLITE":
-            
+        self.db_name = QLatin1String(name)
+        self.__config_db()
+        
+    def __config_db(self):
+        sets_db = Settings()
+        self.db_type = sets_db.get_database_setting("type")
+        if self.db_type == "MYSQL":                            
+            self.media_db = QSqlDatabase.addDatabase("QMYSQL", self.db_name)
+
+            self.media_db.setHostName(sets_db.get_database_setting("hostname"))
+            self.media_db.setDatabaseName(sets_db.get_database_setting("dbname"))
+            self.media_db.setUserName(sets_db.get_database_setting("username"))
+            self.media_db.setPassword(sets_db.get_database_setting("password"))
+            # FIXME: this clearly does nothing
+            self.media_db.setPort(int(sets_db.get_database_setting("port")))
+                            
+        else:        
+            self.db_type = "SQLITE"
             app_dir = "%s/.gereqi/" % os.getenv("HOME")
             db_loc = "%smedia.db" % app_dir
             if QDir(app_dir).exists is False:
-                QDir().mkdir(app_dir)
-                
-            self.media_db = QSqlDatabase.addDatabase("QSQLITE");
+                QDir().mkdir(app_dir)                
+            self.media_db = QSqlDatabase.addDatabase("QSQLITE", self.db_name)
             self.media_db.setDatabaseName(db_loc)
         
-        elif mode == "MYSQL":
-            self.media_db = QSqlDatabase.addDatabase("QMYSQL");
-            self.media_db.setHostName(args["hostname"])
-            self.media_db.setDatabaseName(args["dbname"])
-            self.media_db.setUserName(args["username"])
-            self.media_db.setPassword(args["password"])
-            # FIXME: this clearly does nothing
-            self.media_db.setPort(int(args["port"]))
         
         ok = self.media_db.open()
         if ok is True:
             print "DATABASE OK"
             self.query = QSqlQuery(self.media_db)
-            if mode == "SQLITE":
+            if self.db_type == "SQLITE":
                 self.__pragma()
             self.__setup_tables()
         else:
             print "DATABASE ERROR"
-            return        
         
     def __setup_tables(self):
         print self.db_type
@@ -367,3 +375,13 @@ class CollectionDb:
         query = '''DROP TABLE media'''
         self.__execute_write(query)
         self.__setup_tables()
+        
+    def restart_db(self):
+        """
+        Disconnects db and removes connection
+        """
+        self.media_db.removeDatabase(self.db_name)
+        self.media_db.close()
+        del self.media_db
+        del self.query
+        self.__config_db()
