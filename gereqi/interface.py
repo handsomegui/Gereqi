@@ -63,7 +63,8 @@ class Playlist:
         """
         fname_pos = self.header_search("FileName")
         if self.sort_pos != fname_pos or (self.sort_order != 0):
-            self.ui_main.track_tbl.horizontalHeader().setSortIndicator(self.sort_pos, self.sort_order)
+            self.ui_main.track_tbl.horizontalHeader().setSortIndicator(self.sort_pos,
+                                                                       self.sort_order)
     
     def add_list_to_playlist(self, tracks):
         """
@@ -100,13 +101,15 @@ class Playlist:
                 else:       
                     trk = QString("%1").arg(info[5].toInt()[0], 2, 10, QChar('0'))
                     metadata = {"Track": trk,  "Title": info[0], "Artist": info[1], 
-                                        "Album": info[2], "Year":info[3], "Genre": info[4], "Length": info[6],
-                                        "Bitrate": info[7], "FileName": file_name}
+                                    "Album": info[2], "Year":info[3], "Genre": info[4],
+                                    "Length": info[6], "Bitrate": info[7], 
+                                    "FileName": file_name}
             else:
                 trk = QString("%1").arg(info[6].toInt()[0], 2,10, QChar('0'))
-                metadata = {'Track': trk, "Title": info[1], "Artist": info[2], "Album": info[3], 
-                                    "Year": info[4], "Genre": info[5], "Length": info[7], 
-                                    "Bitrate": info[8], "FileName": file_name}
+                metadata = {'Track': trk, "Title": info[1], "Artist": info[2], 
+                                "Album": info[3], "Year": info[4], "Genre": info[5], 
+                                "Length": info[7], "Bitrate": info[8], 
+                                "FileName": file_name}
                                     
         row = self.ui_main.track_tbl.rowCount()
         self.ui_main.track_tbl.insertRow(row)

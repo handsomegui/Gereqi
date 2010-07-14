@@ -147,11 +147,13 @@ class CollectionDb:
         """
         This command will cause SQLite to not wait on data to reach the disk surface, 
         which will make write operations appear to be much faster. 
-        But if you lose power in the middle of a transaction, your database file might corrupt.
+        But if you lose power in the middle of a transaction, 
+        your database file might corrupt.
         """
         query = '''PRAGMA synchronous = OFF'''
         self.__query_execute(query)
         
+#######################################################################################
 
     def add_media(self, meta):
         """
