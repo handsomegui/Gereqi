@@ -18,7 +18,6 @@
 from PyQt4.QtGui import QPixmap
 from PyQt4.QtCore import QObject, QTime,  QString
 
-
 from gstbe import Gstbe
 
 class AudioBackend:
@@ -26,7 +25,6 @@ class AudioBackend:
     
     def __init__(self, parent):
         self.ui_main = parent
-        self.media_db = parent.media_db
         self.just_finished = False
         self.__gstreamer_init()
             
@@ -110,9 +108,9 @@ class AudioBackend:
         Probably better to do this within the database.
         """
         now = self.ui_main.tracking.generate_track("back")
-        info = self.media_db.get_info(unicode(now))
+        info = self.ui_main.media_db.get_info(unicode(now))
         if info is not None:
             playcount = int(info[10])
             playcount += 1
-            self.media_db.inc_count(playcount, unicode(now))
+            self.ui_main.media_db.inc_count(playcount, unicode(now))
         
