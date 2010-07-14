@@ -218,13 +218,13 @@ class Playlist:
     def gen_full_list(self):
         rows = self.ui_main.track_tbl.rowCount()
         columns = self.ui_main.track_tbl.columnCount()
-        headers = [unicode(self.ui_main.track_tbl.horizontalHeaderItem(cnt).text())
-                                                                                  for cnt in range(columns)]
+        headers = [self.ui_main.track_tbl.horizontalHeaderItem(cnt).text()
+                        for cnt in range(columns)]
         tracks = []
         for row in range(rows):
             tmp_list = []
             for col in range(columns):
-                tmp_list.append(unicode(self.ui_main.track_tbl.item(row, col).text()))
+                tmp_list.append(self.ui_main.track_tbl.item(row, col).text())
             tracks.append(tmp_list)        
         return headers, tracks
      
