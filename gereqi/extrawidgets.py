@@ -154,7 +154,8 @@ class WidgetManips:
         index = self.ui_main.collect_time_box.currentIndex()
         calc = lambda val: int(round(time.time() - val))
         now = time.localtime()
-        filts = [(now[3] * now[4]) + now[5], 604800, 2419200, 7257600, 31557600]   
+        today = ((now[3] * 60) +  now[4] ) * 60 + now[5]
+        filts = [today, 604800, 2629743, 7889229, 31556926]   
         if index > 0:
             return calc(filts[index - 1])
         
