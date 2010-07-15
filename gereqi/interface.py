@@ -634,7 +634,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Really needs to be done in a separate thread as scan could
         take a while.
         """
-        print("Deleting media DB and rebuilding")        
+        print("Deleting media DB and rebuilding") 
+        self.collect_tree.clear()
         self.create_collection(fresh=True)
     
     @pyqtSignature("")
