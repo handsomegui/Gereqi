@@ -979,7 +979,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         playlist = self.playlist_tree.selectedItems()
         if len(playlist) > 0:
-            self.media_db.playlist_delete(unicode(playlist[0].text(0)))
+            self.media_db.playlist_delete(playlist[0].text(0))
             self.wdgt_manip.pop_playlist_view()
             
     
@@ -990,7 +990,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         playlist = self.playlist_tree.selectedItems()
         try:
-            par = unicode(playlist[0].parent().text(0))
+            par = playlist[0].parent().text(0)
         except  AttributeError:
             return
         except IndexError:
@@ -1004,14 +1004,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 QLineEdit.Normal)
             
             # Checks if you entered a non-zero length name and that you clicked 'ok'
-            if (new_name[1] is True) and (len(unicode(new_name[0])) > 0):
+            if (new_name[1] is True) and (len(new_name[0]) > 0):
                 #get all the tracks in the selected playlist
-                tracks = self.media_db.playlist_tracks(unicode(playlist[0].text(0)))
+                tracks = self.media_db.playlist_tracks(playlist[0].text(0))
                 # delete the old playlist
-                self.media_db.playlist_delete(unicode(playlist[0].text(0)))
+                self.media_db.playlist_delete(playlist[0].text(0))
                 # add the tracks back in but with a new name, probably cleaner using an sql query
                 for track in tracks:
-                    self.media_db.playlist_add(unicode(new_name[0]), track)
+                    self.media_db.playlist_add(new_name[0], track)
                 self.wdgt_manip.pop_playlist_view()
             
     @pyqtSignature("bool")
