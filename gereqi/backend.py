@@ -108,9 +108,9 @@ class AudioBackend:
         Probably better to do this within the database.
         """
         now = self.ui_main.tracking.generate_track("back")
-        info = self.ui_main.media_db.get_info(unicode(now))
+        info = self.ui_main.media_db.get_info(now)
         if info is not None:
             playcount = int(info[10])
             playcount += 1
-            self.ui_main.media_db.inc_count(playcount, unicode(now))
+            self.ui_main.media_db.inc_count(playcount, now)
         
