@@ -536,7 +536,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             if highlighted is not None:      
                 # The track in backend is not the same as selected and paused
                 if (queued != highlighted) and (paused is True): 
-                    self.player.audio_object.load(unicode(highlighted))
+                    self.player.audio_object.load(str(highlighted.toUtf8()))
                 # Nothing already loaded into playbin
                 elif queued is None:
                     selected = self.track_tbl.currentRow()
@@ -659,9 +659,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                         
         if mfiles is not None:
             for item in mfiles:
-                ender = unicode(item).split(".")[-1]
-                if ender.lower() in self.audio_formats:
-                    self.playlisting.add_to_playlist(unicode(item))
+                ender = item.split(".")[-1]
+                if ender.toLower() in self.audio_formats:
+                    self.playlisting.add_to_playlist(item)
 
     @pyqtSignature("bool")
     def on_minimise_tray_actn_toggled(self, checked):
