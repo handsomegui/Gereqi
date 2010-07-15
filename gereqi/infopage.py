@@ -85,6 +85,7 @@ class InfoPage:
         coversize = int(coversize) if coversize is not None else 200
         extra = Extraneous()
         cover = extra.get_cover_source(QString(params["artist"]), QString(params["album"]), params["check"])
+#        cover = cover if cover is not None else ""
         now = HTML.arg("%1").arg(coversize)
         now = now.arg("%2").arg(params["title"])
         now = now.arg("%3").arg(params["artist"])

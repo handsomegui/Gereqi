@@ -464,7 +464,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         When double click and abum in the collection browser
         add the album's tracks to the playlist.
         """
-        now = unicode(item.text(0))
+        now = item.text(0)
         par = item.parent()
         track = album = artist = None
         mode = self.__collection_mode()
@@ -475,13 +475,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 par_par = par.parent()
                 # When we select an individual track
                 if par_par is not None:
-                    artist = unicode(par_par.text(0))
-                    album = unicode(par.text(0))
+                    artist = par_par.text(0)
+                    album = par.text(0)
                     track = now
                 # When we've selected an album
                 else:
                     album = now
-                    artist = unicode(par.text(0))
+                    artist = par.text(0)
                     
             # In any case we'll have an artist
             # Just an artist selected
@@ -489,20 +489,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 artist = now
                 tracks = self.media_db.get_artists_files(artist)
                 self.playlisting.add_list_to_playlist(tracks)
-
             elif track is not None:
                 file_name = unicode(self.media_db.get_file(artist, album, track))
-                print file_name
                 self.playlisting.add_to_playlist(file_name)
-                
             elif album is not None:
                 tracks = self.media_db.get_files(artist, album)
                 self.playlisting.add_list_to_playlist(tracks)
         else:
             if par is not None:
-                file_name = self.media_db.get_album_file(unicode(par.text(0)), now)
+                file_name = self.media_db.get_album_file(par.text(0), now)
                 self.playlisting.add_to_playlist(file_name)
-                
             else:
                 file_names = self.media_db.get_album_files(now)
                 self.playlisting.add_list_to_playlist(file_names)
