@@ -490,7 +490,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 tracks = self.media_db.get_artists_files(artist)
                 self.playlisting.add_list_to_playlist(tracks)
             elif track is not None:
-                file_name = unicode(self.media_db.get_file(artist, album, track))
+                file_name = self.media_db.get_file(artist, album, track)
                 self.playlisting.add_to_playlist(file_name)
             elif album is not None:
                 tracks = self.media_db.get_files(artist, album)
@@ -1082,7 +1082,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.clear_trktbl_bttn.setEnabled(True)
         else:
             fname = self.dir_model.filePath(index)
-            self.playlisting.add_to_playlist(unicode(fname))
+            self.playlisting.add_to_playlist(fname)
             self.clear_trktbl_bttn.setEnabled(True)
             
     @pyqtSignature("QModelIndex")
@@ -1207,7 +1207,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             return calc(filts[index - 1])
         
     def __collection_mode(self):
-        text_now = unicode(self.collect_tree.headerItem().text(0))
+        text_now = self.collect_tree.headerItem().text(0)
         if text_now == "Artist/Album":
             return "artist"
         else:
@@ -1216,8 +1216,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def __collection_sort(self, p0):
         mode = self.__collection_mode()
         if mode == "artist":
-            self.collect_tree.headerItem().setText(0, unicode("Album/Artist"))
+            self.collect_tree.headerItem().setText(0, "Album/Artist")
         else:
-            self.collect_tree.headerItem().setText(0, unicode("Artist/Album"))
+            self.collect_tree.headerItem().setText(0, "Artist/Album")
 
         self.wdgt_manip.setup_db_tree()
