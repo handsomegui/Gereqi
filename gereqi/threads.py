@@ -234,14 +234,14 @@ class Watcher(QThread, pyinotify.ProcessEvent):
             return ["^%s" % dir for dir in dirs]
     
     def process_IN_CREATE(self, event):
-        file_name = cleanup_encodings(event.pathname)
+        file_name = event.pathname
         print file_name
         if file_name is not None:
             if file_name not in self.created:            
                 self.created.append(file_name)
 
     def process_IN_DELETE(self, event):
-        file_name = cleanup_encodings(event.pathname)
+        file_name = event.pathname
         print file_name
         if file_name is not None:
             if file_name not in self.deleted:            
@@ -305,9 +305,9 @@ class DeleteFiles(QThread):
             print("WAITING: deletion")
             sleep(1)     
         
-        media_db = db_choice(self.ui_main)
+        media_db = media_db = CollectionDb("deleter")
         for trk in self.file_list:
-            media_db.delete_track(unicode(trk))
+            media_db.delete_track(trk)
          
         # Signals to indicate that items based on
         # DB should probably update
