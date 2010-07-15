@@ -227,11 +227,13 @@ class WidgetManips:
                 for play in playlists:
                     now = QTreeWidgetItem([QString(play)])
                     headers[cnt].addChild(now)
-                    tracks = self.ui_main.media_db.playlist_tracks(
-                                unicode(play))
+                    print play
+                    tracks = self.ui_main.media_db.playlist_tracks(play)
                     for track in tracks:
+                        #FIXME: something odd here. Getting Nones
                         info = self.ui_main.media_db.get_info(track)
-                        now.addChild(QTreeWidgetItem([QString("%s - %s"
+                        if info is not None:
+                            now.addChild(QTreeWidgetItem([QString("%s - %s"
                                                     % (info[2], info[1])) ]))       
                                                                                       
             self.ui_main.playlist_tree.addTopLevelItem(headers[cnt])
