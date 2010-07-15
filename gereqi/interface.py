@@ -691,12 +691,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             QLineEdit.Normal)
             
         if play_name[1] is True:
-            check = self.media_db.playlist_tracks(unicode(play_name[0]))
+            check = self.media_db.playlist_tracks(play_name[0])
             if len(check) > 0:
                 msg = QMessageBox.warning(None,
                     QString("Overwrite Playlist?"),
                     QString("""A playlist named '%s' already exists. Do you want to overwrite it?"""  
-                                % unicode(play_name[0])),
+                                % play_name[0]),
                     QMessageBox.StandardButtons(\
                         QMessageBox.Cancel | \
                         QMessageBox.No | \
@@ -830,10 +830,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if mode == "artist":
         # If we've expanded an album
             if par is not None:
-                artist = unicode(par.text(0))
-                album = unicode(item.text(0))
+                artist = par.text(0)
+                album = item.text(0)
             else:
-                artist = unicode(item.text(0))
+                artist = item.text(0)
                 album = None
             
             if (album is not None) and (item.childCount() == 0):
@@ -865,10 +865,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 
         else:
             if par is not None:
-                album = unicode(par.text(0))
-                track = unicode(item.text(0))
+                album = par.text(0)
+                track = item.text(0)
             else:
-                album = unicode(item.text(0))
+                album = item.text(0)
                 track = None
             
             if (track is None) and (item.childCount() == 0):
@@ -949,7 +949,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Slot documentation goes here.
         """
         try:
-            par = unicode(item.parent().text(0))
+            par = item.parent().text(0)
         except  AttributeError:
             return
         
@@ -961,13 +961,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             
         elif par == "Playlists":
             playlist = item.text(column)
-            tracks = self.media_db.playlist_tracks(unicode(playlist))
+            tracks = self.media_db.playlist_tracks(playlist)
             self.playlisting.add_list_to_playlist(tracks)
             self.clear_trktbl_bttn.setEnabled(True)
         else:
             new_par = item.parent().parent()            
             if new_par.text(0) == "Playlists":
-                artist, title = unicode(item.text(0)).split(" - ")
+                artist, title = item.text(0).split(" - ")
                 track = self.media_db.search_by_titandart(artist, title)[0]
                 self.playlisting.add_to_playlist(track)
                 
