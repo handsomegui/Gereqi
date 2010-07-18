@@ -323,16 +323,7 @@ class CollectionDb:
         result = self.__query_fetchall(1)
         return result
         
-    def get_album_files_timed(self, album, filt):
-        args = (album, filt)
-        query = '''SELECT DISTINCT title
-                        FROM media
-                        WHERE album=?
-                        AND added>?'''
-        self.__query_execute(query, args)
-        result = self.__query_fetchall(1)
-        return result
-        
+       
     def get_info(self, file_name):
         query = '''SELECT
                         file_name, title,artist,album,year,genre,
