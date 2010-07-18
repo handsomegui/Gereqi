@@ -19,11 +19,11 @@ from PyQt4.QtGui import QDirModel
 from PyQt4.QtCore import Qt, pyqtSignal, QModelIndex
 
 
-# TODO: make the checkboxes tristate
+# TODO: make readable and comment
+
 class MyQDirModel(QDirModel):
     needsRefresh = pyqtSignal(QModelIndex)
     check_list = []
-    
        
     def data(self, index, role = Qt.DisplayRole):
         if index.isValid() and (index.column() == 0) and (role == Qt.CheckStateRole):
@@ -33,9 +33,11 @@ class MyQDirModel(QDirModel):
             if dir_now in self.check_list[1]:
                 return Qt.Unchecked
             elif par_dir in self.check_list[1]:
-                return Qt.Unchecked 
-            else:
+                return Qt.Unchecked                 
+            elif dir_now in self.check_list[0]:
+                return Qt.Checked
                 
+            else:
                 # Checks to see if a child-dir is checked
                 for chk in self.check_list[0]:
                     if (chk.contains(dir_now)) and (dir_now != chk):
@@ -48,6 +50,7 @@ class MyQDirModel(QDirModel):
                     dir_part = checker[:val+1].join("/")
                     if dir_part in self.check_list[0]:
                         return Qt.Checked 
+                # Nothing found
                 return Qt.Unchecked
                 
         # Standard QDirModel functionality        
@@ -55,14 +58,21 @@ class MyQDirModel(QDirModel):
             return QDirModel.data(self, index, role)        
         
     def flags(self, index):
+        """
+        Can not remember what this is for
+        """
         if index.column() == 0: # make the first column checkable
            return QDirModel.flags(self, index) | Qt.ItemIsUserCheckable
         else:
             return QDirModel.flags(self, index)
         
-    def setData(self, index, value, role = Qt.EditRole):        
+    def setData(self, index, value, role = Qt.EditRole):
+        """
+        Things to do on user made changes
+        """
         # user trying to do something to the checkbox
         if index.isValid() and (index.column() == 0) and role == Qt.CheckStateRole:
+            print self.check_list
             # store checked paths, remove unchecked paths
             if value == Qt.Checked:
                 dir_now = self.filePath(index)
@@ -81,8 +91,7 @@ class MyQDirModel(QDirModel):
                         if dir_now in exc_dir:
                             tmp_list.append(exc_dir)
                     for thing in tmp_list:
-                        self.check_list[1].remove(thing)   
-
+                        self.check_list[1].remove(thing)
                 except ValueError:
                     # Doesn't exist yet
                     pass
@@ -116,5 +125,3 @@ class MyQDirModel(QDirModel):
         # Standard QDirModel functionality
         else:
             return QDirModel.setData(self, index, value, role);
-            
-            

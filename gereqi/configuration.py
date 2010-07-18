@@ -118,10 +118,10 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.sets_db.add_collection_setting("recursive", recursive_dirs)
         
     def __set_collections(self):
-        for incl in MyQDirModel.check_list[0]:
-            self.sets_db.add_collection_setting("include", incl)
-        for excl in MyQDirModel.check_list[1]:
-            self.sets_db.add_collection_setting("exclude", excl)
+        for incl in self.dir_model.check_list[0]:
+            self.sets_db.add_collection_setting("include", str(incl.toUtf8()))
+        for excl in self.dir_model.check_list[1]:
+            self.sets_db.add_collection_setting("exclude", str(excl.toUtf8()))
             
     def __set_database(self):
         db_type = unicode(self.database_type.currentText())
