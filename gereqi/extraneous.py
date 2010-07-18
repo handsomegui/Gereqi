@@ -37,7 +37,6 @@ class Extraneous:
                 item.remove(ch)
             item.replace(" ", "_")
             things.append(item)
-        # FIXME: funny unicode characters should have been removed/encoded by now
         result = QString("%1-%2").arg(things[0]).arg(things[1])
         return result
         

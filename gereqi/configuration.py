@@ -1,100 +1,31 @@
-# -*- coding: utf-8 -*-
+#Copyright 2009 Jonathan.W.Noble <jonnobleuk@gmail.com>
+
+# This file is part of Gereqi.
+#
+# Gereqi is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Gereqi is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 """
 Module implementing Configuration.
 """
 
-from PyQt4.QtGui import QDialog, QDirModel
-from PyQt4.QtCore import pyqtSignature, QDir, Qt, QAbstractItemModel, \
-pyqtSignal, QModelIndex
+from PyQt4.QtGui import QDialog
+from PyQt4.QtCore import pyqtSignature, QDir, QString
 
 from settings import Settings
 from Ui_configuration import Ui_settings_dialog
+from myqdirmodel import MyQDirModel
 
-
-# TODO: make the checkboxes tristate
-class MyQDirModel(QDirModel):
-    needsRefresh = pyqtSignal(QModelIndex)    
-        
-    def data(self, index, role = Qt.DisplayRole):
-        if index.isValid() and (index.column() == 0) and (role == Qt.CheckStateRole):
-            dir_now = self.filePath(index)
-            par_dir = dir_now.split("/")[:-1].join("/")
-            # the item is checked only if we have stored its path
-            if dir_now in MyQDirModel.check_list[1]:
-                return Qt.Unchecked
-            elif par_dir in MyQDirModel.check_list[1]:
-                return Qt.Unchecked                
-            else:
-                checker = dir_now.split("/")
-                for val in range(len(checker)):
-                    thing = checker[:val+1].join("/")
-                    if thing in MyQDirModel.check_list[0]:
-                        return Qt.Checked    
-                return Qt.Unchecked
-                
-        return QDirModel.data(self, index, role)        
-        
-    def flags(self, index):
-        if index.column() == 0: # make the first column checkable
-           return QDirModel.flags(self, index) | Qt.ItemIsUserCheckable
-        else:
-            return QDirModel.flags(self, index)
-        
-    def setData(self, index, value, role = Qt.EditRole):
-        if index.isValid() and (index.column() == 0) and role == Qt.CheckStateRole:
-            # store checked paths, remove unchecked paths
-            if (value == Qt.Checked):
-                dir_now = self.filePath(index)
-                # No point adding if it's root dir is already there
-                checker = dir_now.split("/")
-                there = False
-                for val in range(len(checker)):
-                    thing = checker[:val+1].join("/")
-                    if thing in MyQDirModel.check_list[0]:
-                        there = True
-                        break
-                        
-                try:
-                    tmp_list = []
-                    for thing in MyQDirModel.check_list[1]:
-                        if str(dir_now) in thing:
-                            tmp_list.append(str(thing))
-                    for thing in tmp_list:
-                        MyQDirModel.check_list[1].remove(thing)   
-
-                except ValueError:
-                    # Doesn't exist yet
-                    pass
-                    
-                if there is False:
-                    MyQDirModel.check_list[0].append(str(self.filePath(index)))
-                self.needsRefresh.emit(index)
-                return True
-                
-            # Want to exclude dir
-            else:
-                dir_now = self.filePath(index)
-                par_dir = dir_now.split("/")[:-1].join("/")                
-                tmp_list = (list(MyQDirModel.check_list[0]), list(MyQDirModel.check_list[1]))
-                
-                for item in tmp_list[0]:
-                    # removes if we've already checked it
-                    if str(dir_now) in item:
-                        MyQDirModel.check_list[0].remove(item)            
-                 
-                # Only add to unchecked if anything above is checked
-                checker = dir_now.split("/")
-                for val in range(len(checker)):
-                    thing = checker[:val+1].join("/")
-                    if thing in MyQDirModel.check_list[0]:
-                        MyQDirModel.check_list[1].append(str(dir_now))
-                self.needsRefresh.emit(index)
-                return True
-                
-        else:
-            return QDirModel.setData(self, index, value, role);
-    
 
 class Configuration(QDialog, Ui_settings_dialog):
     """
@@ -108,9 +39,9 @@ class Configuration(QDialog, Ui_settings_dialog):
         
         self.setupUi(self)
         self.__mysql_avail()
-        self.dir_model = MyQDirModel()        
-        self.dir_model.needsRefresh.connect(self.__refreshing)
         self.sets_db = Settings()
+        self.__fileview_setup() 
+        
         self.__interface_setup()
         
     def __mysql_avail(self):
@@ -132,8 +63,11 @@ class Configuration(QDialog, Ui_settings_dialog):
         """
         Make the fileview the correct type
         """
-        MyQDirModel.check_list = [self.sets_db.get_collection_dirs("include"), 
-                                  self.sets_db.get_collection_dirs("exclude")]
+        self.dir_model = MyQDirModel()        
+        self.dir_model.needsRefresh.connect(self.__refreshing)
+        inc = [QString(dir) for dir in self.sets_db.get_collection_dirs("include")]
+        exc = [QString(dir)for dir in self.sets_db.get_collection_dirs("exclude")]
+        self.dir_model.check_list = [inc, exc]                                        
         filters = QDir.AllDirs|QDir.Readable|QDir.NoDotAndDotDot
         self.dir_model.setFilter(filters)
         self.dir_model.setReadOnly(True)
@@ -167,7 +101,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.scan_recursively.setChecked(func("recursive"))
         self.watch_folders.setChecked(func("watch"))
         self.__database_setup()
-        self.__fileview_setup()
+        
         
     def __save_settings(self):
         true_false = lambda x : x is True and "True" or "False"
