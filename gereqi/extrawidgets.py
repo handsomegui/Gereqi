@@ -193,8 +193,7 @@ class WidgetManips:
             font = QFont()
             font.setBold(True)
             for cnt in range(len(things)):
-                # with sqlite, don't want
-                thing = things[cnt]#.decode("utf-8")
+                thing = things[cnt]
                 # When creating collection tree only 
                 #  allow certain things based on the filter.
                 if (filt is not None) and (filt.toLower() not in thing.toLower()):
@@ -214,8 +213,8 @@ class WidgetManips:
         font.setBold(True)        
         self.ui_main.playlist_tree.clear()
         playlists = self.ui_main.media_db.playlist_list()
-        #podcasts = None
-        #streams = None
+#        podcasts = None
+#        streams = None
         headers = [QTreeWidgetItem(["%s" % tit]) for tit in [
                                     "Podcasts", "Radio Streams",  "Playlists"]]
         for hdr in headers:
@@ -230,7 +229,6 @@ class WidgetManips:
                     print play
                     tracks = self.ui_main.media_db.playlist_tracks(play)
                     for track in tracks:
-                        #FIXME: something odd here. Getting Nones
                         info = self.ui_main.media_db.get_info(track)
                         if info is not None:
                             now.addChild(QTreeWidgetItem([QString("%s - %s"
