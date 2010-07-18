@@ -380,7 +380,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.finishes = Finishers(self)
         self.play_hist = PlaylistHistory()
         
-        #new style signalling
+        # new style signalling
         self.build_db_thread.finished.connect(self.finishes.db_build)
         self.play_actn.toggled.connect(self.play_bttn.setChecked)
         self.actionNext_Track.triggered.connect(self.next_bttn.click)
@@ -435,7 +435,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Via the watcher, newly created/changed files are sent
         to the db to be added or updated
         """
-        self.build_db_thread.set_values(None, self.audio_formats, False, creations)
+        self.build_db_thread.set_values(None, self.audio_formats, "create", creations)
         self.stat_lbl.setText("Auto-Scanning")
         self.stat_prog.setValue(0)
         self.build_db_thread.start()
@@ -787,9 +787,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def on_actionUpdate_Collection_triggered(self):
         """
         Updates collection for new files. Ignore files already in database
+        Removes files if no longer in filesystem
         """
-        # TODO: not completed yet. See self.create_collection
-        print("Rebuild: Ensure the db is ON CONFLICT IGNORE")
         self.create_collection()
 
     @pyqtSignature("int, int")
@@ -1131,10 +1130,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Either generates a new DB or adds new files to it
         Not finished
         """
+        mode = "redo" if fresh is True else "update"
         # If the dialog is cancelled in last if statement the below is ignored
         if self.media_dir is not None:
             self.stat_bttn.setEnabled(True)
-            self.build_db_thread.set_values(self.media_dir, self.audio_formats, fresh)
+            self.build_db_thread.set_values(self.media_dir, self.audio_formats, mode)
             self.stat_lbl.setText("Scanning Media")
             self.stat_prog.setValue(0)
             self.build_db_thread.start()

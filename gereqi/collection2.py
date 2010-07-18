@@ -239,6 +239,14 @@ class CollectionDb:
         result = self.__query_fetchall(1)
         return result
         
+    def get_files_all(self):
+        query = '''SELECT DISTINCT file_name
+                    FROM media'''
+                    
+        self.__query_execute(query)
+        result = self.__query_fetchall(1)
+        return result
+        
     def get_file(self, artist, album, title):
         args = (artist, album, title)
         query = '''SELECT DISTINCT file_name 

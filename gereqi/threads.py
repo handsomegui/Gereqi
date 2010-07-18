@@ -21,7 +21,7 @@ This file contains all the necessary threads for the app
 to make it easier to manage
 """
 
-from PyQt4.QtCore import QThread, QString, SIGNAL, Qt, QStringList, pyqtSignal
+from PyQt4.QtCore import QThread, QString, SIGNAL, Qt, QStringList, pyqtSignal, QDir
 from urllib import pathname2url
 from time import time, sleep
 
@@ -88,18 +88,19 @@ class Builddb(QThread):
     def __init__(self, parent):
         QThread.__init__(self, parent)
         self.ui_main = parent
+        self.media_db = CollectionDb("builder")
         
     def stop_now(self):
         self.exiting = True
         
-    def set_values(self, dirs, formats, fresh, tracks=None):
+    def set_values(self, dirs, formats, mode, tracks=None):
         """
         Required to put parameters into
         this thread from the outside
         """
         self.media_dir = dirs
         self.file_list = tracks
-        self.redo = fresh
+        self.mode = mode
         self.meta = Tagging(formats)  
         self.a_formats = formats
      
@@ -109,7 +110,7 @@ class Builddb(QThread):
         """
         tracks = []
         not_need = [now for now in excl 
-                            if dir in now]
+                        if dir in now]
         # No point trying to speed this up. os.walk is a generator function
         for dirpath, dirnames, filenames in os.walk(dir):
             # The exclusion part
@@ -126,6 +127,17 @@ class Builddb(QThread):
                         tracks.append(now)
         return tracks
         
+    def __check_db(self):
+        # FIXME: this doesn't really work. Files which do exist 
+        # are reported as missing (filename encoding issues again)
+        # and one's which don't are reported as existing
+        return
+        file_list = self.media_db.get_files_all()
+        dir = QDir()
+        for now in file_list:
+            if os.path.exists(str(now.toUtf8())) is False:
+                print("DELETE %s" % now)
+        
     def run(self):
         self.ui_main.build_lock = True
         while self.ui_main.delete_lock is True:
@@ -133,11 +145,13 @@ class Builddb(QThread):
             sleep(1)
             
         old_prog = 0
-        media_db = CollectionDb("builder")
         
-        if self.redo is True:
-            media_db.drop_media()
+        if self.mode == "redo":
+            self.media_db.drop_media()
             print("FROM SCRATCH")
+        elif self.mode == "update":
+            print("UPDATE")
+            self.__check_db()
         
         if self.file_list is None:
             tracks = []
@@ -175,7 +189,7 @@ class Builddb(QThread):
                     # The playcount and rating
                     info.append(0)
                     info.append(0)
-                    media_db.add_media(info)
+                    self.media_db.add_media(info)
                     cnt += 1
             else:
                 print("User terminated scan.")
@@ -313,7 +327,7 @@ class DeleteFiles(QThread):
         # DB should probably update
         self.deleted.emit()
         self.ui_main.delete_lock = False
-        self.exit()            
+        self.exit()       
 
 
 class Finishers:
@@ -352,3 +366,5 @@ class Finishers:
         else:
             self.ui_main.horizontal_tabs.setTabEnabled(2, False)
             
+            
+
