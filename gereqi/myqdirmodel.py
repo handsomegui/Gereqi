@@ -66,6 +66,8 @@ class MyQDirModel(QDirModel):
         else:
             return QDirModel.flags(self, index)
         
+    # FIXME: when the user checks a dir but has already done so for
+    # child dir(s) the child dir(s) are not removed from check_list
     def setData(self, index, value, role = Qt.EditRole):
         """
         Things to do on user made changes
@@ -76,6 +78,15 @@ class MyQDirModel(QDirModel):
             # store checked paths, remove unchecked paths
             if value == Qt.Checked:
                 dir_now = self.filePath(index)
+                
+                tmp_list = []
+                for dir in self.check_list[0]:
+                    if dir.contains(dir_now):
+                        tmp_list.append(dir)                        
+                for dir in tmp_list:
+                    self.check_list[0].remove(dir)
+                    
+                    
                 # No point adding if it's root dir is already there
                 checker = dir_now.split("/")
                 there = False
