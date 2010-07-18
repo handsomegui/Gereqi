@@ -37,6 +37,8 @@ from backend import AudioBackend
 from settings import Settings
 from collection2 import CollectionDb
 
+WATCHTIME = 30
+
 
 class Playlist:
     def __init__(self, parent):
@@ -416,7 +418,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 
             print("WATCHING: ", self.media_dir[0])
             self.watch_thread = Watcher(self)
-            self.watch_thread.set_values(self.media_dir, 60, recur)
+            self.watch_thread.set_values(self.media_dir, WATCHTIME, recur)
             self.watch_thread.start()
             self.watch_thread.creations.connect(self.__files_created)
             self.watch_thread.deletions.connect(self.__files_deleted)
