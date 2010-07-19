@@ -381,6 +381,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.wdgt_manip = WidgetManips(self)
         self.finishes = Finishers(self)
         self.play_hist = PlaylistHistory()
+        self.__playlist_remembered()
         
         # new style signalling
         self.build_db_thread.finished.connect(self.finishes.db_build)
@@ -451,8 +452,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.sets_db = Settings()
         self.__dirs_setup()
         self.__setup_watcher()
+        
+    def __playlist_remembered(self):
         if self.sets_db.get_interface_setting("remember") == "True":
-            print("NEED TO LOAD LAST")
+            tracks = self.media_db.playlist_tracks("##gereqi.remembered##!!")
+            if len(tracks) > 0:
+                self.playlisting.add_list_to_playlist(tracks)
+            
             
     @pyqtSignature("QString")  
     def on_search_collect_edit_textChanged(self, srch_str):
@@ -646,9 +652,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Closing Down. Maybe some database interaction.
         """
-        # TODO: see if we need to save playlist
         if self.sets_db.get_interface_setting("remember") == "True":
-            print("NEED TO SAVE")
+            play_name = "##gereqi.remembered##!!"
+            tracks = self.playlisting.gen_file_list()
+            self.media_db.playlist_delete(play_name)
+            for trk in tracks:
+                self.media_db.playlist_add(play_name,trk)
         exit()
     
     @pyqtSignature("")
@@ -703,10 +712,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     QString("Overwrite Playlist?"),
                     QString("""A playlist named '%s' already exists. Do you want to overwrite it?"""  
                                 % play_name[0]),
-                    QMessageBox.StandardButtons(\
-                        QMessageBox.Cancel | \
-                        QMessageBox.No | \
-                        QMessageBox.Yes))
+                            QMessageBox.StandardButtons(\
+                                QMessageBox.Cancel | \
+                                QMessageBox.No | \
+                                QMessageBox.Yes))
                 
                 if msg == QMessageBox.Cancel:
                     return

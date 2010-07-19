@@ -229,9 +229,10 @@ class WidgetManips:
         for cnt in range(3):
             if cnt == 2:
                 for play in playlists:
+                    if play == "!!##gereqi.remembered##!!":
+                        continue
                     now = QTreeWidgetItem([QString(play)])
                     headers[cnt].addChild(now)
-                    print play
                     tracks = self.ui_main.media_db.playlist_tracks(play)
                     for track in tracks:
                         info = self.ui_main.media_db.get_info(track)
