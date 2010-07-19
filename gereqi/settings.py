@@ -32,14 +32,14 @@ class Settings:
         
     def __setup_tables(self):
             tables = [''' CREATE TABLE IF NOT EXISTS interface (
-                                    tag TEXT,
-                                    value TEXT) ''', 
-                                '''CREATE TABLE IF NOT EXISTS database (
-                                    tag TEXT,
-                                    value TEXT) ''', 
-                                '''CREATE TABLE IF NOT EXISTS collection (
-                                    tag TEXT,
-                                    value TEXT)''']
+                        tag TEXT,
+                        value TEXT) ''', 
+                      '''CREATE TABLE IF NOT EXISTS database (
+                        tag TEXT,
+                        value TEXT) ''', 
+                      '''CREATE TABLE IF NOT EXISTS collection (
+                        tag TEXT,
+                        value TEXT)''']
             for table in tables:
                 self.__query_execute(table)
                 
@@ -60,40 +60,39 @@ class Settings:
         
     def add_collection_setting(self, *args):
         query = '''INSERT INTO collection 
-                        VALUES (?,?)'''
+                    VALUES (?,?)'''
         self.__query_execute(query, args)
         
     def add_database_setting(self, *args):
         query = '''INSERT INTO database 
-                        VALUES (?,?)'''
+                    VALUES (?,?)'''
         self.__query_execute(query, args)        
         
     def add_interface_setting(self, *args):
         query = '''INSERT INTO interface 
-                        VALUES (?,?)'''
+                    VALUES (?,?)'''
         self.__query_execute(query, args)
         
     def get_collection_settings(self):
         query = '''SELECT tag,value
-                        FROM collection'''
+                    FROM collection'''
         return self.__query_fetchall(query)
 
     def get_database_settings(self):
         query = '''SELECT tag,value
-                        FROM database'''
+                    FROM database'''
         return self.__query_fetchall(query)
         
     def get_interface_settings(self):
         query = '''SELECT tag,value
-                        FROM interface'''
+                    FROM interface'''
         return self.__query_fetchall(query)
         
     def get_collection_setting(self, tag):
         query = '''SELECT value
-                        FROM collection
-                        WHERE tag=?'''
+                    FROM collection
+                    WHERE tag=?'''
         result = self.__query_fetchone(query,(tag,))
-        
        
         if result is not None:
             if tag != ("include" or "exclude"):
@@ -109,16 +108,16 @@ class Settings:
 
     def get_database_setting(self, tag):
         query = '''SELECT value
-                        FROM database
-                        WHERE tag=?'''
+                    FROM database
+                    WHERE tag=?'''
         result = self.__query_fetchone(query, (tag, ))
         if result is not None:
             return result[0]
         
     def get_interface_setting(self, tag):
         query = '''SELECT value
-                        FROM interface
-                        WHERE tag=?'''
+                    FROM interface
+                    WHERE tag=?'''
         result = self.__query_fetchone(query, (tag, ))
         if result is not None:
             return result[0]
@@ -130,27 +129,27 @@ class Settings:
         # doesn't appear to actually exist
         # Need to do this as we may want to remove an entry, no primary key
         queries= ['''DROP TABLE collection''', 
-                        '''CREATE TABLE collection (
-                            tag TEXT,
-                            value TEXT)''']
+                    '''CREATE TABLE collection (
+                        tag TEXT,
+                        value TEXT)''']
                     
         for query in queries:
             self.__query_execute(query)
         
     def drop_database(self):
         queries= ['''DROP TABLE database''', 
-                        '''CREATE TABLE database (
-                            tag TEXT,
-                            value TEXT)''']
+                    '''CREATE TABLE database (
+                        tag TEXT,
+                        value TEXT)''']
                     
         for query in queries:
             self.__query_execute(query)
             
     def drop_interface(self):
         queries= ['''DROP TABLE interface''', 
-                        '''CREATE TABLE interface (
-                            tag TEXT,
-                            value TEXT)''']
+                    '''CREATE TABLE interface (
+                        tag TEXT,
+                        value TEXT)''']
                     
         for query in queries:
             self.__query_execute(query)

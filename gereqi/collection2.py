@@ -112,19 +112,15 @@ class CollectionDb:
         for table in tables:
             self.__query_execute(table)            
             
-    def __query_fetchone(self, query, args=None):
-        result = self.__query_execute(self.__query_process(query, args), args)
-        return self.query.result()
-            
     def __query_fetchall(self, field_num):
         output = []
         while self.query.next() is True:
-            if field_num <=1:
+            if field_num <= 1:
                 output.append(self.query.value(0).toString())
             else:
                 tmp = []
-                for  n in range(field_num):
-                    r = self.query.value(n).toString()
+                for  cnt in range(field_num):
+                    r = self.query.value(cnt).toString()
                     tmp.append(r)
                 output.append(tmp)
         return output

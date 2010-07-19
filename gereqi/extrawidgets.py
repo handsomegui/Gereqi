@@ -103,7 +103,7 @@ class SetupExtraWidgets:
         self.ui_main.progress_sldr.setPageStep(0)
         self.ui_main.progress_sldr.setSingleStep(0)
         self.ui_main.stat_lbl = QLabel("Finished")
-        self.ui_main.stat_prog= QProgressBar()
+        self.ui_main.stat_prog = QProgressBar()
         self.ui_main.stat_bttn = QToolButton()
         self.ui_main.play_type_bttn = QToolButton()
         icon = QIcon(QPixmap(":/Icons/application-exit.png"))
@@ -188,10 +188,6 @@ class WidgetManips:
                 
         if things is not None:
             things = sorted(things)
-            old_char = None
-            char = None
-            font = QFont()
-            font.setBold(True)
             for cnt in range(len(things)):
                 thing = things[cnt]
                 # When creating collection tree only 

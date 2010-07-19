@@ -66,8 +66,7 @@ class MyQDirModel(QDirModel):
         else:
             return QDirModel.flags(self, index)
         
-    # FIXME: when the user checks a dir but has already done so for
-    # child dir(s) the child dir(s) are not removed from check_list
+    # TODO: this method is far too messy
     def setData(self, index, value, role = Qt.EditRole):
         """
         Things to do on user made changes
