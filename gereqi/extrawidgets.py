@@ -25,6 +25,9 @@ from settings import Settings
 
 
 class SetupExtraWidgets:
+    """
+    This should be done before the main ui is shown
+    """
     def __init__(self, parent):
         self.ui_main = parent
         set_db = Settings()
@@ -96,6 +99,7 @@ class SetupExtraWidgets:
         stop_action.triggered.connect(self.ui_main.stop_bttn.click)
         quit_action.triggered.connect(qApp.quit)     
        
+    # TODO: separate certain things
     def __setup_misc(self):
         """
         Extra __init__ things to add to the UI
@@ -145,10 +149,18 @@ class SetupExtraWidgets:
         self.ui_main.info_view.setRenderHint(1|4)
 
     def __key_shortcuts(self):
+        """
+        various keyboard shortcuts 
+        """
+        # remove the selected track from the playlist
         delete = QShortcut(QKeySequence(QString("Del")), self.ui_main)
         delete.activated.connect(self.ui_main.playlisting.del_track)
         
     def __mode_change(self, check):
+        """
+        Changes the icon of the random mode button depending
+        if checked or not
+        """
         icon = QIcon()
         if check is True:
             icon.addPixmap(QPixmap(":/Icons/dice-icon.png"), QIcon.Normal, QIcon.Off)
@@ -214,6 +226,9 @@ class WidgetManips:
                 self.ui_main.collect_tree.addTopLevelItem(thing)
             
     def pop_playlist_view(self):
+        """
+        Populates the playlist listview
+        """
         font = QFont()
         font.setBold(True)        
         self.ui_main.playlist_tree.clear()
@@ -243,6 +258,10 @@ class WidgetManips:
             self.ui_main.playlist_tree.addTopLevelItem(headers[cnt])
                 
     def icon_change(self, state):
+        """
+        Depending on the specific state of the program
+        the play button's icon will vary
+        """
         if state == "play":
             icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
             tray = QIcon(QPixmap(":/Icons/app.png"))
