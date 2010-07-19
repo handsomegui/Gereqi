@@ -1146,7 +1146,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="resource.qrc"/>
+  <include location="icons/resource.qrc"/>
  </resources>
  <connections>
   <connection>

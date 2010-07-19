@@ -389,7 +389,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.prev_track_actn.triggered.connect(self.prev_bttn.click)
         self.stop_actn.triggered.connect(self.prev_bttn.click)
         self.stat_bttn.pressed.connect(self.quit_build)
-        self.play_type_bttn.toggled.connect(self.wdgt_manip.set_play_type)
         self.track_tbl.horizontalHeader().sectionClicked.connect(self.playlisting.track_sorting)
         self.collect_tree_hdr.sectionClicked.connect(self.__collection_sort)
         self.html_thread.got_wiki.connect(self.finishes.set_wiki)

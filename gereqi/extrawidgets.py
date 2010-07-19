@@ -104,18 +104,25 @@ class SetupExtraWidgets:
         self.ui_main.progress_sldr.setSingleStep(0)
         self.ui_main.stat_lbl = QLabel("Finished")
         self.ui_main.stat_prog = QProgressBar()
-        self.ui_main.stat_bttn = QToolButton()
-        self.ui_main.play_type_bttn = QToolButton()
-        icon = QIcon(QPixmap(":/Icons/application-exit.png"))
+        
         self.ui_main.stat_prog.setRange(0, 100)
         self.ui_main.stat_prog.setValue(100)
         self.ui_main.stat_prog.setMaximumSize(QSize(100, 18))
+        
+        icon = QIcon(QPixmap(":/Icons/application-exit.png"))
+        self.ui_main.stat_bttn = QToolButton()
         self.ui_main.stat_bttn.setIcon(icon)
         self.ui_main.stat_bttn.setAutoRaise(True)
         self.ui_main.stat_bttn.setEnabled(False)
-        self.ui_main.play_type_bttn.setText("N")
+        
+        icon2 = QIcon()
+        icon2.addPixmap(QPixmap(":/Icons/dice-icon2.png"), QIcon.Normal, QIcon.Off)        
+        self.ui_main.play_type_bttn = QToolButton()  
         self.ui_main.play_type_bttn.setCheckable(True)
         self.ui_main.play_type_bttn.setAutoRaise(True)
+        self.ui_main.play_type_bttn.setIcon(icon2)
+        self.ui_main.play_type_bttn.toggled.connect(self.__mode_change)
+        
         self.ui_main.statusBar.addPermanentWidget(self.ui_main.stat_lbl)
         self.ui_main.statusBar.addPermanentWidget(self.ui_main.stat_prog)
         self.ui_main.statusBar.addPermanentWidget(self.ui_main.stat_bttn)
@@ -140,6 +147,14 @@ class SetupExtraWidgets:
     def __key_shortcuts(self):
         delete = QShortcut(QKeySequence(QString("Del")), self.ui_main)
         delete.activated.connect(self.ui_main.playlisting.del_track)
+        
+    def __mode_change(self, check):
+        icon = QIcon()
+        if check is True:
+            icon.addPixmap(QPixmap(":/Icons/dice-icon.png"), QIcon.Normal, QIcon.Off)
+        else:
+            icon.addPixmap(QPixmap(":/Icons/dice-icon2.png"), QIcon.Normal, QIcon.Off)
+        self.ui_main.play_type_bttn.setIcon(icon)
         
         
 class WidgetManips:
@@ -198,12 +213,6 @@ class WidgetManips:
                 thing.setChildIndicatorPolicy(0)
                 self.ui_main.collect_tree.addTopLevelItem(thing)
             
-    def set_play_type(self, checked):
-        if checked is True:
-            self.ui_main.play_type_bttn.setText("R")
-        else:
-            self.ui_main.play_type_bttn.setText("N")
-            
     def pop_playlist_view(self):
         font = QFont()
         font.setBold(True)        
@@ -231,7 +240,6 @@ class WidgetManips:
                                                     % (info[2], info[1])) ]))       
                                                                                       
             self.ui_main.playlist_tree.addTopLevelItem(headers[cnt])
-                
                 
     def icon_change(self, state):
         if state == "play":

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/gereqi/configuration.ui'
 #
-# Created: Fri Jul  9 18:44:48 2010
+# Created: Mon Jul 19 20:50:36 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!

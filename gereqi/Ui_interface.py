@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/gereqi/interface.ui'
 #
-# Created: Tue Jul  6 18:54:17 2010
+# Created: Mon Jul 19 20:50:35 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -578,7 +578,7 @@ class Ui_MainWindow(object):
         self.actionEqualiser.setText(QtGui.QApplication.translate("MainWindow", "Equaliser", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
-import resource_rc
+import icons.resource_rc
 
 if __name__ == "__main__":
     import sys
