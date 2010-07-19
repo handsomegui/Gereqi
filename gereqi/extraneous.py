@@ -39,20 +39,6 @@ class Extraneous:
             things.append(item)
         result = QString("%1-%2").arg(things[0]).arg(things[1])
         return result
-        
-       
-    def check_source_exists(self, fname):
-        """
-        Checks whether if a track exists on drives.
-        If not, it removes the track from the database.
-        """
-        if QDir(fname).exists() is True:
-            return True
-        else:
-            database = Media()
-            print("WARNING: removed non-existing track, %s, from database" % fname)
-            database.delete_track(fname)
-            
 
     def get_cover_source(self, artist, album, check=True):
         cover_dir = QString("%1/.gereqi/album-art/").arg(getenv["HOME"])
