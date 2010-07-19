@@ -1157,6 +1157,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def set_info(self):
         """
         The wikipedia page + album art to current artist playing
+        Typically done on track-change
         """
         art_change = self.art_alb["nowart"] != self.art_alb["oldart"] 
         alb_change = self.art_alb["nowalb"] != self.art_alb["oldalb"]
@@ -1185,6 +1186,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                                                     title=self.art_alb["title"], check=False, albums=albs)
             self.info_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
+            
+        # Show the context browser
+        if self.sets_db.get_interface_setting("context-change") == "True":
+            self.vertical_tabs.setCurrentIndex(0)
 
     def tray_event(self, event):
         """

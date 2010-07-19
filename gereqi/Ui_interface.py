@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/gereqi/interface.ui'
 #
-# Created: Mon Jul 19 20:50:35 2010
+# Created: Mon Jul 19 22:41:07 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -33,7 +33,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.vertical_tabs.sizePolicy().hasHeightForWidth())
         self.vertical_tabs.setSizePolicy(sizePolicy)
         self.vertical_tabs.setMinimumSize(QtCore.QSize(280, 0))
-        self.vertical_tabs.setMaximumSize(QtCore.QSize(480, 16777215))
+        self.vertical_tabs.setMaximumSize(QtCore.QSize(600, 16777215))
         self.vertical_tabs.setTabPosition(QtGui.QTabWidget.West)
         self.vertical_tabs.setDocumentMode(True)
         self.vertical_tabs.setObjectName("vertical_tabs")
@@ -356,7 +356,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 792, 22))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 792, 21))
         self.menuBar.setObjectName("menuBar")
         self.menuActions = QtGui.QMenu(self.menuBar)
         self.menuActions.setObjectName("menuActions")
@@ -491,7 +491,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.vertical_tabs.setCurrentIndex(1)
-        self.horizontal_tabs.setCurrentIndex(1)
+        self.horizontal_tabs.setCurrentIndex(0)
         QtCore.QObject.connect(self.volume_sldr, QtCore.SIGNAL("valueChanged(int)"), self.volume_lbl.setNum)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 

@@ -76,53 +76,12 @@
            <number>2</number>
           </property>
           <item>
-           <widget class="QCheckBox" name="splash_screen">
-            <property name="text">
-             <string>Show splash-screen on startup</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QCheckBox" name="tray_icon">
             <property name="text">
              <string>Show tray icon</string>
             </property>
             <property name="checked">
              <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item>
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Maximum</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="tray_icon_flash">
-              <property name="text">
-               <string>Flash tray icon when playing</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="player_window">
-            <property name="text">
-             <string>Show player window</string>
             </property>
            </widget>
           </item>
@@ -156,77 +115,6 @@
             </item>
            </layout>
           </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <item>
-             <widget class="QLabel" name="label_2">
-              <property name="text">
-               <string>External web browser: </string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="web_browser">
-              <property name="minimumSize">
-               <size>
-                <width>150</width>
-                <height>0</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
-            <item>
-             <widget class="QCheckBox" name="other_browser">
-              <property name="text">
-               <string>Use another browser: </string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="other_browser_edit">
-              <property name="minimumSize">
-               <size>
-                <width>150</width>
-                <height>0</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_2">
-         <property name="title">
-          <string>Components</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_7">
-          <property name="margin">
-           <number>2</number>
-          </property>
-          <item>
-           <widget class="QRadioButton" name="scores">
-            <property name="text">
-             <string>Use scores</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="ratings">
-            <property name="text">
-             <string>Use ratings</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
          </layout>
         </widget>
        </item>
@@ -247,13 +135,6 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="playlist_relative">
-            <property name="text">
-             <string>Manually saved playlists use relative path</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QCheckBox" name="context_browser_change">
             <property name="text">
              <string>Switch to context browser on track change</string>
@@ -262,6 +143,19 @@
           </item>
          </layout>
         </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -597,22 +491,5 @@
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>other_browser</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>other_browser_edit</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>100</x>
-     <y>220</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>198</x>
-     <y>229</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
