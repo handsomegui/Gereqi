@@ -93,6 +93,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         func = lambda x : self.sets_db.get_interface_setting(x) == "True"
         coversize = self.sets_db.get_interface_setting("coversize")
         self.tray_icon.setChecked(func("trayicon"))
+        self.remember_current.setChecked(func("remember"))
         if coversize is not None:
             self.cover_size.setValue(int(coversize))
         
@@ -108,8 +109,10 @@ class Configuration(QDialog, Ui_settings_dialog):
         # Interface
         cover_size = self.cover_size.value()
         show_tray = true_false(self.tray_icon.isChecked())
+        remember = true_false(self.remember_current.isChecked())
         self.sets_db.add_interface_setting("trayicon", show_tray)
         self.sets_db.add_interface_setting("coversize", cover_size)
+        self.sets_db.add_interface_setting("remember", remember)
 
         recursive_dirs = true_false(self.scan_recursively.isChecked())
         watch_dirs = true_false(self.watch_folders.isChecked())

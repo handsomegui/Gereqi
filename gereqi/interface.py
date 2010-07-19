@@ -451,6 +451,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.sets_db = Settings()
         self.__dirs_setup()
         self.__setup_watcher()
+        if self.sets_db.get_interface_setting("remember") == "True":
+            print("NEED TO LOAD LAST")
             
     @pyqtSignature("QString")  
     def on_search_collect_edit_textChanged(self, srch_str):
@@ -644,7 +646,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Closing Down. Maybe some database interaction.
         """
-        #self.watch_thread.exit()
+        # TODO: see if we need to save playlist
+        if self.sets_db.get_interface_setting("remember") == "True":
+            print("NEED TO SAVE")
         exit()
     
     @pyqtSignature("")

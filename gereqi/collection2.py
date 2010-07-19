@@ -66,7 +66,6 @@ class CollectionDb:
             print "DATABASE ERROR"
         
     def __setup_tables(self):
-        print self.db_type
         if self.db_type == "SQLITE":
             tables = ['''CREATE TABLE IF NOT EXISTS media (
                     file_name    TEXT ,
