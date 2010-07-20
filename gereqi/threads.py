@@ -32,6 +32,7 @@ from webinfo import Webinfo
 from tagging import Tagging
 from infopage import InfoPage
 from collection2 import CollectionDb
+from settings import Settings
 
 build_lock = delete_lock = False
 
@@ -90,6 +91,14 @@ class Builddb(QThread):
         self.ui_main = parent
         self.media_db = CollectionDb("builder")
         
+    def __file_compat(self, dirpath, fname):
+        now = os.path.join(dirpath, fname)
+        ender = os.path.splitext(now)[-1].strip(".")
+        ender = ender.lower() 
+        # We only want to get tags for certain file formats
+        if ender in self.a_formats: 
+            return now  
+        
     def stop_now(self):
         self.exiting = True
         
@@ -111,20 +120,27 @@ class Builddb(QThread):
         tracks = []
         not_need = [now for now in excl 
                         if dir in now]
+        sets_db = Settings()
+        # Recursively search                
+        if sets_db.get_collection_setting("recursive") == "True":
         # No point trying to speed this up. os.walk is a generator function
-        for dirpath, dirnames, filenames in os.walk(dir):
-            # The exclusion part
-            #FIXME: although this means you exclude the dirpath you don't exclude it's subdirs
-            if dirpath not in not_need:
-                for name in filenames:
-                    now = os.path.join(dirpath, name)
-                    ender = os.path.splitext(now)[-1].strip(".")
-                    ender = ender.lower()
-                    # We only want to get tags for certain file formats
-                    if ender in self.a_formats:
-                        # No point doing DB interaction per item. We need to
-                        # Need to know how many tracks for progress bar
-                        tracks.append(now)
+            for dirpath, dirnames, filenames in os.walk(dir):
+                # The exclusion part
+                #FIXME: although this means you exclude the dirpath you don't exclude it's subdirs
+                if dirpath not in not_need:
+                    for fname in filenames:
+                        trk = self.__file_compat(dirpath, fname)
+                        if trk is not None:
+                            tracks.append(trk)
+                            
+        else:
+            # Cannot use the loop for both as one is the above is a generator
+            # and os.listdir is a list-returning function
+            for fname in os.listdir(dir):
+                trk = self.__file_compat(dir, fname)
+                if trk is not None:
+                    tracks.append(trk)
+                         
         return tracks
         
     def __check_db(self):
