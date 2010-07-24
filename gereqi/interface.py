@@ -66,8 +66,8 @@ class Playlist:
         """
         fname_pos = self.header_search("FileName")
         if self.sort_pos != fname_pos or (self.sort_order != 0):
-            self.ui_main.track_tbl.horizontalHeader().setSortIndicator(self.sort_pos,
-                                                                       self.sort_order)
+            hdr = self.ui_main.track_tbl.horizontalHeader()
+            hdr.setSortIndicator(self.sort_pos, self.sort_order)
     
     def add_list_to_playlist(self, tracks):
         """
@@ -103,16 +103,17 @@ class Playlist:
                     return
                 else:       
                     trk = QString("%1").arg(info[5].toInt()[0], 2, 10, QChar('0'))
-                    metadata = {"Track": trk,  "Title": info[0], "Artist": info[1], 
-                                    "Album": info[2], "Year":info[3], "Genre": info[4],
-                                    "Length": info[6], "Bitrate": info[7], 
-                                    "FileName": file_name}
+                    metadata = {"Track": trk,  "Title": info[0],
+                                "Artist": info[1], "Album": info[2],
+                                "Year":info[3], "Genre": info[4],
+                                "Length": info[6], "Bitrate": info[7], 
+                                "FileName": file_name}
             else:
                 trk = QString("%1").arg(info[6].toInt()[0], 2,10, QChar('0'))
                 metadata = {'Track': trk, "Title": info[1], "Artist": info[2], 
-                                "Album": info[3], "Year": info[4], "Genre": info[5], 
-                                "Length": info[7], "Bitrate": info[8], 
-                                "FileName": file_name}
+                            "Album": info[3], "Year": info[4], "Genre": info[5],
+                            "Length": info[7], "Bitrate": info[8], 
+                            "FileName": file_name}
                                     
         row = self.ui_main.track_tbl.rowCount()
         self.ui_main.track_tbl.insertRow(row)
@@ -162,7 +163,8 @@ class Playlist:
                 self.ui_main.track_tbl.removeRow(row)                
                 self.tracknow_colourise(self.current_row())
             except RuntimeError:
-                # likely deleted already i.e selected same row but multiple columns
+                # likely deleted already 
+                # i.e selected same row but multiple columns
                 return 
         
     def header_search(self, val):
@@ -284,8 +286,9 @@ class Track:
         
     def generate_track(self, mode, row=None):
         """
-        As the playlist changes on sorting, the playlist (the immediately next/previous 
-        tracks) has to be regenerated before the queing of the next track
+        As the playlist changes on sorting, the playlist (the immediately 
+        next/previous tracks) has to be regenerated before the queing of 
+        the next track
         """
         # So that it can be dynamic later on when columns can be moved
         column = self.ui_main.playlisting.header_search("FileName")
@@ -300,7 +303,8 @@ class Track:
                 if row_now is not None:
                     if mode == "back":
                         if (row_now - 1) >= 0:
-                            track = self.ui_main.track_tbl.item(row_now - 1 , column)
+                            track = self.ui_main.track_tbl.item(row_now - 1 ,
+                                                                column)
                             track = track.text()
                     elif mode == "next":
                         # Random playback mode selected
@@ -312,7 +316,8 @@ class Track:
                                 track = choice(track)
                                 
                         elif (row_now + 1) < rows:
-                            track = self.ui_main.track_tbl.item(row_now + 1, column)
+                            track = self.ui_main.track_tbl.item(row_now + 1,
+                                                                column)
                             track = track.text()
         if track:
             return str(track)
@@ -392,19 +397,24 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.prev_track_actn.triggered.connect(self.prev_bttn.click)
         self.stop_actn.triggered.connect(self.prev_bttn.click)
         self.stat_bttn.pressed.connect(self.quit_build)
-        self.track_tbl.horizontalHeader().sectionClicked.connect(self.playlisting.track_sorting)
+        hdr = self.track_tbl.horizontalHeader()
+        hdr.sectionClicked.connect(self.playlisting.track_sorting)
         self.collect_tree_hdr.sectionClicked.connect(self.__collection_sort)
         self.html_thread.got_wiki.connect(self.finishes.set_wiki)
         self.build_db_thread.progress.connect(self.stat_prog.setValue)
         self.del_thread.deleted.connect(self.wdgt_manip.setup_db_tree)
         
-        # Old style signalling
-        self.connect(self.info_thread, SIGNAL("got-info ( QString ) "), self.info_view.setHtml)
+        self.info_thread.got_info.connect(self.__bodger)
+        # Cannot do this for some reason
+#        self.info_thread.got_info.connect(self.info_view.setHtml(html))
         
-        # Make the collection search line-edit have the keyboard focus on startup.
+        # Makes the collection search line-edit have the keyboard focus
         self.search_collect_edit.setFocus()
         self.wdgt_manip.setup_db_tree()
-        self.wdgt_manip.pop_playlist_view()        
+        self.wdgt_manip.pop_playlist_view() 
+        
+    def __bodger(self, html):       
+        self.info_view.setHtml(html)
         
     def __setup_watcher(self):
         watch = self.sets_db.get_collection_setting("watch")  == "True"
@@ -438,7 +448,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Via the watcher, newly created/changed files are sent
         to the db to be added or updated
         """
-        self.build_db_thread.set_values(None, self.audio_formats, "create", creations)
+        self.build_db_thread.set_values(None, self.audio_formats, "create", 
+                                        creations)
         self.stat_lbl.setText("Auto-Scanning")
         self.stat_prog.setValue(0)
         self.build_db_thread.start()
@@ -863,9 +874,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 if filt_time is None:
                     tracks = self.media_db.get_titles(artist, album)
                 else:
-                    tracks = self.media_db.get_titles_timed(artist, album, filt_time)
+                    tracks = self.media_db.get_titles_timed(artist, album, 
+                                                            filt_time)
                  
-                # Found this via Schwartzian transform. Only 2/3rds of full transform
+                # Found this via Schwartzian transform. 
+                # Only 2/3rds of a full transform
                 tracks = [(trk[1], trk[0]) for trk in tracks]
                 tracks.sort()
                 
@@ -881,7 +894,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 else:
                     albums = self.media_db.get_albums_timed(artist, filt_time)
                     
-                albums.sort()                    
+                albums = sorted(albums, key=QString.toLower)                    
                 for cnt in range(len(albums)):      
                     album = QTreeWidgetItem([albums[cnt]])
                     album.setChildIndicatorPolicy(0)
@@ -899,7 +912,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 if filt_time is None:
                     tracks = self.media_db.get_album_titles(album)
                 else:
-                    tracks = self.media_db.get_album_titles_timed(album, filt_time)                
+                    tracks = self.media_db.get_album_titles_timed(album,
+                                                                  filt_time) 
+                             
                 for cnt in range(len(tracks)):      
                     track = QTreeWidgetItem([tracks[cnt]])
                     item.insertChild(cnt, track)
@@ -1158,7 +1173,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # If the dialog is cancelled in last if statement the below is ignored
         if self.media_dir is not None:
             self.stat_bttn.setEnabled(True)
-            self.build_db_thread.set_values(self.media_dir, self.audio_formats, mode)
+            self.build_db_thread.set_values(self.media_dir, self.audio_formats,
+                                            mode)
             self.stat_lbl.setText("Scanning Media")
             self.stat_prog.setValue(0)
             self.build_db_thread.start()
@@ -1183,17 +1199,21 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.art_alb["oldart"] = self.art_alb["nowart"]
 
         # Album art
-        if (alb_change is True) and (self.art_alb["nowalb"] is not None):
-            
-            self.info_thread.set_values(artist=self.art_alb["nowart"],  album=self.art_alb["nowalb"], 
-                                                    title=self.art_alb["title"], check=True, albums=albs)
+        if (alb_change is True) and (self.art_alb["nowalb"] is not None):           
+            self.info_thread.set_values(artist=self.art_alb["nowart"],  
+                                        album=self.art_alb["nowalb"], 
+                                        title=self.art_alb["title"],
+                                        check=True, albums=albs,
+                                        )
             self.info_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
             
-        # TODO: maybe tell to not check for covers as we should have them by now
         elif (tit_change is True) and (self.art_alb["title"] is not None):
-            self.info_thread.set_values(artist=self.art_alb["nowart"],  album=self.art_alb["nowalb"], 
-                                                    title=self.art_alb["title"], check=False, albums=albs)
+            self.info_thread.set_values(artist=self.art_alb["nowart"],
+                                        album=self.art_alb["nowalb"],
+                                        title=self.art_alb["title"],
+                                        check=False, albums=albs,
+                                        )
             self.info_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
             

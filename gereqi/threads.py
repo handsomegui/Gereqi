@@ -21,8 +21,8 @@ This file contains all the necessary threads for the app
 to make it easier to manage
 """
 
-from PyQt4.QtCore import QThread, QString, SIGNAL, Qt, QStringList, \
-pyqtSignal, QDir
+from PyQt4.QtCore import QThread, QString, SIGNAL, Qt, QStringList, pyqtSignal, \
+QDir
 from urllib import pathname2url
 from time import time, sleep
 
@@ -44,6 +44,8 @@ class Getinfo(QThread):
     Retrieves the cover for an album
     from Amazon
     """
+    got_info = pyqtSignal(QString)
+    
     def __init__(self, parent=None):
         QThread.__init__(self, parent)
         self.ui_main = parent
@@ -52,7 +54,8 @@ class Getinfo(QThread):
         self.info = params
     def run(self):
         html = InfoPage(self.ui_main).gen_info(**self.info)
-        self.emit(SIGNAL("got-info ( QString )"), html)
+#        self.emit(SIGNAL("got-info ( QString )"), html)
+        self.got_info.emit(html)
         
         
 class Getwiki(QThread):

@@ -19,6 +19,7 @@ from extraneous import Extraneous
 from settings import Settings
 from PyQt4.QtCore import QString
 
+# TODO: put some javascript in here where it loops through a list
 HTML = QString('''
             <html>
             <head>
@@ -84,7 +85,9 @@ class InfoPage:
         coversize = sets_db.get_interface_setting("coversize")
         coversize = int(coversize) if coversize is not None else 200
         extra = Extraneous()
-        cover = extra.get_cover_source(QString(params["artist"]), QString(params["album"]), params["check"])
+        cover = extra.get_cover_source(QString(params["artist"]), 
+                                       QString(params["album"]), 
+                                       params["check"])
 #        cover = cover if cover is not None else ""
         now = HTML.arg("%1").arg(coversize)
         now = now.arg("%2").arg(params["title"])

@@ -40,7 +40,7 @@ class Extraneous:
         result = QString("%1-%2").arg(things[0]).arg(things[1])
         return result
 
-    def get_cover_source(self, artist, album, check=True, fname=None):
+    def get_cover_source(self, artist, album, check=True):
         cover_dir = QString("%1/.gereqi/album-art/").arg(getenv["HOME"])
         cover = QString("%1%2.jpg").arg(cover_dir).arg(self.__filenamer(artist, album))
         

@@ -51,7 +51,8 @@ class SetupExtraWidgets:
         filters = QDir.Files|QDir.AllDirs|QDir.Readable|QDir.NoDotAndDotDot
         self.ui_main.dir_model.setFilter(filters)
         self.ui_main.dir_model.setReadOnly(True)
-        self.ui_main.dir_model.setNameFilters(["*.ogg", "*.flac", "*.mp3",  "*.m4a"])
+        self.ui_main.dir_model.setNameFilters(["*.ogg", "*.flac", "*.mp3", 
+                                               "*.m4a"])
         self.ui_main.filesystem_tree.setModel(self.ui_main.dir_model) 
         self.ui_main.filesystem_tree.setColumnHidden(1, True)
         self.ui_main.filesystem_tree.setColumnHidden(2, True)
@@ -120,7 +121,8 @@ class SetupExtraWidgets:
         self.ui_main.stat_bttn.setEnabled(False)
         
         icon2 = QIcon()
-        icon2.addPixmap(QPixmap(":/Icons/dice-icon2.png"), QIcon.Normal, QIcon.Off)        
+        icon2.addPixmap(QPixmap(":/Icons/dice-icon2.png"), QIcon.Normal,
+                        QIcon.Off)        
         self.ui_main.play_type_bttn = QToolButton()  
         self.ui_main.play_type_bttn.setCheckable(True)
         self.ui_main.play_type_bttn.setAutoRaise(True)
@@ -132,8 +134,8 @@ class SetupExtraWidgets:
         self.ui_main.statusBar.addPermanentWidget(self.ui_main.stat_bttn)
         self.ui_main.statusBar.addPermanentWidget(self.ui_main.play_type_bttn)
         # Headers for the Playlist widget
-        headers = [QString("Track"), QString("Title"), QString("Artist"), \
-                   QString("Album"), QString("Year"), QString("Genre"),   \
+        headers = [QString("Track"), QString("Title"), QString("Artist"),
+                   QString("Album"), QString("Year"), QString("Genre"),  
                    QString("Length"), QString("Bitrate"), QString("FileName")]
         for val in range(len(headers)):
             self.ui_main.track_tbl.insertColumn(val)
@@ -145,7 +147,8 @@ class SetupExtraWidgets:
         # Disables the webView link-clicks as we want to manually handle them
         self.ui_main.info_view.page().setLinkDelegationPolicy(2)
         self.ui_main.wiki_view.page().setLinkDelegationPolicy(2)
-        # The images are scaled smoothly using billinear interp and antialias edges of primitives(?)
+        # The images are scaled smoothly using billinear interp and 
+        # antialias edges of primitives(?)
         self.ui_main.info_view.setRenderHint(1|4)
 
     def __key_shortcuts(self):
@@ -163,9 +166,11 @@ class SetupExtraWidgets:
         """
         icon = QIcon()
         if check is True:
-            icon.addPixmap(QPixmap(":/Icons/dice-icon.png"), QIcon.Normal, QIcon.Off)
+            icon.addPixmap(QPixmap(":/Icons/dice-icon.png"), QIcon.Normal,
+                           QIcon.Off)
         else:
-            icon.addPixmap(QPixmap(":/Icons/dice-icon2.png"), QIcon.Normal, QIcon.Off)
+            icon.addPixmap(QPixmap(":/Icons/dice-icon2.png"), QIcon.Normal,
+                           QIcon.Off)
         self.ui_main.play_type_bttn.setIcon(icon)
         
         
@@ -202,16 +207,19 @@ class WidgetManips:
         else:
             mode = "album"
                 
+        # FIXME: these sortings are doing nowt
         if time_filt is None:
             if mode == "artist":
-                things = media_db.get_artists()
+                things = sorted(media_db.get_artists(), key=QString.toLower)
             elif mode == "album":
-                things = media_db.get_albums_all()
+                things = sorted(media_db.get_albums_all(), key=QString.toLower)
         else:
             if mode == "artist":
-                things = media_db.get_artists_timed(time_filt)
+                things = sorted(media_db.get_artists_timed(time_filt),
+                                key=QString.toLower)
             elif mode == "album":
-                things = media_db.get_albums_all_timed(time_filt)
+                things = sorted(media_db.get_albums_all_timed(time_filt),
+                                key=QString.toLower)
                 
         if things is not None:
             things = sorted(things)
