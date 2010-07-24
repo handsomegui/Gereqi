@@ -718,6 +718,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Save current playlist
         """
+        if self.track_tbl.rowCount() < 1:
+            return
+        
         play_name = QInputDialog.getText(\
             None,
             QString("Save Playlist"),
