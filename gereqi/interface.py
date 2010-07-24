@@ -32,7 +32,7 @@ from configuration import Configuration
 
 from extraneous import Extraneous
 from extrawidgets import SetupExtraWidgets, WidgetManips
-from audiocd import AudioCD
+
 from backend import AudioBackend
 from settings import Settings
 from collection2 import CollectionDb
@@ -382,6 +382,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.finishes = Finishers(self)
         self.play_hist = PlaylistHistory()
         self.__playlist_remembered()
+        self.__audiocd_setup()
         
         # new style signalling
         self.build_db_thread.finished.connect(self.finishes.db_build)
@@ -398,7 +399,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         # Old style signalling
         self.connect(self.info_thread, SIGNAL("got-info ( QString ) "), self.info_view.setHtml)
-        
         
         # Make the collection search line-edit have the keyboard focus on startup.
         self.search_collect_edit.setFocus()
@@ -458,6 +458,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             tracks = self.media_db.playlist_tracks("##gereqi.remembered##!!")
             if len(tracks) > 0:
                 self.playlisting.add_list_to_playlist(tracks)
+                
+    def __audiocd_setup(self):
+        try:
+            from audiocd import AudioCD
+        except:
+            print("Probably missing python-cddb")
+            self.play_cd_actn.setEnabled(False)
             
             
     @pyqtSignature("QString")  
