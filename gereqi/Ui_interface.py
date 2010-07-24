@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/gereqi/interface.ui'
+# Form implementation generated from reading ui file 'interface.ui'
 #
-# Created: Mon Jul 19 22:41:07 2010
-#      by: PyQt4 UI code generator 4.7.3
+# Created: Sat Jul 24 17:31:25 2010
+#      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -356,7 +356,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 792, 21))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 792, 28))
         self.menuBar.setObjectName("menuBar")
         self.menuActions = QtGui.QMenu(self.menuBar)
         self.menuActions.setObjectName("menuActions")
@@ -368,12 +368,6 @@ class Ui_MainWindow(object):
         self.menuSettings.setObjectName("menuSettings")
         self.menuHelp = QtGui.QMenu(self.menuBar)
         self.menuHelp.setObjectName("menuHelp")
-        self.menuMode = QtGui.QMenu(self.menuBar)
-        self.menuMode.setObjectName("menuMode")
-        self.menuRepeat = QtGui.QMenu(self.menuMode)
-        self.menuRepeat.setObjectName("menuRepeat")
-        self.menuRandom = QtGui.QMenu(self.menuMode)
-        self.menuRandom.setObjectName("menuRandom")
         self.menuTools = QtGui.QMenu(self.menuBar)
         self.menuTools.setObjectName("menuTools")
         MainWindow.setMenuBar(self.menuBar)
@@ -466,24 +460,10 @@ class Ui_MainWindow(object):
         self.menuHelp.addAction(self.actionHelp)
         self.menuHelp.addSeparator()
         self.menuHelp.addAction(self.actionAbout_Gereqi)
-        self.menuRepeat.addAction(self.actionRptOff)
-        self.menuRepeat.addAction(self.actionRptTrack)
-        self.menuRepeat.addAction(self.actionRptAlbum)
-        self.menuRepeat.addAction(self.actionRptPlaylist)
-        self.menuRandom.addAction(self.actionRndOff)
-        self.menuRandom.addAction(self.actionRndTrack)
-        self.menuRandom.addAction(self.actionRndAlbum)
-        self.menuRandom.addSeparator()
-        self.menuRandom.addAction(self.actionFavor)
-        self.menuMode.addAction(self.menuRepeat.menuAction())
-        self.menuMode.addAction(self.menuRandom.menuAction())
-        self.menuTools.addAction(self.actionEqualiser)
-        self.menuTools.addSeparator()
         self.menuTools.addAction(self.actionUpdate_Collection)
         self.menuTools.addAction(self.actionRescan_Collection)
         self.menuBar.addAction(self.menuActions.menuAction())
         self.menuBar.addAction(self.menuPlaylist.menuAction())
-        self.menuBar.addAction(self.menuMode.menuAction())
         self.menuBar.addAction(self.menuTools.menuAction())
         self.menuBar.addAction(self.menuSettings.menuAction())
         self.menuBar.addAction(self.menuHelp.menuAction())
@@ -541,9 +521,6 @@ class Ui_MainWindow(object):
         self.menuCurrent.setTitle(QtGui.QApplication.translate("MainWindow", "Current", None, QtGui.QApplication.UnicodeUTF8))
         self.menuSettings.setTitle(QtGui.QApplication.translate("MainWindow", "Settings", None, QtGui.QApplication.UnicodeUTF8))
         self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuMode.setTitle(QtGui.QApplication.translate("MainWindow", "Mode", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuRepeat.setTitle(QtGui.QApplication.translate("MainWindow", "Repeat", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuRandom.setTitle(QtGui.QApplication.translate("MainWindow", "Random", None, QtGui.QApplication.UnicodeUTF8))
         self.menuTools.setTitle(QtGui.QApplication.translate("MainWindow", "Tools", None, QtGui.QApplication.UnicodeUTF8))
         self.actionConfigure.setText(QtGui.QApplication.translate("MainWindow", "Configure Gereqi", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRescan_Collection.setText(QtGui.QApplication.translate("MainWindow", "Rescan Collection", None, QtGui.QApplication.UnicodeUTF8))
@@ -579,13 +556,3 @@ class Ui_MainWindow(object):
 
 from PyQt4 import QtWebKit
 import icons.resource_rc
-
-if __name__ == "__main__":
-    import sys
-    app = QtGui.QApplication(sys.argv)
-    MainWindow = QtGui.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
-

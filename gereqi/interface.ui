@@ -14,7 +14,7 @@
    <string>Gereqi</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="icons/resource.qrc">
+   <iconset>
     <normaloff>:/Icons/app.png</normaloff>:/Icons/app.png</iconset>
   </property>
   <property name="locale">
@@ -185,7 +185,7 @@
                 <string>X</string>
                </property>
                <property name="icon">
-                <iconset resource="icons/resource.qrc">
+                <iconset>
                  <normaloff>:/Icons/edit-clear-locationbar-ltr.png</normaloff>:/Icons/edit-clear-locationbar-ltr.png</iconset>
                </property>
                <property name="iconSize">
@@ -316,7 +316,7 @@
                 <string>_</string>
                </property>
                <property name="icon">
-                <iconset resource="icons/resource.qrc">
+                <iconset>
                  <normaloff>:/Icons/edit-rename.png</normaloff>:/Icons/edit-rename.png</iconset>
                </property>
                <property name="iconSize">
@@ -336,7 +336,7 @@
                 <string>x</string>
                </property>
                <property name="icon">
-                <iconset resource="icons/resource.qrc">
+                <iconset>
                  <normaloff>:/Icons/edit-delete.png</normaloff>:/Icons/edit-delete.png</iconset>
                </property>
                <property name="iconSize">
@@ -418,7 +418,7 @@
              <string>C</string>
             </property>
             <property name="icon">
-             <iconset resource="icons/resource.qrc">
+             <iconset>
               <normaloff>:/Icons/edit-clear-list.png</normaloff>:/Icons/edit-clear-list.png</iconset>
             </property>
             <property name="iconSize">
@@ -441,7 +441,7 @@
              <string>S</string>
             </property>
             <property name="icon">
-             <iconset resource="icons/resource.qrc">
+             <iconset>
               <normaloff>:/Icons/document-save.png</normaloff>:/Icons/document-save.png</iconset>
             </property>
             <property name="iconSize">
@@ -467,7 +467,7 @@
              <string>P</string>
             </property>
             <property name="icon">
-             <iconset resource="icons/resource.qrc">
+             <iconset>
               <normaloff>:/Icons/edit-undo.png</normaloff>:/Icons/edit-undo.png</iconset>
             </property>
             <property name="iconSize">
@@ -493,7 +493,7 @@
              <string>N</string>
             </property>
             <property name="icon">
-             <iconset resource="icons/resource.qrc">
+             <iconset>
               <normaloff>:/Icons/edit-redo.png</normaloff>:/Icons/edit-redo.png</iconset>
             </property>
             <property name="iconSize">
@@ -523,7 +523,7 @@
              <string>X</string>
             </property>
             <property name="icon">
-             <iconset resource="icons/resource.qrc">
+             <iconset>
               <normaloff>:/Icons/edit-clear-locationbar-ltr.png</normaloff>:/Icons/edit-clear-locationbar-ltr.png</iconset>
             </property>
             <property name="iconSize">
@@ -645,7 +645,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="icons/resource.qrc">
+               <iconset>
                 <normaloff>:/Icons/media-skip-backward.png</normaloff>:/Icons/media-skip-backward.png</iconset>
               </property>
               <property name="iconSize">
@@ -668,7 +668,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="icons/resource.qrc">
+               <iconset>
                 <normaloff>:/Icons/media-playback-start.png</normaloff>:/Icons/media-playback-start.png</iconset>
               </property>
               <property name="iconSize">
@@ -697,7 +697,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="icons/resource.qrc">
+               <iconset>
                 <normaloff>:/Icons/media-playback-stop.png</normaloff>:/Icons/media-playback-stop.png</iconset>
               </property>
               <property name="iconSize">
@@ -720,7 +720,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="icons/resource.qrc">
+               <iconset>
                 <normaloff>:/Icons/media-skip-forward.png</normaloff>:/Icons/media-skip-forward.png</iconset>
               </property>
               <property name="iconSize">
@@ -753,7 +753,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="icons/resource.qrc">
+               <iconset>
                 <normaloff>:/Icons/audio-volume-high.png</normaloff>:/Icons/audio-volume-high.png</iconset>
               </property>
               <property name="iconSize">
@@ -857,7 +857,7 @@
      <x>0</x>
      <y>0</y>
      <width>792</width>
-     <height>21</height>
+     <height>28</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuActions">
@@ -903,44 +903,15 @@
     <addaction name="separator"/>
     <addaction name="actionAbout_Gereqi"/>
    </widget>
-   <widget class="QMenu" name="menuMode">
-    <property name="title">
-     <string>Mode</string>
-    </property>
-    <widget class="QMenu" name="menuRepeat">
-     <property name="title">
-      <string>Repeat</string>
-     </property>
-     <addaction name="actionRptOff"/>
-     <addaction name="actionRptTrack"/>
-     <addaction name="actionRptAlbum"/>
-     <addaction name="actionRptPlaylist"/>
-    </widget>
-    <widget class="QMenu" name="menuRandom">
-     <property name="title">
-      <string>Random</string>
-     </property>
-     <addaction name="actionRndOff"/>
-     <addaction name="actionRndTrack"/>
-     <addaction name="actionRndAlbum"/>
-     <addaction name="separator"/>
-     <addaction name="actionFavor"/>
-    </widget>
-    <addaction name="menuRepeat"/>
-    <addaction name="menuRandom"/>
-   </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
      <string>Tools</string>
     </property>
-    <addaction name="actionEqualiser"/>
-    <addaction name="separator"/>
     <addaction name="actionUpdate_Collection"/>
     <addaction name="actionRescan_Collection"/>
    </widget>
    <addaction name="menuActions"/>
    <addaction name="menuPlaylist"/>
-   <addaction name="menuMode"/>
    <addaction name="menuTools"/>
    <addaction name="menuSettings"/>
    <addaction name="menuHelp"/>
@@ -998,7 +969,7 @@
   </action>
   <action name="actionClear">
    <property name="icon">
-    <iconset resource="icons/resource.qrc">
+    <iconset>
      <normaloff>:/Icons/edit-clear-list.png</normaloff>:/Icons/edit-clear-list.png</iconset>
    </property>
    <property name="text">
@@ -1007,7 +978,7 @@
   </action>
   <action name="actionSave_2">
    <property name="icon">
-    <iconset resource="icons/resource.qrc">
+    <iconset>
      <normaloff>:/Icons/document-save.png</normaloff>:/Icons/document-save.png</iconset>
    </property>
    <property name="text">

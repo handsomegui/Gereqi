@@ -1074,12 +1074,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         if first is True:
             self.next_trktbl_bttn.setEnabled(False)
-     
-    @pyqtSignature("")
-    def on_actionEqualiser_activated(self):
-        dialog = Equaliser(self)
-        dialog.show()
-        
+            
     @pyqtSignature("")
     def on_menuTools_aboutToShow(self):
         """
