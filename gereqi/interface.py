@@ -476,7 +476,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             from audiocd import AudioCD
         except:
             print("Probably missing python-cddb")
-            self.play_cd_actn.setEnabled(False)
+            self.play_cd_actn.setVisible(False)
             
             
     @pyqtSignature("QString")  
