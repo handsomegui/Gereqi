@@ -879,7 +879,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 if filt_time is None:
                     albums = self.media_db.get_albums(artist)
                 else:
-                    albums = self.media_db.get_albums_timed(artist, filt_time)                
+                    albums = self.media_db.get_albums_timed(artist, filt_time)
+                    
+                albums.sort()                    
                 for cnt in range(len(albums)):      
                     album = QTreeWidgetItem([albums[cnt]])
                     album.setChildIndicatorPolicy(0)
