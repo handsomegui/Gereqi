@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+from PyQt4.QtCore import QString
 import CDDB
 import DiscID
 import cdrom
@@ -45,8 +47,12 @@ class AudioCD:
             secs = timings [trk] % 60
             time_now = "%02d:%02d" % (minu, secs)
             f_name = "cdda://%s" % (trk+1)
-            now = [read_info['TTITLE%d' % trk], art, alb, year, \
-                   read_info['DGENRE' ], trk+1, time_now, 44100, f_name ]
-            items.append(now)
+
+            now = {"Title":read_info['TTITLE%d' % trk], "Artist": art, 
+                   "Album": alb, "Year": year, "Genre": read_info['DGENRE'], 
+                   "Track": QString("%02u" % (trk+1)), "Length": time_now, 
+                   "Bitrate": QString("%02u" % 44100), "FileName": f_name}
             
+            items.append((f_name, now))
+
         return items

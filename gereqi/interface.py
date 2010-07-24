@@ -78,7 +78,6 @@ class Playlist:
         for trk in tracks:
             # This is for adding a track which has info attached in a tuple
             if isinstance(trk, tuple):
-                print trk
                 self.add_to_playlist(trk[0], trk[1])
             else:
                 self.add_to_playlist(trk, None)        
@@ -93,26 +92,27 @@ class Playlist:
         # This allows to manually put in info for things we know
         # mutagen cannot handle things like urls for podcasts
         self.ui_main.clear_trktbl_bttn.setEnabled(True)
-        if info is None:
+        metadata = info
+        if metadata is None:
             # see if the track is already in db
-            info = self.ui_main.media_db.get_info(file_name)
-            if info is None:
+            metadata = self.ui_main.media_db.get_info(file_name)
+            if metadata is None:
                 # get the info using the tag-extractor module
-                info = self.ui_main.meta.extract(str(file_name))
-                if info is None:
+                metadata = self.ui_main.meta.extract(str(file_name))
+                if metadata is None:
                     return
                 else:       
-                    trk = QString("%1").arg(info[5].toInt()[0], 2, 10, QChar('0'))
-                    metadata = {"Track": trk,  "Title": info[0],
-                                "Artist": info[1], "Album": info[2],
-                                "Year":info[3], "Genre": info[4],
-                                "Length": info[6], "Bitrate": info[7], 
+                    trk = QString("%1").arg(metadata[5].toInt()[0], 2, 10, QChar('0'))
+                    metadata = {"Track": trk,  "Title": metadata[0],
+                                "Artist": metadata[1], "Album": metadata[2],
+                                "Year":metadata[3], "Genre": metadata[4],
+                                "Length": metadata[6], "Bitrate": metadata[7], 
                                 "FileName": file_name}
             else:
-                trk = QString("%1").arg(info[6].toInt()[0], 2,10, QChar('0'))
-                metadata = {'Track': trk, "Title": info[1], "Artist": info[2], 
-                            "Album": info[3], "Year": info[4], "Genre": info[5],
-                            "Length": info[7], "Bitrate": info[8], 
+                trk = QString("%1").arg(metadata[6].toInt()[0], 2,10, QChar('0'))
+                metadata = {'Track': trk, "Title": metadata[1], "Artist": metadata[2], 
+                            "Album": metadata[3], "Year": metadata[4], "Genre": metadata[5],
+                            "Length": metadata[7], "Bitrate": metadata[8], 
                             "FileName": file_name}
                                     
         row = self.ui_main.track_tbl.rowCount()
@@ -311,7 +311,7 @@ class Track:
                         if self.ui_main.play_type_bttn.isChecked() is True:
                             file_list = self.ui_main.playlisting.gen_track_list()
                             track = [trk for trk in file_list
-                                            if trk not in self.ui_main.player.recently_played]
+                                     if trk not in self.ui_main.player.recently_played]
                             if len(track) > 0:
                                 track = choice(track)
                                 
@@ -474,6 +474,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def __audiocd_setup(self):
         try:
             from audiocd import AudioCD
+            self.acd = AudioCD()
         except:
             print("Probably missing python-cddb")
             self.play_cd_actn.setVisible(False)
@@ -721,11 +722,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if self.track_tbl.rowCount() < 1:
             return
         
-        play_name = QInputDialog.getText(\
-            None,
-            QString("Save Playlist"),
-            QString("Enter a name for the playlist:"),
-            QLineEdit.Normal)
+        play_name = QInputDialog.getText(None,
+                                         QString("Save Playlist"),
+                                         QString("Enter a name for the playlist:"),
+                                         QLineEdit.Normal)
             
         if play_name[1] is True:
             check = self.media_db.playlist_tracks(play_name[0])
@@ -734,10 +734,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     QString("Overwrite Playlist?"),
                     QString("""A playlist named '%s' already exists. Do you want to overwrite it?"""  
                                 % play_name[0]),
-                            QMessageBox.StandardButtons(\
-                                QMessageBox.Cancel | \
-                                QMessageBox.No | \
-                                QMessageBox.Yes))
+                                QMessageBox.StandardButtons(
+                                    QMessageBox.Cancel | 
+                                    QMessageBox.No | 
+                                    QMessageBox.Yes)
+                            )
                 
                 if msg == QMessageBox.Cancel:
                     return
@@ -951,10 +952,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         add tracks from cd
         """
-        acd = AudioCD()
-        cd_tracks = acd.get_info()
-        tracks = [(trk[-1],  trk) for trk in cd_tracks]
-        self.playlisting.add_list_to_playlist(tracks)                
+        cd_tracks = self.acd.get_info()
+        # FIXME: doesn't work. Lack of info
+        self.playlisting.add_list_to_playlist(cd_tracks)                
         self.clear_trktbl_bttn.setEnabled(True)
                 
     @pyqtSignature("")
