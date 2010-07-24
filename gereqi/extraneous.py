@@ -40,14 +40,18 @@ class Extraneous:
         result = QString("%1-%2").arg(things[0]).arg(things[1])
         return result
 
-    def get_cover_source(self, artist, album, check=True):
+    def get_cover_source(self, artist, album, check=True, fname=None):
         cover_dir = QString("%1/.gereqi/album-art/").arg(getenv["HOME"])
         cover = QString("%1%2.jpg").arg(cover_dir).arg(self.__filenamer(artist, album))
         
+        # Check=False just provides a filename creator. Used when track has
+        # changed but not the album
         if check is True:
+            # Place to save the covers doesn't exist
             if QDir(cover_dir).exists() is False:
                 QDir().mkdir(cover_dir)
-            elif QFile(cover).exists() is True:
+            
+            if QFile(cover).exists() is True:
                 return QString("file://%1").arg(cover)
             else:                        
                 web_info = Webinfo()
