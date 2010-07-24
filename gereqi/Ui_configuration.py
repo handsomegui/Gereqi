@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/gereqi/configuration.ui'
+# Form implementation generated from reading ui file 'configuration.ui'
 #
-# Created: Mon Jul 19 22:37:04 2010
-#      by: PyQt4 UI code generator 4.7.3
+# Created: Sat Jul 24 17:42:52 2010
+#      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -190,9 +190,6 @@ class Ui_settings_dialog(object):
         self.verticalLayout_5.addWidget(self.tabWidget)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.pushButton = QtGui.QPushButton(settings_dialog)
-        self.pushButton.setObjectName("pushButton")
-        self.horizontalLayout.addWidget(self.pushButton)
         spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem3)
         self.buttonBox = QtGui.QDialogButtonBox(settings_dialog)
@@ -233,15 +230,4 @@ class Ui_settings_dialog(object):
         self.label_8.setText(QtGui.QApplication.translate("settings_dialog", "Username:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_9.setText(QtGui.QApplication.translate("settings_dialog", "Password:", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_6), QtGui.QApplication.translate("settings_dialog", "Collection", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton.setText(QtGui.QApplication.translate("settings_dialog", "Defaults", None, QtGui.QApplication.UnicodeUTF8))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtGui.QApplication(sys.argv)
-    settings_dialog = QtGui.QDialog()
-    ui = Ui_settings_dialog()
-    ui.setupUi(settings_dialog)
-    settings_dialog.show()
-    sys.exit(app.exec_())
 

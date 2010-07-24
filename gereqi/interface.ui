@@ -899,8 +899,6 @@
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionHelp"/>
-    <addaction name="separator"/>
     <addaction name="actionAbout_Gereqi"/>
    </widget>
    <widget class="QMenu" name="menuTools">

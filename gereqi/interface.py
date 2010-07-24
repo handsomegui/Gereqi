@@ -840,16 +840,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.play_bttn.setChecked(True) 
         self.play_action.setChecked(True)
         
-    @pyqtSignature("")
-    def on_actionHelp_activated(self):
-        """
-        Slot documentation goes here.
-        """
-        # TODO: not implemented yet
-        QMessageBox.information(None,
-            QString("Help"),
-            QString("""Boo!"""))
-
     @pyqtSignature("QTreeWidgetItem*")
     def on_collect_tree_itemExpanded(self, item):
         """

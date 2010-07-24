@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'interface.ui'
 #
-# Created: Sat Jul 24 17:31:25 2010
+# Created: Sat Jul 24 17:40:21 2010
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -457,8 +457,6 @@ class Ui_MainWindow(object):
         self.menuCurrent.addAction(self.actionLoad)
         self.menuPlaylist.addAction(self.menuCurrent.menuAction())
         self.menuSettings.addAction(self.actionConfigure)
-        self.menuHelp.addAction(self.actionHelp)
-        self.menuHelp.addSeparator()
         self.menuHelp.addAction(self.actionAbout_Gereqi)
         self.menuTools.addAction(self.actionUpdate_Collection)
         self.menuTools.addAction(self.actionRescan_Collection)
