@@ -956,23 +956,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     @pyqtSignature("")
     def on_play_cd_actn_triggered(self):
         """
-        Slot documentation goes here.
+        add tracks from cd
         """
-        check = QMessageBox.question(None,
-            QString("Play Audio-CD?"),
-            QString("""Playback of CDs works up to a point at the moment. 
-            Until Gstreamer-10.26 is released this situation will not change.  
-            You can give it a try anyway."""),
-            QMessageBox.StandardButtons(\
-                QMessageBox.No | \
-                QMessageBox.Yes))        
-        
-        if check == QMessageBox.Yes:
-            acd = AudioCD()
-            cd_tracks = acd.get_info()
-            tracks = [(trk[-1],  trk) for trk in cd_tracks]
-            self.playlisting.add_list_to_playlist(tracks)                
-            self.clear_trktbl_bttn.setEnabled(True)
+        acd = AudioCD()
+        cd_tracks = acd.get_info()
+        tracks = [(trk[-1],  trk) for trk in cd_tracks]
+        self.playlisting.add_list_to_playlist(tracks)                
+        self.clear_trktbl_bttn.setEnabled(True)
                 
     @pyqtSignature("")
     def on_save_trktbl_bttn_clicked(self):
