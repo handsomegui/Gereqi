@@ -31,6 +31,7 @@ class Configuration(QDialog, Ui_settings_dialog):
     """
     Class documentation goes here.
     """
+    
     def __init__(self, parent = None, **args):
         """
         Constructor
@@ -40,8 +41,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.setupUi(self)
         self.__mysql_avail()
         self.sets_db = Settings()
-        self.__fileview_setup() 
-        
+        self.__fileview_setup()         
         self.__interface_setup()
         
     def __mysql_avail(self):
@@ -116,7 +116,6 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.sets_db.add_interface_setting("coversize", cover_size)
         self.sets_db.add_interface_setting("remember", remember)
         self.sets_db.add_interface_setting("context-change", context)
-        
 
         recursive_dirs = true_false(self.scan_recursively.isChecked())
         watch_dirs = true_false(self.watch_folders.isChecked())
@@ -181,4 +180,10 @@ class Configuration(QDialog, Ui_settings_dialog):
             self.mysql_config.setEnabled(False)
         elif val == "MYSQL":
             self.mysql_config.setEnabled(True)
+            
+    @pyqtSignature("bool")
+    def on_scan_recursively_toggled(self, check):
+        # TODO: set the myqdirmodel in a certain mode
+        print check
+        self.dir_model.recursive = check
             

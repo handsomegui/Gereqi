@@ -21,7 +21,8 @@ This file contains all the necessary threads for the app
 to make it easier to manage
 """
 
-from PyQt4.QtCore import QThread, QString, SIGNAL, Qt, QStringList, pyqtSignal, QDir
+from PyQt4.QtCore import QThread, QString, SIGNAL, Qt, QStringList, \
+pyqtSignal, QDir
 from urllib import pathname2url
 from time import time, sleep
 
@@ -44,7 +45,7 @@ class Getinfo(QThread):
     from Amazon
     """
     def __init__(self, parent=None):
-        QThread.__init__(self, parent = None)
+        QThread.__init__(self, parent)
         self.ui_main = parent
         
     def set_values(self, **params):

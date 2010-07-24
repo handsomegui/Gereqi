@@ -24,35 +24,49 @@ from PyQt4.QtCore import Qt, pyqtSignal, QModelIndex
 class MyQDirModel(QDirModel):
     needsRefresh = pyqtSignal(QModelIndex)
     check_list = []
+    recursive = True
+    
+    def __partial_check(self, dir_now):
+        """
+        Checks to see if a child-dir is checked
+        """
+        for chk in self.check_list[0]:
+            if (chk.contains(dir_now)) and (dir_now != chk):
+                return Qt.PartiallyChecked
        
     def data(self, index, role = Qt.DisplayRole):
         if index.isValid() and (index.column() == 0) and (role == Qt.CheckStateRole):
             dir_now = self.filePath(index)
-            par_dir = dir_now.split("/")[:-1].join("/")
-            # the item is checked only if we have stored its path
-            if dir_now in self.check_list[1]:
-                return Qt.Unchecked
-            elif par_dir in self.check_list[1]:
-                return Qt.Unchecked                 
+            
+            partial = self.__partial_check(dir_now)
+            if partial is not None:
+                        return partial
             elif dir_now in self.check_list[0]:
                 return Qt.Checked
+            
+            elif self.recursive is True:
+                par_dir = dir_now.split("/")[:-1].join("/")
+                # the item is checked only if we have stored its path
+                if dir_now in self.check_list[1]:
+                    return Qt.Unchecked
+                elif par_dir in self.check_list[1]:
+                    return Qt.Unchecked                 
+                    
+                else:                    
+                    # Recursively go down directory from parent to 
+                    # see if it should be included
+                    checker = dir_now.split("/")
+                    for val in range(1, len(checker)):
+                        dir_part = checker[:val+1].join("/")
+                        if dir_part in self.check_list[0]:
+                            return Qt.Checked 
+                    # Nothing found
+                    return Qt.Unchecked
                 
             else:
-                # Checks to see if a child-dir is checked
-                for chk in self.check_list[0]:
-                    if (chk.contains(dir_now)) and (dir_now != chk):
-                        return Qt.PartiallyChecked
-                        
-                # Recursively go down directory from parent to 
-                # see if it should be included
-                checker = dir_now.split("/")
-                for val in range(1, len(checker)):
-                    dir_part = checker[:val+1].join("/")
-                    if dir_part in self.check_list[0]:
-                        return Qt.Checked 
-                # Nothing found
                 return Qt.Unchecked
-                
+                    
+               
         # Standard QDirModel functionality        
         else:                
             return QDirModel.data(self, index, role)        
@@ -72,19 +86,22 @@ class MyQDirModel(QDirModel):
         Things to do on user made changes
         """
         # user trying to do something to the checkbox
-        if index.isValid() and (index.column() == 0) and role == Qt.CheckStateRole:
-            print self.check_list
+        if index.isValid() and (index.column() == 0) and (role == Qt.CheckStateRole):
+            dir_now = self.filePath(index)        
+            print dir_now, self.check_list, self.recursive
             # store checked paths, remove unchecked paths
-            if value == Qt.Checked:
-                dir_now = self.filePath(index)
-                
+            if value == Qt.Checked:               
+                if self.recursive is False:
+                    if dir_now not in self.check_list[0]:
+                        self.check_list[0].append(dir_now)                        
+                    return True
+                                
                 tmp_list = []
                 for dir in self.check_list[0]:
                     if dir.contains(dir_now):
                         tmp_list.append(dir)                        
                 for dir in tmp_list:
-                    self.check_list[0].remove(dir)
-                    
+                    self.check_list[0].remove(dir)                   
                     
                 # No point adding if it's root dir is already there
                 checker = dir_now.split("/")
@@ -109,12 +126,10 @@ class MyQDirModel(QDirModel):
                 if there is False:
                     self.check_list[0].append(self.filePath(index))
                 self.needsRefresh.emit(index)
-                return True
-            
+                return True           
             
             # Want to exclude dir
             else:
-                dir_now = self.filePath(index)
                 par_dir = dir_now.split("/")[:-1].join("/")                
                 tmp_list = (list(self.check_list[0]), list(self.check_list[1]))
                 
@@ -134,4 +149,4 @@ class MyQDirModel(QDirModel):
          
         # Standard QDirModel functionality
         else:
-            return QDirModel.setData(self, index, value, role);
+            return QDirModel.setData(self, index, value, role)
