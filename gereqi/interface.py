@@ -23,16 +23,12 @@ from random import choice
 import time
 
 from tagging import Tagging
-from threads import Getinfo, Getwiki, Builddb, Finishers, \
-Watcher, DeleteFiles
-
+from threads import Getinfo, Getwiki, Builddb, Finishers, Watcher, DeleteFiles
 from Ui_interface import Ui_MainWindow
 from equaliser import Equaliser
 from configuration import Configuration
-
 from extraneous import Extraneous
 from extrawidgets import SetupExtraWidgets, WidgetManips
-
 from backend import AudioBackend
 from settings import Settings
 from collection2 import CollectionDb
@@ -52,13 +48,14 @@ class Playlist:
         order that appears to work)
         """
         # Finds the sorting status of the playlist
-        self.sort_order = self.ui_main.track_tbl.horizontalHeader().sortIndicatorOrder()
-        self.sort_pos = self.ui_main.track_tbl.horizontalHeader().sortIndicatorSection()
+        hdr = self.ui_main.track_tbl.horizontalHeader()
+        self.sort_order = hdr.sortIndicatorOrder()
+        self.sort_pos = hdr.sortIndicatorSection()
         fname_pos = self.header_search(mode)
         
         # Not the default FileName+ascending sort
         if (self.sort_pos != fname_pos) or (self.sort_order != 0) :
-            self.ui_main.track_tbl.horizontalHeader().setSortIndicator(fname_pos, 0)
+            hdr.setSortIndicator(fname_pos, 0)
             
     def __unsort(self):
         """
@@ -221,6 +218,9 @@ class Playlist:
             self.ui_main.track_tbl.removeRow(cnt)
             
     def gen_full_list(self):
+        """
+        Get all the info in the playlist
+        """
         rows = self.ui_main.track_tbl.rowCount()
         columns = self.ui_main.track_tbl.columnCount()
         headers = [self.ui_main.track_tbl.horizontalHeaderItem(cnt).text()
@@ -245,6 +245,9 @@ class Playlist:
         self.tracknow_colourise(self.current_row())
         
     def gen_track_list(self):
+        """
+        Get a list of filenames in playlist
+        """
         rows = self.ui_main.track_tbl.rowCount()
         trk_col = self.header_search("FileName")
         tracks = []
@@ -360,14 +363,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                                 "nowart":None, "nowalb":None, 
                                 "title":None, "oldtit":None} 
         self.old_pos = 0
-        self.locale = ".com"
+        # TODO: do not hardcode these formats
         self.audio_formats = ["flac", "mp3", "ogg",  "m4a"]
         self.format_filter = ["*.ogg", "*.flac", "*.mp3",  "*.m4a"]
-        self.colours = {
-           "odd": QColor(220, 220, 220, 128), 
-           "even": QColor(255, 255, 255), 
-           "now": QColor(128, 184, 255, 128), 
-           "search": QColor(255, 128, 128, 128)}
+        self.colours = {"odd": QColor(220, 220, 220, 128), 
+                       "even": QColor(255, 255, 255), 
+                       "now": QColor(128, 184, 255, 128), 
+                       "search": QColor(255, 128, 128, 128)}
            
         QMainWindow.__init__(self, parent)
         Ui_MainWindow.__init__(self)
@@ -402,8 +404,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.collect_tree_hdr.sectionClicked.connect(self.__collection_sort)
         self.html_thread.got_wiki.connect(self.finishes.set_wiki)
         self.build_db_thread.progress.connect(self.stat_prog.setValue)
-        self.del_thread.deleted.connect(self.wdgt_manip.setup_db_tree)
-        
+        self.del_thread.deleted.connect(self.wdgt_manip.setup_db_tree)        
         self.info_thread.got_info.connect(self.__bodger)
         # Cannot do this for some reason
 #        self.info_thread.got_info.connect(self.info_view.setHtml(html))
@@ -440,7 +441,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         the filename is put into a list. This list checked every 60secs
         and fed into the DB
         """
-        self.del_thread.set_values(deletions)        
+        self.del_thread.set_values(deletions)
         self.del_thread.start()
             
     def __files_created(self, creations):

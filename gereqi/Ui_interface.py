@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'interface.ui'
 #
-# Created: Sat Jul 24 17:40:21 2010
+# Created: Sat Jul 24 22:24:33 2010
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -553,4 +553,4 @@ class Ui_MainWindow(object):
         self.actionEqualiser.setText(QtGui.QApplication.translate("MainWindow", "Equaliser", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
-import icons.resource_rc
+import resource_rc

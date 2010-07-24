@@ -1,11 +1,11 @@
 Package: Gereqi
-Version: 0.3.9-2
+Version: 0.4.0-rc1
 Section: multimedia
 Priority: optional
 Architecture: all
 Essential: no
-Depends: python-qt4 (>= 4.5.0), python-lxml, python-beautifulsoup, python-gst0.10, python-cddb, python-mutagen
-Recommends: gstreamer0.10-plugins-ugly, gstreamer0.10-plugins-bad
+Depends: python-qt4 (>= 4.5.0), python-gst0.10, python-mutagen
+Recommends: gstreamer0.10-plugins-ugly, gstreamer0.10-plugins-bad, python-cddb 
 Installed-Size: 300
 Maintainer: Jonathan Noble <jonnobleuk@gmail.com>
 Homepage: http://code.google.com/p/gereqi/
