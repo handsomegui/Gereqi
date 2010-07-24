@@ -37,7 +37,8 @@ from backend import AudioBackend
 from settings import Settings
 from collection2 import CollectionDb
 
-WATCHTIME = 30
+# The folder watcher poll-time in seconds
+WATCHTIME = 30 
 
 
 class Playlist:
