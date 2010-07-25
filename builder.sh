@@ -22,5 +22,5 @@ cp -v build/lib*/gereqi/*   debs/usr/local/lib/python2.6/dist-packages/gereqi/
 cp -v gereqi/data/gereqi.desktop    debs/usr/share/applications/
 cp -v gereqi/data/gereqi.png    debs/usr/share/pixmaps/
 
-dpkg -b debs/ "$DEBNAME"
+dpkg -b debs/ ${DEBNAME}.deb
 
