@@ -716,7 +716,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.clear_trktbl_bttn.setEnabled(False)
         
     @pyqtSignature("")
-    def on_actionSave_2_triggered(self):
+    def on_actionSave_triggered(self):
         """
         Save current playlist
         """
