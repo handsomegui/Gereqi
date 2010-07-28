@@ -713,6 +713,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.play_hist.update(tracks)
         self.playlisting.clear()
         self.prev_trktbl_bttn.setEnabled(True)
+        self.actionUndo.setEnabled(True)
         self.clear_trktbl_bttn.setEnabled(False)
         
     @pyqtSignature("")
@@ -761,6 +762,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.on_actionClear_triggered()
         self.search_trktbl_edit.setFocus()
         self.next_trktbl_bttn.setEnabled(False)
+        self.actionRedo.setEnabled(False)
         self.player.recently_played = []
     
     @pyqtSignature("QString")
@@ -1045,14 +1047,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         self.playlisting.clear()
 
-        if PlaylistHistory.position < len(PlaylistHistory.stack) :
+        if PlaylistHistory.position < len(PlaylistHistory.stack):
             self.next_trktbl_bttn.setEnabled(True)
+            self.actionRedo.setEnabled(True)
         tracks, last = self.play_hist.last_list()
         self.playlisting.add_list_to_playlist(tracks)
         self.clear_trktbl_bttn.setEnabled(True)
         
         if last is True:
             self.prev_trktbl_bttn.setEnabled(False)
+            self.actionUndo.setEnabled(False)
         
     @pyqtSignature("bool")
     def on_next_trktbl_bttn_clicked(self, checked):
@@ -1062,12 +1066,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         self.playlisting.clear()
         self.prev_trktbl_bttn.setEnabled(True)
+        self.actionUndo.setEnabled(True)
         tracks, first = self.play_hist.next_list()
         self.playlisting.add_list_to_playlist(tracks)
         self.clear_trktbl_bttn.setEnabled(True)
         
         if first is True:
             self.next_trktbl_bttn.setEnabled(False)
+            self.actionRedo.setEnabled(False)
             
     @pyqtSignature("")
     def on_menuTools_aboutToShow(self):
@@ -1110,6 +1116,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Because of the '0' this seperate method is needed
         """
         self.filesystem_tree.resizeColumnToContents(0)
+        
+    @pyqtSignature("")
+    def on_actionUndo_triggered(self):
+        self.prev_trktbl_bttn.click()
+        
+    @pyqtSignature("")
+    def on_actionRedo_triggered(self):
+        self.next_trktbl_bttn.click()
             
 #######################################
 #######################################
