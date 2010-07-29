@@ -362,7 +362,7 @@ class CollectionDb:
     def playlist_delete(self, name):
         query = '''DELETE FROM playlist
                         WHERE name=?'''
-        self. __execute_write(query, (name, ))
+        self.__execute_write(query, (name, ))
 
     def search_by_titandart(self, art, tit):
         args = (art, tit)

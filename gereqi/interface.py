@@ -966,7 +966,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Based on what is in the playlist and chosen name, it'll
         get put into the database
         """
-        self.on_actionSave_2_triggered()
+        self.on_actionSave_triggered()
             
     @pyqtSignature("QTreeWidgetItem*, int")
     def on_playlist_tree_itemDoubleClicked(self, item, column):
