@@ -63,7 +63,7 @@ class CollectionDb:
                 self.__pragma()
             self.__setup_tables()
         else:
-            print "DATABASE ERROR"
+            print "DATABASE ERROR",self.db_type
         
     def __setup_tables(self):
         if self.db_type == "SQLITE":
@@ -88,6 +88,7 @@ class CollectionDb:
                     file_name TEXT
                     )''']      
         elif self.db_type == "MYSQL":
+            # Not sure if playlist should have a primary key
             tables = ['''CREATE TABLE IF NOT EXISTS media (
                                 file_name    VARCHAR(255) ,
                                 title   VARCHAR(50),
@@ -105,9 +106,8 @@ class CollectionDb:
                                 ) DEFAULT CHARSET=utf8''', 
                             '''CREATE TABLE IF NOT EXISTS playlist (
                                 name VARCHAR(255),
-                                file_name VARCHAR(255),
-                                PRIMARY KEY (name)
-                                ) DEFAULT CHARSET=utf8''']  
+                                file_name VARCHAR(255)
+                                ) DEFAULT CHARSET=utf8''']
         for table in tables:
             self.__query_execute(table)            
             
@@ -333,8 +333,15 @@ class CollectionDb:
             return
         
     def playlist_add(self, *params):
-        query = '''INSERT INTO playlist 
+        if self.db_type == "SQLITE":
+            query = '''INSERT OR REPLACE INTO playlist 
+                                VALUES (?,?)'''
+        # FIXME: for some reason can only add 1 track out of many
+        # when using mysql
+        elif self.db_type == "MYSQL":
+            query = '''REPLACE INTO playlist 
                             VALUES (?,?)'''
+
         self.__execute_write(query, params)
         
     def playlist_list(self):
