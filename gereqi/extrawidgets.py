@@ -144,12 +144,20 @@ class SetupExtraWidgets:
         self.ui_main.collect_tree_hdr = self.ui_main.collect_tree.header()
         self.ui_main.collect_tree_hdr.setClickable(True)
         
+        
         # Disables the webView link-clicks as we want to manually handle them
         self.ui_main.info_view.page().setLinkDelegationPolicy(2)
         self.ui_main.wiki_view.page().setLinkDelegationPolicy(2)
+        
+        # FIXME: will not work in PyQT <4.6 i.e. Ubuntu 9.10
         # The images are scaled smoothly using billinear interp and 
         # antialias edges of primitives(?)
-        self.ui_main.info_view.setRenderHint(1|4)
+        try:
+            self.ui_main.info_view.setRenderHint(1|4)
+        except AttributeError,e:
+            print("WARNING: it's likely you are using an old \
+            version of PyQt4 which lacks the option to antialias.\
+            This means cover art will look rubbish. Full error:- %s" % e)
 
     def __key_shortcuts(self):
         """
