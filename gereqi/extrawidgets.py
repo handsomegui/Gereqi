@@ -155,9 +155,10 @@ class SetupExtraWidgets:
         try:
             self.ui_main.info_view.setRenderHint(1|4)
         except AttributeError,e:
-            print("WARNING: it's likely you are using an old \
-            version of PyQt4 which lacks the option to antialias.\
-            This means cover art will look rubbish. Full error:- %s" % e)
+            print('''WARNING: it's likely you are using an old\n
+            version of PyQt4 which lacks the option to antialias\n
+            This means cover art will look rubbish.\n
+            Full error:- %s''' % e)
 
     def __key_shortcuts(self):
         """
