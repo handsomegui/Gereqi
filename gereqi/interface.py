@@ -643,6 +643,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         value = (value / 100.0) ** 2
         self.player.audio_object.set_volume(value)
     
+    #TODO: need to refresh the saved playlists
     @pyqtSignature("")
     def on_actionConfigure_triggered(self):
         """
@@ -655,6 +656,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.__setup_watcher()
             self.media_db.restart_db()
             self.wdgt_manip.setup_db_tree()
+            self.wdgt_manip.pop_playlist_view()
             
     @pyqtSignature("")
     def on_actionRescan_Collection_triggered(self):
