@@ -75,7 +75,11 @@ class InfoPage:
         
         for alb in albums:
             cover = extra.get_cover_source(artist, QString(alb))
-            thing = thing.append(tmpl.arg(cover, alb))
+            if cover is not None:
+                thing = thing.append(tmpl.arg(cover, alb))
+            else:
+                thing = thing.append(tmpl.arg("", alb))
+
         html = QString("<p>%1</p>").arg(thing)
         return html
         
