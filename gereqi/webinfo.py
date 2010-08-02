@@ -114,11 +114,9 @@ class Webinfo:
                 srch = "http://www.albumart.org/images/zoom-icon.jpg"
                 html = pre_html.read().split("\n")
                 html = filter(lambda x: srch in x,  html)
-                images = [line.partition('</a><a href="')[2].partition('"')[0] for line in html]
+                images = [line.partition('</a><a href="')[2].partition('"')[0] 
+                          for line in html]
                 if len(images) > 0:
                     img = self.__fetch(images[0])
-                    if img is not None:
+                    if img.info()['Content-type'] == "image/jpeg":
                         return img.read()
-                    
-                else:
-                    return ""

@@ -78,7 +78,7 @@ class InfoPage:
             if cover is not None:
                 thing = thing.append(tmpl.arg(cover, alb))
             else:
-                thing = thing.append(tmpl.arg("", alb))
+                thing = thing.append(tmpl.arg("file://", alb))
 
         html = QString("<p>%1</p>").arg(thing)
         return html
@@ -92,13 +92,16 @@ class InfoPage:
         cover = extra.get_cover_source(QString(params["artist"]), 
                                        QString(params["album"]), 
                                        params["check"])
-#        cover = cover if cover is not None else ""
+        
+        cover = cover if cover is not None else "file://"
+        
         now = HTML.arg("%1").arg(coversize)
         now = now.arg("%2").arg(params["title"])
         now = now.arg("%3").arg(params["artist"])
         now = now.arg("%4").arg(params["album"])
         now = now.arg("%5").arg(cover)
-        now = now.arg("%6").arg(self.__gen_albs(params["artist"], params["albums"]))
+        now = now.arg("%6").arg(self.__gen_albs(params["artist"], 
+                                                params["albums"]))
         return now
         
         
