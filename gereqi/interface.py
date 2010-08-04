@@ -468,7 +468,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
     def __playlist_remembered(self):
         if self.sets_db.get_interface_setting("remember") == "True":
-            tracks = self.media_db.playlist_tracks("##gereqi.remembered##!!")
+            tracks = self.media_db.playlist_tracks("!!##gereqi.remembered##!!")
             if len(tracks) > 0:
                 self.playlisting.add_list_to_playlist(tracks)
                 
