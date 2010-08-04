@@ -676,7 +676,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Closing Down. Maybe some database interaction.
         """
         if self.sets_db.get_interface_setting("remember") == "True":
-            play_name = "##gereqi.remembered##!!"
+            play_name = "!!##gereqi.remembered##!!"
             tracks = self.playlisting.gen_file_list()
             self.media_db.playlist_delete(play_name)
             for trk in tracks:

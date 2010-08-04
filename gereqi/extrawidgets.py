@@ -261,6 +261,7 @@ class WidgetManips:
         for cnt in range(3):
             if cnt == 2:
                 for play in playlists:
+                    # Ignore the auto-save playlist
                     if play == "!!##gereqi.remembered##!!":
                         continue
                     now = QTreeWidgetItem([QString(play)])
