@@ -218,7 +218,8 @@ class Builddb(QThread):
                 self.exit()
                 return
             
-        print("%u of %u tracks scanned in: %0.1f seconds" % (cnt, tracks_total,  (time() - strt)))
+        print("%u of %u tracks scanned in: %0.1f seconds" % (cnt, tracks_total,
+                                                             (time() - strt)))
         self.finished.emit(QString("complete"))
         self.ui_main.build_lock = False
         self.exit()
@@ -266,12 +267,31 @@ class Watcher(QThread, pyinotify.ProcessEvent):
     def __gen_exc_list(self, dirs):
         if dirs is not None:
             return ["^%s" % dir for dir in dirs]
-    
+        
+    def __track_list(self, dir):
+        tracks = []
+        if self.recur is True:
+            for dirpath, dirnames, filenames in os.walk(dir):
+                for fname in filenames:
+                    trk = os.path.join(dirpath, fname)
+                    tracks.append(trk)                            
+        else:
+            for fname in os.listdir(dir):
+                trk = os.path.join(dirpath, fname)
+                tracks.append(trk)
+                
+        return tracks
+        
     def process_IN_CREATE(self, event):
         file_name = event.pathname
-        print file_name
-        if file_name is not None:
-            if file_name not in self.created:            
+        if (file_name is not None) and (file_name not in self.created):
+            # pyinotify will only create just a single instance of
+            # creation, the directory, not it's contained files
+            if os.path.isdir(file_name) is True:
+                tracks = self.__track_list(file_name)
+                for trk in tracks:
+                    self.created.append(trk)
+            else:
                 self.created.append(file_name)
 
     def process_IN_DELETE(self, event):
