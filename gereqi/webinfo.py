@@ -118,5 +118,7 @@ class Webinfo:
                           for line in html]
                 if len(images) > 0:
                     img = self.__fetch(images[0])
-                    if img.info()['Content-type'] == "image/jpeg":
-                        return img.read()
+                    if img is not None:
+                        if img.info()['Content-type'] == "image/jpeg":
+                            return img.read()
+
