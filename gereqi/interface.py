@@ -643,7 +643,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         value = (value / 100.0) ** 2
         self.player.audio_object.set_volume(value)
     
-    #TODO: need to refresh the saved playlists
+    #TODO: not sure if the DB changes are made
+    # i.e going from sqlite to mysql or v'-v'
     @pyqtSignature("")
     def on_actionConfigure_triggered(self):
         """

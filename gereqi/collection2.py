@@ -155,10 +155,10 @@ class CollectionDb:
         Here we add data into the media database
         """
         if self.db_type == "SQLITE":
-            query = '''INSERT OR REPLACE INTO media 
+            query = '''INSERT INTO media 
                             VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''
         elif self.db_type == "MYSQL":
-            query = '''REPLACE INTO media
+            query = '''INSERT IGNORE INTO media
                         VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''
         self.__execute_write(query, tuple(meta))
         
