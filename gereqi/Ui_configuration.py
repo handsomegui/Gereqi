@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'configuration.ui'
 #
-# Created: Fri Aug 27 10:06:24 2010
+# Created: Fri Aug 27 23:42:43 2010
 #      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -132,12 +132,12 @@ class Ui_settings_dialog(object):
         self.horizontalLayout_7 = QtGui.QHBoxLayout()
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
         self.label_5 = QtGui.QLabel(self.mysql_config)
-        self.label_5.setMinimumSize(QtCore.QSize(75, 0))
+        self.label_5.setMinimumSize(QtCore.QSize(65, 0))
         self.label_5.setMaximumSize(QtCore.QSize(100, 16777215))
         self.label_5.setObjectName("label_5")
         self.horizontalLayout_7.addWidget(self.label_5)
         self.mysql_host = QtGui.QLineEdit(self.mysql_config)
-        self.mysql_host.setMinimumSize(QtCore.QSize(200, 0))
+        self.mysql_host.setMinimumSize(QtCore.QSize(150, 0))
         self.mysql_host.setMaximumSize(QtCore.QSize(220, 16777215))
         self.mysql_host.setObjectName("mysql_host")
         self.horizontalLayout_7.addWidget(self.mysql_host)
@@ -155,12 +155,12 @@ class Ui_settings_dialog(object):
         self.horizontalLayout_8 = QtGui.QHBoxLayout()
         self.horizontalLayout_8.setObjectName("horizontalLayout_8")
         self.label_6 = QtGui.QLabel(self.mysql_config)
-        self.label_6.setMinimumSize(QtCore.QSize(75, 0))
+        self.label_6.setMinimumSize(QtCore.QSize(65, 0))
         self.label_6.setMaximumSize(QtCore.QSize(100, 16777215))
         self.label_6.setObjectName("label_6")
         self.horizontalLayout_8.addWidget(self.label_6)
         self.mysql_dbname = QtGui.QLineEdit(self.mysql_config)
-        self.mysql_dbname.setMinimumSize(QtCore.QSize(200, 0))
+        self.mysql_dbname.setMinimumSize(QtCore.QSize(150, 0))
         self.mysql_dbname.setMaximumSize(QtCore.QSize(220, 16777215))
         self.mysql_dbname.setObjectName("mysql_dbname")
         self.horizontalLayout_8.addWidget(self.mysql_dbname)
@@ -206,7 +206,7 @@ class Ui_settings_dialog(object):
         self.verticalLayout_5.addLayout(self.horizontalLayout)
 
         self.retranslateUi(settings_dialog)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         self.database_type.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(settings_dialog)
 
