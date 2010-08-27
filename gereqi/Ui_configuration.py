@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'configuration.ui'
 #
-# Created: Sat Jul 24 17:42:52 2010
-#      by: PyQt4 UI code generator 4.7.2
+# Created: Fri Aug 27 10:06:24 2010
+#      by: PyQt4 UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -13,14 +13,14 @@ class Ui_settings_dialog(object):
     def setupUi(self, settings_dialog):
         settings_dialog.setObjectName("settings_dialog")
         settings_dialog.setWindowModality(QtCore.Qt.WindowModal)
-        settings_dialog.resize(480, 640)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        settings_dialog.resize(400, 600)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(settings_dialog.sizePolicy().hasHeightForWidth())
         settings_dialog.setSizePolicy(sizePolicy)
-        settings_dialog.setMinimumSize(QtCore.QSize(480, 640))
-        settings_dialog.setMaximumSize(QtCore.QSize(480, 640))
+        settings_dialog.setMinimumSize(QtCore.QSize(400, 600))
+        settings_dialog.setMaximumSize(QtCore.QSize(15536, 15536))
         settings_dialog.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedKingdom))
         settings_dialog.setWindowFilePath("")
         self.verticalLayout_5 = QtGui.QVBoxLayout(settings_dialog)
@@ -28,6 +28,12 @@ class Ui_settings_dialog(object):
         self.verticalLayout_5.setMargin(1)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
         self.tabWidget = QtGui.QTabWidget(settings_dialog)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
+        self.tabWidget.setSizePolicy(sizePolicy)
+        self.tabWidget.setMinimumSize(QtCore.QSize(398, 567))
         self.tabWidget.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedKingdom))
         self.tabWidget.setTabPosition(QtGui.QTabWidget.West)
         self.tabWidget.setObjectName("tabWidget")
@@ -200,7 +206,7 @@ class Ui_settings_dialog(object):
         self.verticalLayout_5.addLayout(self.horizontalLayout)
 
         self.retranslateUi(settings_dialog)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         self.database_type.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(settings_dialog)
 
