@@ -174,25 +174,30 @@ class Playlist:
                    for col in range(cols)]
         return headers.index(val)
         
-    #TODO: use native/theme colours for odd/even colours
     def tracknow_colourise(self, now=None):
         """
         Instead of using QTableWidget's selectRow function, 
         set the background colour of each item in a row
         until track changes.
-        """       
+        """
         columns = self.ui_main.track_tbl.columnCount()
         rows = self.ui_main.track_tbl.rowCount()
+        palette = self.ui_main.track_tbl.palette()
+        
         for row in range(rows):
             for col in range(columns):
                 item = self.ui_main.track_tbl.item(row, col)
                 if row != now:
                     if row % 2:
-                        item.setBackgroundColor(self.ui_main.colours["odd"])
+                        # Odd-row
+                        item.setBackgroundColor(palette.alternateBase().color())
                     else:
-                        item.setBackgroundColor(self.ui_main.colours["even"])
+                        # even row
+                        item.setBackgroundColor(palette.base().color())
                 else:
-                    item.setBackgroundColor(self.ui_main.colours["now"])
+                    highlight = palette.highlight().color()
+                    highlight.setAlpha(128)
+                    item.setBackgroundColor(highlight)
                     self.ui_main.track_tbl.selectRow(now)
                         
     def highlighted_track(self):
@@ -360,16 +365,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         self.build_lock = self.delete_lock = False
         self.art_alb = {"oldart":None, "oldalb":None, 
-                                "nowart":None, "nowalb":None, 
-                                "title":None, "oldtit":None} 
+                        "nowart":None, "nowalb":None, 
+                        "title":None, "oldtit":None} 
         self.old_pos = 0
-        # TODO: do not hardcode these formats
+        # FIXME: do not hardcode these formats
         self.audio_formats = ["flac", "mp3", "ogg",  "m4a"]
         self.format_filter = ["*.ogg", "*.flac", "*.mp3",  "*.m4a"]
-        self.colours = {"odd": QColor(220, 220, 220, 128), 
-                       "even": QColor(255, 255, 255), 
-                       "now": QColor(128, 184, 255, 128), 
-                       "search": QColor(255, 128, 128, 128)}
            
         QMainWindow.__init__(self, parent)
         Ui_MainWindow.__init__(self)
@@ -782,6 +783,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # Checks if the search edit isn't empty
         if len(str(srch_str).strip()) > 0:
             rows = []
+            palette = self.track_tbl.palette()
             columns = self.track_tbl.columnCount()
             searched = self.track_tbl.findItems(srch_str, Qt.MatchContains)
             for search in searched:
@@ -790,15 +792,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     rows.append(row)
                     for col in range(columns):
                         item = self.track_tbl.item(row, col)
-                        item.setBackgroundColor(self.colours["search"])
+                        # FIXME: change to system-colour
+                        item.setBackgroundColor(QColor(255, 128, 128, 128))
             for row in range(self.track_tbl.rowCount()):
                 if row not in rows:
                     for col in range(columns):
                         item = self.track_tbl.item(row, col)
                         if row % 2:
-                            item.setBackgroundColor(self.colours["odd"])
+                            item.setBackgroundColor(palette.alternateBase().color())
                         else:
-                            item.setBackgroundColor(self.colours["even"])
+                            item.setBackgroundColor(palette.base().color())
         else:
             self.playlisting.tracknow_colourise()
                 
