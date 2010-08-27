@@ -107,6 +107,7 @@ class Manipulations:
                 if hdr in ["tracknumber", "date", "trkn",  "\xa9day"]:
                     val = 0
                 else:
+                    # FIXME: this may be unnecessarily creating titles to be "unknown"
                     val = "Unknown"
             values.append(val)
             
@@ -147,9 +148,7 @@ class Tagging:
             tags = self.manip.dict_to_list(audio)
         # This is likely due to having to tags at all.
         except ID3NoHeaderError, err:
-            base = path.basename(fname)
-            title = path.splitext(base)[0]
-            tags = [title,  "Unknown Artist", "Unknown Album", 0, "Unknown", 0]
+            tags = ["Unknown",  "Unknown Artist", "Unknown Album", 0, "Unknown", 0]
         except ID3BadUnsynchData, err:
             print("ERROR:%s %s" % (err, fname))
             return
@@ -159,10 +158,10 @@ class Tagging:
             print("ERROR:%s %s" % (err, fname))
             return
         length = self.manip.sec_to_time(round(other.info.length))
-        bitrate = int(round(other.info.bitrate / 1024))
-        
+        bitrate = int(round(other.info.bitrate / 1024))            
         tags.append(length)
         tags.append(bitrate)
+        
         return tags
         
     def __oggflac_extract(self, fname, mode):
@@ -233,6 +232,12 @@ class Tagging:
                 tags = self.__m4a_extract(fname)
             
             if tags is not None:
+                # 'unknown' is the output from mutagen
+                # also to do the conversion here last for other formats
+                if tags[0].lower() == "unknown":
+                    base = path.basename(fname)
+                    tags[0]= path.splitext(base)[0]
+                    
                 year = tags[3]                
                 if isinstance(year, str):
                     if "-" in year:
