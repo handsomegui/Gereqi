@@ -786,14 +786,17 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             palette = self.track_tbl.palette()
             columns = self.track_tbl.columnCount()
             searched = self.track_tbl.findItems(srch_str, Qt.MatchContains)
+            # TODO: make readable
             for search in searched:
                 row = search.row()
                 if row not in rows:
                     rows.append(row)
                     for col in range(columns):
                         item = self.track_tbl.item(row, col)
-                        # FIXME: change to system-colour
-                        item.setBackgroundColor(QColor(255, 128, 128, 128))
+                        orig = palette.highlight().color().getRgb()
+                        new_col = map(lambda x : 255-x, orig)
+                        item.setBackgroundColor(QColor(new_col[0],new_col[1],new_col[2], 128))
+                        
             for row in range(self.track_tbl.rowCount()):
                 if row not in rows:
                     for col in range(columns):
