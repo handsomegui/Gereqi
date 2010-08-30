@@ -4,8 +4,8 @@
 from distutils.core import setup 
 
 setup(name='gereqi', 
-        version='0.4.0-rc2', 
-        description='An Amarok-1.4 clone in PyQt4 and Gstreamer', 
+        version='0.4.0', 
+        description='A music organiser and player.', 
         author='Jonathan Noble',
         author_email='jonnobleuk@gmail.com', 
         url='http://github.com/regomodo/Gereqi', 
