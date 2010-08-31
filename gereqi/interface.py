@@ -415,6 +415,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.wdgt_manip.setup_db_tree()
         self.wdgt_manip.pop_playlist_view() 
         
+        
     def __bodger(self, html):       
         self.info_view.setHtml(html)
         
@@ -1133,7 +1134,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     @pyqtSignature("")
     def on_actionRedo_triggered(self):
         self.next_trktbl_bttn.click()
-            
+
+    def aboutToQuit(self):
+        print "SPAM"
 #######################################
 #######################################
         

@@ -28,7 +28,8 @@ from PyQt4.QtGui import QApplication
 from PyQt4.QtCore import QString
 from gereqi.interface import MainWindow
 import sys
-__version__= "development"  
+__version__= "0.4" 
+
 
 def main():
     """
@@ -40,6 +41,8 @@ def main():
     wnd = MainWindow()
     wnd.show()
     sys.exit(app.exec_())
+    
+
     
 if __name__ == '__main__':
     main()
