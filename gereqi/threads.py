@@ -79,7 +79,6 @@ class Getwiki(QThread):
             result = QString("None")
         
         self.got_wiki.emit(result)
-        self.exit()
         
         
 class Builddb(QThread):
@@ -215,14 +214,12 @@ class Builddb(QThread):
                 print("User terminated scan.")
                 self.finished.emit(QString("cancelled"))
                 self.ui_main.build_lock = False
-                self.exit()
                 return
             
         print("%u of %u tracks scanned in: %0.1f seconds" % (cnt, tracks_total,
                                                              (time() - strt)))
         self.finished.emit(QString("complete"))
         self.ui_main.build_lock = False
-        self.exit()
         
         
 class Watcher(QThread, pyinotify.ProcessEvent):
@@ -339,8 +336,7 @@ class Watcher(QThread, pyinotify.ProcessEvent):
             TypeError: 'NoneType' object is not callable
             """
             if int(time() - self.start_time) > self.timer:
-                self.__poller()         
-        self.exit()
+                self.__poller()
 
 
 class DeleteFiles(QThread):
@@ -366,8 +362,7 @@ class DeleteFiles(QThread):
         # Signals to indicate that items based on
         # DB should probably update
         self.deleted.emit()
-        self.ui_main.delete_lock = False
-        self.exit()       
+        self.ui_main.delete_lock = False       
 
 
 class Finishers:
