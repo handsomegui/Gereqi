@@ -41,6 +41,9 @@
    <string/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_5">
+   <property name="spacing">
+    <number>2</number>
+   </property>
    <property name="sizeConstraint">
     <enum>QLayout::SetMinimumSize</enum>
    </property>
@@ -68,15 +71,18 @@
       <enum>QTabWidget::West</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
        <string>General</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="spacing">
+        <number>4</number>
+       </property>
        <property name="margin">
-        <number>1</number>
+        <number>2</number>
        </property>
        <item>
         <widget class="QGroupBox" name="groupBox">
@@ -84,6 +90,9 @@
           <string>General Options</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="spacing">
+           <number>4</number>
+          </property>
           <property name="margin">
            <number>2</number>
           </property>
@@ -99,6 +108,9 @@
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <property name="spacing">
+             <number>4</number>
+            </property>
             <item>
              <widget class="QLabel" name="label">
               <property name="text">
@@ -136,6 +148,9 @@
           <string>Playlist Window Options</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
+          <property name="spacing">
+           <number>4</number>
+          </property>
           <property name="margin">
            <number>2</number>
           </property>
@@ -176,16 +191,34 @@
        <string>Collection</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_6">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <property name="margin">
+        <number>2</number>
+       </property>
        <item>
         <widget class="QGroupBox" name="groupBox_4">
          <property name="title">
           <string>Collection Folders</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
+          <property name="horizontalSpacing">
+           <number>2</number>
+          </property>
+          <property name="verticalSpacing">
+           <number>4</number>
+          </property>
+          <property name="margin">
+           <number>2</number>
+          </property>
           <item row="0" column="0">
            <widget class="QLabel" name="label_3">
             <property name="text">
              <string>These folders will be scanned for media to make up your collection:</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -234,8 +267,17 @@
           <string>Collection Database</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_8">
+          <property name="spacing">
+           <number>4</number>
+          </property>
+          <property name="margin">
+           <number>2</number>
+          </property>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <property name="spacing">
+             <number>4</number>
+            </property>
             <item>
              <widget class="QLabel" name="label_4">
               <property name="text">
@@ -281,8 +323,17 @@
              <string>MySql Configuration</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
+             <property name="spacing">
+              <number>4</number>
+             </property>
+             <property name="margin">
+              <number>2</number>
+             </property>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_7">
+               <property name="spacing">
+                <number>4</number>
+               </property>
                <item>
                 <widget class="QLabel" name="label_5">
                  <property name="minimumSize">
@@ -304,6 +355,12 @@
                </item>
                <item>
                 <widget class="QLineEdit" name="mysql_host">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="minimumSize">
                   <size>
                    <width>150</width>
@@ -312,8 +369,8 @@
                  </property>
                  <property name="maximumSize">
                   <size>
-                   <width>220</width>
-                   <height>16777215</height>
+                   <width>65535</width>
+                   <height>65535</height>
                   </size>
                  </property>
                  <property name="text">
@@ -325,6 +382,9 @@
                 <spacer name="horizontalSpacer_4">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Preferred</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -355,6 +415,9 @@
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_8">
+               <property name="spacing">
+                <number>4</number>
+               </property>
                <item>
                 <widget class="QLabel" name="label_6">
                  <property name="minimumSize">
@@ -384,8 +447,8 @@
                  </property>
                  <property name="maximumSize">
                   <size>
-                   <width>220</width>
-                   <height>16777215</height>
+                   <width>65535</width>
+                   <height>65535</height>
                   </size>
                  </property>
                  <property name="text">
@@ -397,6 +460,9 @@
                 <spacer name="horizontalSpacer_3">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Minimum</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -417,6 +483,9 @@
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_9">
+               <property name="spacing">
+                <number>4</number>
+               </property>
                <item>
                 <widget class="QLabel" name="label_8">
                  <property name="text">
@@ -426,9 +495,15 @@
                </item>
                <item>
                 <widget class="QLineEdit" name="mysql_user">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="maximumSize">
                   <size>
-                   <width>200</width>
+                   <width>65535</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -443,9 +518,15 @@
                </item>
                <item>
                 <widget class="QLineEdit" name="mysql_password">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="maximumSize">
                   <size>
-                   <width>200</width>
+                   <width>65535</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -468,6 +549,9 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>2</number>
+     </property>
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
