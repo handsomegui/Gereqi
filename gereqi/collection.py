@@ -88,7 +88,7 @@ class CollectionDb:
                     file_name TEXT
                     )''']      
         elif self.db_type == "MYSQL":
-            # Not sure if playlist should have a primary key
+            # Mysql requires slightly different tables
             tables = ['''CREATE TABLE IF NOT EXISTS media (
                                 file_name    VARCHAR(255) ,
                                 title   VARCHAR(50),
@@ -105,9 +105,12 @@ class CollectionDb:
                                 PRIMARY KEY (file_name)
                                 ) DEFAULT CHARSET=utf8''', 
                             '''CREATE TABLE IF NOT EXISTS playlist (
+                                id SMALLINT NOT NULL AUTO_INCREMENT,
                                 name VARCHAR(255),
-                                file_name VARCHAR(255)
+                                file_name VARCHAR(255),
+                                PRIMARY KEY (id)
                                 ) DEFAULT CHARSET=utf8''']
+            
         for table in tables:
             self.__query_execute(table)            
             
@@ -335,18 +338,18 @@ class CollectionDb:
     def playlist_add(self, *params):
         if self.db_type == "SQLITE":
             query = '''INSERT OR REPLACE INTO playlist 
-                                VALUES (?,?)'''
-        # FIXME: for some reason can only add 1 track out of many
-        # when using mysql
+                        VALUES (?,?)'''
+
         elif self.db_type == "MYSQL":
-            query = '''REPLACE INTO playlist 
-                            VALUES (?,?)'''
+            query = '''INSERT INTO playlist 
+                        (name,file_name)
+                        VALUES (?,?)'''
 
         self.__execute_write(query, params)
         
     def playlist_list(self):
         query = '''SELECT DISTINCT name 
-                            FROM playlist'''
+                    FROM playlist'''
         self.__query_execute(query)
         result = self.__query_fetchall(1)
         return result
