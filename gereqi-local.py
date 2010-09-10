@@ -28,7 +28,7 @@ from PyQt4.QtGui import QApplication
 from PyQt4.QtCore import QString
 from gereqi.interface import MainWindow
 import sys
-__version__= "0.4" 
+__version__= "0.4.2" 
 
 
 def main():

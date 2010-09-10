@@ -16,6 +16,7 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt4.QtCore import QString
+
 import CDDB
 import DiscID
 import cdrom

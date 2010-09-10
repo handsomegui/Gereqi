@@ -16,10 +16,12 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from os import environ as getenv
 from PyQt4.QtCore import QDir, QString, QFile, QIODevice
 
+from os import environ as getenv
+
 from webinfo import Webinfo
+
 
 class Extraneous:
     """

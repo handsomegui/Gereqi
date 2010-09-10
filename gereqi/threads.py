@@ -23,6 +23,7 @@ to make it easier to manage
 
 from PyQt4.QtCore import QThread, QString, SIGNAL, Qt, QStringList, pyqtSignal, \
 QDir
+
 from urllib import pathname2url
 from time import time, sleep
 
@@ -32,13 +33,12 @@ import pyinotify
 from webinfo import Webinfo
 from tagging import Tagging
 from infopage import InfoPage
-from collection2 import CollectionDb
+from collection import CollectionDb
 from settings import Settings
 
 build_lock = delete_lock = False
 
 
-# TODO: create a pyqtSignal
 class Getinfo(QThread):
     """
     Retrieves the cover for an album
@@ -54,7 +54,6 @@ class Getinfo(QThread):
         self.info = params
     def run(self):
         html = InfoPage(self.ui_main).gen_info(**self.info)
-#        self.emit(SIGNAL("got-info ( QString )"), html)
         self.got_info.emit(html)
         
         
@@ -327,14 +326,6 @@ class Watcher(QThread, pyinotify.ProcessEvent):
             if notifier.check_events():
                 notifier.read_events()           
            
-            # FIXME: god knows why time() is a Nonetype (low-priority)
-            # Appears to be on close so it could be due to this being a thread
-            """
-            Traceback (most recent call last):
-            File "gereqi/threads.py", line 277, in run
-                if int(time() - self.start_time) > self.timer:
-            TypeError: 'NoneType' object is not callable
-            """
             if int(time() - self.start_time) > self.timer:
                 self.__poller()
 

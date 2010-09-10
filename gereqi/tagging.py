@@ -19,6 +19,7 @@
 #TODO: Import based on gstreamer capabilities (#gstreamer says it's near impossible)
 from PyQt4.QtGui import QMessageBox
 from PyQt4.QtCore import QString
+
 from mutagen.flac import FLAC, FLACNoHeaderError, FLACVorbisError
 from mutagen.mp3 import MP3, HeaderNotFoundError
 from mutagen.oggvorbis import OggVorbis, OggVorbisHeaderError
@@ -27,7 +28,9 @@ from mutagen.id3 import ID3NoHeaderError, ID3BadUnsynchData
 from mutagen.asf import ASF 
 from mutagen.mp4 import MP4
 from os import stat, path
+
 import subprocess
+
 from extraneous import Extraneous
 
 

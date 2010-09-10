@@ -53,6 +53,8 @@ class Configuration(QDialog, Ui_settings_dialog):
         avails = QSqlDatabase.drivers()
         if "QMYSQL" in avails:
             self.database_type.addItem("MYSQL")
+        else:
+            print("Mysql option not available")
         
     def __refreshing(self, index):
         if self.collection_view.isExpanded(index):
@@ -65,8 +67,18 @@ class Configuration(QDialog, Ui_settings_dialog):
         """
         self.dir_model = MyQDirModel()        
         self.dir_model.needsRefresh.connect(self.__refreshing)
-        inc = [QString(dir) for dir in self.sets_db.get_collection_dirs("include")]
-        exc = [QString(dir)for dir in self.sets_db.get_collection_dirs("exclude")]
+        
+        inc = exc = []
+        include = self.sets_db.get_collection_setting("include").split(",")
+        exclude = self.sets_db.get_collection_setting("exclude").split(",")
+        print "CONFIG: %s, %s" % (include,exclude)
+        if include is not None:
+            inc = [QString(dir) for dir in include]
+        if exclude is not None:
+            exc = [QString(dir) for dir in exclude]
+        
+        print inc,exc
+        
         self.dir_model.check_list = [inc, exc]                                        
         filters = QDir.AllDirs|QDir.Readable|QDir.NoDotAndDotDot
         self.dir_model.setFilter(filters)
@@ -124,10 +136,14 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.sets_db.add_collection_setting("recursive", recursive_dirs)
         
     def __set_collections(self):
-        for incl in self.dir_model.check_list[0]:
-            self.sets_db.add_collection_setting("include", str(incl.toUtf8()))
-        for excl in self.dir_model.check_list[1]:
-            self.sets_db.add_collection_setting("exclude", str(excl.toUtf8()))
+        
+        incl = [ str(dir.toUtf8()) for dir in self.dir_model.check_list[0] ]
+        excl = [ str(dir.toUtf8()) for dir in self.dir_model.check_list[1] ]
+        incl = ",".join(incl)
+        excl = ",".join(excl)
+        self.sets_db.add_collection_setting("include",incl)
+        self.sets_db.add_collection_setting("exclude",excl)
+        print "DIRS: %s - %s" %(incl, excl)
             
     def __set_database(self):
         db_type = unicode(self.database_type.currentText())
@@ -143,10 +159,7 @@ class Configuration(QDialog, Ui_settings_dialog):
     def __apply_settings(self):
         """
         Apply all the settings to the db
-        """
-        self.sets_db.drop_interface()
-        self.sets_db.drop_database()
-        self.sets_db.drop_collection()        
+        """      
         self.__set_collections()
         self.__set_database()
         self.__save_settings()
@@ -183,7 +196,8 @@ class Configuration(QDialog, Ui_settings_dialog):
             
     @pyqtSignature("bool")
     def on_scan_recursively_toggled(self, check):
-        # TODO: set the myqdirmodel in a certain mode
-        print check
+        """
+        sets the myqdirmodel in a certain mode
+        """
         self.dir_model.recursive = check
             

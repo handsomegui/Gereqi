@@ -31,7 +31,7 @@ from extraneous import Extraneous
 from extrawidgets import SetupExtraWidgets, WidgetManips
 from backend import AudioBackend
 from settings import Settings
-from collection2 import CollectionDb
+from collection import CollectionDb
 
 # The folder watcher poll-time in seconds
 WATCHTIME = 30 
@@ -361,6 +361,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Initialisation of key items. Some may be pulled
         from other files as this file is getting messy
         """ 
+        
+        
         self.__settings_init()
         
         self.build_lock = self.delete_lock = False
@@ -374,7 +376,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
            
         QMainWindow.__init__(self, parent)
         Ui_MainWindow.__init__(self)
-        # TODO: change ui settings based on saved states/options
+        # TODO: change ui settings based on saved states/options. QSession
         self.setupUi(self)
         self.media_db = CollectionDb("main")
         self.info_thread = Getinfo(self)
@@ -459,8 +461,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
     def __dirs_setup(self):
         func = lambda x : x if not None else []
-        includes = self.sets_db.get_collection_dirs("include")
-        excludes = self.sets_db.get_collection_dirs("exclude")
+        includes = self.sets_db.get_collection_setting("include").split(",")
+        excludes = self.sets_db.get_collection_setting("exclude").split(",")
         self.media_dir = (func(includes), func(excludes))
         
     def __settings_init(self):
@@ -957,6 +959,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Clears the playlist search filter
         """
+        # FIXME: the current track needs to re-highlighted
         self.search_trktbl_edit.clear()
         self.playlisting.highlighted_track()
         
@@ -966,7 +969,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         add tracks from cd
         """
         cd_tracks = self.acd.get_info()
-        # FIXME: doesn't work. Lack of info
         self.playlisting.add_list_to_playlist(cd_tracks)                
         self.clear_trktbl_bttn.setEnabled(True)
                 

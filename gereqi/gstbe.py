@@ -16,14 +16,16 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from PyQt4.QtCore import QObject, pyqtSignal
+
 import pygst
 pygst.require("0.10")
 import gst
 import thread
 import gobject
+
 from os import path
 from time import sleep
-from PyQt4.QtCore import QObject, pyqtSignal
 from urllib import pathname2url
 
 

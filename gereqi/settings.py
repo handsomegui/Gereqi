@@ -14,142 +14,78 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
+# 
 
-from sqlite3 import dbapi2 as sqlite
+"""
+Saves the application's settings in an .ini-like
+file at '~/.gereqi/config'
+""" 
+
+import ConfigParser
 import os
 
-CFG_DIR = "%s/.gereqi" % os.environ["HOME"]
-SETSFILE = "%s/settings.db" % CFG_DIR
 
-if os.path.exists(CFG_DIR) is False:
+CFG_DIR = "%s/.gereqi" % os.environ["HOME"]
+SETSFILE = "%s/config" % CFG_DIR
+
+# Typically needed on 1st-run of program
+if os.path.exists(CFG_DIR) is False: 
     os.mkdir(CFG_DIR)
+
 
 class Settings:
     def __init__(self):
-        self.settings_db = sqlite.connect(SETSFILE)
-        self.settings_curs = self.settings_db.cursor()
-        self.__setup_tables()  
+        self.config = ConfigParser.ConfigParser()
+        self.config.read(SETSFILE)
         
-    def __setup_tables(self):
-            tables = [''' CREATE TABLE IF NOT EXISTS interface (
-                        tag TEXT,
-                        value TEXT) ''', 
-                      '''CREATE TABLE IF NOT EXISTS database (
-                        tag TEXT,
-                        value TEXT) ''', 
-                      '''CREATE TABLE IF NOT EXISTS collection (
-                        tag TEXT,
-                        value TEXT)''']
-            for table in tables:
-                self.__query_execute(table)
-                
-    def __query_fetchone(self, query, args=None):
-        self.__query_execute(query, args)
-        return self.settings_curs.fetchone()
-            
-    def __query_fetchall(self, query, args=None):
-        self.__query_execute(query, args)
-        return self.settings_curs.fetchall()
-                        
-    def __query_execute(self, query, args=None):
-        if args is not None:
-            self.settings_curs.execute(query, args)
-        else:
-            self.settings_curs.execute(query) 
-        self.settings_db.commit() 
+    def __section_exists(self, section):
+        sects = self.config.sections()
+        return section in sects
+    
+    def __option_exists(self, section, option):
+        opts = self.config.options(section) 
+        return option in opts
+    
+    def __write_config(self):
+        fnow = open(SETSFILE, "wb")
+        self.config.write(fnow)
+        fnow.close()
+    
+    def add_collection_setting(self, opt, val):
+        if self.__section_exists("collection") is False:
+            self.config.add_section("collection")        
+        self.config.set("collection", opt, val)
+        self.__write_config()
         
-    def add_collection_setting(self, *args):
-        query = '''INSERT INTO collection 
-                    VALUES (?,?)'''
-        self.__query_execute(query, args)
+    def add_database_setting(self, opt, val):
+        if self.__section_exists("database") is False:
+            self.config.add_section("database")        
+        self.config.set("database", opt, val)      
+        self.__write_config()
         
-    def add_database_setting(self, *args):
-        query = '''INSERT INTO database 
-                    VALUES (?,?)'''
-        self.__query_execute(query, args)        
+    def add_interface_setting(self, opt, val):
+        if self.__section_exists("interface") is False:
+            self.config.add_section("interface")        
+        self.config.set("interface", opt, val)  
+        self.__write_config()        
+    
         
-    def add_interface_setting(self, *args):
-        query = '''INSERT INTO interface 
-                    VALUES (?,?)'''
-        self.__query_execute(query, args)
-        
-    def get_collection_settings(self):
-        query = '''SELECT tag,value
-                    FROM collection'''
-        return self.__query_fetchall(query)
+    def get_collection_setting(self, opt):
+        if self.__section_exists("collection") is True:
+            options = self.config.options("collection")
+            if opt in options:
+                # The directories are csv
+                return self.config.get("collection",opt)
 
-    def get_database_settings(self):
-        query = '''SELECT tag,value
-                    FROM database'''
-        return self.__query_fetchall(query)
+    def get_database_setting(self, opt):
+        if self.__section_exists("database") is True:
+            options = self.config.options("database")
+            if opt in options:
+                return self.config.get("database",opt)
         
-    def get_interface_settings(self):
-        query = '''SELECT tag,value
-                    FROM interface'''
-        return self.__query_fetchall(query)
-        
-    def get_collection_setting(self, tag):
-        query = '''SELECT value
-                    FROM collection
-                    WHERE tag=?'''
-        result = self.__query_fetchone(query,(tag,))
-       
-        if result is not None:
-            if tag != ("include" or "exclude"):
-                return result[0]
-            else:
-                return result
+    def get_interface_setting(self, opt):
+        if self.__section_exists("interface") is True:
+            options = self.config.options("interface")
+            if opt in options:
+                return self.config.get("interface",opt)
 
-    def get_collection_dirs(self, tag):
-        query = '''SELECT value
-                    FROM collection
-                    WHERE tag=?'''
-        return [str(val[0]) for val in self.__query_fetchall(query, (tag, ))]
-
-    def get_database_setting(self, tag):
-        query = '''SELECT value
-                    FROM database
-                    WHERE tag=?'''
-        result = self.__query_fetchone(query, (tag, ))
-        if result is not None:
-            return result[0]
-        
-    def get_interface_setting(self, tag):
-        query = '''SELECT value
-                    FROM interface
-                    WHERE tag=?'''
-        result = self.__query_fetchone(query, (tag, ))
-        if result is not None:
-            return result[0]
-        
-    #FIXME: fix this ungodly mess
-
-    def drop_collection(self):
-        # If I use the IF NOT EXIST in the CREATE the collection TABLE
-        # doesn't appear to actually exist
-        # Need to do this as we may want to remove an entry, no primary key
-        queries= ['''DROP TABLE collection''', 
-                    '''CREATE TABLE collection (
-                        tag TEXT,
-                        value TEXT)''']
-                    
-        for query in queries:
-            self.__query_execute(query)
-        
-    def drop_database(self):
-        queries= ['''DROP TABLE database''', 
-                    '''CREATE TABLE database (
-                        tag TEXT,
-                        value TEXT)''']
-                    
-        for query in queries:
-            self.__query_execute(query)
-            
-    def drop_interface(self):
-        queries= ['''DROP TABLE interface''', 
-                    '''CREATE TABLE interface (
-                        tag TEXT,
-                        value TEXT)''']
-                    
-        for query in queries:
-            self.__query_execute(query)

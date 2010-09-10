@@ -15,11 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
-from extraneous import Extraneous
-from settings import Settings
 from PyQt4.QtCore import QString
 
-# TODO: put some javascript in here where it loops through a list
+from extraneous import Extraneous
+from settings import Settings
+
+
+
 HTML = QString('''
             <html>
             <head>
