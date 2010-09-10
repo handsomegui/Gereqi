@@ -32,6 +32,7 @@ from extrawidgets import SetupExtraWidgets, WidgetManips
 from backend import AudioBackend
 from settings import Settings
 from collection import CollectionDb
+from about import About
 
 # The folder watcher poll-time in seconds
 WATCHTIME = 30 
@@ -951,8 +952,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Slot documentation goes here.
         """
         # TODO: not implemented yet
-        QMessageBox.aboutQt(None, 
-            QString(""))
+#        QMessageBox.aboutQt(None, 
+#            QString(""))
+        About(self).show()
             
     @pyqtSignature("")
     def on_clear_search_bttn_clicked(self):
