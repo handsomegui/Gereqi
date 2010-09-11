@@ -461,10 +461,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.build_db_thread.start()
         
     def __dirs_setup(self):
-        func = lambda x : x if not None else []
-        includes = self.sets_db.get_collection_setting("include").split(",")
-        excludes = self.sets_db.get_collection_setting("exclude").split(",")
-        self.media_dir = (func(includes), func(excludes))
+        include = exclude = []
+        inc = self.sets_db.get_collection_setting("include")
+        exc = self.sets_db.get_collection_setting("exclude")
+        
+        if inc is not None:
+            include = inc.split(",")
+        if exc is not None:
+            exclude = exc.split(",")
+        self.media_dir = (include, exclude)
         
     def __settings_init(self):
         self.sets_db = Settings()

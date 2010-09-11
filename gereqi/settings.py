@@ -16,6 +16,7 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 # 
 
+# FIXME: mysql password is saved plain-text. Salt them? 
 """
 Saves the application's settings in an .ini-like
 file at '~/.gereqi/config'

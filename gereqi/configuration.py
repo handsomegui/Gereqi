@@ -69,13 +69,13 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.dir_model.needsRefresh.connect(self.__refreshing)
         
         inc = exc = []
-        include = self.sets_db.get_collection_setting("include").split(",")
-        exclude = self.sets_db.get_collection_setting("exclude").split(",")
+        include = self.sets_db.get_collection_setting("include")
+        exclude = self.sets_db.get_collection_setting("exclude")
         print "CONFIG: %s, %s" % (include,exclude)
         if include is not None:
-            inc = [QString(dir) for dir in include]
+            inc = [QString(dir) for dir in include.split(",")]
         if exclude is not None:
-            exc = [QString(dir) for dir in exclude]
+            exc = [QString(dir) for dir in exclude.split(",")]
         
         print inc,exc
         
@@ -129,6 +129,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.sets_db.add_interface_setting("remember", remember)
         self.sets_db.add_interface_setting("context-change", context)
 
+        # Collection
         recursive_dirs = true_false(self.scan_recursively.isChecked())
         watch_dirs = true_false(self.watch_folders.isChecked())
         
@@ -139,6 +140,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         
         incl = [ str(dir.toUtf8()) for dir in self.dir_model.check_list[0] ]
         excl = [ str(dir.toUtf8()) for dir in self.dir_model.check_list[1] ]
+        print self.dir_model.check_list
         incl = ",".join(incl)
         excl = ",".join(excl)
         self.sets_db.add_collection_setting("include",incl)
