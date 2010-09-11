@@ -35,6 +35,9 @@ class MyQDirModel(QDirModel):
                 return Qt.PartiallyChecked
        
     def data(self, index, role = Qt.DisplayRole):
+        """
+        This is called when mouse-over of the dirmodel sections
+        """
         if index.isValid() and (index.column() == 0) and (role == Qt.CheckStateRole):
             dir_now = self.filePath(index)
             
@@ -80,6 +83,7 @@ class MyQDirModel(QDirModel):
         else:
             return QDirModel.flags(self, index)
         
+    # FIXME: includes and excludes are getting mixed up
     # TODO: this method is far too messy
     def setData(self, index, value, role = Qt.EditRole):
         """
@@ -88,9 +92,10 @@ class MyQDirModel(QDirModel):
         # user trying to do something to the checkbox
         if index.isValid() and (index.column() == 0) and (role == Qt.CheckStateRole):
             dir_now = self.filePath(index)        
-            print dir_now, self.check_list, self.recursive
+            
             # store checked paths, remove unchecked paths
-            if value == Qt.Checked:               
+            if value == Qt.Checked:
+                print "INC:",dir_now, self.check_list, self.recursive               
                 if self.recursive is False:
                     if dir_now not in self.check_list[0]:
                         self.check_list[0].append(dir_now)                        
@@ -130,6 +135,7 @@ class MyQDirModel(QDirModel):
             
             # Want to exclude dir
             else:
+                print "EXC:",dir_now, self.check_list, self.recursive  
                 par_dir = dir_now.split("/")[:-1].join("/")                
                 tmp_list = (list(self.check_list[0]), list(self.check_list[1]))
                 

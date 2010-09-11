@@ -21,8 +21,7 @@ This file contains all the necessary threads for the app
 to make it easier to manage
 """
 
-from PyQt4.QtCore import QThread, QString, SIGNAL, Qt, QStringList, pyqtSignal, \
-QDir
+from PyQt4.QtCore import *
 
 from urllib import pathname2url
 from time import time, sleep
