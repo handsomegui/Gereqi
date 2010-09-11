@@ -461,10 +461,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.build_db_thread.start()
         
     def __dirs_setup(self):
-        include = exclude = []
+        """
+        Load the collection directories into self
+        """
+        include = []
+        exclude = []
         inc = self.sets_db.get_collection_setting("include")
-        exc = self.sets_db.get_collection_setting("exclude")
-        
+        exc = self.sets_db.get_collection_setting("exclude")        
         if inc is not None:
             include = inc.split(",")
         if exc is not None:
@@ -472,17 +475,28 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.media_dir = (include, exclude)
         
     def __settings_init(self):
+        """
+        Things to perform on startup
+        """
         self.sets_db = Settings()
         self.__dirs_setup()
         self.__setup_watcher()
         
     def __playlist_remembered(self):
+        """
+        Load the playlist auto-saved(optional)
+        on last shutdown
+        """
         if self.sets_db.get_interface_setting("remember") == "True":
             tracks = self.media_db.playlist_tracks("!!##gereqi.remembered##!!")
             if len(tracks) > 0:
                 self.playlisting.add_list_to_playlist(tracks)
                 
     def __audiocd_setup(self):
+        """
+        As pyCDDB is optional only load cd
+        modules if possible
+        """
         try:
             from audiocd import AudioCD
             self.acd = AudioCD()

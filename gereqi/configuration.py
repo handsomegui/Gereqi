@@ -68,7 +68,9 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.dir_model = MyQDirModel()        
         self.dir_model.needsRefresh.connect(self.__refreshing)
         
-        inc = exc = []
+        # DO NOT DO 'inc=exc=[]' they all point to the same thing 
+        inc = []
+        exc = []
         include = self.sets_db.get_collection_setting("include")
         exclude = self.sets_db.get_collection_setting("exclude")
         print "CONFIG: %s, %s" % (include,exclude)
@@ -76,8 +78,6 @@ class Configuration(QDialog, Ui_settings_dialog):
             inc = [QString(dir) for dir in include.split(",")]
         if exclude is not None:
             exc = [QString(dir) for dir in exclude.split(",")]
-        
-        print inc,exc
         
         self.dir_model.check_list = [inc, exc]                                        
         filters = QDir.AllDirs|QDir.Readable|QDir.NoDotAndDotDot
