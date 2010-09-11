@@ -21,6 +21,7 @@ from PyQt4.QtCore import *
 
 from random import choice
 import time
+from os import path
 
 from tagging import Tagging
 from threads import Getinfo, Getwiki, Builddb, Finishers, Watcher, DeleteFiles
@@ -329,7 +330,13 @@ class Track:
                                                                 column)
                             track = track.text()
         if track:
-            return str(track)
+            result = str(track.toUtf8())
+            if path.exists(result):
+                return result
+            else:
+                result = str(track.toLatin1())
+                if path.exists(result):
+                    return result
             
     def generate_info(self):
         """
