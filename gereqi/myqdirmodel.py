@@ -83,7 +83,7 @@ class MyQDirModel(QDirModel):
         else:
             return QDirModel.flags(self, index)
         
-    # FIXME: includes and excludes are getting mixed up
+
     # TODO: this method is far too messy
     def setData(self, index, value, role = Qt.EditRole):
         """
@@ -94,8 +94,7 @@ class MyQDirModel(QDirModel):
             dir_now = self.filePath(index)        
             
             # store checked paths, remove unchecked paths
-            if value == Qt.Checked:
-                print "INC:",dir_now, self.check_list, self.recursive               
+            if value == Qt.Checked:             
                 if self.recursive is False:
                     if dir_now not in self.check_list[0]:
                         self.check_list[0].append(dir_now)                        
@@ -135,7 +134,6 @@ class MyQDirModel(QDirModel):
             
             # Want to exclude dir
             else:
-                print "EXC:",dir_now, self.check_list, self.recursive  
                 par_dir = dir_now.split("/")[:-1].join("/")                
                 tmp_list = (list(self.check_list[0]), list(self.check_list[1]))
                 

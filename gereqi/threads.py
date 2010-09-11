@@ -392,4 +392,3 @@ class Finishers:
             self.ui_main.horizontal_tabs.setTabEnabled(2, False)
             
             
-
