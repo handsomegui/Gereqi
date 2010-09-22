@@ -40,9 +40,6 @@ from playlist import Playlist, PlaylistHistory
 WATCHTIME = 30 
 
 
-
-
-
 class Track:
     def __init__(self, parent):
         self.ui_main = parent
@@ -185,7 +182,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             self.tray_icon.hide()
         
-    def __bodger(self, html):       
+    # FIXME: HACK ALERT!!!
+    def __bodger(self, html):
+        """
+        needed as the signal cannot be directly connected to
+        the webview for unknown reasons
+        """    
         self.info_view.setHtml(html)
         
     def __setup_watcher(self):
@@ -335,7 +337,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.player.audio_object.stop()
             self.player.audio_object.load(track)
             # Checks to see if the playbutton is in play state
-            if self.play_bttn.isChecked() is True:
+            if self.play_bttn.isChecked():
                 self.player.audio_object.play()
             else:
                 self.playlisting.tracknow_colourise(self.playlisting.current_row())
@@ -356,7 +358,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             # Something in the playlist is selected
             if highlighted is not None:      
                 # The track in backend is not the same as selected and paused
-                if (queued != highlighted) and (paused is True): 
+                if (queued != highlighted) and paused: 
                     self.player.audio_object.load(str(highlighted.toUtf8()))
                 # Nothing already loaded into playbin
                 elif queued is None:
@@ -370,7 +372,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                         # Just reset the play button and stop here
                         self.play_bttn.setChecked(False)                        
                 # Just unpausing
-                elif paused is True:
+                elif paused:
                     # Makes sure the statusbar text changes from
                     # paused back to the artist/album/track string
                     self.stat_lbl.setText(self.tracking.msg_status)                    
@@ -418,7 +420,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if track is not None:
             self.player.audio_object.stop() 
             self.player.audio_object.load(track)
-            if self.play_bttn.isChecked() is True:
+            if self.play_bttn.isChecked():
                 self.player.audio_object.play()
             else:
                 self.playlisting.tracknow_colourise(self.playlisting.current_row())
@@ -523,10 +525,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                                          QString("Save Playlist"),
                                          QString("Enter a name for the playlist:"),
                                          QLineEdit.Normal)
-            
-        if play_name[1] is True:
-            check = self.media_db.playlist_tracks(play_name[0])
-            if len(check) > 0:
+         
+          
+        if play_name[1]: # Boolean NonNull
+            if len(self.media_db.playlist_tracks(play_name[0])) > 0:
                 msg = QMessageBox.warning(None,
                     QString("Overwrite Playlist?"),
                     QString("""A playlist named '%s' already exists. Do you want to overwrite it?"""  
@@ -605,7 +607,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Mutes audio output and changes button icon accordingly
         """
         self.player.audio_object.mute(checked)
-        if checked is True:
+        if checked:
             icon = QIcon(QPixmap(":/Icons/audio-volume-muted.png"))
             self.mute_bttn.setIcon(icon)
         else:
@@ -736,11 +738,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     @pyqtSignature("")
     def on_actionAbout_Gereqi_triggered(self):
         """
-        Slot documentation goes here.
+        The Gereqi about dialog
         """
-        # TODO: not implemented yet
-#        QMessageBox.aboutQt(None, 
-#            QString(""))
         About(self).show()
             
     @pyqtSignature("")
@@ -830,7 +829,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 QLineEdit.Normal)
             
             # Checks if you entered a non-zero length name and that you clicked 'ok'
-            if (new_name[1] is True) and (len(new_name[0]) > 0):
+            if new_name[1] and (len(new_name[0]) > 0):
                 #get all the tracks in the selected playlist
                 tracks = self.media_db.playlist_tracks(playlist[0].text(0))
                 # delete the old playlist
@@ -855,7 +854,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.playlisting.add_list_to_playlist(tracks)
         self.clear_trktbl_bttn.setEnabled(True)
         
-        if last is True:
+        if last:
             self.prev_trktbl_bttn.setEnabled(False)
             self.actionUndo.setEnabled(False)
         
@@ -872,7 +871,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.playlisting.add_list_to_playlist(tracks)
         self.clear_trktbl_bttn.setEnabled(True)
         
-        if first is True:
+        if first:
             self.next_trktbl_bttn.setEnabled(False)
             self.actionRedo.setEnabled(False)
             
@@ -897,7 +896,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         it's a file or directory and populates playlist if possible
         """
         #TODO: check to see if it's avail in db 1st otherwise if it isn't exceptions occur
-        if self.dir_model.isDir(index) is True:
+        if self.dir_model.isDir(index):
             fname = self.dir_model.filePath(index)
             searcher = QDir(fname)
             searcher.setFilter(QDir.Files)
@@ -952,7 +951,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Does what it says.
         """
-        if state is True:
+        if state:
             self.show()
             self.setWindowState(Qt.WindowActive)
         else:
@@ -965,7 +964,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Either generates a new DB or adds new files to it
         Not finished
         """
-        mode = "redo" if fresh is True else "update"
+        mode = "redo" if fresh else "update"
         # If the dialog is cancelled in last if statement the below is ignored
         if self.media_dir is not None:
             self.stat_bttn.setEnabled(True)
@@ -987,7 +986,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         albs = self.media_db.get_albums(self.art_alb["nowart"])
         
         # Wikipedia info
-        if (art_change is True) and (self.art_alb["nowart"] is not None):
+        if art_change and (self.art_alb["nowart"] is not None):
             # passes the artist to the thread
             self.html_thread.set_values(self.art_alb["nowart"]) 
             # starts the thread
@@ -995,7 +994,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.art_alb["oldart"] = self.art_alb["nowart"]
 
         # Album art
-        if (alb_change is True) and (self.art_alb["nowalb"] is not None):           
+        if alb_change and (self.art_alb["nowalb"] is not None):           
             self.info_thread.set_values(artist=self.art_alb["nowart"],  
                                         album=self.art_alb["nowalb"], 
                                         title=self.art_alb["title"],
@@ -1004,7 +1003,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.info_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
             
-        elif (tit_change is True) and (self.art_alb["title"] is not None):
+        elif tit_change and (self.art_alb["title"] is not None):
             self.info_thread.set_values(artist=self.art_alb["nowart"],
                                         album=self.art_alb["nowalb"],
                                         title=self.art_alb["title"],
@@ -1036,7 +1035,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         When the 'X' button or alt-f4 is triggered
         """
         if self.sets_db.get_interface_setting("trayicon") == "True":
-            if self.tray_icon.isVisible() is True:
+            if self.tray_icon.isVisible():
                 self.hide()
                 event.ignore()
 
