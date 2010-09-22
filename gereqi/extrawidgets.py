@@ -21,8 +21,6 @@ from PyQt4.QtCore import *
 
 import time
 
-from settings import Settings
-
 
 class SetupExtraWidgets:
     """
@@ -30,14 +28,9 @@ class SetupExtraWidgets:
     """
     def __init__(self, parent):
         self.ui_main = parent
-        set_db = Settings()
         
         self.__setup_filesystem_tree()
-        tray = set_db.get_interface_setting("trayicon")
-        if tray == "True":
-            self.__create_tray_menu(show=True)
-        else:
-            self.__create_tray_menu()
+        self.__create_tray_menu()
 
         self.__setup_misc()
         self.__key_shortcuts()
@@ -59,7 +52,7 @@ class SetupExtraWidgets:
         self.ui_main.filesystem_tree.setColumnHidden(3, True)
         self.ui_main.filesystem_tree.expandToDepth(0)
         
-    def __create_tray_menu(self, show=False):
+    def __create_tray_menu(self):
         """
         The tray menu contains shortcuts to features
         in the main UI
@@ -73,23 +66,21 @@ class SetupExtraWidgets:
         self.ui_main.view_action = QAction(QString("&Visible"), self.ui_main)
         self.ui_main.view_action.setCheckable(True)
         self.ui_main.view_action.setChecked(True)
-        tray_icon_menu = QMenu(self.ui_main)
+        tray_menu = QMenu(self.ui_main)
         icon_normal = QIcon(QPixmap(":/Icons/app.png"))
-        tray_icon_menu.addAction(icon_normal, QString("Gereqi"))
-        tray_icon_menu.addSeparator()
-        tray_icon_menu.addAction(prev_action)
-        tray_icon_menu.addAction(self.ui_main.play_action)
-        tray_icon_menu.addAction(stop_action)
-        tray_icon_menu.addAction(next_action)
-        tray_icon_menu.addSeparator()
-        tray_icon_menu.addAction(self.ui_main.view_action)
-        tray_icon_menu.addAction(quit_action)
+        tray_menu.addAction(icon_normal, QString("Gereqi"))
+        tray_menu.addSeparator()
+        tray_menu.addAction(prev_action)
+        tray_menu.addAction(self.ui_main.play_action)
+        tray_menu.addAction(stop_action)
+        tray_menu.addAction(next_action)
+        tray_menu.addSeparator()
+        tray_menu.addAction(self.ui_main.view_action)
+        tray_menu.addAction(quit_action)
         self.ui_main.tray_icon = QSystemTrayIcon(self.ui_main)
         icon_stopped = QIcon(QPixmap(":/Icons/app-paused.png"))
         self.ui_main.tray_icon.setIcon(icon_stopped)
-        self.ui_main.tray_icon.setContextMenu(tray_icon_menu)
-        if show is True:
-            self.ui_main.tray_icon.show()
+        self.ui_main.tray_icon.setContextMenu(tray_menu)
         self.ui_main.tray_icon.setToolTip("Stopped")    
         
         self.ui_main.play_action.toggled.connect(self.ui_main.play_bttn.setChecked)
