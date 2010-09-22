@@ -318,7 +318,7 @@ class Track:
                             track = track.text()
                     elif mode == "next":
                         # Random playback mode selected
-                        if self.ui_main.play_type_bttn.isChecked() is True:
+                        if self.ui_main.play_type_bttn.isChecked():
                             file_list = self.ui_main.playlisting.gen_track_list()
                             track = [trk for trk in file_list
                                      if trk not in self.ui_main.player.recently_played]
@@ -402,6 +402,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.play_hist = PlaylistHistory()
         self.__playlist_remembered()
         self.__audiocd_setup()
+        self.__tray_menu_appearance()
         
         # new style signalling
         self.build_db_thread.finished.connect(self.finishes.db_build)
@@ -425,6 +426,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.wdgt_manip.setup_db_tree()
         self.wdgt_manip.pop_playlist_view() 
         
+    def __tray_menu_appearance(self):
+        if self.sets_db.get_interface_setting("trayicon") == "True":
+            self.tray_icon.show()
+        else:
+            self.tray_icon.hide()
         
     def __bodger(self, html):       
         self.info_view.setHtml(html)
@@ -488,6 +494,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.sets_db = Settings()
         self.__dirs_setup()
         self.__setup_watcher()
+        
         
     def __playlist_remembered(self):
         """
@@ -689,6 +696,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.media_db.restart_db()
             self.wdgt_manip.setup_db_tree()
             self.wdgt_manip.pop_playlist_view()
+            self.__tray_menu_appearance()
             
     @pyqtSignature("")
     def on_actionRescan_Collection_triggered(self):
