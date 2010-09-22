@@ -157,7 +157,6 @@ class Builddb(QThread):
             print("FROM SCRATCH")
         elif self.mode == "update":
             print("UPDATE")
-            self.__check_db()
         
         if self.file_list is None:
             tracks = []
