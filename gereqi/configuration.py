@@ -73,7 +73,6 @@ class Configuration(QDialog, Ui_settings_dialog):
         exc = []
         include = self.sets_db.get_collection_setting("include")
         exclude = self.sets_db.get_collection_setting("exclude")
-        print "CONFIG: %s, %s" % (include,exclude)
         if include is not None:
             inc = [QString(dir) for dir in include.split(",")]
         if exclude is not None:
@@ -118,7 +117,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         
         
     def __save_settings(self):
-        true_false = lambda x : x is True and "True" or "False"
+        true_false = lambda x : x == True and "True" or "False"
         # Interface
         cover_size = self.cover_size.value()
         show_tray = true_false(self.tray_icon.isChecked())
@@ -140,12 +139,10 @@ class Configuration(QDialog, Ui_settings_dialog):
         
         incl = [ str(dir.toUtf8()) for dir in self.dir_model.check_list[0] ]
         excl = [ str(dir.toUtf8()) for dir in self.dir_model.check_list[1] ]
-        print self.dir_model.check_list
         incl = ",".join(incl)
         excl = ",".join(excl)
         self.sets_db.add_collection_setting("include",incl)
         self.sets_db.add_collection_setting("exclude",excl)
-        print "DIRS: %s - %s" %(incl, excl)
             
     def __set_database(self):
         db_type = unicode(self.database_type.currentText())
