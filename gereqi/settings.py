@@ -35,8 +35,13 @@ if os.path.exists(CFG_DIR) is False:
 
 
 class Settings:
+    # Need to be the same for all that use it
+    config = ConfigParser.ConfigParser()
+    
     def __init__(self):
-        self.config = ConfigParser.ConfigParser()
+        self.__read_config()
+    
+    def __read_config(self):
         self.config.read(SETSFILE)
         
     def __section_exists(self, section):
@@ -51,6 +56,7 @@ class Settings:
         fnow = open(SETSFILE, "wb")
         self.config.write(fnow)
         fnow.close()
+        self.__read_config()
     
     def add_collection_setting(self, opt, val):
         if self.__section_exists("collection") is False:
