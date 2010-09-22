@@ -44,7 +44,10 @@ class Extraneous:
 
     def get_cover_source(self, artist, album, check=True):
         cover_dir = QString("%1/.gereqi/album-art/").arg(getenv["HOME"])
-        cover = QString("%1%2.jpg").arg(cover_dir).arg(self.__filenamer(artist, album))
+        # Need to create new qstring as sending without seems to be sending a 
+        # pointer and the changes are pertinent
+        fname = self.__filenamer(QString(artist), QString(album))
+        cover = QString("%1%2.jpg").arg(cover_dir).arg(fname)
         
         # Check=False just provides a filename creator. Used when track has
         # changed but not the album
@@ -57,7 +60,7 @@ class Extraneous:
                 return QString("file://%1").arg(cover)
             else:                        
                 web_info = Webinfo()
-                img = web_info.get_info("cover", artist, album)
+                img = web_info.get_cover(artist, album)
                 if img is not None:
                     now = QFile(cover)
                     now.open(QIODevice.WriteOnly)

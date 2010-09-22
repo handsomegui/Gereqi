@@ -28,7 +28,7 @@ class Webinfo:
         things = []
         exc = '''!,.%%$&(){}[]'''
         for item in params:
-            result = filter(lambda x : x not in exc, unicode(item))
+            result = filter(lambda x : x not in exc, str(item))
             things.append(result.replace(" ", "+"))
             
         if site == "wikipedia.org":
@@ -71,7 +71,7 @@ class Webinfo:
         
     def get_info(self, thing, *params):
         """
-        Where everything starts from
+        
         """
         if thing == "info":
             site = "wikipedia.org"
@@ -106,19 +106,20 @@ class Webinfo:
                         '''
                     return base_html % unicode(result , "utf-8")
         
-        elif thing == "cover":    
-            site = "albumart.org"
-            url = self.__create_url(site, *params)
-            pre_html = self.__fetch(url)
-            if pre_html is not None:
-                srch = "http://www.albumart.org/images/zoom-icon.jpg"
-                html = pre_html.read().split("\n")
-                html = filter(lambda x: srch in x,  html)
-                images = [line.partition('</a><a href="')[2].partition('"')[0] 
-                          for line in html]
-                if len(images) > 0:
-                    img = self.__fetch(images[0])
-                    if img is not None:
-                        if img.info()['Content-type'] == "image/jpeg":
-                            return img.read()
+    def get_cover(self, artist, album):
+        alb = str(album).partition("(")[0].partition("[")[0]
+        site = "albumart.org"
+        url = self.__create_url(site, artist, alb)
+        pre_html = self.__fetch(url)
+        if pre_html is not None:
+            srch = "http://www.albumart.org/images/zoom-icon.jpg"
+            html = pre_html.read().split("\n")
+            html = filter(lambda x: srch in x,  html)
+            images = [line.partition('</a><a href="')[2].partition('"')[0] 
+                      for line in html]
+            if len(images) > 0:
+                img = self.__fetch(images[0])
+                if img is not None:
+                    if img.info()['Content-type'] == "image/jpeg":
+                        return img.read()
 
