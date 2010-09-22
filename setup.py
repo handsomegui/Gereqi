@@ -4,7 +4,7 @@
 from distutils.core import setup 
 
 setup(name='gereqi', 
-        version='0.4.0', 
+        version='0.4.2', 
         description='A music organiser and player.', 
         author='Jonathan Noble',
         author_email='jonnobleuk@gmail.com', 

@@ -48,12 +48,12 @@ class Extraneous:
         
         # Check=False just provides a filename creator. Used when track has
         # changed but not the album
-        if check is True:
+        if check:
             # Place to save the covers doesn't exist
             if QDir(cover_dir).exists() is False:
                 QDir().mkdir(cover_dir)
             
-            if QFile(cover).exists() is True:
+            if QFile(cover).exists():
                 return QString("file://%1").arg(cover)
             else:                        
                 web_info = Webinfo()

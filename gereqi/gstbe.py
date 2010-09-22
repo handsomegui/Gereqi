@@ -38,11 +38,13 @@ class Utilities:
         Gstreamer finds out if it would be able 
         to play the media source
         """
-        return gst.element_make_from_uri(gst.URI_SRC, source, "") is not None
+        result = gst.element_make_from_uri(gst.URI_SRC, source, "")
+        if result is not None:
+            return result
         
     def source_checks(self, source, source_type):
         fnow = None
-        if source_type == "file" and (path.isfile(source) is True):
+        if source_type == "file" and path.isfile(source):
             fnow = "file://%s" % pathname2url(source)
         elif source_type == "cd":
             fnow = "cdda://%s" % source

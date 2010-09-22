@@ -130,6 +130,7 @@ class Manipulations:
         f_size = stat(fname).st_size * 8
         bitrate = int(round(f_size / item.info.length / 1024))
         return bitrate
+    
         
 class Tagging:
     def __init__(self, formats):

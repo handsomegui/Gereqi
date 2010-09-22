@@ -144,20 +144,9 @@ class Builddb(QThread):
                          
         return tracks
         
-    def __check_db(self):
-        # FIXME: this doesn't really work. Files which do exist 
-        # are reported as missing (filename encoding issues again)
-        # and one's which don't are reported as existing
-        return
-        file_list = self.media_db.get_files_all()
-        dir = QDir()
-        for now in file_list:
-            if os.path.exists(str(now.toUtf8())) is False:
-                print("DELETE %s" % now)
-        
     def run(self):
         self.ui_main.build_lock = True
-        while self.ui_main.delete_lock is True:
+        while self.ui_main.delete_lock == True:
             print("WAITING: creation")
             sleep(1)
             
@@ -189,7 +178,7 @@ class Builddb(QThread):
         cnt = 0
         #TODO: performance tuning
         for trk in tracks:
-            if not self.exiting: # Can't tell if this is causing slowdown
+            if self.exiting == False: # Can't tell if this is causing slowdown
                 ratio = float(cnt ) /  float(tracks_total)
                 prog = int(round(100 * ratio))
                 if prog > old_prog:
@@ -244,14 +233,14 @@ class Watcher(QThread, pyinotify.ProcessEvent):
         be handled such as deleting/adding tracks from/to the DB.
         """
         if self.deleted.count() > 0:
-            if self.ui_main.delete_lock is False:
+            if self.ui_main.delete_lock == False:
                 self.deletions.emit(self.deleted)
                 self.deleted.clear()
             else:
                 print("WAITING: deletion list")
                 
         if self.created.count() > 0:
-            if self.ui_main.build_lock is False:
+            if self.ui_main.build_lock == False:
                 self.creations.emit(self.created)
                 self.created.clear()
             else:
@@ -265,7 +254,7 @@ class Watcher(QThread, pyinotify.ProcessEvent):
         
     def __track_list(self, dir):
         tracks = []
-        if self.recur is True:
+        if self.recur:
             for dirpath, dirnames, filenames in os.walk(dir):
                 for fname in filenames:
                     trk = os.path.join(dirpath, fname)
@@ -282,7 +271,7 @@ class Watcher(QThread, pyinotify.ProcessEvent):
         if (file_name is not None) and (file_name not in self.created):
             # pyinotify will only create just a single instance of
             # creation, the directory, not it's contained files
-            if os.path.isdir(file_name) is True:
+            if os.path.isdir(file_name):
                 tracks = self.__track_list(file_name)
                 for trk in tracks:
                     self.created.append(trk)
@@ -317,10 +306,10 @@ class Watcher(QThread, pyinotify.ProcessEvent):
         notifier = pyinotify.Notifier(wm, self,  read_freq=3, timeout=10)
         exclusions = self.__gen_exc_list(self.directory[1])
         excl = pyinotify.ExcludeFilter(exclusions)
-        wdd = wm.add_watch(self.directory[0], mask, rec=self.recur, auto_add=True,
-                            exclude_filter=excl)
+        wdd = wm.add_watch(self.directory[0], mask, rec=self.recur, 
+                           auto_add=True, exclude_filter=excl)
         
-        while self.gogogo is True:
+        while self.gogogo != False:
             notifier.process_events()
             if notifier.check_events():
                 notifier.read_events()           
@@ -341,7 +330,7 @@ class DeleteFiles(QThread):
         
     def run(self):        
         self.ui_main.delete_lock = True
-        while self.ui_main.build_lock is True:
+        while self.ui_main.build_lock == True:
             print("WAITING: deletion")
             sleep(1)     
         

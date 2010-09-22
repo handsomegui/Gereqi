@@ -74,7 +74,7 @@ class AudioBackend:
         Ui features may need to be updated.
         """
         # Cannot do it in "about_to_finish" as it's in another thread
-        if self.just_finished is True:
+        if self.just_finished == True:
             self.just_finished = False
             self.__inc_playcount()
         

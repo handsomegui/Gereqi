@@ -116,7 +116,7 @@ class CollectionDb:
             
     def __query_fetchall(self, field_num):
         output = []
-        while self.query.next() is True:
+        while self.query.next():
             if field_num <= 1:
                 output.append(self.query.value(0).toString())
             else:

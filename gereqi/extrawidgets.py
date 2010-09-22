@@ -165,7 +165,7 @@ class SetupExtraWidgets:
         if checked or not
         """
         icon = QIcon()
-        if check is True:
+        if check:
             icon.addPixmap(QPixmap(":/Icons/dice-icon.png"), QIcon.Normal,
                            QIcon.Off)
         else:
