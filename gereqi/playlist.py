@@ -230,24 +230,25 @@ class PlaylistHistory:
     """
     The playlist history
     """
-    stack = []
-    position = 0
+    def __init__(self):
+        self.stack = []
+        self.position = 0
     
     def update(self, tracks):
-        if PlaylistHistory.position != len(PlaylistHistory.stack):
-            del PlaylistHistory.stack[PlaylistHistory.position:]
+        if self.position != len(self.stack):
+            del self.stack[self.position:]
             
-        PlaylistHistory.stack.append(tracks)
-        PlaylistHistory.position += 1
+        self.stack.append(tracks)
+        self.position += 1
         
     def last_list(self):
-        if PlaylistHistory.position > 0:
-            PlaylistHistory.position -= 1
-            last = PlaylistHistory.position == 0
-            return PlaylistHistory.stack[PlaylistHistory.position], last
+        if self.position > 0:
+            self.position -= 1
+            last = self.position == 0
+            return self.stack[self.position], last
         
     def next_list(self):
-        if PlaylistHistory.position < len(PlaylistHistory.stack):
-            PlaylistHistory.position += 1
-            first = PlaylistHistory.position == (len(PlaylistHistory.stack) - 1)
-            return PlaylistHistory.stack[PlaylistHistory.position], first
+        if self.position < len(self.stack):
+            self.position += 1
+            first = self.position == (len(self.stack) - 1)
+            return self.stack[self.position], first

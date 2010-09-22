@@ -847,7 +847,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         self.playlisting.clear()
 
-        if PlaylistHistory.position < len(PlaylistHistory.stack):
+        if self.play_hist.position < len(self.play_hist.stack):
             self.next_trktbl_bttn.setEnabled(True)
             self.actionRedo.setEnabled(True)
         tracks, last = self.play_hist.last_list()
