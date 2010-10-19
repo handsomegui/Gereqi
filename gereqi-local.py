@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#Copyright 2009 Jonathan.W.Noble <jonnobleuk@gmail.com>
-
 # This file is part of Gereqi.
 #
 # Gereqi is free software: you can redistribute it and/or modify
@@ -36,6 +34,7 @@ def main():
     dummy
     """
     app = QApplication(sys.argv)
+
     app.setApplicationName(QString("Gereqi"))
     app.setApplicationVersion(QString(__version__))
     wnd = MainWindow()

@@ -1,5 +1,3 @@
-#Copyright 2009 Jonathan.W.Noble <jonnobleuk@gmail.com>
-
 # This file is part of Gereqi.
 #
 # Gereqi is free software: you can redistribute it and/or modify
@@ -249,6 +247,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.sets_db = Settings()
         self.__dirs_setup()
         self.__setup_watcher()
+  
         
         
     def __playlist_remembered(self):
