@@ -81,6 +81,7 @@ class AudioBackend:
         self.ui_main.set_prog_sldr()
         self.ui_main.old_pos = 0
         self.ui_main.progress_sldr.setValue(0)
+        self.ui_main.tray_tooltip()
         
     def __finished_playing(self):
         """

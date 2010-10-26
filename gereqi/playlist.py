@@ -103,6 +103,21 @@ class Playlist:
             return file_list.index(current_file)
         
         
+    def current_row_info(self):
+        row = self.current_row()
+        info = {"Track":None,"Title": None,
+                "Artist": None, "Album": None,
+                "Year":None, "Genre": None,
+                "Length": None, "Bitrate": None, 
+                "FileName": None}
+        
+        for key in info.keys():
+            col = self.header_search(key)
+            info[key] = self.ui_main.track_tbl.item(row,col).text()
+            
+        return info
+            
+            
     def gen_file_list(self):
         """
         Creates a list of files in the playlist at its
@@ -132,7 +147,8 @@ class Playlist:
     def header_search(self, val):
         """
         This will eventually allows the column order of the 
-        playlist view to be changed         
+        playlist view to be changed.
+        Returns the position of the header
         """
         cols = self.ui_main.track_tbl.columnCount()
         headers = [self.ui_main.track_tbl.horizontalHeaderItem(col).text() 

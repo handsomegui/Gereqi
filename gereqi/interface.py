@@ -273,6 +273,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.play_cd_actn.setVisible(False)
             
             
+    def tray_tooltip(self):
+        if self.play_bttn.isChecked() == False:
+            msg = "Paused"
+        # Puts the current track info in tray tooltip
+        else:
+            info = self.playlisting.current_row_info()
+            msg = "%s by %s" % (info["Title"], info["Artist"])
+        self.tray_icon.setToolTip(msg) 
+        
     @pyqtSignature("QString")  
     def on_search_collect_edit_textChanged(self, srch_str):
         """
@@ -378,7 +387,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 self.player.audio_object.play()
                 self.stop_bttn.setEnabled(True)
                 self.wdgt_manip.icon_change("play")
-                
+        
             # Nothing to play
             else:
                 self.play_bttn.setChecked(False)
@@ -398,6 +407,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # of the "Nothing to play" situations also.
         self.play_action.setChecked(checked)
         self.play_actn.setChecked(checked)
+        self.tray_tooltip()
         
     @pyqtSignature("")    
     def on_stop_bttn_pressed(self):
