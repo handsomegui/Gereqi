@@ -621,8 +621,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.mute_bttn.setIcon(icon)
         else:
             vol = (self.volume_sldr.value() / 100.0) ** 2
-            icon = QIcon(QPixmap(":/Icons/audio-volume-high.png"))
-            self.mute_bttn.setIcon(icon)
+            self.mute_bttn.setIcon(QIcon().fromTheme("player-volume"))
             self.player.audio_object.set_volume(vol)
       
     @pyqtSignature("")  

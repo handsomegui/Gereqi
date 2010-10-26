@@ -32,6 +32,7 @@ class SetupExtraWidgets:
 
         self.__setup_misc()
         self.__key_shortcuts()
+        self.__icons()
         
     def __setup_filesystem_tree(self):
         """
@@ -103,9 +104,9 @@ class SetupExtraWidgets:
         self.ui_main.stat_prog.setValue(100)
         self.ui_main.stat_prog.setMaximumSize(QSize(100, 18))
         
-        icon = QIcon(QPixmap(":/Icons/application-exit.png"))
+        
         self.ui_main.stat_bttn = QToolButton()
-        self.ui_main.stat_bttn.setIcon(icon)
+        self.ui_main.stat_bttn.setIcon(QIcon().fromTheme("application-exit"))
         self.ui_main.stat_bttn.setAutoRaise(True)
         self.ui_main.stat_bttn.setEnabled(False)
         
@@ -170,6 +171,29 @@ class SetupExtraWidgets:
             icon.addPixmap(QPixmap(":/Icons/dice-icon2.png"), QIcon.Normal,
                            QIcon.Off)
         self.ui_main.play_type_bttn.setIcon(icon)
+        
+    def __icons(self):
+        """
+        Using the theme's icons
+        """
+        self.ui_main.clear_collect_bttn.setIcon(QIcon().fromTheme("edit-clear"))
+        self.ui_main.clear_search_bttn.setIcon(QIcon().fromTheme("edit-clear"))
+        self.ui_main.clear_trktbl_bttn.setIcon(QIcon().fromTheme("window-new"))
+        self.ui_main.save_trktbl_bttn.setIcon(QIcon().fromTheme("document-save-as"))
+        self.ui_main.prev_trktbl_bttn.setIcon(QIcon().fromTheme("edit-undo"))
+        self.ui_main.next_trktbl_bttn.setIcon(QIcon().fromTheme("edit-redo"))
+        
+        self.ui_main.prev_bttn.setIcon(QIcon().fromTheme("media-skip-backward"))
+        self.ui_main.play_bttn.setIcon(QIcon().fromTheme("media-playback-start"))
+        self.ui_main.stop_bttn.setIcon(QIcon().fromTheme("media-playback-stop"))
+        self.ui_main.next_bttn.setIcon(QIcon().fromTheme("media-skip-forward"))        
+        self.ui_main.mute_bttn.setIcon(QIcon().fromTheme("player-volume"))
+        
+        self.ui_main.rename_playlist_bttn.setIcon(QIcon().fromTheme("edit-rename")) # NONSTD
+        self.ui_main.delete_playlist_bttn.setIcon(QIcon().fromTheme("edit-delete")) # NONSTD
+        
+        
+        
         
         
 class WidgetManips:
@@ -269,11 +293,12 @@ class WidgetManips:
         Depending on the specific state of the program
         the play button's icon will vary
         """
+        #FIXME: systray icon is missing
         if state == "play":
-            icon = QIcon(QPixmap(":/Icons/media-playback-pause.png"))
+            icon = QIcon().fromTheme("media-playback-pause")
             tray = QIcon(QPixmap(":/Icons/app.png"))
-        elif state == "pause":
-            icon = QIcon(QPixmap(":/Icons/media-playback-start.png"))
+        elif state == "pause":            
+            icon = QIcon().fromTheme("media-playback-start")
             tray = QIcon(QPixmap(":/Icons/app-paused.png"))
 
         self.ui_main.play_bttn.setIcon(icon)

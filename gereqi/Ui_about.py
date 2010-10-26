@@ -58,4 +58,3 @@ class Ui_About(object):
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Visit <a href=\"http://code.google.com/p/gereqi/\"><span style=\" text-decoration: underline; color:#e85290;\">http://code.google.com/p/gereqi/</span></a></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
 
-import resource_rc
