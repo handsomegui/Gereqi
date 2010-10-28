@@ -442,7 +442,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Self explanatory
         """        
-        value = (value / 100.0) ** 2
+        value = (value / 100.0)
         self.player.audio_object.set_volume(value)
     
     #TODO: not sure if the DB changes are made
@@ -617,10 +617,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         self.player.audio_object.mute(checked)
         if checked:
-            icon = QIcon(QPixmap(":/Icons/audio-volume-muted.png"))
+            icon = QIcon(QIcon().fromTheme("process-stop"))
             self.mute_bttn.setIcon(icon)
         else:
-            vol = (self.volume_sldr.value() / 100.0) ** 2
+            vol = (self.volume_sldr.value() / 100.0)
             self.mute_bttn.setIcon(QIcon().fromTheme("player-volume"))
             self.player.audio_object.set_volume(vol)
       
