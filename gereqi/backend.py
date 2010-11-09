@@ -16,6 +16,8 @@
 from PyQt4.QtGui import QPixmap
 from PyQt4.QtCore import QObject, QTime,  QString
 
+import time
+
 from gstbe import Gstbe
 
 class AudioBackend:
@@ -104,12 +106,10 @@ class AudioBackend:
         
     def __inc_playcount(self):
         """
-        Probably better to do this within the database.
+        Doesn't actually change count. Adds notification
+        of full-play into the historyDB table
         """
-        now = self.ui_main.tracking.generate_track("back")
-        info = self.ui_main.media_db.get_info(now)
-        if info is not None:
-            playcount = int(info[10])
-            playcount += 1
-            self.ui_main.media_db.inc_count(playcount, now)
+        track = self.ui_main.tracking.generate_track("back")
+        timestamp = time.time()
+        self.ui_main.media_db.inc_count(timestamp, track)
         

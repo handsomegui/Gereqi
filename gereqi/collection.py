@@ -14,11 +14,13 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt4.QtCore import *
+from PyQt4.QtCore import QCryptographicHash as QHash
 from PyQt4.QtSql import *
 
 from settings import Settings
 
 import os
+
 
 class CollectionDb:
     def __init__(self, name):
@@ -34,7 +36,6 @@ class CollectionDb:
         self.db_type = sets_db.get_database_setting("type")
         if self.db_type == "MYSQL":                            
             self.media_db = QSqlDatabase.addDatabase("QMYSQL", self.db_name)
-
             self.media_db.setHostName(sets_db.get_database_setting("hostname"))
             self.media_db.setDatabaseName(sets_db.get_database_setting("dbname"))
             self.media_db.setUserName(sets_db.get_database_setting("username"))
@@ -54,7 +55,7 @@ class CollectionDb:
         
         ok = self.media_db.open()
         if ok is True:
-            print "DATABASE OK"
+            print "DATABASE OK",self.db_type
             self.query = QSqlQuery(self.media_db)
             if self.db_type == "SQLITE":
                 self.__pragma()
@@ -65,51 +66,51 @@ class CollectionDb:
     def __setup_tables(self):
         if self.db_type == "SQLITE":
             tables = ['''CREATE TABLE IF NOT EXISTS media (
-                    file_name    TEXT ,
-                    title   VARCHAR(50),
-                    artist  VARCHAR(50),
-                    album   VARCHAR(50),
-                    year   SMALLINT(4),
-                    genre  VARCHAR(20),
-                    track UNSIGNED TINYINT(2),
-                    length  VARCHAR(5),
-                    bitrate SMALLINT(4),
-                    added UNSIGNED INT(10),
-                    playcount SMALLINT(5),
-                    rating TINYINT(1),
-                    PRIMARY KEY (file_name)
-                    )'''
-                    , 
+                        file_name    TEXT ,
+                        title   VARCHAR(50),
+                        artist  VARCHAR(50),
+                        album   VARCHAR(50),
+                        year   SMALLINT(4),
+                        genre  VARCHAR(20),
+                        track UNSIGNED TINYINT(2),
+                        length  VARCHAR(5),
+                        bitrate SMALLINT(4),
+                        added UNSIGNED INT(10),
+                        rating TINYINT(1),
+                        PRIMARY KEY (file_name) )''', 
                     '''CREATE TABLE IF NOT EXISTS playlist (
-                    name TEXT,
-                    file_name TEXT
-                    )''']      
+                        name TEXT,
+                        file_name TEXT)''',
+                    '''CREATE TABLE IF NOT EXISTS history (
+                        timestamp    INT(10) PRIMARY KEY,
+                        file_name    TEXT)''']
+                  
         elif self.db_type == "MYSQL":
             # Mysql requires slightly different tables
             tables = ['''CREATE TABLE IF NOT EXISTS media (
-                                file_name    TEXT ,
-                                title   VARCHAR(50),
-                                artist  VARCHAR(50),
-                                album   VARCHAR(50),
-                                year   SMALLINT(4) UNSIGNED,
-                                genre  VARCHAR(20),
-                                track  TINYINT(2) UNSIGNED,
-                                length  VARCHAR(5),
-                                bitrate SMALLINT(4) UNSIGNED,
-                                added INT(10) UNSIGNED ,
-                                playcount SMALLINT(5) UNSIGNED,
-                                rating TINYINT(1) UNSIGNED,
-                                PRIMARY KEY (file_name)
-                                ) DEFAULT CHARSET=utf8''', 
+                                id VARCHAR(32) PRIMARY KEY,
+                                file_name    TEXT,
+                                title    VARCHAR(50),
+                                artist    VARCHAR(50),
+                                album    VARCHAR(50),
+                                year    SMALLINT(4) UNSIGNED,
+                                genre    VARCHAR(20),
+                                track    TINYINT(2) UNSIGNED,
+                                length    VARCHAR(5),
+                                bitrate    SMALLINT(4) UNSIGNED,
+                                added    INT(10) UNSIGNED ,
+                                rating    TINYINT(1) UNSIGNED) ''', 
                             '''CREATE TABLE IF NOT EXISTS playlist (
-                                id SMALLINT NOT NULL AUTO_INCREMENT,
+                                id SMALLINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                                 name VARCHAR(255),
-                                file_name VARCHAR(255),
-                                PRIMARY KEY (id)
-                                ) DEFAULT CHARSET=utf8''']
+                                file_name TEXT) ''',
+                            '''CREATE TABLE IF NOT EXISTS history (
+                                timestamp    INT(10) PRIMARY KEY,
+                                file_name    TEXT) ''']
             
         for table in tables:
-            self.__query_execute(table)            
+            self.__query_execute(table)
+            
             
     def __query_fetchall(self, field_num):
         output = []
@@ -125,14 +126,19 @@ class CollectionDb:
         return output
         
     def __query_execute(self, query, args=None):
-            if args is not None:
-                self.query.prepare(query)
-                for arg in args:
-                    self.query.addBindValue(arg)
-                self.query.exec_()
-            else:
-                # The execute() doesn't accept NoneTypes
-                self.query.exec_(query)                 
+        if args is not None:
+            self.query.prepare(query)
+            for arg in args:
+                self.query.addBindValue(arg)
+            self.query.exec_()
+        else:
+            # The execute() doesn't accept NoneTypes
+            self.query.exec_(query)   
+            
+        err = self.query.lastError()
+        if err.isValid():
+            print err.text()
+                              
     
     def __execute_write(self, query, args=None):
         self.__query_execute(query, args)
@@ -156,17 +162,27 @@ class CollectionDb:
         """
         if self.db_type == "SQLITE":
             query = '''INSERT INTO media 
-                            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''
+                            VALUES (?,?,?,?,?,?,?,?,?,?,?)'''
         elif self.db_type == "MYSQL":
             query = '''INSERT IGNORE INTO media
-                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''                        
+            # Required as MYSQL will not accept a TEXT data-type as
+            # a primary key. However, file_name needs to be a TEXT
+            # as VARCHAR is limiting. Instead, an md5 hash of the file_name 
+            # becomes the PRIMARY KEY instead.
+            hash = QHash.hash(meta[0],1).toHex()
+            meta.insert(0,hash)            
         self.__execute_write(query, tuple(meta))
         
-    def inc_count(self, cnt, fname):
-        args = (cnt, fname)
-        query = '''UPDATE media
-                        SET playcount=?
-                        WHERE file_name=?'''
+    def inc_count(self, timestamp, fname):
+        """
+        Doesn't change count directly but by adding another
+        row into DB with a file_name the row_count (play count)
+        would increase
+        """
+        args = (timestamp, fname)
+        query = '''INSERT INTO history
+                    VALUES(?,?)'''
         self.__execute_write(query, args)
         
     def delete_track(self, fname):

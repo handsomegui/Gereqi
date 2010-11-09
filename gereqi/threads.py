@@ -169,13 +169,10 @@ class Builddb(QThread):
         print("%06d tracks to scan" % tracks_total)
         self.exiting = False
         
-        #TODO:maybe put in a check to not bother getting tags for
-        # an existing file and skipping anyway
         strt = time()
         cnt = 0
-        #TODO: performance tuning
         for trk in tracks:
-            if self.exiting == False: # Can't tell if this is causing slowdown
+            if self.exiting == False:
                 ratio = float(cnt ) /  float(tracks_total)
                 prog = int(round(100 * ratio))
                 if prog > old_prog:
@@ -189,8 +186,7 @@ class Builddb(QThread):
                     info.insert(0, trk) 
                     info.append(int(round(time())))
                     
-                    # The playcount and rating
-                    info.append(0)
+                    # The default rating
                     info.append(0)
                     self.media_db.add_media(info)
                     cnt += 1
