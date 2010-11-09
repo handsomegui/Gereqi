@@ -87,7 +87,7 @@ class CollectionDb:
         elif self.db_type == "MYSQL":
             # Mysql requires slightly different tables
             tables = ['''CREATE TABLE IF NOT EXISTS media (
-                                file_name    VARCHAR(255) ,
+                                file_name    TEXT ,
                                 title   VARCHAR(50),
                                 artist  VARCHAR(50),
                                 album   VARCHAR(50),
