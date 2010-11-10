@@ -22,12 +22,10 @@ from settings import Settings
 import os
 
 
+# TODO: remove the '_timed()' functions
+
 class CollectionDb:
     def __init__(self, name):
-        """
-        Experimental. As sqlite and mysql are barely different trying to
-        account for the differences
-        """
         self.db_name = QLatin1String(name)
         self.__config_db()
         
@@ -112,18 +110,32 @@ class CollectionDb:
             self.__query_execute(table)
             
             
-    def __query_fetchall(self, field_num):
-        output = []
+    def __query_fetchall(self):
+        """
+        Returns the result of the last query in
+        a list of dicts if more than 1 field
+        otherwise, a list
+        """
+        record = self.query.record
+        field_count = record().count()
+        fields = []
+        for cnt in range(field_count):
+            fields.append( record().field(cnt).name() )
+        
+        results = []
+        row = 0
+        
         while self.query.next():
-            if field_num <= 1:
-                output.append(self.query.value(0).toString())
+            if len(fields) > 1:
+                row_result = {}
+                for field in fields:                    
+                    row_result[str(field)] = record().value(field).toString()            
+                results.append(row_result)
+                row+=1
             else:
-                tmp = []
-                for  cnt in range(field_num):
-                    r = self.query.value(cnt).toString()
-                    tmp.append(r)
-                output.append(tmp)
-        return output
+                results.append(record().value(0).toString())
+        
+        return results
         
     def __query_execute(self, query, args=None):
         if args is not None:
@@ -196,7 +208,7 @@ class CollectionDb:
         query = '''SELECT DISTINCT artist
                         FROM media'''  
         self.__query_execute(query)
-        result = self.__query_fetchall(1)
+        result = self.__query_fetchall()
         return result
 
     def get_artists_timed(self, filt):
@@ -204,7 +216,7 @@ class CollectionDb:
                             FROM media
                             WHERE added>?'''
         self.__query_execute(query, (filt, ))
-        result = self.__query_fetchall(1)
+        result = self.__query_fetchall()
         return result
         
     def get_albums(self, artist):
@@ -212,7 +224,7 @@ class CollectionDb:
                             FROM media
                             WHERE artist=?'''
         self.__query_execute(query, (artist, ))
-        result = self.__query_fetchall(1)
+        result = self.__query_fetchall()
         return result
         
     def get_albums_timed(self, artist, filt):
@@ -222,14 +234,14 @@ class CollectionDb:
                             WHERE artist=?
                             AND added>?'''
         self.__query_execute(query, args)
-        result = self.__query_fetchall(1)
+        result = self.__query_fetchall()
         return result
         
     def get_albums_all(self):
         query = '''SELECT DISTINCT album
                         FROM media'''
         self.__query_execute(query)
-        result = self.__query_fetchall(1)
+        result = self.__query_fetchall()
         return result        
 
     def get_albums_all_timed(self, filt):
@@ -237,7 +249,7 @@ class CollectionDb:
                         FROM media   
                         WHERE added>?'''
         self.__query_execute(query, (filt, ))
-        result = self.__query_fetchall(1)
+        result = self.__query_fetchall()
         return result
         
     def get_files(self, artist, album):
@@ -247,7 +259,7 @@ class CollectionDb:
                         WHERE artist=?
                         AND album=?'''
         self.__query_execute(query, args)
-        result = self.__query_fetchall(1)
+        result = self.__query_fetchall()
         return result
         
     def get_files_all(self):
@@ -255,7 +267,7 @@ class CollectionDb:
                     FROM media'''
                     
         self.__query_execute(query)
-        result = self.__query_fetchall(1)
+        result = self.__query_fetchall()
         return result
         
     def get_file(self, artist, album, title):
@@ -266,7 +278,7 @@ class CollectionDb:
                         AND album=?
                         AND title=?'''
         self.__query_execute(query, args)
-        result = self.__query_fetchall(1)[0]
+        result = self.__query_fetchall()[0]
         return result
         
     def get_album_file(self, album, title):
@@ -276,7 +288,7 @@ class CollectionDb:
                         WHERE album=?
                         AND title=?'''
         self.__query_execute(query, args)
-        result = self.__query_fetchall(1)[0]
+        result = self.__query_fetchall()[0]
         return result
         
     def get_album_files(self, album):
@@ -284,7 +296,7 @@ class CollectionDb:
                         FROM media
                         WHERE album=?'''
         self.__query_execute(query, (album, ))
-        result = self.__query_fetchall(1)
+        result = self.__query_fetchall()
         return result
         
     def get_album_files_timed(self, album, filt):
@@ -294,7 +306,7 @@ class CollectionDb:
                         WHERE album=?
                         AND added>?'''
         self.__query_execute(query, args)
-        result = self.__query_fetchall(1)
+        result = self.__query_fetchall()
         return result
         
     def get_artists_files(self, artist):
@@ -302,7 +314,7 @@ class CollectionDb:
                             FROM media
                             WHERE artist=?'''
         self.__query_execute(query, (artist, ))
-        result = self.__query_fetchall(1)
+        result = self.__query_fetchall()
         return result
                         
     def get_titles(self, artist, album):
@@ -312,7 +324,7 @@ class CollectionDb:
                         WHERE artist=?
                         AND album=?'''
         self.__query_execute(query, args)
-        result = self.__query_fetchall(2)
+        result = self.__query_fetchall()
         return result
 
     def get_titles_timed(self, artist, album, filt):
@@ -323,7 +335,7 @@ class CollectionDb:
                         AND album=?
                         AND added>?'''
         self.__query_execute(query, args)
-        result = self.__query_fetchall(2)
+        result = self.__query_fetchall()
         return result
         
     def get_album_titles(self, album):
@@ -331,7 +343,7 @@ class CollectionDb:
                         FROM media
                         WHERE album=?'''
         self.__query_execute(query,(album, ))
-        result = self.__query_fetchall(1)
+        result = self.__query_fetchall()
         return result
         
        
@@ -343,7 +355,7 @@ class CollectionDb:
                         WHERE file_name=?'''
         self.__query_execute(query, (file_name, ))
         try:
-            result = self.__query_fetchall(12)[0]
+            result = self.__query_fetchall()[0]
             return result
         except IndexError:
             return
@@ -364,7 +376,7 @@ class CollectionDb:
         query = '''SELECT DISTINCT name 
                     FROM playlist'''
         self.__query_execute(query)
-        result = self.__query_fetchall(1)
+        result = self.__query_fetchall()
         return result
         
     def playlist_tracks(self, name):
@@ -372,7 +384,7 @@ class CollectionDb:
                             FROM playlist
                             WHERE name=?'''
         self.__query_execute(query, (name, ))
-        result = self.__query_fetchall(1)
+        result = self.__query_fetchall()
         return result
         
     def playlist_delete(self, name):
@@ -387,7 +399,7 @@ class CollectionDb:
                         WHERE artist=?
                         AND title=?'''        
         self.__query_execute(query, args)
-        result = self.__query_fetchall(1)
+        result = self.__query_fetchall()
         return result
    
     def drop_media(self):

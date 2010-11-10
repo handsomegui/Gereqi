@@ -683,10 +683,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 else:
                     tracks = self.media_db.get_titles_timed(artist, album, 
                                                             filt_time)
-                 
+
                 # Found this via Schwartzian transform. 
                 # Only 2/3rds of a full transform
-                tracks = [(trk[1], trk[0]) for trk in tracks]
+                tracks = [(trk["track"], trk["title"]) for trk in tracks]
                 tracks.sort()
                 
                 for cnt in range(len(tracks)):
@@ -701,7 +701,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 else:
                     albums = self.media_db.get_albums_timed(artist, filt_time)
                     
-                albums = sorted(albums, key=QString.toLower)                    
+                albums = sorted(albums, key=QString)             
                 for cnt in range(len(albums)):      
                     album = QTreeWidgetItem([albums[cnt]])
                     album.setChildIndicatorPolicy(0)

@@ -227,22 +227,21 @@ class WidgetManips:
         else:
             mode = "album"
                 
-        # FIXME: these sortings are doing nowt
+                
         if time_filt is None:
             if mode == "artist":
-                things = sorted(media_db.get_artists(), key=QString.toLower)
+                things = sorted(media_db.get_artists(), key=QString)
+                
             elif mode == "album":
-                things = sorted(media_db.get_albums_all(), key=QString.toLower)
+                things = sorted(media_db.get_albums_all(), key=QString)
         else:
             if mode == "artist":
-                things = sorted(media_db.get_artists_timed(time_filt),
-                                key=QString.toLower)
+                things = sorted(media_db.get_artists_timed(time_filt), key=QString)
             elif mode == "album":
-                things = sorted(media_db.get_albums_all_timed(time_filt),
-                                key=QString.toLower)
-                
+                things = sorted(media_db.get_albums_all_timed(time_filt), key=QString)
+        
+        # FIXME: UGLY!!!!
         if things is not None:
-            things = sorted(things)
             for cnt in range(len(things)):
                 thing = things[cnt]
                 # When creating collection tree only 
@@ -281,8 +280,8 @@ class WidgetManips:
                     for track in tracks:
                         info = self.ui_main.media_db.get_info(track)
                         if info is not None:
-                            now.addChild(QTreeWidgetItem([QString("%s - %s"
-                                                    % (info[2], info[1])) ]))       
+                            now.addChild(QTreeWidgetItem([QString("%s - %s" %
+                                         (info["title"], info["artist"])) ]))       
                                                                                       
             self.ui_main.playlist_tree.addTopLevelItem(headers[cnt])
                 

@@ -108,6 +108,7 @@ class Webinfo:
         alb = str(album).partition("(")[0].partition("[")[0]
         site = "albumart.org"
         url = self.__create_url(site, artist, alb)
+        # TODO: put fetch.read here in a try/except (timeouts)
         pre_html = self.__fetch(url)
         if pre_html is not None:
             srch = "http://www.albumart.org/images/zoom-icon.jpg"
