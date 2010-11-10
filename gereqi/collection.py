@@ -137,7 +137,7 @@ class CollectionDb:
             
         err = self.query.lastError()
         if err.isValid():
-            print err.text()
+            print err.text(),self.query.lastQuery()
                               
     
     def __execute_write(self, query, args=None):
