@@ -338,7 +338,7 @@ class CollectionDb:
     def get_info(self, file_name):
         query = '''SELECT
                         file_name, title,artist,album,year,genre,
-                        track,length,bitrate,added,playcount,rating
+                        track,length,bitrate,added,rating
                         FROM media 
                         WHERE file_name=?'''
         self.__query_execute(query, (file_name, ))
