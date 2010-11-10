@@ -99,14 +99,14 @@ class CollectionDb:
                                 length    VARCHAR(5),
                                 bitrate    SMALLINT(4) UNSIGNED,
                                 added    INT(10) UNSIGNED ,
-                                rating    TINYINT(1) UNSIGNED) ''', 
+                                rating    TINYINT(1) UNSIGNED) DEFAULT CHARSET=utf8 ''', 
                             '''CREATE TABLE IF NOT EXISTS playlist (
                                 id SMALLINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                                 name VARCHAR(255),
-                                file_name TEXT) ''',
+                                file_name TEXT) DEFAULT CHARSET=utf8 ''',
                             '''CREATE TABLE IF NOT EXISTS history (
                                 timestamp    INT(10) PRIMARY KEY,
-                                file_name    TEXT) ''']
+                                file_name    TEXT) DEFAULT CHARSET=utf8 ''']
             
         for table in tables:
             self.__query_execute(table)
