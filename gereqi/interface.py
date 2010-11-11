@@ -678,10 +678,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             
             if (album is not None) and (item.childCount() == 0):
                 # Adding tracks to album
-                if filt_time is None:
-                    tracks = self.media_db.get_titles(artist, album)
-                else:
-                    tracks = self.media_db.get_titles_timed(artist, album, 
+                tracks = self.media_db.get_titles(artist, album, 
                                                             filt_time)
 
                 # Found this via Schwartzian transform. 
@@ -696,10 +693,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
            # Adding albums to the artist 
            # i.e. the parent has no children    
             elif item.childCount() == 0: 
-                if filt_time is None:
-                    albums = self.media_db.get_albums(artist)
-                else:
-                    albums = self.media_db.get_albums_timed(artist, filt_time)
+                albums = self.media_db.get_albums(artist, filt_time)
                     
                 albums = sorted(albums, key=QString)             
                 for cnt in range(len(albums)):      
@@ -716,11 +710,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 track = None
             
             if (track is None) and (item.childCount() == 0):
-                if filt_time is None:
-                    tracks = self.media_db.get_album_titles(album)
-                else:
-                    tracks = self.media_db.get_album_titles_timed(album,
-                                                                  filt_time) 
+                tracks = self.media_db.get_album_titles(album,filt_time) 
                              
                 for cnt in range(len(tracks)):      
                     track = QTreeWidgetItem([tracks[cnt]])
@@ -1058,6 +1048,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         filts = [(now[3] * now[4]) + now[5], 604800, 2419200, 7257600, 31557600]   
         if index > 0:
             return calc(filts[index - 1])
+        else:
+            return 0
         
     def __collection_mode(self):
         text_now = self.collect_tree.headerItem().text(0)

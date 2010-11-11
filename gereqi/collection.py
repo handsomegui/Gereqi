@@ -204,14 +204,7 @@ class CollectionDb:
         print("DELETING FROM DB: %s" % fname)
         self.__execute_write(query, args)
         
-    def get_artists(self):
-        query = '''SELECT DISTINCT artist
-                        FROM media'''  
-        self.__query_execute(query)
-        result = self.__query_fetchall()
-        return result
-
-    def get_artists_timed(self, filt):
+    def get_artists(self, filt=0):
         query = '''SELECT DISTINCT artist 
                             FROM media
                             WHERE added>?'''
@@ -219,15 +212,7 @@ class CollectionDb:
         result = self.__query_fetchall()
         return result
         
-    def get_albums(self, artist):
-        query = '''SELECT DISTINCT album 
-                            FROM media
-                            WHERE artist=?'''
-        self.__query_execute(query, (artist, ))
-        result = self.__query_fetchall()
-        return result
-        
-    def get_albums_timed(self, artist, filt):
+    def get_albums(self, artist, filt=0):
         args = (artist, filt)
         query = '''SELECT DISTINCT album   
                             FROM media
@@ -237,14 +222,7 @@ class CollectionDb:
         result = self.__query_fetchall()
         return result
         
-    def get_albums_all(self):
-        query = '''SELECT DISTINCT album
-                        FROM media'''
-        self.__query_execute(query)
-        result = self.__query_fetchall()
-        return result        
-
-    def get_albums_all_timed(self, filt):
+    def get_albums_all(self, filt=0):
         query = '''SELECT DISTINCT album
                         FROM media   
                         WHERE added>?'''
@@ -291,24 +269,16 @@ class CollectionDb:
         result = self.__query_fetchall()[0]
         return result
         
-    def get_album_files(self, album):
-        query = '''SELECT DISTINCT file_name
-                        FROM media
-                        WHERE album=?'''
-        self.__query_execute(query, (album, ))
-        result = self.__query_fetchall()
-        return result
-        
-    def get_album_files_timed(self, album, filt):
-        args = (album, filt)
+    def get_album_files(self, album,filt=0):
         query = '''SELECT DISTINCT file_name
                         FROM media
                         WHERE album=?
                         AND added>?'''
-        self.__query_execute(query, args)
+        self.__query_execute(query, (album, filt ))
         result = self.__query_fetchall()
         return result
         
+       
     def get_artists_files(self, artist):
         query = '''SELECT DISTINCT file_name 
                             FROM media
@@ -317,17 +287,7 @@ class CollectionDb:
         result = self.__query_fetchall()
         return result
                         
-    def get_titles(self, artist, album):
-        args = (artist, album)
-        query = '''SELECT DISTINCT title,track 
-                        FROM media 
-                        WHERE artist=?
-                        AND album=?'''
-        self.__query_execute(query, args)
-        result = self.__query_fetchall()
-        return result
-
-    def get_titles_timed(self, artist, album, filt):
+    def get_titles(self, artist, album, filt=0):
         args = (artist, album, filt)
         query = '''SELECT DISTINCT title,track 
                         FROM media 

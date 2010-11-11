@@ -210,6 +210,8 @@ class WidgetManips:
         filts = [today, 604800, 2629743, 7889229, 31556926]   
         if index > 0:
             return calc(filts[index - 1])
+        else:
+            return 0
         
     def setup_db_tree(self):
         """
@@ -227,18 +229,10 @@ class WidgetManips:
         else:
             mode = "album"
                 
-                
-        if time_filt is None:
-            if mode == "artist":
-                things = sorted(media_db.get_artists(), key=QString)
-                
-            elif mode == "album":
-                things = sorted(media_db.get_albums_all(), key=QString)
-        else:
-            if mode == "artist":
-                things = sorted(media_db.get_artists_timed(time_filt), key=QString)
-            elif mode == "album":
-                things = sorted(media_db.get_albums_all_timed(time_filt), key=QString)
+        if mode == "artist":
+            things = sorted(media_db.get_artists(time_filt), key=QString)
+        elif mode == "album":
+            things = sorted(media_db.get_albums_all(time_filt), key=QString)
         
         # FIXME: UGLY!!!!
         if things is not None:
