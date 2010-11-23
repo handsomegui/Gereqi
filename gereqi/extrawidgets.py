@@ -195,8 +195,22 @@ class SetupExtraWidgets:
         
         
 class WidgetManips:
+    """
+    For repeated custom widget actions
+    """
     def __init__(self, parent):
+        parent.track_tbl.setContextMenuPolicy(Qt.CustomContextMenu)
+        parent.track_tbl.customContextMenuRequested.connect(self.__context_menu)
         self.ui_main = parent
+        
+    def __context_menu(self,pos):
+        # do nothing if table is empty
+        if self.ui_main.track_tbl.rowCount() > 0:
+            menu = QMenu()
+            quitAction = menu.addAction("Quit")
+            action = menu.exec_(self.ui_main.track_tbl.mapToGlobal(pos))
+
+            print "CONTEXT MENU",pos
         
     def __time_filt_now(self):
         """
