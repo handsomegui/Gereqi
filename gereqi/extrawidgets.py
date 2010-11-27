@@ -207,7 +207,12 @@ class WidgetManips:
         # do nothing if table is empty
         if self.ui_main.track_tbl.rowCount() > 0:
             menu = QMenu()
-            quitAction = menu.addAction("Quit")
+            play_action = menu.addAction("Play")
+            menu.addSeparator()
+            manage_action = menu.addAction("Manage File")
+            copy_tags_action = menu.addAction("Copy Tags to Clipboard")
+            edit_action = menu.addAction("Edit Track Information")
+            
             action = menu.exec_(self.ui_main.track_tbl.mapToGlobal(pos))
 
             print "CONTEXT MENU",pos
