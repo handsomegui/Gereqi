@@ -249,9 +249,9 @@ class WidgetManips:
             mode = "album"
                 
         if mode == "artist":
-            things = sorted(media_db.get_artists(time_filt), key=QString)
+            things = media_db.get_artists(time_filt)
         elif mode == "album":
-            things = sorted(media_db.get_albums_all(time_filt), key=QString)
+            things = media_db.get_albums_all(time_filt)
         
         # FIXME: UGLY!!!!
         if things is not None:

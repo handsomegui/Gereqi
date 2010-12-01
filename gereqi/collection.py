@@ -206,8 +206,9 @@ class CollectionDb:
         
     def get_artists(self, filt=0):
         query = '''SELECT DISTINCT artist 
-                            FROM media
-                            WHERE added>?'''
+                    FROM media
+                    WHERE added > ?
+                    ORDER BY lower(artist)'''
         self.__query_execute(query, (filt, ))
         result = self.__query_fetchall()
         return result
@@ -215,9 +216,10 @@ class CollectionDb:
     def get_albums(self, artist, filt=0):
         args = (artist, filt)
         query = '''SELECT DISTINCT album   
-                            FROM media
-                            WHERE artist=?
-                            AND added>?'''
+                    FROM media
+                    WHERE artist=?
+                    AND added > ?
+                    ORDER BY lower(album)'''
         self.__query_execute(query, args)
         result = self.__query_fetchall()
         return result
