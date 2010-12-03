@@ -168,15 +168,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.info_thread.got_info.connect(self.__bodger)
         # Cannot do this for some reason
 #        self.info_thread.got_info.connect(self.info_view.setHtml(html))
-
-
         
         # Makes the collection search line-edit have the keyboard focus
         self.search_collect_edit.setFocus()
         self.wdgt_manip.setup_db_tree()
         self.wdgt_manip.pop_playlist_view() 
-        
-
         
     def __tray_menu_appearance(self):
         if self.sets_db.get_interface_setting("trayicon") == "True":
@@ -682,12 +678,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             
             if (album is not None) and (item.childCount() == 0):
                 # Adding tracks to album
-                tracks = self.media_db.get_titles(artist, album, 
+                if filt_time is None:
+                    tracks = self.media_db.get_titles(artist, album)
+                else:
+                    tracks = self.media_db.get_titles_timed(artist, album, 
                                                             filt_time)
-
+                 
                 # Found this via Schwartzian transform. 
                 # Only 2/3rds of a full transform
-                tracks = [(trk["track"], trk["title"]) for trk in tracks]
+                tracks = [(trk[1], trk[0]) for trk in tracks]
                 tracks.sort()
                 
                 for cnt in range(len(tracks)):
@@ -697,9 +696,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
            # Adding albums to the artist 
            # i.e. the parent has no children    
             elif item.childCount() == 0: 
-                albums = self.media_db.get_albums(artist, filt_time)
+                if filt_time is None:
+                    albums = self.media_db.get_albums(artist)
+                else:
+                    albums = self.media_db.get_albums_timed(artist, filt_time)
                     
-                albums = sorted(albums, key=QString)             
+                albums = sorted(albums, key=QString.toLower)                    
                 for cnt in range(len(albums)):      
                     album = QTreeWidgetItem([albums[cnt]])
                     album.setChildIndicatorPolicy(0)
@@ -714,7 +716,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 track = None
             
             if (track is None) and (item.childCount() == 0):
-                tracks = self.media_db.get_album_titles(album,filt_time) 
+                if filt_time is None:
+                    tracks = self.media_db.get_album_titles(album)
+                else:
+                    tracks = self.media_db.get_album_titles_timed(album,
+                                                                  filt_time) 
                              
                 for cnt in range(len(tracks)):      
                     track = QTreeWidgetItem([tracks[cnt]])
@@ -1052,8 +1058,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         filts = [(now[3] * now[4]) + now[5], 604800, 2419200, 7257600, 31557600]   
         if index > 0:
             return calc(filts[index - 1])
-        else:
-            return 0
         
     def __collection_mode(self):
         text_now = self.collect_tree.headerItem().text(0)

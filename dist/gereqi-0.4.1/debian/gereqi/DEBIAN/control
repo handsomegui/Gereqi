@@ -1,0 +1,10 @@
+Package: gereqi
+Version: 0.4.1-1
+Architecture: all
+Maintainer: Jon Noble <jonnobleuk@gmail.com>
+Installed-Size: 516
+Depends: python-qt4 (>= 4.5.0), python-gst0.10, python-mutagen, gstreamer0.10-plugins-ugly, gstreamer0.10-plugins-bad, python-qt4-sql, libqt4-sql-sqlite, python-pyinotify
+Section: Multimedia
+Priority: extra
+Homepage: http://code.google.com/p/gereqi/
+Description: A music player based on Amarok-1.4

@@ -1,0 +1,31 @@
+Format: 1.8
+Date: Tue, 31 Aug 2010 20:20:32 +0100
+Source: gereqi
+Binary: gereqi
+Architecture: source all
+Version: 0.4.1-1
+Distribution: unstable
+Urgency: low
+Maintainer: Jon Noble <jonnobleuk@gmail.com>
+Changed-By: Jon Noble <jonnobleuk@gmail.com>
+Description: 
+ gereqi     - A music player based on Amarok-1.4
+Changes: 
+ gereqi (0.4.1-1) unstable; urgency=low
+ .
+   *  0.4.1 release. Fixes some UI and logic issues
+Checksums-Sha1: 
+ 165f83320b44e8c0c4f84ecf93491f8877e9933e 763 gereqi_0.4.1-1.dsc
+ f9e94c52957690c93b5d675c788f863f214ac709 114189 gereqi_0.4.1.orig.tar.gz
+ 0b4928e8e146d265571583ba5e08678750c0a5c2 1121 gereqi_0.4.1-1.diff.gz
+ 85831869704c5424d4136c785cdf719f80a14ce4 117376 gereqi_0.4.1-1_all.deb
+Checksums-Sha256: 
+ d5a6a1760995839907c1a3d9554b207301c8cb3db76abf37be68367b66aa05f5 763 gereqi_0.4.1-1.dsc
+ bfbfe973999340a83ed2729c47afd26d1287114937a2245ea01179397dda8af5 114189 gereqi_0.4.1.orig.tar.gz
+ 54de156ae50553b0d549a7667d58c3493b32d95d47cde4b686092b6c2568e046 1121 gereqi_0.4.1-1.diff.gz
+ ca5fd0e4bc2e025dd411469f43c478cf286f8944f7a5b509939b2e7ce6480de8 117376 gereqi_0.4.1-1_all.deb
+Files: 
+ 2ed675bbafda3668dfa3cf98096edd5b 763 Multimedia extra gereqi_0.4.1-1.dsc
+ 194becbd2191c2e8be5fb2f580f78403 114189 Multimedia extra gereqi_0.4.1.orig.tar.gz
+ ddb259ac02525a0ee0d5c6b83706c343 1121 Multimedia extra gereqi_0.4.1-1.diff.gz
+ 2be1dc39cd1af5b3b64d05b6611b93b1 117376 Multimedia extra gereqi_0.4.1-1_all.deb

@@ -1,3 +1,5 @@
+#Copyright 2009 Jonathan.W.Noble <jonnobleuk@gmail.com>
+
 # This file is part of Gereqi.
 #
 # Gereqi is free software: you can redistribute it and/or modify
@@ -32,10 +34,260 @@ from backend import AudioBackend
 from settings import Settings
 from collection import CollectionDb
 from about import About
-from playlist import Playlist, PlaylistHistory
 
 # The folder watcher poll-time in seconds
 WATCHTIME = 30 
+
+
+class Playlist:
+    def __init__(self, parent):
+        self.ui_main = parent          
+  
+    def __sort_custom(self, mode="FileName"):
+        """
+        Puts the playlist into a sorting order
+        that works only for filename sorting (the only
+        order that appears to work)
+        """
+        # Finds the sorting status of the playlist
+        hdr = self.ui_main.track_tbl.horizontalHeader()
+        self.sort_order = hdr.sortIndicatorOrder()
+        self.sort_pos = hdr.sortIndicatorSection()
+        fname_pos = self.header_search(mode)
+        
+        # Not the default FileName+ascending sort
+        if (self.sort_pos != fname_pos) or (self.sort_order != 0) :
+            hdr.setSortIndicator(fname_pos, 0)
+            
+    def __unsort(self):
+        """
+        Puts the playlist sorting back to what it was 
+        """
+        fname_pos = self.header_search("FileName")
+        if self.sort_pos != fname_pos or (self.sort_order != 0):
+            hdr = self.ui_main.track_tbl.horizontalHeader()
+            hdr.setSortIndicator(self.sort_pos, self.sort_order)
+    
+    def add_list_to_playlist(self, tracks):
+        """
+        Takes a list of filenames and adds to the playlist
+        whilst handling the sorting orders
+        """
+        self.__sort_custom()
+        for trk in tracks:
+            # This is for adding a track which has info attached in a tuple
+            if isinstance(trk, tuple):
+                self.add_to_playlist(trk[0], trk[1])
+            else:
+                self.add_to_playlist(trk, None)        
+        self.__unsort()
+    
+    def add_to_playlist(self, file_name, info=None):
+        """
+        Called when adding tracks to the playlist either locally
+        or from the database. Does not pull metadata from 
+        the database and is passed into the function directly
+        """
+        # This allows to manually put in info for things we know
+        # mutagen cannot handle things like urls for podcasts
+        self.ui_main.clear_trktbl_bttn.setEnabled(True)
+        metadata = info
+        if metadata is None:
+            # see if the track is already in db
+            metadata = self.ui_main.media_db.get_info(file_name)
+            if metadata is None:
+                # get the info using the tag-extractor module
+                metadata = self.ui_main.meta.extract(str(file_name))
+                if metadata is None:
+                    return
+                else:       
+                    trk = QString("%1").arg(metadata[5].toInt()[0], 2, 10, QChar('0'))
+                    metadata = {"Track": trk,  "Title": metadata[0],
+                                "Artist": metadata[1], "Album": metadata[2],
+                                "Year":metadata[3], "Genre": metadata[4],
+                                "Length": metadata[6], "Bitrate": metadata[7], 
+                                "FileName": file_name}
+            else:
+                trk = QString("%1").arg(metadata[6].toInt()[0], 2,10, QChar('0'))
+                metadata = {'Track': trk, "Title": metadata[1], "Artist": metadata[2], 
+                            "Album": metadata[3], "Year": metadata[4], "Genre": metadata[5],
+                            "Length": metadata[7], "Bitrate": metadata[8], 
+                            "FileName": file_name}
+                                    
+        row = self.ui_main.track_tbl.rowCount()
+        self.ui_main.track_tbl.insertRow(row)
+        # Creates each cell for a track based on info
+        for key in metadata:
+            tbl_wdgt = QTableWidgetItem(metadata[key])
+            column = self.header_search(key)
+            self.ui_main.track_tbl.setItem(row, column, tbl_wdgt)
+        self.ui_main.track_tbl.resizeColumnsToContents()   
+        
+        
+    # This is needed as the higlighted row can be different
+    # than the currentRow method of Qtableview.
+    def current_row(self):
+        """
+        Finds the playlist row of the
+        currently playing track
+        """
+        file_list = self.gen_file_list()
+        current_file = self.ui_main.player.audio_object.current_source()
+        
+        if current_file is None:
+            return self.ui_main.track_tbl.currentRow()
+        elif current_file in file_list:
+            return file_list.index(current_file)
+        
+        
+    def gen_file_list(self):
+        """
+        Creates a list of files in the playlist at its
+        current sorting top to bottom
+        """
+        rows = self.ui_main.track_tbl.rowCount() 
+        column = self.header_search("FileName")
+        file_list = [self.ui_main.track_tbl.item(row, column).text()
+                        for row in range(rows)]
+        return file_list           
+        
+    def del_track(self):
+        """
+        Deletes selected tracks from playlist
+        """
+        items = self.ui_main.track_tbl.selectedItems()
+        for item in items:
+            try:
+                row = item.row()
+                self.ui_main.track_tbl.removeRow(row)                
+                self.tracknow_colourise(self.current_row())
+            except RuntimeError:
+                # likely deleted already 
+                # i.e selected same row but multiple columns
+                return 
+        
+    def header_search(self, val):
+        """
+        This will eventually allows the column order of the 
+        playlist view to be changed         
+        """
+        cols = self.ui_main.track_tbl.columnCount()
+        headers = [self.ui_main.track_tbl.horizontalHeaderItem(col).text() 
+                   for col in range(cols)]
+        return headers.index(val)
+        
+    def tracknow_colourise(self, now=None):
+        """
+        Instead of using QTableWidget's selectRow function, 
+        set the background colour of each item in a row
+        until track changes.
+        """
+        columns = self.ui_main.track_tbl.columnCount()
+        rows = self.ui_main.track_tbl.rowCount()
+        palette = self.ui_main.track_tbl.palette()
+        
+        for row in range(rows):
+            for col in range(columns):
+                item = self.ui_main.track_tbl.item(row, col)
+                if row != now:
+                    if row % 2:
+                        # Odd-row
+                        item.setBackgroundColor(palette.alternateBase().color())
+                    else:
+                        # even row
+                        item.setBackgroundColor(palette.base().color())
+                else:
+                    highlight = palette.highlight().color()
+                    highlight.setAlpha(128)
+                    item.setBackgroundColor(highlight)
+                    self.ui_main.track_tbl.selectRow(now)
+                        
+    def highlighted_track(self):
+        """
+        In the playlist
+        """
+        row = self.ui_main.track_tbl.currentRow()
+        column = self.header_search("FileName")
+        track = None
+        # -1 is the row value for None
+        if row > -1:
+            track = self.ui_main.track_tbl.item(row, column).text()
+        return track        
+        
+    def clear(self):
+        """
+        Clears the playlist
+        """
+        self.ui_main.track_tbl.clearContents()
+        rows = self.ui_main.track_tbl.rowCount()
+        # For some reason can only remove from bot to top
+        for cnt in range(rows, -1, -1):
+            self.ui_main.track_tbl.removeRow(cnt)
+            
+    def gen_full_list(self):
+        """
+        Get all the info in the playlist
+        """
+        rows = self.ui_main.track_tbl.rowCount()
+        columns = self.ui_main.track_tbl.columnCount()
+        headers = [self.ui_main.track_tbl.horizontalHeaderItem(cnt).text()
+                        for cnt in range(columns)]
+        tracks = []
+        for row in range(rows):
+            tmp_list = []
+            for col in range(columns):
+                tmp_list.append(self.ui_main.track_tbl.item(row, col).text())
+            tracks.append(tmp_list)        
+        return headers, tracks
+     
+    def track_sorting(self, index):
+        """
+        A bit of a hack. The table is first sorted by track automatically
+        then manually sorting by album by telling the table to auto-sort
+        it that way
+        """
+        hdrs, tracks = self.gen_full_list()
+        if hdrs[index] == "Track":
+            self.__sort_custom("Album")
+        self.tracknow_colourise(self.current_row())
+        
+    def gen_track_list(self):
+        """
+        Get a list of filenames in playlist
+        """
+        rows = self.ui_main.track_tbl.rowCount()
+        trk_col = self.header_search("FileName")
+        tracks = []
+        for row in range(rows):
+            tracks.append(self.ui_main.track_tbl.item(row, trk_col).text())
+        return tracks
+        
+        
+class PlaylistHistory:
+    """
+    The playlist history
+    """
+    stack = []
+    position = 0
+    
+    def update(self, tracks):
+        if PlaylistHistory.position != len(PlaylistHistory.stack):
+            del PlaylistHistory.stack[PlaylistHistory.position:]
+            
+        PlaylistHistory.stack.append(tracks)
+        PlaylistHistory.position += 1
+        
+    def last_list(self):
+        if PlaylistHistory.position > 0:
+            PlaylistHistory.position -= 1
+            last = PlaylistHistory.position == 0
+            return PlaylistHistory.stack[PlaylistHistory.position], last
+        
+    def next_list(self):
+        if PlaylistHistory.position < len(PlaylistHistory.stack):
+            PlaylistHistory.position += 1
+            first = PlaylistHistory.position == (len(PlaylistHistory.stack) - 1)
+            return PlaylistHistory.stack[PlaylistHistory.position], first
 
 
 class Track:
@@ -150,7 +402,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.play_hist = PlaylistHistory()
         self.__playlist_remembered()
         self.__audiocd_setup()
-        self.__tray_menu_appearance()
         
         # new style signalling
         self.build_db_thread.finished.connect(self.finishes.db_build)
@@ -168,28 +419,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.info_thread.got_info.connect(self.__bodger)
         # Cannot do this for some reason
 #        self.info_thread.got_info.connect(self.info_view.setHtml(html))
-
-
         
         # Makes the collection search line-edit have the keyboard focus
         self.search_collect_edit.setFocus()
         self.wdgt_manip.setup_db_tree()
         self.wdgt_manip.pop_playlist_view() 
         
-
         
-    def __tray_menu_appearance(self):
-        if self.sets_db.get_interface_setting("trayicon") == "True":
-            self.tray_icon.show()
-        else:
-            self.tray_icon.hide()
-        
-    # FIXME: HACK ALERT!!!
-    def __bodger(self, html):
-        """
-        needed as the signal cannot be directly connected to
-        the webview for unknown reasons
-        """    
+    def __bodger(self, html):       
         self.info_view.setHtml(html)
         
     def __setup_watcher(self):
@@ -251,8 +488,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.sets_db = Settings()
         self.__dirs_setup()
         self.__setup_watcher()
-  
-        
         
     def __playlist_remembered(self):
         """
@@ -277,15 +512,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.play_cd_actn.setVisible(False)
             
             
-    def tray_tooltip(self):
-        if self.play_bttn.isChecked() == False:
-            msg = "Paused"
-        # Puts the current track info in tray tooltip
-        else:
-            info = self.playlisting.current_row_info()
-            msg = "%s by %s" % (info["Title"], info["Artist"])
-        self.tray_icon.setToolTip(msg) 
-        
     @pyqtSignature("QString")  
     def on_search_collect_edit_textChanged(self, srch_str):
         """
@@ -349,7 +575,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.player.audio_object.stop()
             self.player.audio_object.load(track)
             # Checks to see if the playbutton is in play state
-            if self.play_bttn.isChecked():
+            if self.play_bttn.isChecked() is True:
                 self.player.audio_object.play()
             else:
                 self.playlisting.tracknow_colourise(self.playlisting.current_row())
@@ -370,7 +596,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             # Something in the playlist is selected
             if highlighted is not None:      
                 # The track in backend is not the same as selected and paused
-                if (queued != highlighted) and paused: 
+                if (queued != highlighted) and (paused is True): 
                     self.player.audio_object.load(str(highlighted.toUtf8()))
                 # Nothing already loaded into playbin
                 elif queued is None:
@@ -384,14 +610,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                         # Just reset the play button and stop here
                         self.play_bttn.setChecked(False)                        
                 # Just unpausing
-                elif paused:
+                elif paused is True:
                     # Makes sure the statusbar text changes from
                     # paused back to the artist/album/track string
                     self.stat_lbl.setText(self.tracking.msg_status)                    
                 self.player.audio_object.play()
                 self.stop_bttn.setEnabled(True)
                 self.wdgt_manip.icon_change("play")
-        
+                
             # Nothing to play
             else:
                 self.play_bttn.setChecked(False)
@@ -411,7 +637,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # of the "Nothing to play" situations also.
         self.play_action.setChecked(checked)
         self.play_actn.setChecked(checked)
-        self.tray_tooltip()
         
     @pyqtSignature("")    
     def on_stop_bttn_pressed(self):
@@ -433,7 +658,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if track is not None:
             self.player.audio_object.stop() 
             self.player.audio_object.load(track)
-            if self.play_bttn.isChecked():
+            if self.play_bttn.isChecked() is True:
                 self.player.audio_object.play()
             else:
                 self.playlisting.tracknow_colourise(self.playlisting.current_row())
@@ -446,7 +671,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Self explanatory
         """        
-        value = (value / 100.0)
+        value = (value / 100.0) ** 2
         self.player.audio_object.set_volume(value)
     
     #TODO: not sure if the DB changes are made
@@ -464,7 +689,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.media_db.restart_db()
             self.wdgt_manip.setup_db_tree()
             self.wdgt_manip.pop_playlist_view()
-            self.__tray_menu_appearance()
             
     @pyqtSignature("")
     def on_actionRescan_Collection_triggered(self):
@@ -538,10 +762,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                                          QString("Save Playlist"),
                                          QString("Enter a name for the playlist:"),
                                          QLineEdit.Normal)
-         
-          
-        if play_name[1]: # Boolean NonNull
-            if len(self.media_db.playlist_tracks(play_name[0])) > 0:
+            
+        if play_name[1] is True:
+            check = self.media_db.playlist_tracks(play_name[0])
+            if len(check) > 0:
                 msg = QMessageBox.warning(None,
                     QString("Overwrite Playlist?"),
                     QString("""A playlist named '%s' already exists. Do you want to overwrite it?"""  
@@ -620,12 +844,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Mutes audio output and changes button icon accordingly
         """
         self.player.audio_object.mute(checked)
-        if checked:
-            icon = QIcon(QIcon().fromTheme("process-stop"))
+        if checked is True:
+            icon = QIcon(QPixmap(":/Icons/audio-volume-muted.png"))
             self.mute_bttn.setIcon(icon)
         else:
-            vol = (self.volume_sldr.value() / 100.0)
-            self.mute_bttn.setIcon(QIcon().fromTheme("player-volume"))
+            vol = (self.volume_sldr.value() / 100.0) ** 2
+            icon = QIcon(QPixmap(":/Icons/audio-volume-high.png"))
+            self.mute_bttn.setIcon(icon)
             self.player.audio_object.set_volume(vol)
       
     @pyqtSignature("")  
@@ -682,12 +907,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             
             if (album is not None) and (item.childCount() == 0):
                 # Adding tracks to album
-                tracks = self.media_db.get_titles(artist, album, 
+                if filt_time is None:
+                    tracks = self.media_db.get_titles(artist, album)
+                else:
+                    tracks = self.media_db.get_titles_timed(artist, album, 
                                                             filt_time)
-
+                 
                 # Found this via Schwartzian transform. 
                 # Only 2/3rds of a full transform
-                tracks = [(trk["track"], trk["title"]) for trk in tracks]
+                tracks = [(trk[1], trk[0]) for trk in tracks]
                 tracks.sort()
                 
                 for cnt in range(len(tracks)):
@@ -697,9 +925,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
            # Adding albums to the artist 
            # i.e. the parent has no children    
             elif item.childCount() == 0: 
-                albums = self.media_db.get_albums(artist, filt_time)
+                if filt_time is None:
+                    albums = self.media_db.get_albums(artist)
+                else:
+                    albums = self.media_db.get_albums_timed(artist, filt_time)
                     
-                albums = sorted(albums, key=QString)             
+                albums = sorted(albums, key=QString.toLower)                    
                 for cnt in range(len(albums)):      
                     album = QTreeWidgetItem([albums[cnt]])
                     album.setChildIndicatorPolicy(0)
@@ -714,7 +945,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 track = None
             
             if (track is None) and (item.childCount() == 0):
-                tracks = self.media_db.get_album_titles(album,filt_time) 
+                if filt_time is None:
+                    tracks = self.media_db.get_album_titles(album)
+                else:
+                    tracks = self.media_db.get_album_titles_timed(album,
+                                                                  filt_time) 
                              
                 for cnt in range(len(tracks)):      
                     track = QTreeWidgetItem([tracks[cnt]])
@@ -740,8 +975,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     @pyqtSignature("")
     def on_actionAbout_Gereqi_triggered(self):
         """
-        The Gereqi about dialog
+        Slot documentation goes here.
         """
+        # TODO: not implemented yet
+#        QMessageBox.aboutQt(None, 
+#            QString(""))
         About(self).show()
             
     @pyqtSignature("")
@@ -831,7 +1069,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 QLineEdit.Normal)
             
             # Checks if you entered a non-zero length name and that you clicked 'ok'
-            if new_name[1] and (len(new_name[0]) > 0):
+            if (new_name[1] is True) and (len(new_name[0]) > 0):
                 #get all the tracks in the selected playlist
                 tracks = self.media_db.playlist_tracks(playlist[0].text(0))
                 # delete the old playlist
@@ -849,14 +1087,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         self.playlisting.clear()
 
-        if self.play_hist.position < len(self.play_hist.stack):
+        if PlaylistHistory.position < len(PlaylistHistory.stack):
             self.next_trktbl_bttn.setEnabled(True)
             self.actionRedo.setEnabled(True)
         tracks, last = self.play_hist.last_list()
         self.playlisting.add_list_to_playlist(tracks)
         self.clear_trktbl_bttn.setEnabled(True)
         
-        if last:
+        if last is True:
             self.prev_trktbl_bttn.setEnabled(False)
             self.actionUndo.setEnabled(False)
         
@@ -873,7 +1111,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.playlisting.add_list_to_playlist(tracks)
         self.clear_trktbl_bttn.setEnabled(True)
         
-        if first:
+        if first is True:
             self.next_trktbl_bttn.setEnabled(False)
             self.actionRedo.setEnabled(False)
             
@@ -898,7 +1136,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         it's a file or directory and populates playlist if possible
         """
         #TODO: check to see if it's avail in db 1st otherwise if it isn't exceptions occur
-        if self.dir_model.isDir(index):
+        if self.dir_model.isDir(index) is True:
             fname = self.dir_model.filePath(index)
             searcher = QDir(fname)
             searcher.setFilter(QDir.Files)
@@ -953,7 +1191,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Does what it says.
         """
-        if state:
+        if state is True:
             self.show()
             self.setWindowState(Qt.WindowActive)
         else:
@@ -966,7 +1204,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Either generates a new DB or adds new files to it
         Not finished
         """
-        mode = "redo" if fresh else "update"
+        mode = "redo" if fresh is True else "update"
         # If the dialog is cancelled in last if statement the below is ignored
         if self.media_dir is not None:
             self.stat_bttn.setEnabled(True)
@@ -988,7 +1226,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         albs = self.media_db.get_albums(self.art_alb["nowart"])
         
         # Wikipedia info
-        if art_change and (self.art_alb["nowart"] is not None):
+        if (art_change is True) and (self.art_alb["nowart"] is not None):
             # passes the artist to the thread
             self.html_thread.set_values(self.art_alb["nowart"]) 
             # starts the thread
@@ -996,7 +1234,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.art_alb["oldart"] = self.art_alb["nowart"]
 
         # Album art
-        if alb_change and (self.art_alb["nowalb"] is not None):           
+        if (alb_change is True) and (self.art_alb["nowalb"] is not None):           
             self.info_thread.set_values(artist=self.art_alb["nowart"],  
                                         album=self.art_alb["nowalb"], 
                                         title=self.art_alb["title"],
@@ -1005,7 +1243,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.info_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
             
-        elif tit_change and (self.art_alb["title"] is not None):
+        elif (tit_change is True) and (self.art_alb["title"] is not None):
             self.info_thread.set_values(artist=self.art_alb["nowart"],
                                         album=self.art_alb["nowalb"],
                                         title=self.art_alb["title"],
@@ -1037,7 +1275,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         When the 'X' button or alt-f4 is triggered
         """
         if self.sets_db.get_interface_setting("trayicon") == "True":
-            if self.tray_icon.isVisible():
+            if self.tray_icon.isVisible() is True:
                 self.hide()
                 event.ignore()
 
@@ -1052,8 +1290,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         filts = [(now[3] * now[4]) + now[5], 604800, 2419200, 7257600, 31557600]   
         if index > 0:
             return calc(filts[index - 1])
-        else:
-            return 0
         
     def __collection_mode(self):
         text_now = self.collect_tree.headerItem().text(0)

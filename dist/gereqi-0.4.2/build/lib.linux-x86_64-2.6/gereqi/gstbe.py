@@ -1,0 +1,204 @@
+#Copyright 2009 Jonathan.W.Noble <jonnobleuk@gmail.com>
+
+# This file is part of Gereqi.
+#
+# Gereqi is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Gereqi is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
+
+
+from PyQt4.QtCore import QObject, pyqtSignal
+
+import pygst
+pygst.require("0.10")
+import gst
+import thread
+import gobject
+
+from os import path
+from time import sleep
+from urllib import pathname2url
+
+
+class Utilities:
+    def __init__(self):
+        return
+
+    def can_play_source(self, source):
+        """
+        Gstreamer finds out if it would be able 
+        to play the media source
+        """
+        result = gst.element_make_from_uri(gst.URI_SRC, source, "")
+        if result is not None:
+            return result
+        
+    def source_checks(self, source, source_type):
+        fnow = None
+        if source_type == "file" and path.isfile(source):
+            fnow = "file://%s" % pathname2url(source)
+        elif source_type == "cd":
+            fnow = "cdda://%s" % source
+        elif "cdda://" in source:
+            fnow = source
+            
+        if (fnow is not None) and self.can_play_source(fnow): 
+            return fnow
+            
+            
+class Gstbe(QObject):
+    finished = pyqtSignal()
+    tick = pyqtSignal(int)
+    track_changed = pyqtSignal()
+    
+    
+    def __init__(self):
+        QObject.__init__(self)
+        gobject.threads_init() # V.Important
+        self.extra = Utilities()
+
+        self.pipe_line = gst.element_factory_make("playbin2", "player")
+        self.pipe_line.connect("audio-changed",  self.__audio_changed)
+        self.pipe_line.set_property('video-sink', None)
+        self.set_volume(1)
+        bus = self.pipe_line.get_bus()
+        bus.add_signal_watch()
+        bus.connect("message", self.__on_message)        
+        self.pipe_source = self.play_thread_id = None
+
+    def __audio_changed(self, pipeline):
+        self.track_changed.emit()
+
+    def __on_message(self, bus, msg):
+        """
+        Messages from pipe_line object
+        """
+        mtype = msg.type
+        if mtype == gst.MESSAGE_EOS:
+            self.play_thread_id = None            
+            self.pipe_line.set_state(gst.STATE_NULL)
+            self.finished.emit()
+        
+        elif mtype == gst.MESSAGE_ERROR:
+            self.pipe_line.set_state(gst.STATE_NULL)
+            err, debug = msg.parse_error()
+            print("Error: %s" % err, debug)
+            
+        elif mtype == gst.MESSAGE_BUFFERING:
+            print(msg)            
+        
+        
+    def __whilst_playing(self):
+        """
+        Whilst a track is playing create a new thread to
+        emit the playing-file's position
+        """
+        play_thread = self.play_thread_id
+        
+        while play_thread == self.play_thread_id:
+            try:
+                pos_int = self.pipe_line.query_position(gst.FORMAT_TIME)[0]
+                val = int(round(pos_int / 1000000))
+                self.tick.emit(val)
+            except gst.QueryError:
+                pass
+            sleep(1)
+
+    def load(self, fname, ftype="file"):
+        """
+        A dynamic way of loading of media. Files, urls, cds 
+        (last 2 are todo) can be used. As we are using playbin2 
+        we are actually queuing a track if one is already playing
+        """
+        # cdda://4   <-- cd track#4
+        fnow = self.extra.source_checks(fname, ftype)
+        if (fnow is not None):
+            self.pipe_line.set_state(gst.STATE_NULL)
+            self.pipe_line.set_property("uri", fnow)  
+            self.pipe_line.set_state(gst.STATE_READY)
+            self.pipe_source = fname
+        else:
+            print("ERROR: Gstreamer cannot play %s" % fname)
+            
+    def play(self):
+        """
+        If a file is loaded play  or unpause it
+        """
+        now = self.state()
+        if (now == gst.STATE_READY) or (now == gst.STATE_NULL):
+            self.pipe_line.set_state(gst.STATE_PLAYING)
+            self.play_thread_id = thread.start_new_thread(
+                                    self.__whilst_playing, ())
+        elif now == gst.STATE_PAUSED:
+            self.pipe_line.set_state(gst.STATE_PLAYING)
+            self.play_thread_id = thread.start_new_thread(
+                                    self.__whilst_playing, ())
+        else:
+            self.finished.emit()
+        
+    def pause(self):
+        self.pipe_line.set_state(gst.STATE_PAUSED)
+        self.play_thread_id = None
+        
+    def stop(self):
+        if self.play_thread_id is not None:
+            self.pipe_source = self.play_thread_id = None
+            self.pipe_line.set_state(gst.STATE_NULL)
+   
+    def seek(self, val):
+        """
+        Seek to a time-position(in nS) of playing file
+        """
+        pos = val * 1000000        
+        event = gst.event_new_seek(1.0, gst.FORMAT_TIME, gst.SEEK_FLAG_FLUSH,
+                gst.SEEK_TYPE_SET, pos, gst.SEEK_TYPE_NONE, 0)
+        self.pipe_line.send_event(event)
+        
+    def set_volume(self, val):        
+        if 0 <= val <= 1:
+            self.pipe_line.set_property('volume', val)
+
+    def enqueue(self, fname, ftype="file"):
+        fnow  = self.extra.source_checks(fname, ftype)
+        if fnow is not None:
+            self.pipe_line.set_property("uri", fnow)
+            self.pipe_source = fname
+
+    def mute(self, state):
+        self.pipe_line.set_property("mute", state)
+
+    def state(self):
+        """
+        To find out pipe_line's current state
+        """
+        return self.pipe_line.get_state(1)[1]
+
+    def current_source(self):
+        """
+        The pipe-line's current loaded track
+        """
+        # TODO: replace with GStreamer implementation
+        return self.pipe_source
+        
+    def total_time(self):
+        """
+        This won't do anything until the pipe_line
+        is in a PLAYING_STATE
+        """
+        dur = self.pipe_line.query_duration(gst.FORMAT_TIME)[0]
+        return int(round( dur/1000000 ))
+        
+    def is_playing(self):
+        return self.state() == gst.STATE_PLAYING
+        
+    def is_paused(self):
+        return self.state() == gst.STATE_PAUSED
