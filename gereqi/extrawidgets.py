@@ -56,11 +56,16 @@ class SetupExtraWidgets:
         The tray menu contains shortcuts to features
         in the main UI
         """
-        quit_action = QAction(QString("&Quit"), self.ui_main)
-        self.ui_main.play_action = QAction(QString("&Play"), self.ui_main)
-        next_action = QAction(QString("&Next"), self.ui_main)
-        prev_action = QAction(QString("&Previous"), self.ui_main)
-        stop_action = QAction(QString("&Stop"), self.ui_main)
+        quit_action = QAction(QIcon().fromTheme("process-stop"),
+                              QString("&Quit"), self.ui_main)
+        self.ui_main.play_action = QAction(QIcon().fromTheme("media-playback-start"),
+                                           QString("&Play"), self.ui_main)
+        next_action = QAction(QIcon().fromTheme("media-skip-forward"),
+                              QString("&Next"), self.ui_main)
+        prev_action = QAction(QIcon().fromTheme("media-skip-backward"),
+                              QString("&Previous"), self.ui_main)
+        stop_action = QAction(QIcon().fromTheme("media-playback-stop"),
+                              QString("&Stop"), self.ui_main)
         self.ui_main.play_action.setCheckable(True)
         self.ui_main.view_action = QAction(QString("&Visible"), self.ui_main)
         self.ui_main.view_action.setCheckable(True)
@@ -207,15 +212,18 @@ class WidgetManips:
         # do nothing if table is empty
         if self.ui_main.track_tbl.rowCount() > 0:
             menu = QMenu()
-            play_action = menu.addAction("Play")
+            play_action = menu.addAction(QIcon().fromTheme("media-playback-start"),
+                                         "Play")
             menu.addSeparator()
-            manage_action = menu.addAction("Manage File")
-            copy_tags_action = menu.addAction("Copy Tags to Clipboard")
+            manage_action = menu.addAction(QIcon().fromTheme("document-open"),
+                                           "Manage File")
+            copy_tags_action = menu.addAction(QIcon().fromTheme("edit-copy"),
+                                              "Copy Tags to Clipboard")
             edit_action = menu.addAction("Edit Track Information")
             
             action = menu.exec_(self.ui_main.track_tbl.mapToGlobal(pos))
 
-            print "CONTEXT MENU",pos
+            print "CONTEXT MENU",pos,action
         
     def __time_filt_now(self):
         """
