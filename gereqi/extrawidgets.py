@@ -18,6 +18,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 import time
+import gereqi.devices
 
 
 class SetupExtraWidgets:
@@ -26,6 +27,7 @@ class SetupExtraWidgets:
     """
     def __init__(self, parent):
         self.ui_main = parent
+        self.dev_man = gereqi.devices.Devices()
         
         self.__setup_filesystem_tree()
         self.__create_tray_menu()
@@ -33,6 +35,7 @@ class SetupExtraWidgets:
         self.__setup_misc()
         self.__key_shortcuts()
         self.__icons()
+        self.pop_devs()
         
     def __setup_filesystem_tree(self):
         """
@@ -197,8 +200,106 @@ class SetupExtraWidgets:
         self.ui_main.mute_bttn.setIcon(QIcon().fromTheme("player-volume"))
         
         
+    def __dev_view_expand(self,item):
+        par = item.parent()
+        if not par:
+            artist = str(item.text(0))
+            if item.childCount() > 0:
+                return
+            albums = self.dev_interface.albums(artist)
+            for alb in albums:
+                now = QTreeWidgetItem([alb])
+                now.setChildIndicatorPolicy(0)
+                item.addChild(now)
+            return
+            
+        elif not par.parent():
+            artist = str(par.text(0))
+            album = str(item.text(0))
+            if item.childCount() > 0:
+                return
+            
+            tracks = self.dev_interface.tracks(artist,album)
+            for trk in tracks:
+                now = QTreeWidgetItem([trk])
+                now.setChildIndicatorPolicy(1)
+                item.addChild(now)
+            return
+            
+        
+    def __add_from_dev(self, item):
+        self.__dev_view_expand(item)
+        par = item.parent()
+        if not par:
+            art = str(item.text(0))
+            tracks = self.dev_interface.filename(artist=art)
+            # List comps or generators are very,very flakey
+            for trk in tracks:
+                info = self.dev_interface.metadata(trk)
+                self.ui_main.playlisting.add_to_playlist(trk,info)
+            return
+        
+        par_par = par.parent()
+        if not par_par:
+            art = str(par.text(0))
+            alb = str(item.text(0))
+            tracks = self.dev_interface.filename(artist=art,album=alb)
+            for trk in tracks:
+                info = self.dev_interface.metadata(trk)
+                self.ui_main.playlisting.add_to_playlist(trk,info)
+                
+        else:
+            artist = str(par_par.text(0))
+            album = str(par.text(0))
+            title = str(item.text(0))
+            track = self.dev_interface.filename(artist, album, title)
+            info = self.dev_interface.metadata(track)
+            self.ui_main.playlisting.add_to_playlist(track,info)
+            
+            
+        
+    def __pop_dev_view(self):
+        arts = self.dev_interface.artists()
+        for art in arts:
+            row = QTreeWidgetItem([art])
+            row.setChildIndicatorPolicy(0)
+            self.ui_main.device_view.addTopLevelItem(row)
         
         
+    def __ipod_view(self,m_point):
+        self.ui_main.device_view.clear()
+        self.dev_interface = gereqi.devices.Ipod(m_point)
+        self.__pop_dev_view()
+        
+        
+    def __mount_dev(self):
+        dev_now = str(self.ui_main.devices_box.currentText())
+        m_point = self.dev_man.mount(dev_now)
+        for dev in self.dev_man.device_list:
+            if (dev["PATH"] != dev_now):
+                continue
+            
+            dev["MOUNTPOINT"] = m_point
+            if (dev["PROTOCOL"] == "ipod"):
+                self.__ipod_view(m_point)
+                return
+        
+    def __umount_dev(self):
+        dev = str(self.ui_main.devices_box.currentText())
+        self.dev_man.unmount(dev)
+        self.ui_main.device_view.clear()
+        
+        
+    def pop_devs(self):
+        self.ui_main.connect_dev.clicked.connect(self.__mount_dev)
+        self.ui_main.disconnect_dev.clicked.connect(self.__umount_dev)
+        self.ui_main.device_view.itemExpanded.connect(self.__dev_view_expand)
+        self.ui_main.device_view.itemDoubleClicked.connect(self.__add_from_dev)
+        for dev in self.dev_man.device_list:
+            self.ui_main.devices_box.addItem(dev["PATH"])
+        
+
+   
 class WidgetManips:
     """
     For repeated custom widget actions
@@ -206,6 +307,7 @@ class WidgetManips:
     def __init__(self, parent):
         parent.track_tbl.setContextMenuPolicy(Qt.CustomContextMenu)
         parent.track_tbl.customContextMenuRequested.connect(self.__context_menu)
+        
         self.ui_main = parent
         
     def __context_menu(self,pos):

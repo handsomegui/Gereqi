@@ -40,6 +40,7 @@ class Playlist:
         for trk in tracks:
             # This is for adding a track which has info attached in a tuple
             if isinstance(trk, tuple):
+                print trk[1]
                 self.add_to_playlist(trk[0], trk[1])
             else:
                 self.add_to_playlist(trk, None)        
@@ -54,7 +55,9 @@ class Playlist:
         # This allows to manually put in info for things we know
         # mutagen cannot handle things like urls for podcasts
         self.ui_main.clear_trktbl_bttn.setEnabled(True)
+        print info
         metadata = info
+        # FIXME: ugly, ugly, ugly
         if metadata is None:
             # see if the track is already in db
             metadata = self.ui_main.media_db.get_info(file_name)
@@ -71,16 +74,23 @@ class Playlist:
                                 "Length": metadata[6], "Bitrate": metadata[7], 
                                 "FileName": file_name}
             else:
-                trk = QString("%1").arg(metadata["track"].toInt()[0], 2,10, QChar('0'))
+                
                 metadata = {'Track': trk, "Title": metadata["title"], "Artist": metadata["artist"], 
                             "Album": metadata["album"], "Year": metadata["year"], "Genre": metadata["genre"],
                             "Length": metadata["length"], "Bitrate": metadata["bitrate"], 
                             "FileName": file_name}
-                                    
+
+        else:
+            if isinstance(metadata['Track'],QString):
+                metadata['Track'] = metadata['Track'].toInt(0)
+            metadata['Track'] = QString("%1").arg(metadata['Track'], 2,10, QChar('0'))    
+                                  
         row = self.ui_main.track_tbl.rowCount()
         self.ui_main.track_tbl.insertRow(row)
         # Creates each cell for a track based on info
         for key in metadata:
+            #val = metadata[key] and metadata[key] or ""
+            
             tbl_wdgt = QTableWidgetItem(metadata[key])
             column = self.header_search(key)
             self.ui_main.track_tbl.setItem(row, column, tbl_wdgt)

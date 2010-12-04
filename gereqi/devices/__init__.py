@@ -6,11 +6,64 @@ for guidance/reference
 """
 
 import dbus
-import udev
 import os
 import ConfigParser
 import gpod
 import sqlite3 as sqlite
+import ctypes
+
+class Udev:
+    def __init__(self):
+        self.__udev = ctypes.cdll.LoadLibrary("libudev.so.0")
+        self.__struct = self.__udev.udev_new()
+        
+    def __get_attributes(self, device):
+        """Pack all device attributes in a dict"""
+        get_name = self.__udev.udev_list_entry_get_name
+        get_value = self.__udev.udev_list_entry_get_value
+        device_get_properties_list_entry = \
+            self.__udev.udev_device_get_properties_list_entry
+        list_entry_get_next = self.__udev.udev_list_entry_get_next
+
+        entry = device_get_properties_list_entry(device)
+        device = {}
+        while entry != 0:
+            name = ctypes.c_char_p(get_name(entry)).value
+            value = ctypes.c_char_p(get_value(entry)).value
+            device[name] = value.decode("string-escape")
+            entry = list_entry_get_next(entry)
+        return device
+
+    def get_device_from_path(self, path):
+        """
+            Return the first device that matches the path
+            i.e. /dev/sdj1
+        """
+        path = path.encode("ascii")
+        udev = self.__udev
+        enumerate_scan_devices = udev.udev_enumerate_scan_devices
+        device_new_from_syspath = udev.udev_device_new_from_syspath
+        list_entry_get_name = udev.udev_list_entry_get_name
+        enumerate_get_list_entry = udev.udev_enumerate_get_list_entry
+        device_unref = udev.udev_device_unref
+        enumerate_new = udev.udev_enumerate_new
+        enumerate_unref = udev.udev_enumerate_unref
+        enumerate_add_match_property = udev.udev_enumerate_add_match_property
+
+        enum = enumerate_new(self.__struct)
+        enumerate_add_match_property(enum, "DEVNAME", path)
+        enumerate_scan_devices(enum)
+        entry = enumerate_get_list_entry(enum)
+        if entry != 0:
+            dev = device_new_from_syspath(self.__struct,
+                list_entry_get_name(entry))
+            device = self.__get_attributes(dev)
+            device_unref(dev)
+        else:
+            device = {}
+        enumerate_unref(enum)
+
+        return device
 
 class Ipod_sql:
     def __init__(self):
@@ -51,46 +104,54 @@ class Ipod_sql:
         if len(result) > 0:
             return (alb[0] for alb in result)
         
-    def find_tracks(self,artist,album):
+    def find_tracks(self,artist="*",album="*"):
         query = """SELECT title FROM ipod
-                    WHERE artist=? AND album=?
+                    WHERE (artist=? OR "*"=?) 
+                        AND (album=? OR "*"=?)
                     ORDER BY number"""
-        results = self.cursor.execute(query,(artist,album)).fetchall()
+        results = self.cursor.execute(query,(artist,artist,album,album)).fetchall()
         
         if len(results) > 0:
             return (trk[0] for trk in results)
         
-    def find_location(self,artist,album,title):
+    def find_location(self,artist="*",album="*",title="*"):
         # Put the 'like's in because it was being a bit screwy
         # Might be ok when dealing with it's own outputs as inputs
         query = """SELECT filename FROM ipod
-                    WHERE artist LIKE ? AND album LIKE ? AND title LIKE ?"""
-        result = self.cursor.execute(query,(artist,album,title)).fetchone()
-        if result:
-            return result[0]
+                    WHERE (artist LIKE ? OR "*"=?)
+                        AND (album LIKE ? OR "*"=?)
+                        AND (title LIKE ? OR "*"=?)"""
+        result = self.cursor.execute(query,
+                    (artist,artist,album,album,title,title)).fetchall()
+        if len(result) < 1:
+            return
+        return (res[0] for res in result)
         
         
     def all_info(self,filename):
-        query = """SELECT number,title,album,artist,year,genre,length,bitrate
+        query = """SELECT filename,number,title,album,artist,year,genre,length,bitrate
                     FROM ipod
                     WHERE filename=?"""
         result = self.cursor.execute(query,(filename,)).fetchone()
-        hdrs = ['Track', 'Title', 'Album','Artist','Year','Genre','Length',
+        hdrs = ['FileName','Track', 'Title', 'Album','Artist','Year','Genre','Length',
                 'Bitrate']
         
         if len(result) < 1:
             return
             
         info = {}
-        for i in range(8):
-            if i == 6:
-                t = int(result[6]) / 1000
+        for i in range(9):
+            if hdrs[i] == "Length":
+                t = int(result[i]) / 1000
                 min = t // 60
                 rem = t % 60
                 info[hdrs[i]] = "%02d:%02d" % (min, rem)
                 continue
+            elif (hdrs[i] == "Year") or (hdrs[i] == "Bitrate"):
+                info[hdrs[i]] = str(result[i])
+                continue
             
-            info[hdrs[i]] = result[i]
+            info[hdrs[i]] = result[i] and result[i] or ""
             
         return info
         
@@ -116,7 +177,7 @@ class Ipod:
     def tracks(self,artist,album):
         return self.temp_db.find_tracks(artist, album)
     
-    def filename(self,artist,album,title):
+    def filename(self,artist="*",album="*",title="*"):
         return self.temp_db.find_location(artist, album, title)
             
     def metadata(self, filename):
@@ -126,7 +187,7 @@ class Devices:
     device_list = []
     
     def __init__(self):
-        self.__udev = udev.udev()
+        self.__udev = Udev()
         self.bus = dbus.SystemBus()
         obj = self.bus.get_object("org.freedesktop.UDisks",
                                    "/org/freedesktop/UDisks")
@@ -253,6 +314,8 @@ class Devices:
         return m_point
     
     def unmount(self,dev):
+        if not self.mounted(dev):
+            return
         dev_if = self.__dev_interface(dev)
         dev_if.FilesystemUnmount([])
     

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'interface.ui'
 #
-# Created: Sat Dec  4 00:31:41 2010
+# Created: Sat Dec  4 01:17:33 2010
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -200,6 +200,14 @@ class Ui_MainWindow(object):
         self.devices_box.setObjectName("devices_box")
         self.gridLayout_5.addWidget(self.devices_box, 1, 0, 1, 1)
         self.device_view = QtGui.QTreeWidget(self.devTab)
+        self.device_view.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.device_view.setAlternatingRowColors(True)
+        self.device_view.setRootIsDecorated(True)
+        self.device_view.setUniformRowHeights(True)
+        self.device_view.setItemsExpandable(True)
+        self.device_view.setAnimated(True)
+        self.device_view.setHeaderHidden(True)
+        self.device_view.setExpandsOnDoubleClick(False)
         self.device_view.setObjectName("device_view")
         self.device_view.headerItem().setText(0, "1")
         self.gridLayout_5.addWidget(self.device_view, 2, 0, 1, 1)
@@ -490,7 +498,7 @@ class Ui_MainWindow(object):
         self.label.setBuddy(self.search_trktbl_edit)
 
         self.retranslateUi(MainWindow)
-        self.vertical_tabs.setCurrentIndex(1)
+        self.vertical_tabs.setCurrentIndex(4)
         self.horizontal_tabs.setCurrentIndex(0)
         QtCore.QObject.connect(self.volume_sldr, QtCore.SIGNAL("valueChanged(int)"), self.volume_lbl.setNum)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
