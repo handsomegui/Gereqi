@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'interface.ui'
 #
-# Created: Sat Dec  4 01:17:33 2010
+# Created: Sat Dec  4 02:43:32 2010
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -191,10 +191,14 @@ class Ui_MainWindow(object):
         self.connect_dev.setObjectName("connect_dev")
         self.horizontalLayout_6.addWidget(self.connect_dev)
         self.disconnect_dev = QtGui.QPushButton(self.devTab)
+        self.disconnect_dev.setEnabled(False)
         self.disconnect_dev.setObjectName("disconnect_dev")
         self.horizontalLayout_6.addWidget(self.disconnect_dev)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_6.addItem(spacerItem1)
+        self.dev_refresh = QtGui.QToolButton(self.devTab)
+        self.dev_refresh.setObjectName("dev_refresh")
+        self.horizontalLayout_6.addWidget(self.dev_refresh)
         self.gridLayout_5.addLayout(self.horizontalLayout_6, 0, 0, 1, 1)
         self.devices_box = QtGui.QComboBox(self.devTab)
         self.devices_box.setObjectName("devices_box")
@@ -498,7 +502,7 @@ class Ui_MainWindow(object):
         self.label.setBuddy(self.search_trktbl_edit)
 
         self.retranslateUi(MainWindow)
-        self.vertical_tabs.setCurrentIndex(4)
+        self.vertical_tabs.setCurrentIndex(1)
         self.horizontal_tabs.setCurrentIndex(0)
         QtCore.QObject.connect(self.volume_sldr, QtCore.SIGNAL("valueChanged(int)"), self.volume_lbl.setNum)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -526,6 +530,7 @@ class Ui_MainWindow(object):
         self.vertical_tabs.setTabText(self.vertical_tabs.indexOf(self.filesTab), QtGui.QApplication.translate("MainWindow", "Files", None, QtGui.QApplication.UnicodeUTF8))
         self.connect_dev.setText(QtGui.QApplication.translate("MainWindow", "Connect", None, QtGui.QApplication.UnicodeUTF8))
         self.disconnect_dev.setText(QtGui.QApplication.translate("MainWindow", "Disconnect", None, QtGui.QApplication.UnicodeUTF8))
+        self.dev_refresh.setText(QtGui.QApplication.translate("MainWindow", "O", None, QtGui.QApplication.UnicodeUTF8))
         self.vertical_tabs.setTabText(self.vertical_tabs.indexOf(self.devTab), QtGui.QApplication.translate("MainWindow", "Devices", None, QtGui.QApplication.UnicodeUTF8))
         self.clear_trktbl_bttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Clear", None, QtGui.QApplication.UnicodeUTF8))
         self.clear_trktbl_bttn.setText(QtGui.QApplication.translate("MainWindow", "C", None, QtGui.QApplication.UnicodeUTF8))

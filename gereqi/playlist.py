@@ -55,7 +55,6 @@ class Playlist:
         # This allows to manually put in info for things we know
         # mutagen cannot handle things like urls for podcasts
         self.ui_main.clear_trktbl_bttn.setEnabled(True)
-        print info
         metadata = info
         # FIXME: ugly, ugly, ugly
         if metadata is None:

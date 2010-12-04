@@ -275,6 +275,8 @@ class SetupExtraWidgets:
     def __mount_dev(self):
         dev_now = str(self.ui_main.devices_box.currentText())
         m_point = self.dev_man.mount(dev_now)
+        self.ui_main.connect_dev.setEnabled(False)
+        self.ui_main.disconnect_dev.setEnabled(True)
         for dev in self.dev_man.device_list:
             if (dev["PATH"] != dev_now):
                 continue
@@ -288,6 +290,8 @@ class SetupExtraWidgets:
         dev = str(self.ui_main.devices_box.currentText())
         self.dev_man.unmount(dev)
         self.ui_main.device_view.clear()
+        self.ui_main.disconnect_dev.setEnabled(False)
+        self.ui_main.connect_dev.setEnabled(True)
         
         
     def pop_devs(self):

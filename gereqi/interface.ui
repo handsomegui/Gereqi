@@ -56,7 +56,7 @@
         <enum>QTabWidget::West</enum>
        </property>
        <property name="currentIndex">
-        <number>4</number>
+        <number>1</number>
        </property>
        <property name="documentMode">
         <bool>true</bool>
@@ -417,6 +417,9 @@
            </item>
            <item>
             <widget class="QPushButton" name="disconnect_dev">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>Disconnect</string>
              </property>
@@ -434,6 +437,13 @@
               </size>
              </property>
             </spacer>
+           </item>
+           <item>
+            <widget class="QToolButton" name="dev_refresh">
+             <property name="text">
+              <string>O</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
