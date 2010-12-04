@@ -113,7 +113,7 @@
               <number>2</number>
              </property>
              <item row="0" column="0">
-              <widget class="QWebView" name="info_view">
+              <widget class="QWebView" name="info_view" native="true">
                <property name="acceptDrops">
                 <bool>false</bool>
                </property>
@@ -123,7 +123,7 @@
                <property name="whatsThis">
                 <string notr="true"/>
                </property>
-               <property name="url">
+               <property name="url" stdset="0">
                 <url>
                  <string>about:blank</string>
                 </url>
@@ -141,19 +141,19 @@
               <number>2</number>
              </property>
              <item row="0" column="0">
-              <widget class="QWebView" name="wiki_view">
+              <widget class="QWebView" name="wiki_view" native="true">
                <property name="autoFillBackground">
                 <bool>true</bool>
                </property>
                <property name="styleSheet">
                 <string/>
                </property>
-               <property name="url">
+               <property name="url" stdset="0">
                 <url>
                  <string>about:blank</string>
                 </url>
                </property>
-               <property name="zoomFactor">
+               <property name="zoomFactor" stdset="0">
                 <double>1.000000000000000</double>
                </property>
               </widget>
@@ -401,6 +401,56 @@
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="devTab">
+        <attribute name="title">
+         <string>Devices</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <widget class="QPushButton" name="connect_dev">
+             <property name="text">
+              <string>Connect</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="disconnect_dev">
+             <property name="text">
+              <string>Disconnect</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item row="1" column="0">
+          <widget class="QComboBox" name="devices_box"/>
+         </item>
+         <item row="2" column="0">
+          <widget class="QTreeWidget" name="device_view">
+           <column>
+            <property name="text">
+             <string notr="true">1</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </widget>
       <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -623,12 +673,6 @@
           </attribute>
           <attribute name="verticalHeaderVisible">
            <bool>false</bool>
-          </attribute>
-          <attribute name="verticalHeaderVisible">
-           <bool>false</bool>
-          </attribute>
-          <attribute name="horizontalHeaderVisible">
-           <bool>true</bool>
           </attribute>
          </widget>
         </item>
@@ -857,7 +901,7 @@
      <x>0</x>
      <y>0</y>
      <width>792</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuActions">
