@@ -27,7 +27,7 @@ class SetupExtraWidgets:
     """
     def __init__(self, parent):
         self.ui_main = parent
-        self.dev_man = gereqi.devices.Devices()
+        
         
         self.__setup_filesystem_tree()
         self.__create_tray_menu()
@@ -35,7 +35,7 @@ class SetupExtraWidgets:
         self.__setup_misc()
         self.__key_shortcuts()
         self.__icons()
-        self.pop_devs()
+        #self.pop_devs()
         
     def __setup_filesystem_tree(self):
         """
@@ -256,9 +256,64 @@ class SetupExtraWidgets:
             info = self.dev_interface.metadata(track)
             self.ui_main.playlisting.add_to_playlist(track,info)
             
-            
+
+   
+class WidgetManips:
+    """
+    For repeated custom widget actions
+    """
+    def __init__(self, parent):
+        parent.track_tbl.setContextMenuPolicy(Qt.CustomContextMenu)
+        parent.track_tbl.horizontalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
         
+        parent.track_tbl.customContextMenuRequested.connect(self.__context_menu)
+        parent.track_tbl.horizontalHeader().customContextMenuRequested.connect(self.__header_menu)
+        parent.vertical_tabs.currentChanged.connect(self.__tab_changed)
+        self.__hdr_menu_setup()
+        self.ui_main = parent
+        self.dev_man = None
+        
+    def __hdr_menu_setup(self):
+        """
+            Setup the Context Menu for the table headers.
+            Needed to keep the checkbox states
+        """        
+        self.hdr_menu = QMenu()
+        hdrs = ["Track","Title","Artist","Album","Year","Genre","Length",
+                "Bitrate","FileName"]
+        for hdr in hdrs:
+            action = self.hdr_menu.addAction(hdr)
+            action.setCheckable(True)
+            action.setChecked(True)
+        
+    def __header_menu(self,pos): 
+        """
+            The names of each header column is checkable
+            for viewing of its column
+        """
+        action = self.hdr_menu.exec_(self.ui_main.track_tbl.horizontalHeader().mapToGlobal(pos))
+        hdr_pos = self.ui_main.playlisting.header_search(action.iconText())
+        hdr_view = False if action.isChecked() else True
+        self.ui_main.track_tbl.setColumnHidden(hdr_pos,hdr_view)
+        
+    def __tab_changed(self,pos):
+        if (pos == 4):
+            if not self.dev_man:
+                self.dev_man = gereqi.devices.Devices()
+                
+            self.ui_main.connect_dev.clicked.connect(self.__mount_dev)
+            self.ui_main.disconnect_dev.clicked.connect(self.__umount_dev)
+            self.ui_main.device_view.itemExpanded.connect(self.__dev_view_expand)
+            self.ui_main.device_view.itemDoubleClicked.connect(self.__add_from_dev)
+            for dev in self.dev_man.device_list:
+                self.ui_main.devices_box.addItem(dev["PATH"])
+                
+                
     def __pop_dev_view(self):
+        """
+            Populate the treeView based on the
+            currently mounted device
+        """
         arts = self.dev_interface.artists()
         for art in arts:
             row = QTreeWidgetItem([art])
@@ -267,12 +322,18 @@ class SetupExtraWidgets:
         
         
     def __ipod_view(self,m_point):
+        """
+            Shows the iPods contents in the treeview
+        """
         self.ui_main.device_view.clear()
         self.dev_interface = gereqi.devices.Ipod(m_point)
         self.__pop_dev_view()
         
         
     def __mount_dev(self):
+        """
+            Mount the device shown in the combobox
+        """
         dev_now = str(self.ui_main.devices_box.currentText())
         m_point = self.dev_man.mount(dev_now)
         self.ui_main.connect_dev.setEnabled(False)
@@ -287,32 +348,14 @@ class SetupExtraWidgets:
                 return
         
     def __umount_dev(self):
+        """
+            Unmount current device
+        """
         dev = str(self.ui_main.devices_box.currentText())
         self.dev_man.unmount(dev)
         self.ui_main.device_view.clear()
         self.ui_main.disconnect_dev.setEnabled(False)
         self.ui_main.connect_dev.setEnabled(True)
-        
-        
-    def pop_devs(self):
-        self.ui_main.connect_dev.clicked.connect(self.__mount_dev)
-        self.ui_main.disconnect_dev.clicked.connect(self.__umount_dev)
-        self.ui_main.device_view.itemExpanded.connect(self.__dev_view_expand)
-        self.ui_main.device_view.itemDoubleClicked.connect(self.__add_from_dev)
-        for dev in self.dev_man.device_list:
-            self.ui_main.devices_box.addItem(dev["PATH"])
-        
-
-   
-class WidgetManips:
-    """
-    For repeated custom widget actions
-    """
-    def __init__(self, parent):
-        parent.track_tbl.setContextMenuPolicy(Qt.CustomContextMenu)
-        parent.track_tbl.customContextMenuRequested.connect(self.__context_menu)
-        
-        self.ui_main = parent
         
     def __context_menu(self,pos):
         # do nothing if table is empty
@@ -389,20 +432,19 @@ class WidgetManips:
         playlists = self.ui_main.media_db.playlist_list()
 #        podcasts = None
 #        streams = None
-        headers = [QTreeWidgetItem(["%s" % tit]) for tit in [
-                                    "Podcasts", "Radio Streams",  "Playlists"]]
+        hdr_names = ["Playlists"] # Podcasts Radio Streams
+        headers = [QTreeWidgetItem(["%s" % tit]) for tit in hdr_names ]
         for hdr in headers:
             hdr.setFont(0, font)
             hdr.setChildIndicatorPolicy(2)
-        
-        for cnt in range(3):
-            if cnt == 2:
+         
+            if hdr.text(0) == "Playlists":
                 for play in playlists:
                     # Ignore the auto-save playlist
                     if play == "!!##gereqi.remembered##!!":
                         continue
                     now = QTreeWidgetItem([QString(play)])
-                    headers[cnt].addChild(now)
+                    hdr.addChild(now)
                     tracks = self.ui_main.media_db.playlist_tracks(play)
                     for track in tracks:
                         info = self.ui_main.media_db.get_info(track)
@@ -410,7 +452,7 @@ class WidgetManips:
                             now.addChild(QTreeWidgetItem([QString("%s - %s" %
                                          (info["title"], info["artist"])) ]))       
                                                                                       
-            self.ui_main.playlist_tree.addTopLevelItem(headers[cnt])
+            self.ui_main.playlist_tree.addTopLevelItem(hdr)
                 
     def icon_change(self, state):
         """
