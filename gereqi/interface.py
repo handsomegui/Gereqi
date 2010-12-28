@@ -636,6 +636,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         val = self.progress_sldr.value()
         self.player.audio_object.seek(val)
         self.old_pos = val
+        
+    @pyqtSignature("int")
+    def on_progress_sldr_actionTriggered(self,action):
+        if (action==3) or (action==4) or (action==1) or (action==2):
+            #Does what's needed
+            self.on_progress_sldr_sliderReleased()
+        else:
+            print action
     
     @pyqtSignature("")
     def on_actionUpdate_Collection_triggered(self):
@@ -946,6 +954,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         track being played
         """
         self.progress_sldr.setRange(0, self.tracking.play_time)
+        self.progress_sldr.setPageStep(self.tracking.play_time/10)
+        self.progress_sldr.setSingleStep(self.tracking.play_time/25)
         self.t_length = QTime(0, (self.tracking.play_time / 60000) % 60, 
                               (self.tracking.play_time / 1000) % 60)
             
