@@ -62,6 +62,12 @@
         <bool>true</bool>
        </property>
        <widget class="QWidget" name="contentTab">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <attribute name="title">
          <string>Context</string>
         </attribute>
@@ -90,7 +96,7 @@
             <enum>QTabWidget::Rounded</enum>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <property name="usesScrollButtons">
             <bool>false</bool>
@@ -113,7 +119,13 @@
               <number>2</number>
              </property>
              <item row="0" column="0">
-              <widget class="QWebView" name="info_view" native="true">
+              <widget class="QWebView" name="info_view">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="acceptDrops">
                 <bool>false</bool>
                </property>
@@ -123,7 +135,7 @@
                <property name="whatsThis">
                 <string notr="true"/>
                </property>
-               <property name="url" stdset="0">
+               <property name="url">
                 <url>
                  <string>about:blank</string>
                 </url>
@@ -141,19 +153,25 @@
               <number>2</number>
              </property>
              <item row="0" column="0">
-              <widget class="QWebView" name="wiki_view" native="true">
+              <widget class="QWebView" name="wiki_view">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="autoFillBackground">
                 <bool>true</bool>
                </property>
                <property name="styleSheet">
                 <string/>
                </property>
-               <property name="url" stdset="0">
+               <property name="url">
                 <url>
                  <string>about:blank</string>
                 </url>
                </property>
-               <property name="zoomFactor" stdset="0">
+               <property name="zoomFactor">
                 <double>1.000000000000000</double>
                </property>
               </widget>
@@ -165,6 +183,12 @@
         </layout>
        </widget>
        <widget class="QWidget" name="collectionTab">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <attribute name="title">
          <string>Collection</string>
         </attribute>
@@ -201,6 +225,12 @@
              </item>
              <item>
               <widget class="QLineEdit" name="search_collect_edit">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="toolTip">
                 <string>Enter search terms here</string>
                </property>
@@ -210,6 +240,12 @@
            </item>
            <item>
             <widget class="QComboBox" name="collect_time_box">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="maxVisibleItems">
               <number>6</number>
              </property>
@@ -256,6 +292,12 @@
            </item>
            <item>
             <widget class="QTreeWidget" name="collect_tree">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="editTriggers">
               <set>QAbstractItemView::NoEditTriggers</set>
              </property>
@@ -295,6 +337,12 @@
         </layout>
        </widget>
        <widget class="QWidget" name="playlistsTab">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <attribute name="title">
          <string>Playlists</string>
         </attribute>
@@ -367,6 +415,12 @@
            </item>
            <item>
             <widget class="QTreeWidget" name="playlist_tree">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="editTriggers">
               <set>QAbstractItemView::NoEditTriggers</set>
              </property>
@@ -385,12 +439,24 @@
         </layout>
        </widget>
        <widget class="QWidget" name="filesTab">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <attribute name="title">
          <string>Files</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_13">
          <item row="0" column="0">
           <widget class="QTreeView" name="filesystem_tree">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="indentation">
             <number>15</number>
            </property>
@@ -402,6 +468,12 @@
         </layout>
        </widget>
        <widget class="QWidget" name="devTab">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <attribute name="title">
          <string>Devices</string>
         </attribute>
@@ -448,10 +520,23 @@
           </layout>
          </item>
          <item row="1" column="0">
-          <widget class="QComboBox" name="devices_box"/>
+          <widget class="QComboBox" name="devices_box">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
          <item row="2" column="0">
           <widget class="QTreeWidget" name="device_view">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="editTriggers">
             <set>QAbstractItemView::NoEditTriggers</set>
            </property>
@@ -935,7 +1020,7 @@
      <x>0</x>
      <y>0</y>
      <width>792</width>
-     <height>25</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuActions">
