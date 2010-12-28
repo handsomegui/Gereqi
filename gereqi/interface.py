@@ -570,7 +570,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         on the search linedit
         """
         self.on_actionClear_triggered()
-        self.search_trktbl_edit.setFocus()
+        self.search_collect_edit.setFocus()
         self.next_trktbl_bttn.setEnabled(False)
         self.actionRedo.setEnabled(False)
         self.player.recently_played = []
