@@ -73,7 +73,7 @@ class Playlist:
                                 "Length": metadata[6], "Bitrate": metadata[7], 
                                 "FileName": file_name}
             else:
-               	trk = QString("%1").arg(metadata[6].toInt()[0], 2,10, QChar('0')) 
+               	trk = QString("%1").arg(metadata["track"].toInt()[0], 2,10, QChar('0')) 
                 metadata = {'Track': trk, "Title": metadata["title"], "Artist": metadata["artist"], 
                             "Album": metadata["album"], "Year": metadata["year"], "Genre": metadata["genre"],
                             "Length": metadata["length"], "Bitrate": metadata["bitrate"], 
