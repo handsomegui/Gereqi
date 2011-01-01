@@ -46,8 +46,7 @@ class SetupExtraWidgets:
         filters = QDir.Files|QDir.AllDirs|QDir.Readable|QDir.NoDotAndDotDot
         self.ui_main.dir_model.setFilter(filters)
         self.ui_main.dir_model.setReadOnly(True)
-        self.ui_main.dir_model.setNameFilters(["*.ogg", "*.flac", "*.mp3", 
-                                               "*.m4a"])
+        self.ui_main.dir_model.setNameFilters(self.ui_main.format_filter)
         self.ui_main.filesystem_tree.setModel(self.ui_main.dir_model) 
         self.ui_main.filesystem_tree.setColumnHidden(1, True)
         self.ui_main.filesystem_tree.setColumnHidden(2, True)
@@ -102,9 +101,7 @@ class SetupExtraWidgets:
     def __setup_misc(self):
         """
         Extra __init__ things to add to the UI
-        """        
-        self.ui_main.progress_sldr.setPageStep(0)
-        self.ui_main.progress_sldr.setSingleStep(0)
+        """
         self.ui_main.stat_lbl = QLabel("Finished")
         self.ui_main.stat_prog = QProgressBar()
         
