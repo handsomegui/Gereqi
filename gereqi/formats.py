@@ -15,7 +15,7 @@ class Formats:
     def available(self):
         fmats = {"ogg": "libgstvorbis.so",
                  "flac": "libgstflac.so",
-                 "mp3": "liblamevorbis.so",
+                 "mp3": "libgstlame.so",
                  "m4a": "libfaac.so"}
         
         cmd = "find /usr/lib/ -name %s"
