@@ -17,6 +17,8 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
+from PyQt4 import uic
+
 from random import choice
 import time
 from os import path
@@ -33,6 +35,7 @@ from settings import Settings
 from collection import CollectionDb
 from about import About
 from playlist import Playlist, PlaylistHistory
+import formats
 
 # The folder watcher poll-time in seconds
 WATCHTIME = 30 
@@ -117,7 +120,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Initialisation of key items. Some may be pulled
         from other files as this file is getting messy
         """ 
-        
+        QMainWindow.__init__(self, parent)
+        Ui_MainWindow.__init__(self)
         
         self.__settings_init()
         
@@ -126,12 +130,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                         "nowart":None, "nowalb":None, 
                         "title":None, "oldtit":None} 
         self.old_pos = 0
-        # FIXME: do not hardcode these formats
-        self.audio_formats = ["flac", "mp3", "ogg",  "m4a"]
-        self.format_filter = ["*.ogg", "*.flac", "*.mp3",  "*.m4a"]
-           
-        QMainWindow.__init__(self, parent)
-        Ui_MainWindow.__init__(self)
+        
+        # The file formats that can be encoded
+        self.audio_formats = formats.Formats().available()
+        self.format_filter = ["*.%s" % fmat for fmat in self.audio_formats]
+        
+        
         # TODO: change ui settings based on saved states/options. QSession
         self.setupUi(self)
         self.media_db = CollectionDb("main")
