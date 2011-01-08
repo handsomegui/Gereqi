@@ -6,16 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>792</width>
-    <height>533</height>
+    <width>799</width>
+    <height>538</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Gereqi</string>
-  </property>
-  <property name="windowIcon">
-   <iconset>
-    <normaloff>:/Icons/app.png</normaloff>:/Icons/app.png</iconset>
   </property>
   <property name="locale">
    <locale language="English" country="UnitedKingdom"/>
@@ -208,10 +204,6 @@
                <property name="text">
                 <string>X</string>
                </property>
-               <property name="icon">
-                <iconset>
-                 <normaloff>:/Icons/edit-clear-locationbar-ltr.png</normaloff>:/Icons/edit-clear-locationbar-ltr.png</iconset>
-               </property>
                <property name="iconSize">
                 <size>
                  <width>24</width>
@@ -363,10 +355,6 @@
                <property name="text">
                 <string>_</string>
                </property>
-               <property name="icon">
-                <iconset>
-                 <normaloff>:/Icons/edit-rename.png</normaloff>:/Icons/edit-rename.png</iconset>
-               </property>
                <property name="iconSize">
                 <size>
                  <width>24</width>
@@ -382,10 +370,6 @@
               <widget class="QToolButton" name="delete_playlist_bttn">
                <property name="text">
                 <string>x</string>
-               </property>
-               <property name="icon">
-                <iconset>
-                 <normaloff>:/Icons/edit-delete.png</normaloff>:/Icons/edit-delete.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -586,10 +570,6 @@
             <property name="text">
              <string>C</string>
             </property>
-            <property name="icon">
-             <iconset>
-              <normaloff>:/Icons/edit-clear-list.png</normaloff>:/Icons/edit-clear-list.png</iconset>
-            </property>
             <property name="iconSize">
              <size>
               <width>24</width>
@@ -608,10 +588,6 @@
             </property>
             <property name="text">
              <string>S</string>
-            </property>
-            <property name="icon">
-             <iconset>
-              <normaloff>:/Icons/document-save.png</normaloff>:/Icons/document-save.png</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -635,10 +611,6 @@
             <property name="text">
              <string>P</string>
             </property>
-            <property name="icon">
-             <iconset>
-              <normaloff>:/Icons/edit-undo.png</normaloff>:/Icons/edit-undo.png</iconset>
-            </property>
             <property name="iconSize">
              <size>
               <width>24</width>
@@ -660,10 +632,6 @@
             </property>
             <property name="text">
              <string>N</string>
-            </property>
-            <property name="icon">
-             <iconset>
-              <normaloff>:/Icons/edit-redo.png</normaloff>:/Icons/edit-redo.png</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -690,10 +658,6 @@
             </property>
             <property name="text">
              <string>X</string>
-            </property>
-            <property name="icon">
-             <iconset>
-              <normaloff>:/Icons/edit-clear-locationbar-ltr.png</normaloff>:/Icons/edit-clear-locationbar-ltr.png</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -807,10 +771,6 @@
               <property name="text">
                <string/>
               </property>
-              <property name="icon">
-               <iconset>
-                <normaloff>:/Icons/media-skip-backward.png</normaloff>:/Icons/media-skip-backward.png</iconset>
-              </property>
               <property name="iconSize">
                <size>
                 <width>24</width>
@@ -829,10 +789,6 @@
               </property>
               <property name="text">
                <string/>
-              </property>
-              <property name="icon">
-               <iconset>
-                <normaloff>:/Icons/media-playback-start.png</normaloff>:/Icons/media-playback-start.png</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -859,10 +815,6 @@
               <property name="text">
                <string/>
               </property>
-              <property name="icon">
-               <iconset>
-                <normaloff>:/Icons/media-playback-stop.png</normaloff>:/Icons/media-playback-stop.png</iconset>
-              </property>
               <property name="iconSize">
                <size>
                 <width>24</width>
@@ -881,10 +833,6 @@
               </property>
               <property name="text">
                <string/>
-              </property>
-              <property name="icon">
-               <iconset>
-                <normaloff>:/Icons/media-skip-forward.png</normaloff>:/Icons/media-skip-forward.png</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -914,10 +862,6 @@
              <widget class="QToolButton" name="mute_bttn">
               <property name="text">
                <string/>
-              </property>
-              <property name="icon">
-               <iconset>
-                <normaloff>:/Icons/audio-volume-high.png</normaloff>:/Icons/audio-volume-high.png</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -1019,8 +963,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>792</width>
-     <height>23</height>
+     <width>799</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuActions">
