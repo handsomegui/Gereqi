@@ -4,14 +4,18 @@
 from distutils.core import setup 
 
 setup(name='gereqi', 
-        version='0.4.2', 
+        version='0.5.0', 
         description='A music organiser and player.', 
         author='Jonathan Noble',
         author_email='jonnobleuk@gmail.com', 
         url='http://github.com/regomodo/Gereqi', 
         license='GPLv3', 
-        packages=['gereqi'], 
-        package_data={'gereqi': ['gereqi/*.py']}, 
+        packages=['gereqi','gereqi.devices', 'gereqi.icons'], 
+        package_data={
+                      'gereqi': ['gereqi/*.py'],
+                      'gereqi.devices': ['gereqi/devices/*.py'],
+                      'gereqi.icons': ['gereqi/icons/*.py']
+                      }, 
         
         data_files=[('/usr/share/applications',['gereqi/data/gereqi.desktop']),
             ('/usr/share/pixmaps',['gereqi/data/gereqi.png'])],
