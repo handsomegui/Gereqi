@@ -19,6 +19,7 @@ from PyQt4.QtCore import *
 
 import time
 import gereqi.devices
+import gereqi.icons
 
 
 class SetupExtraWidgets:
@@ -60,20 +61,29 @@ class SetupExtraWidgets:
         """
         quit_action = QAction(QIcon().fromTheme("process-stop"),
                               QString("&Quit"), self.ui_main)
-        self.ui_main.play_action = QAction(QIcon().fromTheme("media-playback-start"),
+        
+        self.ui_main.play_action = QAction(QIcon().fromTheme("media-playback-start", 
+                                                             QIcon(":/icons/media-playback-start")),
                                            QString("&Play"), self.ui_main)
-        next_action = QAction(QIcon().fromTheme("media-skip-forward"),
+        
+        next_action = QAction(QIcon().fromTheme("media-skip-forward",
+                                                QIcon(":/icons/media-skip-forward")),
                               QString("&Next"), self.ui_main)
-        prev_action = QAction(QIcon().fromTheme("media-skip-backward"),
+        
+        prev_action = QAction(QIcon().fromTheme("media-skip-backward",
+                                                QIcon(":/icons/media-skip-backward")),
                               QString("&Previous"), self.ui_main)
-        stop_action = QAction(QIcon().fromTheme("media-playback-stop"),
+        
+        stop_action = QAction(QIcon().fromTheme("media-playback-stop",
+                                                QIcon(":/icons/media-playback-stop")),
                               QString("&Stop"), self.ui_main)
+        
         self.ui_main.play_action.setCheckable(True)
         self.ui_main.view_action = QAction(QString("&Visible"), self.ui_main)
         self.ui_main.view_action.setCheckable(True)
         self.ui_main.view_action.setChecked(True)
         tray_menu = QMenu(self.ui_main)
-        icon_normal = QIcon("gereqi/icons/app.png")
+        icon_normal = QIcon(":/icons/app")
         tray_menu.addAction(icon_normal, QString("Gereqi"))
         tray_menu.addSeparator()
         tray_menu.addAction(prev_action)
@@ -84,7 +94,7 @@ class SetupExtraWidgets:
         tray_menu.addAction(self.ui_main.view_action)
         tray_menu.addAction(quit_action)
         self.ui_main.tray_icon = QSystemTrayIcon(self.ui_main)
-        icon_stopped = QIcon("gereqi/icons/app-paused.png")
+        icon_stopped = QIcon(":/icons/app-paused")
         self.ui_main.tray_icon.setIcon(icon_stopped)
         self.ui_main.tray_icon.setContextMenu(tray_menu)
         self.ui_main.tray_icon.setToolTip("Stopped")    
@@ -118,7 +128,7 @@ class SetupExtraWidgets:
         self.ui_main.play_type_bttn = QToolButton()  
         self.ui_main.play_type_bttn.setCheckable(True)
         self.ui_main.play_type_bttn.setAutoRaise(True)
-        self.ui_main.play_type_bttn.setIcon(QIcon("gereqi/icons/dice-icon2.png"))
+        self.ui_main.play_type_bttn.setIcon(QIcon(":/icons/dice-icon2"))
         self.ui_main.play_type_bttn.toggled.connect(self.__mode_change)
         
         self.ui_main.statusBar.addPermanentWidget(self.ui_main.stat_lbl)
@@ -166,9 +176,9 @@ class SetupExtraWidgets:
         if checked or not
         """
         if check:
-            icon = QIcon("gereqi/icons/dice-icon.png")
+            icon = QIcon(":/icons/dice-icon")
         else:
-            icon = QIcon("gereqi/icons/dice-icon2.png")            
+            icon = QIcon(":/icons/dice-icon2")            
         self.ui_main.play_type_bttn.setIcon(icon)
         
         
@@ -176,25 +186,38 @@ class SetupExtraWidgets:
         """
         Using the theme's icons
         """
-        self.ui_main.clear_collect_bttn.setIcon(QIcon().fromTheme("edit-clear"))
-        self.ui_main.clear_search_bttn.setIcon(QIcon().fromTheme("edit-clear"))
-        self.ui_main.clear_trktbl_bttn.setIcon(QIcon().fromTheme("window-new"))
-        self.ui_main.save_trktbl_bttn.setIcon(QIcon().fromTheme("document-save-as"))
-        self.ui_main.prev_trktbl_bttn.setIcon(QIcon().fromTheme("edit-undo"))
-        self.ui_main.next_trktbl_bttn.setIcon(QIcon().fromTheme("edit-redo"))
+        self.ui_main.clear_collect_bttn.setIcon(QIcon().fromTheme("edit-clear",
+                                                                  QIcon(":/icons/edit-clear")))
+        self.ui_main.clear_search_bttn.setIcon(QIcon().fromTheme("edit-clear"
+                                                                 ,QIcon(":/icons/edit-clear")))
+        self.ui_main.clear_trktbl_bttn.setIcon(QIcon().fromTheme("window-new",
+                                                                 QIcon(":/icons/window-new")))
+        self.ui_main.save_trktbl_bttn.setIcon(QIcon().fromTheme("document-save-as",
+                                                                QIcon(":/icons/document-save-as")))
+        self.ui_main.prev_trktbl_bttn.setIcon(QIcon().fromTheme("edit-undo",
+                                                               QIcon(":/icons/edit-undo")))
+        self.ui_main.next_trktbl_bttn.setIcon(QIcon().fromTheme("edit-redo",
+                                                                QIcon(":/icons/edit-redo")))
         
-        self.ui_main.prev_bttn.setIcon(QIcon().fromTheme("media-skip-backward"))
-        self.ui_main.play_bttn.setIcon(QIcon().fromTheme("media-playback-start"))
-        self.ui_main.stop_bttn.setIcon(QIcon().fromTheme("media-playback-stop"))
-        self.ui_main.next_bttn.setIcon(QIcon().fromTheme("media-skip-forward"))   
+        self.ui_main.prev_bttn.setIcon(QIcon().fromTheme("media-skip-backward",
+                                                         QIcon(":/icons/media-skip-backward")))
+        self.ui_main.play_bttn.setIcon(QIcon().fromTheme("media-playback-start",
+                                                         QIcon(":/icons/media-playback-start")))
+        self.ui_main.stop_bttn.setIcon(QIcon().fromTheme("media-playback-stop",
+                                                         QIcon(":/icons/media-playback-stop")))
+        self.ui_main.next_bttn.setIcon(QIcon().fromTheme("media-skip-forward",
+                                                         QIcon(":/icons/media-skip-forward")))   
         
-        self.ui_main.rename_playlist_bttn.setIcon(QIcon().fromTheme("edit-rename")) # NONSTD
-        self.ui_main.delete_playlist_bttn.setIcon(QIcon().fromTheme("edit-delete")) # NONSTD
+        self.ui_main.rename_playlist_bttn.setIcon(QIcon().fromTheme("edit-rename",
+                                                                    QIcon(":/icons/document-properties")))
+        self.ui_main.delete_playlist_bttn.setIcon(QIcon().fromTheme("edit-delete",
+                                                                    QIcon(":/icons/edit-delete")))
         
         app_icon = QIcon("gereqi/icons/app.png")
         self.ui_main.setWindowIcon(app_icon)
         
-        self.ui_main.mute_bttn.setIcon(QIcon().fromTheme("player-volume"))
+        self.ui_main.mute_bttn.setIcon(QIcon().fromTheme("player-volume",
+                                                         QIcon(":/icons/audio-card")))
         
         
     def __dev_view_expand(self,item):
@@ -363,7 +386,8 @@ class WidgetManips:
             menu.addSeparator()
             manage_action = menu.addAction(QIcon().fromTheme("document-open"),
                                            "Manage File")
-            copy_tags_action = menu.addAction(QIcon().fromTheme("edit-copy"),
+            
+            copy_tags_action = menu.addAction(QIcon().fromTheme("edit-copy", QIcon(":/icon/")),
                                               "Copy Tags to Clipboard")
             edit_action = menu.addAction("Edit Track Information")
             
@@ -458,10 +482,10 @@ class WidgetManips:
         """
         if state == "play":
             icon = QIcon().fromTheme("media-playback-pause")
-            tray = QIcon("gereqi/icons/app.png")
+            tray = QIcon(":/icons/app.png")
         elif state == "pause":            
             icon = QIcon().fromTheme("media-playback-start")
-            tray = QIcon("gereqi/icons/app-paused.png")
+            tray = QIcon(":/icons/app-paused.png")
 
         self.ui_main.play_bttn.setIcon(icon)
         self.ui_main.tray_icon.setIcon(tray)
