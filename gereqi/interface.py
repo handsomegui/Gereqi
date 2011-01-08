@@ -626,11 +626,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.player.audio_object.mute(checked)
         if checked:
             icon = QIcon(QIcon().fromTheme("process-stop"))
-            self.mute_bttn.setIcon(icon)
         else:
             vol = (self.volume_sldr.value() / 100.0)
-            self.mute_bttn.setIcon(QIcon().fromTheme("player-volume"))
+            icon = QIcon().fromTheme("player-volume",QIcon(":/icons/audio-card.png"))
+            # The volume-slider may have changed since being muted            
             self.player.audio_object.set_volume(vol)
+            
+        self.mute_bttn.setIcon(icon)
       
     @pyqtSignature("")  
     def on_progress_sldr_sliderReleased(self):
