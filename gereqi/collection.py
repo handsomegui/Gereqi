@@ -227,7 +227,8 @@ class CollectionDb:
     def get_albums_all(self, filt=0):
         query = '''SELECT DISTINCT album
                         FROM media   
-                        WHERE added>?'''
+                        WHERE added>?
+                        ORDER BY lower(album)'''
         self.__query_execute(query, (filt, ))
         result = self.__query_fetchall()
         return result
