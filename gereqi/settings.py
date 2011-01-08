@@ -93,10 +93,4 @@ class Settings:
             options = self.config.options("interface")
             if opt in options:
                 return self.config.get("interface",opt)
-            
-    def default_db(self):
-        """
-            used in case of DB config errors
-        """
-        self.add_database_setting("type", "SQLITE")
 

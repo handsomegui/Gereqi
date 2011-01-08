@@ -197,7 +197,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         err_msg = QErrorMessage()
         err_msg.showMessage(str(err))
         if err_msg.exec_():                
-            self.sets_db.default_db() 
+            self.sets_db.add_database_setting("type", "SQLITE")
             self.media_db.media_db.removeDatabase("main")
             self.media_db = CollectionDb("main")
         
