@@ -1108,7 +1108,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         index = self.collect_time_box.currentIndex()
         calc = lambda val: int(round(time.time() - val))
         now = time.localtime()
-        filts = [(now[3] * now[4]) + now[5], 604800, 2419200, 7257600, 31557600]   
+        today_secs = ( ( (now[3] * 60) + now[4] ) * 60 ) + now[5]
+        filts = [ today_secs, 604800, 2419200, 7257600, 31557600]   
         if index > 0:
             return calc(filts[index - 1])
         else:
