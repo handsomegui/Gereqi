@@ -26,10 +26,10 @@ import gereqi.icons.icons_resource
 class SetupExtraWidgets:
     """
     This should be done before the main ui is shown
+    e.g. on app initialisation
     """
     def __init__(self, parent):
         self.ui = parent
-        
         
         self.__setup_filesystem_tree()
         self.__create_tray_menu()
@@ -103,7 +103,6 @@ class SetupExtraWidgets:
         stop_action.triggered.connect(self.ui.stop_bttn.click)
         quit_action.triggered.connect(qApp.quit)     
        
-    # TODO: separate certain things
     def __setup_misc(self):
         """
         Extra __init__ things to add to the UI
@@ -125,7 +124,6 @@ class SetupExtraWidgets:
         self.ui.play_type_bttn.setCheckable(True)
         self.ui.play_type_bttn.setAutoRaise(True)
         self.ui.play_type_bttn.setIcon(QIcon(":/icons/dice-icon2.png"))
-        self.ui.play_type_bttn.toggled.connect(self.__play_mode_changed)
         
         self.ui.statusBar.addPermanentWidget(self.ui.stat_lbl)
         self.ui.statusBar.addPermanentWidget(self.ui.stat_prog)
@@ -166,6 +164,26 @@ class SetupExtraWidgets:
         delete = QShortcut(QKeySequence(QString("Del")), self.ui)
         delete.activated.connect(self.ui.playlisting.del_track)
         
+
+        
+
+class WidgetManips:
+    """
+    For repeated custom widget actions
+    """
+    def __init__(self, parent):
+        parent.track_tbl.setContextMenuPolicy(Qt.CustomContextMenu)
+        parent.track_tbl.horizontalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
+        
+        parent.track_tbl.customContextMenuRequested.connect(self.__context_menu)
+        parent.track_tbl.horizontalHeader().customContextMenuRequested.connect(self.__header_menu)
+        parent.vertical_tabs.currentChanged.connect(self.__tab_changed)
+        parent.play_type_bttn.toggled.connect(self.__play_mode_changed)
+        self.__hdr_menu_setup()
+        self.ui = parent
+        self.dev_man = None
+        
+        
     def __play_mode_changed(self, check):
         """
         Changes the icon of the random mode button depending
@@ -177,70 +195,6 @@ class SetupExtraWidgets:
             icon = QIcon(":/icons/dice-icon2.png")            
         self.ui.play_type_bttn.setIcon(icon)
         
-        
-    def __icons(self):
-        """
-        Using the theme's icons
-        """
-        self.ui.clear_collect_bttn.setIcon(QIcon().fromTheme("edit-clear",
-                                                                  QIcon(":/icons/edit-clear.png")))
-        self.ui.clear_search_bttn.setIcon(QIcon().fromTheme("edit-clear"
-                                                                 ,QIcon(":/icons/edit-clear.png")))
-        self.ui.clear_trktbl_bttn.setIcon(QIcon().fromTheme("window-new",
-                                                                 QIcon(":/icons/window-new.png")))
-        self.ui.save_trktbl_bttn.setIcon(QIcon().fromTheme("document-save-as",
-                                                                QIcon(":/icons/document-save-as.png")))
-        self.ui.prev_trktbl_bttn.setIcon(QIcon().fromTheme("edit-undo",
-                                                               QIcon(":/icons/edit-undo.png")))
-        self.ui.next_trktbl_bttn.setIcon(QIcon().fromTheme("edit-redo",
-                                                                QIcon(":/icons/edit-redo.png")))
-        
-        self.ui.prev_bttn.setIcon(QIcon().fromTheme("media-skip-backward",
-                                                         QIcon(":/icons/media-skip-backward.png")))
-        self.ui.play_bttn.setIcon(QIcon().fromTheme("media-playback-start",
-                                                         QIcon(":/icons/media-playback-start.png")))
-        self.ui.stop_bttn.setIcon(QIcon().fromTheme("media-playback-stop",
-                                                         QIcon(":/icons/media-playback-stop.png")))
-        self.ui.next_bttn.setIcon(QIcon().fromTheme("media-skip-forward",
-                                                         QIcon(":/icons/media-skip-forward.png")))   
-        
-        self.ui.rename_playlist_bttn.setIcon(QIcon().fromTheme("edit-rename",
-                                                                    QIcon(":/icons/document-properties.png")))
-        self.ui.delete_playlist_bttn.setIcon(QIcon().fromTheme("edit-delete",
-                                                                    QIcon(":/icons/edit-delete.png")))
-        
-        self.ui.setWindowIcon(QIcon(":icons/app.png"))
-        
-        self.ui.mute_bttn.setIcon(QIcon().fromTheme("player-volume",
-                                                         QIcon(":/icons/audio-card.png")))
-        
-        
-    def __dev_view_expand(self,item):
-        par = item.parent()
-        if not par:
-            artist = str(item.text(0))
-            if item.childCount() > 0:
-                return
-            albums = self.dev_interface.albums(artist)
-            for alb in albums:
-                now = QTreeWidgetItem([alb])
-                now.setChildIndicatorPolicy(0)
-                item.addChild(now)
-            return
-            
-        elif not par.parent():
-            artist = str(par.text(0))
-            album = str(item.text(0))
-            if item.childCount() > 0:
-                return
-            
-            tracks = self.dev_interface.tracks(artist,album)
-            for trk in tracks:
-                now = QTreeWidgetItem([trk])
-                now.setChildIndicatorPolicy(1)
-                item.addChild(now)
-            return
-            
         
     def __add_from_dev(self, item):
         self.__dev_view_expand(item)
@@ -270,23 +224,32 @@ class SetupExtraWidgets:
             track = self.dev_interface.filename(artist, album, title)
             info = self.dev_interface.metadata(track)
             self.ui.playlisting.add_to_playlist(track,info)
-            
-
-   
-class WidgetManips:
-    """
-    For repeated custom widget actions
-    """
-    def __init__(self, parent):
-        parent.track_tbl.setContextMenuPolicy(Qt.CustomContextMenu)
-        parent.track_tbl.horizontalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
         
-        parent.track_tbl.customContextMenuRequested.connect(self.__context_menu)
-        parent.track_tbl.horizontalHeader().customContextMenuRequested.connect(self.__header_menu)
-        parent.vertical_tabs.currentChanged.connect(self.__tab_changed)
-        self.__hdr_menu_setup()
-        self.ui = parent
-        self.dev_man = None
+    def __dev_view_expand(self,item):
+        par = item.parent()
+        if not par:
+            artist = str(item.text(0))
+            if item.childCount() > 0:
+                return
+            albums = self.dev_interface.albums(artist)
+            for alb in albums:
+                now = QTreeWidgetItem([alb])
+                now.setChildIndicatorPolicy(0)
+                item.addChild(now)
+            return
+            
+        elif not par.parent():
+            artist = str(par.text(0))
+            album = str(item.text(0))
+            if item.childCount() > 0:
+                return
+            
+            tracks = self.dev_interface.tracks(artist,album)
+            for trk in tracks:
+                now = QTreeWidgetItem([trk])
+                now.setChildIndicatorPolicy(1)
+                item.addChild(now)
+            return
         
     def __hdr_menu_setup(self):
         """
@@ -424,17 +387,17 @@ class WidgetManips:
         elif mode == "album":
             things = media_db.get_albums_all(time_filt)
         
-        # FIXME: UGLY!!!!
-        if things is not None:
-            for cnt in range(len(things)):
-                thing = things[cnt]
-                # When creating collection tree only 
-                #  allow certain things based on the filter.
-                if (filt is not None) and (filt.toLower() not in thing.toLower()):
-                    continue
-                thing = QTreeWidgetItem([thing])
-                thing.setChildIndicatorPolicy(0)
-                self.ui.collect_tree.addTopLevelItem(thing)
+        if things is None:
+            return
+        
+        for thing in things:
+            # When creating collection tree only 
+            #  allow certain things based on the filter.
+            if (filt is not None) and (filt.toLower() not in thing.toLower()):
+                continue
+            thing = QTreeWidgetItem([thing])
+            thing.setChildIndicatorPolicy(0)
+            self.ui.collect_tree.addTopLevelItem(thing)
             
     def pop_playlist_view(self):
         """
