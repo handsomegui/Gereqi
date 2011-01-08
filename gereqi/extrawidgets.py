@@ -19,7 +19,8 @@ from PyQt4.QtCore import *
 
 import time
 import gereqi.devices
-import gereqi.icons
+import gereqi.icons.configuration
+import gereqi.icons.icons_resource
 
 
 class SetupExtraWidgets:
@@ -27,7 +28,7 @@ class SetupExtraWidgets:
     This should be done before the main ui is shown
     """
     def __init__(self, parent):
-        self.ui_main = parent
+        self.ui = parent
         
         
         self.__setup_filesystem_tree()
@@ -35,24 +36,24 @@ class SetupExtraWidgets:
 
         self.__setup_misc()
         self.__key_shortcuts()
-        self.__icons()
-        #self.pop_devs()
+        # Load all the button/action icons
+        gereqi.icons.configuration.Setup(self.ui)
         
     def __setup_filesystem_tree(self):
         """
         A filesystem_tree browser where tracks can be (eventually)
         added to the playlist
         """
-        self.ui_main.dir_model = QDirModel()
+        self.ui.dir_model = QDirModel()
         filters = QDir.Files|QDir.AllDirs|QDir.Readable|QDir.NoDotAndDotDot
-        self.ui_main.dir_model.setFilter(filters)
-        self.ui_main.dir_model.setReadOnly(True)
-        self.ui_main.dir_model.setNameFilters(self.ui_main.format_filter)
-        self.ui_main.filesystem_tree.setModel(self.ui_main.dir_model) 
-        self.ui_main.filesystem_tree.setColumnHidden(1, True)
-        self.ui_main.filesystem_tree.setColumnHidden(2, True)
-        self.ui_main.filesystem_tree.setColumnHidden(3, True)
-        self.ui_main.filesystem_tree.expandToDepth(0)
+        self.ui.dir_model.setFilter(filters)
+        self.ui.dir_model.setReadOnly(True)
+        self.ui.dir_model.setNameFilters(self.ui.format_filter)
+        self.ui.filesystem_tree.setModel(self.ui.dir_model) 
+        self.ui.filesystem_tree.setColumnHidden(1, True)
+        self.ui.filesystem_tree.setColumnHidden(2, True)
+        self.ui.filesystem_tree.setColumnHidden(3, True)
+        self.ui.filesystem_tree.expandToDepth(0)
         
     def __create_tray_menu(self):
         """
@@ -60,51 +61,49 @@ class SetupExtraWidgets:
         in the main UI
         """
         quit_action = QAction(QIcon().fromTheme("process-stop"),
-                              QString("&Quit"), self.ui_main)
+                              QString("&Quit"), self.ui)
         
-        self.ui_main.play_action = QAction(QIcon().fromTheme("media-playback-start", 
-                                                             QIcon(":/icons/media-playback-start")),
-                                           QString("&Play"), self.ui_main)
+        self.ui.play_action = QAction(QIcon().fromTheme("media-playback-start", 
+                                                             QIcon(":/icons/media-playback-start.png")),
+                                           QString("&Play"), self.ui)
         
         next_action = QAction(QIcon().fromTheme("media-skip-forward",
-                                                QIcon(":/icons/media-skip-forward")),
-                              QString("&Next"), self.ui_main)
+                                                QIcon(":/icons/media-skip-forward.png")),
+                              QString("&Next"), self.ui)
         
         prev_action = QAction(QIcon().fromTheme("media-skip-backward",
-                                                QIcon(":/icons/media-skip-backward")),
-                              QString("&Previous"), self.ui_main)
+                                                QIcon(":/icons/media-skip-backward.png")),
+                              QString("&Previous"), self.ui)
         
         stop_action = QAction(QIcon().fromTheme("media-playback-stop",
-                                                QIcon(":/icons/media-playback-stop")),
-                              QString("&Stop"), self.ui_main)
+                                                QIcon(":/icons/media-playback-stop.png")),
+                              QString("&Stop"), self.ui)
         
-        self.ui_main.play_action.setCheckable(True)
-        self.ui_main.view_action = QAction(QString("&Visible"), self.ui_main)
-        self.ui_main.view_action.setCheckable(True)
-        self.ui_main.view_action.setChecked(True)
-        tray_menu = QMenu(self.ui_main)
-        icon_normal = QIcon(":/icons/app")
-        tray_menu.addAction(icon_normal, QString("Gereqi"))
+        self.ui.play_action.setCheckable(True)
+        self.ui.view_action = QAction(QString("&Visible"), self.ui)
+        self.ui.view_action.setCheckable(True)
+        self.ui.view_action.setChecked(True)
+        tray_menu = QMenu(self.ui)
+        tray_menu.addAction(QIcon(":/icons/app.png"), QString("Gereqi"))
         tray_menu.addSeparator()
         tray_menu.addAction(prev_action)
-        tray_menu.addAction(self.ui_main.play_action)
+        tray_menu.addAction(self.ui.play_action)
         tray_menu.addAction(stop_action)
         tray_menu.addAction(next_action)
         tray_menu.addSeparator()
-        tray_menu.addAction(self.ui_main.view_action)
+        tray_menu.addAction(self.ui.view_action)
         tray_menu.addAction(quit_action)
-        self.ui_main.tray_icon = QSystemTrayIcon(self.ui_main)
-        icon_stopped = QIcon(":/icons/app-paused")
-        self.ui_main.tray_icon.setIcon(icon_stopped)
-        self.ui_main.tray_icon.setContextMenu(tray_menu)
-        self.ui_main.tray_icon.setToolTip("Stopped")    
+        self.ui.tray_icon = QSystemTrayIcon(self.ui)
+        self.ui.tray_icon.setIcon(QIcon(":/icons/app-paused.png"))
+        self.ui.tray_icon.setContextMenu(tray_menu)
+        self.ui.tray_icon.setToolTip("Stopped")    
         
-        self.ui_main.play_action.toggled.connect(self.ui_main.play_bttn.setChecked)
-        self.ui_main.view_action.toggled.connect(self.ui_main.minimise_to_tray)
-        self.ui_main.tray_icon.activated.connect(self.ui_main.tray_event)
-        next_action.triggered.connect(self.ui_main.next_bttn.click)
-        prev_action.triggered.connect(self.ui_main.prev_bttn.click)
-        stop_action.triggered.connect(self.ui_main.stop_bttn.click)
+        self.ui.play_action.toggled.connect(self.ui.play_bttn.setChecked)
+        self.ui.view_action.toggled.connect(self.ui.minimise_to_tray)
+        self.ui.tray_icon.activated.connect(self.ui.tray_event)
+        next_action.triggered.connect(self.ui.next_bttn.click)
+        prev_action.triggered.connect(self.ui.prev_bttn.click)
+        stop_action.triggered.connect(self.ui.stop_bttn.click)
         quit_action.triggered.connect(qApp.quit)     
        
     # TODO: separate certain things
@@ -112,50 +111,50 @@ class SetupExtraWidgets:
         """
         Extra __init__ things to add to the UI
         """
-        self.ui_main.stat_lbl = QLabel("Finished")
-        self.ui_main.stat_prog = QProgressBar()
+        self.ui.stat_lbl = QLabel("Finished")
+        self.ui.stat_prog = QProgressBar()
         
-        self.ui_main.stat_prog.setRange(0, 100)
-        self.ui_main.stat_prog.setValue(100)
-        self.ui_main.stat_prog.setMaximumSize(QSize(100, 18))
+        self.ui.stat_prog.setRange(0, 100)
+        self.ui.stat_prog.setValue(100)
+        self.ui.stat_prog.setMaximumSize(QSize(100, 18))
         
         
-        self.ui_main.stat_bttn = QToolButton()
-        self.ui_main.stat_bttn.setIcon(QIcon().fromTheme("application-exit"))
-        self.ui_main.stat_bttn.setAutoRaise(True)
-        self.ui_main.stat_bttn.setEnabled(False)
+        self.ui.stat_bttn = QToolButton()
+        self.ui.stat_bttn.setIcon(QIcon().fromTheme("application-exit"))
+        self.ui.stat_bttn.setAutoRaise(True)
+        self.ui.stat_bttn.setEnabled(False)
         
-        self.ui_main.play_type_bttn = QToolButton()  
-        self.ui_main.play_type_bttn.setCheckable(True)
-        self.ui_main.play_type_bttn.setAutoRaise(True)
-        self.ui_main.play_type_bttn.setIcon(QIcon(":/icons/dice-icon2"))
-        self.ui_main.play_type_bttn.toggled.connect(self.__mode_change)
+        self.ui.play_type_bttn = QToolButton()  
+        self.ui.play_type_bttn.setCheckable(True)
+        self.ui.play_type_bttn.setAutoRaise(True)
+        self.ui.play_type_bttn.setIcon(QIcon(":/icons/dice-icon2.png"))
+        self.ui.play_type_bttn.toggled.connect(self.__play_mode_changed)
         
-        self.ui_main.statusBar.addPermanentWidget(self.ui_main.stat_lbl)
-        self.ui_main.statusBar.addPermanentWidget(self.ui_main.stat_prog)
-        self.ui_main.statusBar.addPermanentWidget(self.ui_main.stat_bttn)
-        self.ui_main.statusBar.addPermanentWidget(self.ui_main.play_type_bttn)
+        self.ui.statusBar.addPermanentWidget(self.ui.stat_lbl)
+        self.ui.statusBar.addPermanentWidget(self.ui.stat_prog)
+        self.ui.statusBar.addPermanentWidget(self.ui.stat_bttn)
+        self.ui.statusBar.addPermanentWidget(self.ui.play_type_bttn)
         # Headers for the Playlist widget
         headers = [QString("Track"), QString("Title"), QString("Artist"),
                    QString("Album"), QString("Year"), QString("Genre"),  
                    QString("Length"), QString("Bitrate"), QString("FileName")]
         for val in range(len(headers)):
-            self.ui_main.track_tbl.insertColumn(val)
-        self.ui_main.track_tbl.setHorizontalHeaderLabels(headers)
+            self.ui.track_tbl.insertColumn(val)
+        self.ui.track_tbl.setHorizontalHeaderLabels(headers)
         
-        self.ui_main.collect_tree_hdr = self.ui_main.collect_tree.header()
-        self.ui_main.collect_tree_hdr.setClickable(True)
+        self.ui.collect_tree_hdr = self.ui.collect_tree.header()
+        self.ui.collect_tree_hdr.setClickable(True)
         
         
         # Disables the webView link-clicks as we want to manually handle them
-        self.ui_main.info_view.page().setLinkDelegationPolicy(2)
-        self.ui_main.wiki_view.page().setLinkDelegationPolicy(2)
+        self.ui.info_view.page().setLinkDelegationPolicy(2)
+        self.ui.wiki_view.page().setLinkDelegationPolicy(2)
         
         # FIXME: will not work in PyQT <4.6 i.e. Ubuntu 9.10
         # The images are scaled smoothly using billinear interp and 
         # antialias edges of primitives(?)
         try:
-            self.ui_main.info_view.setRenderHint(1|4)
+            self.ui.info_view.setRenderHint(1|4)
         except AttributeError,e:
             print('''WARNING: it's likely you are using an old\n
             version of PyQt4 which lacks the option to antialias\n
@@ -167,57 +166,56 @@ class SetupExtraWidgets:
         various keyboard shortcuts 
         """
         # remove the selected track from the playlist
-        delete = QShortcut(QKeySequence(QString("Del")), self.ui_main)
-        delete.activated.connect(self.ui_main.playlisting.del_track)
+        delete = QShortcut(QKeySequence(QString("Del")), self.ui)
+        delete.activated.connect(self.ui.playlisting.del_track)
         
-    def __mode_change(self, check):
+    def __play_mode_changed(self, check):
         """
         Changes the icon of the random mode button depending
         if checked or not
         """
         if check:
-            icon = QIcon(":/icons/dice-icon")
+            icon = QIcon(":/icons/dice-icon.png")
         else:
-            icon = QIcon(":/icons/dice-icon2")            
-        self.ui_main.play_type_bttn.setIcon(icon)
+            icon = QIcon(":/icons/dice-icon2.png")            
+        self.ui.play_type_bttn.setIcon(icon)
         
         
     def __icons(self):
         """
         Using the theme's icons
         """
-        self.ui_main.clear_collect_bttn.setIcon(QIcon().fromTheme("edit-clear",
-                                                                  QIcon(":/icons/edit-clear")))
-        self.ui_main.clear_search_bttn.setIcon(QIcon().fromTheme("edit-clear"
-                                                                 ,QIcon(":/icons/edit-clear")))
-        self.ui_main.clear_trktbl_bttn.setIcon(QIcon().fromTheme("window-new",
-                                                                 QIcon(":/icons/window-new")))
-        self.ui_main.save_trktbl_bttn.setIcon(QIcon().fromTheme("document-save-as",
-                                                                QIcon(":/icons/document-save-as")))
-        self.ui_main.prev_trktbl_bttn.setIcon(QIcon().fromTheme("edit-undo",
-                                                               QIcon(":/icons/edit-undo")))
-        self.ui_main.next_trktbl_bttn.setIcon(QIcon().fromTheme("edit-redo",
-                                                                QIcon(":/icons/edit-redo")))
+        self.ui.clear_collect_bttn.setIcon(QIcon().fromTheme("edit-clear",
+                                                                  QIcon(":/icons/edit-clear.png")))
+        self.ui.clear_search_bttn.setIcon(QIcon().fromTheme("edit-clear"
+                                                                 ,QIcon(":/icons/edit-clear.png")))
+        self.ui.clear_trktbl_bttn.setIcon(QIcon().fromTheme("window-new",
+                                                                 QIcon(":/icons/window-new.png")))
+        self.ui.save_trktbl_bttn.setIcon(QIcon().fromTheme("document-save-as",
+                                                                QIcon(":/icons/document-save-as.png")))
+        self.ui.prev_trktbl_bttn.setIcon(QIcon().fromTheme("edit-undo",
+                                                               QIcon(":/icons/edit-undo.png")))
+        self.ui.next_trktbl_bttn.setIcon(QIcon().fromTheme("edit-redo",
+                                                                QIcon(":/icons/edit-redo.png")))
         
-        self.ui_main.prev_bttn.setIcon(QIcon().fromTheme("media-skip-backward",
-                                                         QIcon(":/icons/media-skip-backward")))
-        self.ui_main.play_bttn.setIcon(QIcon().fromTheme("media-playback-start",
-                                                         QIcon(":/icons/media-playback-start")))
-        self.ui_main.stop_bttn.setIcon(QIcon().fromTheme("media-playback-stop",
-                                                         QIcon(":/icons/media-playback-stop")))
-        self.ui_main.next_bttn.setIcon(QIcon().fromTheme("media-skip-forward",
-                                                         QIcon(":/icons/media-skip-forward")))   
+        self.ui.prev_bttn.setIcon(QIcon().fromTheme("media-skip-backward",
+                                                         QIcon(":/icons/media-skip-backward.png")))
+        self.ui.play_bttn.setIcon(QIcon().fromTheme("media-playback-start",
+                                                         QIcon(":/icons/media-playback-start.png")))
+        self.ui.stop_bttn.setIcon(QIcon().fromTheme("media-playback-stop",
+                                                         QIcon(":/icons/media-playback-stop.png")))
+        self.ui.next_bttn.setIcon(QIcon().fromTheme("media-skip-forward",
+                                                         QIcon(":/icons/media-skip-forward.png")))   
         
-        self.ui_main.rename_playlist_bttn.setIcon(QIcon().fromTheme("edit-rename",
-                                                                    QIcon(":/icons/document-properties")))
-        self.ui_main.delete_playlist_bttn.setIcon(QIcon().fromTheme("edit-delete",
-                                                                    QIcon(":/icons/edit-delete")))
+        self.ui.rename_playlist_bttn.setIcon(QIcon().fromTheme("edit-rename",
+                                                                    QIcon(":/icons/document-properties.png")))
+        self.ui.delete_playlist_bttn.setIcon(QIcon().fromTheme("edit-delete",
+                                                                    QIcon(":/icons/edit-delete.png")))
         
-        app_icon = QIcon("gereqi/icons/app.png")
-        self.ui_main.setWindowIcon(app_icon)
+        self.ui.setWindowIcon(QIcon(":icons/app.png"))
         
-        self.ui_main.mute_bttn.setIcon(QIcon().fromTheme("player-volume",
-                                                         QIcon(":/icons/audio-card")))
+        self.ui.mute_bttn.setIcon(QIcon().fromTheme("player-volume",
+                                                         QIcon(":/icons/audio-card.png")))
         
         
     def __dev_view_expand(self,item):
@@ -256,7 +254,7 @@ class SetupExtraWidgets:
             # List comps or generators are very,very flakey
             for trk in tracks:
                 info = self.dev_interface.metadata(trk)
-                self.ui_main.playlisting.add_to_playlist(trk,info)
+                self.ui.playlisting.add_to_playlist(trk,info)
             return
         
         par_par = par.parent()
@@ -266,7 +264,7 @@ class SetupExtraWidgets:
             tracks = self.dev_interface.filename(artist=art,album=alb)
             for trk in tracks:
                 info = self.dev_interface.metadata(trk)
-                self.ui_main.playlisting.add_to_playlist(trk,info)
+                self.ui.playlisting.add_to_playlist(trk,info)
                 
         else:
             artist = str(par_par.text(0))
@@ -274,7 +272,7 @@ class SetupExtraWidgets:
             title = str(item.text(0))
             track = self.dev_interface.filename(artist, album, title)
             info = self.dev_interface.metadata(track)
-            self.ui_main.playlisting.add_to_playlist(track,info)
+            self.ui.playlisting.add_to_playlist(track,info)
             
 
    
@@ -290,7 +288,7 @@ class WidgetManips:
         parent.track_tbl.horizontalHeader().customContextMenuRequested.connect(self.__header_menu)
         parent.vertical_tabs.currentChanged.connect(self.__tab_changed)
         self.__hdr_menu_setup()
-        self.ui_main = parent
+        self.ui = parent
         self.dev_man = None
         
     def __hdr_menu_setup(self):
@@ -311,22 +309,22 @@ class WidgetManips:
             The names of each header column is checkable
             for viewing of its column
         """
-        action = self.hdr_menu.exec_(self.ui_main.track_tbl.horizontalHeader().mapToGlobal(pos))
-        hdr_pos = self.ui_main.playlisting.header_search(action.iconText())
+        action = self.hdr_menu.exec_(self.ui.track_tbl.horizontalHeader().mapToGlobal(pos))
+        hdr_pos = self.ui.playlisting.header_search(action.iconText())
         hdr_view = False if action.isChecked() else True
-        self.ui_main.track_tbl.setColumnHidden(hdr_pos,hdr_view)
+        self.ui.track_tbl.setColumnHidden(hdr_pos,hdr_view)
         
     def __tab_changed(self,pos):
         if (pos == 4):
             if not self.dev_man:
                 self.dev_man = gereqi.devices.Devices()
                 
-            self.ui_main.connect_dev.clicked.connect(self.__mount_dev)
-            self.ui_main.disconnect_dev.clicked.connect(self.__umount_dev)
-            self.ui_main.device_view.itemExpanded.connect(self.__dev_view_expand)
-            self.ui_main.device_view.itemDoubleClicked.connect(self.__add_from_dev)
+            self.ui.connect_dev.clicked.connect(self.__mount_dev)
+            self.ui.disconnect_dev.clicked.connect(self.__umount_dev)
+            self.ui.device_view.itemExpanded.connect(self.__dev_view_expand)
+            self.ui.device_view.itemDoubleClicked.connect(self.__add_from_dev)
             for dev in self.dev_man.device_list:
-                self.ui_main.devices_box.addItem(dev["PATH"])
+                self.ui.devices_box.addItem(dev["PATH"])
                 
                 
     def __pop_dev_view(self):
@@ -338,26 +336,24 @@ class WidgetManips:
         for art in arts:
             row = QTreeWidgetItem([art])
             row.setChildIndicatorPolicy(0)
-            self.ui_main.device_view.addTopLevelItem(row)
-        
+            self.ui.device_view.addTopLevelItem(row)
         
     def __ipod_view(self,m_point):
         """
             Shows the iPods contents in the treeview
         """
-        self.ui_main.device_view.clear()
+        self.ui.device_view.clear()
         self.dev_interface = gereqi.devices.Ipod(m_point)
         self.__pop_dev_view()
-        
         
     def __mount_dev(self):
         """
             Mount the device shown in the combobox
         """
-        dev_now = str(self.ui_main.devices_box.currentText())
+        dev_now = str(self.ui.devices_box.currentText())
         m_point = self.dev_man.mount(dev_now)
-        self.ui_main.connect_dev.setEnabled(False)
-        self.ui_main.disconnect_dev.setEnabled(True)
+        self.ui.connect_dev.setEnabled(False)
+        self.ui.disconnect_dev.setEnabled(True)
         for dev in self.dev_man.device_list:
             if (dev["PATH"] != dev_now):
                 continue
@@ -371,27 +367,27 @@ class WidgetManips:
         """
             Unmount current device
         """
-        dev = str(self.ui_main.devices_box.currentText())
+        dev = str(self.ui.devices_box.currentText())
         self.dev_man.unmount(dev)
-        self.ui_main.device_view.clear()
-        self.ui_main.disconnect_dev.setEnabled(False)
-        self.ui_main.connect_dev.setEnabled(True)
+        self.ui.device_view.clear()
+        self.ui.disconnect_dev.setEnabled(False)
+        self.ui.connect_dev.setEnabled(True)
         
     def __context_menu(self,pos):
         # do nothing if table is empty
-        if self.ui_main.track_tbl.rowCount() > 0:
+        if self.ui.track_tbl.rowCount() > 0:
             menu = QMenu()
-            play_action = menu.addAction(QIcon().fromTheme("media-playback-start"),
-                                         "Play")
+            icon = QIcon().fromTheme("media-playback-start")
+            play_action = menu.addAction(icon, "Play")
             menu.addSeparator()
-            manage_action = menu.addAction(QIcon().fromTheme("document-open"),
-                                           "Manage File")
+            icon = QIcon().fromTheme("document-open")
+            manage_action = menu.addAction(icon, "Manage File")
             
-            copy_tags_action = menu.addAction(QIcon().fromTheme("edit-copy", QIcon(":/icon/")),
-                                              "Copy Tags to Clipboard")
+            icon = QIcon().fromTheme("edit-copy", QIcon(":/icon/edit-copy.png"))
+            copy_tags_action = menu.addAction(icon, "Copy Tags to Clipboard")
             edit_action = menu.addAction("Edit Track Information")
             
-            action = menu.exec_(self.ui_main.track_tbl.mapToGlobal(pos))
+            action = menu.exec_(self.ui.track_tbl.mapToGlobal(pos))
 
             print "CONTEXT MENU",pos,action
         
@@ -400,7 +396,7 @@ class WidgetManips:
         Based on the combobox selection, the collection
         browser is filtered by addition date
         """
-        index = self.ui_main.collect_time_box.currentIndex()
+        index = self.ui.collect_time_box.currentIndex()
         calc = lambda val: int(round(time.time() - val))
         now = time.localtime()
         today = ((now[3] * 60) +  now[4] ) * 60 + now[5]
@@ -414,13 +410,13 @@ class WidgetManips:
         """
         viewing the media database in the QTreeView
         """
-        media_db = self.ui_main.media_db
-        self.ui_main.collect_tree.clear()
+        media_db = self.ui.media_db
+        self.ui.collect_tree.clear()
         # This gives multiples of the same thing i.e albums
-        filt = self.ui_main.search_collect_edit.text()
+        filt = self.ui.search_collect_edit.text()
         time_filt = self.__time_filt_now()
         
-        text_now = self.ui_main.collect_tree.headerItem().text(0)
+        text_now = self.ui.collect_tree.headerItem().text(0)
         if text_now == "Artist/Album":
             mode = "artist"
         else:
@@ -441,7 +437,7 @@ class WidgetManips:
                     continue
                 thing = QTreeWidgetItem([thing])
                 thing.setChildIndicatorPolicy(0)
-                self.ui_main.collect_tree.addTopLevelItem(thing)
+                self.ui.collect_tree.addTopLevelItem(thing)
             
     def pop_playlist_view(self):
         """
@@ -449,8 +445,8 @@ class WidgetManips:
         """
         font = QFont()
         font.setBold(True)        
-        self.ui_main.playlist_tree.clear()
-        playlists = self.ui_main.media_db.playlist_list()
+        self.ui.playlist_tree.clear()
+        playlists = self.ui.media_db.playlist_list()
 #        podcasts = None
 #        streams = None
         hdr_names = ["Playlists"] # Podcasts Radio Streams
@@ -466,14 +462,14 @@ class WidgetManips:
                         continue
                     now = QTreeWidgetItem([QString(play)])
                     hdr.addChild(now)
-                    tracks = self.ui_main.media_db.playlist_tracks(play)
+                    tracks = self.ui.media_db.playlist_tracks(play)
                     for track in tracks:
-                        info = self.ui_main.media_db.get_info(track)
+                        info = self.ui.media_db.get_info(track)
                         if info is not None:
                             now.addChild(QTreeWidgetItem([QString("%s - %s" %
                                          (info["title"], info["artist"])) ]))       
                                                                                       
-            self.ui_main.playlist_tree.addTopLevelItem(hdr)
+            self.ui.playlist_tree.addTopLevelItem(hdr)
                 
     def icon_change(self, state):
         """
@@ -487,5 +483,5 @@ class WidgetManips:
             icon = QIcon().fromTheme("media-playback-start")
             tray = QIcon(":/icons/app-paused.png")
 
-        self.ui_main.play_bttn.setIcon(icon)
-        self.ui_main.tray_icon.setIcon(tray)
+        self.ui.play_bttn.setIcon(icon)
+        self.ui.tray_icon.setIcon(tray)
