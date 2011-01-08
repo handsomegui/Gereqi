@@ -144,7 +144,7 @@ class Configuration(QDialog, Ui_settings_dialog):
             
     def __set_database(self):
         db_type = unicode(self.database_type.currentText())
-        self.sets_db.add_database_setting("type", db_type)
+        self.sets_db.add_database_setting("type", db_type) 
         
         if db_type == "MYSQL":
             self.sets_db.add_database_setting("hostname", str(self.mysql_host.text().toUtf8()) )

@@ -25,21 +25,22 @@ import os
 # TODO: remove the '_timed()' functions
 
 class CollectionDb:
-    def __init__(self, name):
-        self.db_name = QLatin1String(name)
-        self.__config_db()
+    media_db = None
+    def __init__(self, name):        
+        self.__config_db(name)
         
-    def __config_db(self):
+    def __config_db(self,name):
+        db_name = QLatin1String(name)
         sets_db = Settings()
         self.db_type = sets_db.get_database_setting("type")
         if self.db_type == "MYSQL":                            
-            self.media_db = QSqlDatabase.addDatabase("QMYSQL", self.db_name)
-            self.media_db.setHostName(sets_db.get_database_setting("hostname"))
-            self.media_db.setDatabaseName(sets_db.get_database_setting("dbname"))
-            self.media_db.setUserName(sets_db.get_database_setting("username"))
-            self.media_db.setPassword(sets_db.get_database_setting("password"))
+            CollectionDb.media_db = QSqlDatabase.addDatabase("QMYSQL", db_name)
+            CollectionDb.media_db.setHostName(sets_db.get_database_setting("hostname"))
+            CollectionDb.media_db.setDatabaseName(sets_db.get_database_setting("dbname"))
+            CollectionDb.media_db.setUserName(sets_db.get_database_setting("username"))
+            CollectionDb.media_db.setPassword(sets_db.get_database_setting("password"))
             # FIXME: this clearly does nothing
-            self.media_db.setPort(int(sets_db.get_database_setting("port")))
+            CollectionDb.media_db.setPort(int(sets_db.get_database_setting("port")))
                             
         else:        
             self.db_type = "SQLITE"
@@ -47,19 +48,20 @@ class CollectionDb:
             db_loc = "%smedia.db" % app_dir
             if QDir(app_dir).exists is False:
                 QDir().mkdir(app_dir)                
-            self.media_db = QSqlDatabase.addDatabase("QSQLITE", self.db_name)
-            self.media_db.setDatabaseName(db_loc)
+            CollectionDb.media_db = QSqlDatabase.addDatabase("QSQLITE", db_name)
+            CollectionDb.media_db.setDatabaseName(db_loc)
         
         
-        ok = self.media_db.open()
+        ok = CollectionDb.media_db.open()
         if ok is True:
             print "DATABASE OK",self.db_type
-            self.query = QSqlQuery(self.media_db)
+            CollectionDb.query = QSqlQuery(CollectionDb.media_db)
             if self.db_type == "SQLITE":
                 self.__pragma()
             self.__setup_tables()
         else:
-            print "DATABASE ERROR",self.db_type
+            err = self.media_db.lastError().text()
+            raise StandardError(err)
         
     def __setup_tables(self):
         if self.db_type == "SQLITE":
@@ -116,7 +118,7 @@ class CollectionDb:
         a list of dicts if more than 1 field
         otherwise, a list
         """
-        record = self.query.record
+        record = CollectionDb.query.record
         field_count = record().count()
         fields = []
         for cnt in range(field_count):
@@ -125,7 +127,7 @@ class CollectionDb:
         results = []
         row = 0
         
-        while self.query.next():
+        while CollectionDb.query.next():
             if len(fields) > 1:
                 row_result = {}
                 for field in fields:                    
@@ -139,22 +141,22 @@ class CollectionDb:
         
     def __query_execute(self, query, args=None):
         if args is not None:
-            self.query.prepare(query)
+            CollectionDb.query.prepare(query)
             for arg in args:
-                self.query.addBindValue(arg)
-            self.query.exec_()
+                CollectionDb.query.addBindValue(arg)
+            CollectionDb.query.exec_()
         else:
             # The execute() doesn't accept NoneTypes
-            self.query.exec_(query)   
+            CollectionDb.query.exec_(query)   
             
-        err = self.query.lastError()
+        err = CollectionDb.query.lastError()
         if err.isValid():
-            print err.text(),self.query.lastQuery()
+            print err.text(),CollectionDb.query.lastQuery()
                               
     
     def __execute_write(self, query, args=None):
         self.__query_execute(query, args)
-        self.media_db.commit()
+        CollectionDb.media_db.commit()
         
     def __pragma(self):
         """
@@ -370,12 +372,33 @@ class CollectionDb:
         self.__execute_write(query)
         self.__setup_tables()
         
-    def restart_db(self):
+    def restart_db(self,name=None):
         """
         Disconnects db and removes connection
         """
-        self.media_db.removeDatabase(self.db_name)
-        self.media_db.close()
-        del self.media_db
-        del self.query
-        self.__config_db()
+        #print "AVAIL: %s TOGO %s " % (self.__connections(), name)
+        if name:
+            CollectionDb.query.finish()
+#            del CollectionDb.query
+#            db = CollectionDb.media_db.database(QLatin1String(name))
+#            db.close() 
+            CollectionDb.media_db.removeDatabase(name)
+            self.__config_db(name) 
+
+    def __connections(self):
+        db_names = CollectionDb.media_db.connectionNames()
+        return [str(db_names[cnt]) for cnt in range(db_names.count())]
+    
+    def shutdown(self):
+        """
+            Trying to shutdown cleanly. The Qt docs fail me.
+        """
+        conn_names = self.__connections()
+        CollectionDb.query.finish()
+        del CollectionDb.query
+        for conn in conn_names:
+            CollectionDb.media_db.database(QLatin1String(conn)).close()
+            CollectionDb.media_db.removeDatabase(conn)
+            
+        
+            

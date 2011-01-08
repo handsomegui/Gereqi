@@ -88,9 +88,15 @@ class Settings:
             if opt in options:
                 return self.config.get("database",opt)
         
-    def get_interface_setting(self, opt):
+    def get_interface_setting(self, opt): 
         if self.__section_exists("interface") is True:
             options = self.config.options("interface")
             if opt in options:
                 return self.config.get("interface",opt)
+            
+    def default_db(self):
+        """
+            used in case of DB config errors
+        """
+        self.add_database_setting("type", "SQLITE")
 

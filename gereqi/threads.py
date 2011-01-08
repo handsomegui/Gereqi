@@ -350,7 +350,7 @@ class Finishers:
     def db_build(self, status):
         """
         Things to perform when the media library
-        has been built/cancelled
+        has been built/cancelled 
         """
         self.ui_main.stat_bttn.setEnabled(False)
         if status == "cancelled":

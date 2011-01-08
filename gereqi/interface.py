@@ -142,10 +142,20 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         # TODO: change ui settings based on saved states/options. QSession
         self.setupUi(self)
-        self.media_db = CollectionDb("main")
+        try:
+            self.media_db = CollectionDb("main")
+        except StandardError, err:
+            self.__reset_db_default(err)
+            
+        try:
+            self.build_db_thread = Builddb(self)
+        except StandardError, err:
+            self.__reset_db_default(err)
+            
         self.info_thread = Getinfo(self)
         self.html_thread = Getwiki()
-        self.build_db_thread = Builddb(self)
+        
+            
         self.del_thread = DeleteFiles(self)
         self.extras = Extraneous()
         self.meta = Tagging(self.audio_formats)
@@ -175,16 +185,21 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.del_thread.deleted.connect(self.wdgt_manip.setup_db_tree)        
         self.info_thread.got_info.connect(self.__bodger)
         # Cannot do this for some reason
-#        self.info_thread.got_info.connect(self.info_view.setHtml(html))
-
-
+        #self.info_thread.got_info.connect(self.info_view.setHtml)
         
         # Makes the collection search line-edit have the keyboard focus
         self.search_collect_edit.setFocus()
         self.wdgt_manip.setup_db_tree()
         self.wdgt_manip.pop_playlist_view() 
         
-
+    def __reset_db_default(self,err):
+        err = "Database Error: %s. Setting Database to default" % str(err)
+        err_msg = QErrorMessage()
+        err_msg.showMessage(str(err))
+        if err_msg.exec_():                
+            self.sets_db.default_db() 
+            self.media_db.media_db.removeDatabase("main")
+            self.media_db = CollectionDb("main")
         
     def __tray_menu_appearance(self):
         if self.sets_db.get_interface_setting("trayicon") == "True":
@@ -473,7 +488,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if config.exec_():
             self.__dirs_setup()
             self.__setup_watcher()
-            self.media_db.restart_db()
+            try:
+                self.media_db.restart_db("main")
+            except StandardError, err:
+                # The user has entered duff DB values
+                self.__reset_db_default(err)
+                
             self.wdgt_manip.setup_db_tree()
             self.wdgt_manip.pop_playlist_view()
             self.__tray_menu_appearance()
@@ -501,6 +521,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.media_db.playlist_delete(play_name)
             for trk in tracks:
                 self.media_db.playlist_add(play_name,trk)
+        self.media_db.shutdown()
         exit()
     
     @pyqtSignature("")
