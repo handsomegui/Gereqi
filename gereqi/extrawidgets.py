@@ -60,24 +60,21 @@ class SetupExtraWidgets:
         The tray menu contains shortcuts to features
         in the main UI
         """
-        quit_action = QAction(QIcon().fromTheme("process-stop"),
-                              QString("&Quit"), self.ui)
+        #FIXME: the icons do not show in Ubuntu
+        icon = QIcon().fromTheme("process-stop")
+        quit_action = QAction(icon, QString("&Quit"), self.ui)
         
-        self.ui.play_action = QAction(QIcon().fromTheme("media-playback-start", 
-                                                             QIcon(":/icons/media-playback-start.png")),
-                                           QString("&Play"), self.ui)
+        icon = QIcon().fromTheme("media-playback-start", QIcon(":/icons/media-playback-start.png"))
+        self.ui.play_action = QAction(icon, QString("&Play"), self.ui)
         
-        next_action = QAction(QIcon().fromTheme("media-skip-forward",
-                                                QIcon(":/icons/media-skip-forward.png")),
-                              QString("&Next"), self.ui)
+        icon = QIcon().fromTheme("media-skip-forward", QIcon(":/icons/media-skip-forward.png"))
+        next_action = QAction(icon, QString("&Next"), self.ui)
         
-        prev_action = QAction(QIcon().fromTheme("media-skip-backward",
-                                                QIcon(":/icons/media-skip-backward.png")),
-                              QString("&Previous"), self.ui)
+        icon = QIcon().fromTheme("media-skip-backward", QIcon(":/icons/media-skip-backward.png"))
+        prev_action = QAction(icon, QString("&Previous"), self.ui)
         
-        stop_action = QAction(QIcon().fromTheme("media-playback-stop",
-                                                QIcon(":/icons/media-playback-stop.png")),
-                              QString("&Stop"), self.ui)
+        icon = QIcon().fromTheme("media-playback-stop", QIcon(":/icons/media-playback-stop.png"))
+        stop_action = QAction(icon, QString("&Stop"), self.ui)
         
         self.ui.play_action.setCheckable(True)
         self.ui.view_action = QAction(QString("&Visible"), self.ui)
