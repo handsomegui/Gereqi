@@ -200,19 +200,21 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         watch = self.sets_db.get_collection_setting("watch")  == "True"
         recur = self.sets_db.get_collection_setting("recursive")  == "True"
         
-        if (self.media_dir is not None) and watch is True:
-            try:
-                # To stop the possibly already running thread
-                self.watch_thread.exit()
-            except AttributeError:
-                pass
-                
-            print("WATCHING: ", self.media_dir[0])
-            self.watch_thread = Watcher(self)
-            self.watch_thread.set_values(self.media_dir, WATCHTIME, recur)
-            self.watch_thread.start()
-            self.watch_thread.creations.connect(self.__files_created)
-            self.watch_thread.deletions.connect(self.__files_deleted)
+        if (self.media_dir is None) or (watch is False):
+            return
+        
+        try:
+            # To stop the possibly already running thread
+            self.watch_thread.exit()
+        except AttributeError:
+            pass
+            
+        print("WATCHING: ", self.media_dir[0])
+        self.watch_thread = Watcher(self)
+        self.watch_thread.set_values(self.media_dir, WATCHTIME, recur)
+        self.watch_thread.start()
+        self.watch_thread.creations.connect(self.__files_created)
+        self.watch_thread.deletions.connect(self.__files_deleted)
         
     def __files_deleted(self, deletions):
         """
