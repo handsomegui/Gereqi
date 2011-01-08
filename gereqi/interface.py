@@ -51,7 +51,6 @@ class Track:
         next/previous tracks) has to be regenerated before the queing of 
         the next track
         """
-        # So that it can be dynamic later on when columns can be moved
         column = self.ui_main.playlisting.header_search("FileName")
         track = None
         if mode == "now":
@@ -59,35 +58,40 @@ class Track:
         else:
             # If 0 then the playlist is empty
             rows = self.ui_main.track_tbl.rowCount() 
-            if rows > 0:
-                row_now = self.ui_main.playlisting.current_row()
-                if row_now is not None:
-                    if mode == "back":
-                        if (row_now - 1) >= 0:
-                            track = self.ui_main.track_tbl.item(row_now - 1 ,
-                                                                column)
-                            track = track.text()
-                    elif mode == "next":
-                        # Random playback mode selected
-                        if self.ui_main.play_type_bttn.isChecked():
-                            file_list = self.ui_main.playlisting.gen_track_list()
-                            track = [trk for trk in file_list
-                                     if trk not in self.ui_main.player.recently_played]
-                            if len(track) > 0:
-                                track = choice(track)
-                                
-                        elif (row_now + 1) < rows:
-                            track = self.ui_main.track_tbl.item(row_now + 1,
-                                                                column)
-                            track = track.text()
-        if track:
-            result = str(track.toUtf8())
+            if rows < 1:
+                return
+            
+            row_now = self.ui_main.playlisting.current_row()
+            if row_now is None:
+                return
+            
+            if mode == "back":
+                if (row_now - 1) >= 0:
+                    track = self.ui_main.track_tbl.item(row_now - 1 , column)
+                    track = track.text()
+            elif mode == "next":
+                # Random playback mode selected
+                if self.ui_main.play_type_bttn.isChecked():
+                    file_list = self.ui_main.playlisting.gen_track_list()
+                    track = [trk for trk in file_list
+                             if trk not in self.ui_main.player.recently_played]
+                    if len(track) > 0:
+                        track = choice(track)
+                        
+                elif (row_now + 1) < rows:
+                    track = self.ui_main.track_tbl.item(row_now + 1, column)
+                    track = track.text()
+                    
+        if track is None:
+            return
+        
+        result = str(track.toUtf8())
+        if path.exists(result):
+            return result
+        else:
+            result = str(track.toLatin1())
             if path.exists(result):
                 return result
-            else:
-                result = str(track.toLatin1())
-                if path.exists(result):
-                    return result
             
     def generate_info(self):
         """
@@ -265,10 +269,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Load the playlist auto-saved(optional)
         on last shutdown
         """
-        if self.sets_db.get_interface_setting("remember") == "True":
-            tracks = self.media_db.playlist_tracks("!!##gereqi.remembered##!!")
-            if len(tracks) > 0:
-                self.playlisting.add_list_to_playlist(tracks)
+        if self.sets_db.get_interface_setting("remember") == "False":
+            return
+        tracks = self.media_db.playlist_tracks("!!##gereqi.remembered##!!")
+        if len(tracks) > 0:
+            self.playlisting.add_list_to_playlist(tracks)
                 
     def __audiocd_setup(self):
         """
@@ -351,14 +356,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if possible
         """
         track = self.tracking.generate_track("back")
-        if track is not None:
-            self.player.audio_object.stop()
-            self.player.audio_object.load(track)
-            # Checks to see if the playbutton is in play state
-            if self.play_bttn.isChecked():
-                self.player.audio_object.play()
-            else:
-                self.playlisting.tracknow_colourise(self.playlisting.current_row())
+        if track is None:
+            return
+        self.player.audio_object.stop()
+        self.player.audio_object.load(track)
+        # Checks to see if the playbutton is in play state
+        if self.play_bttn.isChecked():
+            self.player.audio_object.play()
+        else:
+            self.playlisting.tracknow_colourise(self.playlisting.current_row())
 
     @pyqtSignature("bool")
     def on_play_bttn_toggled(self, checked):
@@ -509,11 +515,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                         QString(" ".join(self.format_filter)), 
                         None)       
                         
-        if mfiles is not None:
-            for item in mfiles:
-                ender = item.split(".")[-1]
-                if ender.toLower() in self.audio_formats:
-                    self.playlisting.add_to_playlist(item)
+        if mfiles is None:
+            return
+        
+        for item in mfiles:
+            ender = item.split(".")[-1]
+            if ender.toLower() in self.audio_formats:
+                self.playlisting.add_to_playlist(item)
 
     @pyqtSignature("bool")
     def on_minimise_tray_actn_toggled(self, checked):
@@ -546,27 +554,31 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                                          QLineEdit.Normal)
          
           
-        if play_name[1]: # Boolean NonNull
-            if len(self.media_db.playlist_tracks(play_name[0])) > 0:
-                msg = QMessageBox.warning(None,
-                    QString("Overwrite Playlist?"),
-                    QString("""A playlist named '%s' already exists. Do you want to overwrite it?"""  
-                                % play_name[0]),
-                                QMessageBox.StandardButtons(
-                                    QMessageBox.Cancel | 
-                                    QMessageBox.No | 
-                                    QMessageBox.Yes)
-                            )
+        if play_name[1]is None: # Boolean NonNull
+            return
+        
+        if len(self.media_db.playlist_tracks(play_name[0])) < 1:
+            return
+        
+        msg = QMessageBox.warning(None,
+            QString("Overwrite Playlist?"),
+            QString("""A playlist named '%s' already exists. Do you want to overwrite it?"""  
+                        % play_name[0]),
+                        QMessageBox.StandardButtons(
+                            QMessageBox.Cancel | 
+                            QMessageBox.No | 
+                            QMessageBox.Yes)
+                    )
+        
+        if msg == QMessageBox.Cancel:
+            return
+        elif msg == QMessageBox.No:
+            self.on_save_trktbl_bttn_clicked()
                 
-                if msg == QMessageBox.Cancel:
-                    return
-                elif msg == QMessageBox.No:
-                    self.on_save_trktbl_bttn_clicked()
-                    
-            tracks = self.playlisting.gen_file_list()            
-            for track in tracks:
-                self.media_db.playlist_add(play_name[0], track)
-            self.wdgt_manip.pop_playlist_view()
+        tracks = self.playlisting.gen_file_list()            
+        for track in tracks:
+            self.media_db.playlist_add(play_name[0], track)
+        self.wdgt_manip.pop_playlist_view()
     
     
     @pyqtSignature("")
@@ -601,22 +613,24 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             # TODO: make readable
             for search in searched:
                 row = search.row()
-                if row not in rows:
-                    rows.append(row)
-                    for col in range(columns):
-                        item = self.track_tbl.item(row, col)
-                        orig = palette.highlight().color().getRgb()
-                        new_col = map(lambda x : 255-x, orig)
-                        item.setBackgroundColor(QColor(new_col[0],new_col[1],new_col[2], 128))
+                if row in rows:
+                    continue
+                rows.append(row)
+                for col in range(columns):
+                    item = self.track_tbl.item(row, col)
+                    orig = palette.highlight().color().getRgb()
+                    new_col = map(lambda x : 255-x, orig)
+                    item.setBackgroundColor(QColor(new_col[0],new_col[1],new_col[2], 128))
                         
             for row in range(self.track_tbl.rowCount()):
-                if row not in rows:
-                    for col in range(columns):
-                        item = self.track_tbl.item(row, col)
-                        if row % 2:
-                            item.setBackgroundColor(palette.alternateBase().color())
-                        else:
-                            item.setBackgroundColor(palette.base().color())
+                if row in rows:
+                    continue
+                for col in range(columns):
+                    item = self.track_tbl.item(row, col)
+                    if row % 2:
+                        item.setBackgroundColor(palette.alternateBase().color())
+                    else:
+                        item.setBackgroundColor(palette.base().color())
         else:
             self.playlisting.tracknow_colourise()
                 
@@ -647,11 +661,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
     @pyqtSignature("int")
     def on_progress_sldr_actionTriggered(self,action):
-        if (action==3) or (action==4) or (action==1) or (action==2):
+        ok_actions = [1,2,3,4]
+        if action in ok_actions:
             #Does what's needed
             self.on_progress_sldr_sliderReleased()
-        else:
-            print action
+
     
     @pyqtSignature("")
     def on_actionUpdate_Collection_triggered(self):
@@ -839,23 +853,27 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         except IndexError:
             return
             
-        if (len(playlist) > 0) and (par in ["Podcasts", "Radio Streams",  "Playlists"]):
-            new_name = QInputDialog.getText(\
-                None,
-                QString("Rename Playlist"),
-                QString("Rename the playlist to:"),
-                QLineEdit.Normal)
-            
-            # Checks if you entered a non-zero length name and that you clicked 'ok'
-            if new_name[1] and (len(new_name[0]) > 0):
-                #get all the tracks in the selected playlist
-                tracks = self.media_db.playlist_tracks(playlist[0].text(0))
-                # delete the old playlist
-                self.media_db.playlist_delete(playlist[0].text(0))
-                # add the tracks back in but with a new name, probably cleaner using an sql query
-                for track in tracks:
-                    self.media_db.playlist_add(new_name[0], track)
-                self.wdgt_manip.pop_playlist_view()
+        if (len(playlist) < 1) and (par not in ["Podcasts", "Radio Streams",  "Playlists"]):
+            return
+        
+        new_name = QInputDialog.getText(\
+            None,
+            QString("Rename Playlist"),
+            QString("Rename the playlist to:"),
+            QLineEdit.Normal)
+        
+        # Checks if you entered a non-zero length name and that you clicked 'ok'
+        if (new_name[1] is None) and (len(new_name[0]) < 1):
+            return
+        
+        #get all the tracks in the selected playlist
+        tracks = self.media_db.playlist_tracks(playlist[0].text(0))
+        # delete the old playlist
+        self.media_db.playlist_delete(playlist[0].text(0))
+        # add the tracks back in but with a new name, probably cleaner using an sql query
+        for track in tracks:
+            self.media_db.playlist_add(new_name[0], track)
+        self.wdgt_manip.pop_playlist_view()
             
     @pyqtSignature("bool")
     def on_prev_trktbl_bttn_clicked(self, checked):
@@ -868,6 +886,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if self.play_hist.position < len(self.play_hist.stack):
             self.next_trktbl_bttn.setEnabled(True)
             self.actionRedo.setEnabled(True)
+            
         tracks, last = self.play_hist.last_list()
         self.playlisting.add_list_to_playlist(tracks)
         self.clear_trktbl_bttn.setEnabled(True)
@@ -1054,10 +1073,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         When the 'X' button or alt-f4 is triggered
         """
-        if self.sets_db.get_interface_setting("trayicon") == "True":
-            if self.tray_icon.isVisible():
-                self.hide()
-                event.ignore()
+        if self.sets_db.get_interface_setting("trayicon") == "False":
+            return
+        if self.tray_icon.isVisible():
+            self.hide()
+            event.ignore()
 
     def __time_filt_now(self):
         """
