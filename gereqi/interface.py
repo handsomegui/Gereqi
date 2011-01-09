@@ -817,6 +817,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 msg_box.setWindowTitle("No medium found")
                 if (msg_box.exec_() == QMessageBox.Ok):
                     self.on_play_cd_actn_triggered()
+                    return
                 else:
                     return
             else:
