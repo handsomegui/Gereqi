@@ -87,7 +87,8 @@ class Track:
             return
         
         result = str(track.toUtf8())
-        if path.exists(result):
+        
+        if path.exists(result) or result.startswith("cdda"):
             return result
         else:
             result = str(track.toLatin1())
@@ -706,9 +707,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         self.player.audio_object.stop()
         track = self.tracking.generate_track("now", row)
+
         self.player.audio_object.load(track)
         # Checking the button is the same
-        #  as self.player.audio_object.play(), just cleaner overall
+        # as self.player.audio_object.play(), just cleaner overall
         self.play_bttn.setChecked(True) 
         self.play_action.setChecked(True)
         

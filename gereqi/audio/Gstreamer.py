@@ -46,7 +46,8 @@ class Utilities:
             fnow = "file://%s" % pathname2url(source)
         elif source_type == "cd":
             fnow = "cdda://%s" % source
-        elif "cdda://" in source:
+        
+        if "cdda://" in source:
             fnow = source
             
         if (fnow is not None) and self.can_play_source(fnow): 

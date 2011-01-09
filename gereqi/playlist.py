@@ -40,7 +40,6 @@ class Playlist:
         for trk in tracks:
             # This is for adding a track which has info attached in a tuple
             if isinstance(trk, tuple):
-                print trk[1]
                 self.add_to_playlist(trk[0], trk[1])
             else:
                 self.add_to_playlist(trk, None)        
@@ -81,7 +80,7 @@ class Playlist:
 
         else:
             if isinstance(metadata['Track'],QString):
-                metadata['Track'] = metadata['Track'].toInt(0)
+                metadata['Track'] = metadata['Track'].toInt()[0]
             metadata['Track'] = QString("%1").arg(metadata['Track'], 2,10, QChar('0'))    
                                   
         row = self.ui_main.track_tbl.rowCount()
