@@ -18,7 +18,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 from PyQt4 import uic
-
+from gereqi.audio import Backend,Cdrom,Formats
 from random import choice
 import time
 from os import path
@@ -26,16 +26,15 @@ from os import path
 from tagging import Tagging
 from threads import Getinfo, Getwiki, Builddb, Finishers, Watcher, DeleteFiles
 from Ui_interface import Ui_MainWindow
-from equaliser import Equaliser
 from configuration import Configuration
 from extraneous import Extraneous
 from extrawidgets import SetupExtraWidgets, WidgetManips
-from backend import AudioBackend
+
 from settings import Settings
 from collection import CollectionDb
 from about import About
 from playlist import Playlist, PlaylistHistory
-import formats
+
 
 # The folder watcher poll-time in seconds
 WATCHTIME = 30 
@@ -136,7 +135,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.old_pos = 0
         
         # The file formats that can be encoded
-        self.audio_formats = formats.Formats().available()
+        self.audio_formats = Formats.Formats().available()
         self.format_filter = ["*.%s" % fmat for fmat in self.audio_formats]
         
         
@@ -159,7 +158,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.del_thread = DeleteFiles(self)
         self.extras = Extraneous()
         self.meta = Tagging(self.audio_formats)
-        self.player = AudioBackend(self)
+        self.player = Backend.AudioBackend(self)
         self.playlisting = Playlist(self)
         self.xtrawdgt = SetupExtraWidgets(self)
         self.tracking = Track(self)
@@ -296,8 +295,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         modules if possible
         """
         try:
-            from audiocd import AudioCD
-            self.acd = AudioCD()
+            self.acd = Cdrom.AudioCD()
         except:
             print("Probably missing python-cddb")
             self.play_cd_actn.setVisible(False)

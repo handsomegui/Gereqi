@@ -18,7 +18,7 @@ from PyQt4.QtCore import QObject, QTime,  QString
 
 import time
 
-from gstbe import Gstbe
+from Gstreamer import Gstbe
 
 class AudioBackend:
     recently_played = []

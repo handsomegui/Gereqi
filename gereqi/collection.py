@@ -152,7 +152,7 @@ class CollectionDb:
         err = CollectionDb.query.lastError()
         if err.isValid():
             print err.text(),CollectionDb.query.lastQuery()
-                              
+            
     
     def __execute_write(self, query, args=None):
         self.__query_execute(query, args)
