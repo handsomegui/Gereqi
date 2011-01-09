@@ -27,8 +27,8 @@ from time import time, sleep
 import os
 import pyinotify
 
-from webinfo import Webinfo
-from tagging import Tagging
+from gereqi.information.webinfo import Webinfo
+from gereqi.information.tagging import Tagging
 from infopage import InfoPage
 from gereqi.storage.Collection import CollectionDb
 from gereqi.storage.Settings import Settings

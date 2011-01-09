@@ -18,7 +18,7 @@ from PyQt4.QtCore import QDir, QString, QFile, QIODevice
 
 from os import environ as getenv
 
-from webinfo import Webinfo
+from gereqi.information.webinfo import Webinfo
 
 
 class Extraneous:

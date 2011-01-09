@@ -17,15 +17,15 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-from PyQt4 import uic
 from gereqi.audio import Backend,Cdrom,Formats
 from gereqi.storage.Settings import Settings
 from gereqi.storage.Collection import CollectionDb
+from gereqi.information.tagging import Tagging
+
 from random import choice
 import time
 from os import path
 
-from tagging import Tagging
 from threads import Getinfo, Getwiki, Builddb, Finishers, Watcher, DeleteFiles
 from Ui_interface import Ui_MainWindow
 from configuration import Configuration

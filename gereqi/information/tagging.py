@@ -29,9 +29,8 @@ from os import stat, path
 
 import subprocess
 
-from extraneous import Extraneous
+from gereqi.extraneous import Extraneous
 
-# TODO: make the output a DICT
 
 class Fixing:
     def __init__(self):
