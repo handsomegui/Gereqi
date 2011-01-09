@@ -303,11 +303,12 @@ class CollectionDb:
         result = self.__query_fetchall()
         return result
         
-    def get_album_titles(self, album):
+    def get_album_titles(self, album,filt=0):
         query = '''SELECT DISTINCT title
                         FROM media
-                        WHERE album=?'''
-        self.__query_execute(query,(album, ))
+                        WHERE album=?
+                        AND added>?'''
+        self.__query_execute(query,(album, filt))
         result = self.__query_fetchall()
         return result
         
