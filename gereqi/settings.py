@@ -76,21 +76,24 @@ class Settings:
     
         
     def get_collection_setting(self, opt):
-        if self.__section_exists("collection") is True:
-            options = self.config.options("collection")
-            if opt in options:
-                # The directories are csv
-                return self.config.get("collection",opt)
+        if self.__section_exists("collection") is False:
+            return
+        options = self.config.options("collection")
+        if opt in options:
+            # The directories are csv
+            return self.config.get("collection",opt)
 
     def get_database_setting(self, opt):
-        if self.__section_exists("database") is True:
-            options = self.config.options("database")
-            if opt in options:
-                return self.config.get("database",opt)
+        if self.__section_exists("database") is False:
+            return
+        options = self.config.options("database")
+        if opt in options:
+            return self.config.get("database",opt)
         
     def get_interface_setting(self, opt): 
-        if self.__section_exists("interface") is True:
-            options = self.config.options("interface")
-            if opt in options:
-                return self.config.get("interface",opt)
+        if self.__section_exists("interface") is False:
+            return
+        options = self.config.options("interface")
+        if opt in options:
+            return self.config.get("interface",opt)
 
