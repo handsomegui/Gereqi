@@ -19,6 +19,8 @@ from PyQt4.QtCore import *
 
 from PyQt4 import uic
 from gereqi.audio import Backend,Cdrom,Formats
+from gereqi.storage.Settings import Settings
+from gereqi.storage.Collection import CollectionDb
 from random import choice
 import time
 from os import path
@@ -30,8 +32,8 @@ from configuration import Configuration
 from extraneous import Extraneous
 from extrawidgets import SetupExtraWidgets, WidgetManips
 
-from settings import Settings
-from collection import CollectionDb
+#from settings import Settings
+#from collection import CollectionDb
 from about import About
 from playlist import Playlist, PlaylistHistory
 

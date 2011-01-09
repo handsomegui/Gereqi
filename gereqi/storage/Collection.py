@@ -17,7 +17,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtCore import QCryptographicHash as QHash
 from PyQt4.QtSql import *
 
-from settings import Settings
+from gereqi.storage.Settings import Settings
 
 import os
 

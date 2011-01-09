@@ -30,8 +30,8 @@ import pyinotify
 from webinfo import Webinfo
 from tagging import Tagging
 from infopage import InfoPage
-from collection import CollectionDb
-from settings import Settings
+from gereqi.storage.Collection import CollectionDb
+from gereqi.storage.Settings import Settings
 
 build_lock = delete_lock = False
 

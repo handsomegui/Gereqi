@@ -16,7 +16,7 @@
 from PyQt4.QtCore import QString
 
 from extraneous import Extraneous
-from settings import Settings
+from gereqi.storage.Settings import Settings
 
 
 

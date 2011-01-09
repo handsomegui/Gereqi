@@ -20,7 +20,7 @@ Module implementing Configuration.
 from PyQt4.QtGui import QDialog
 from PyQt4.QtCore import pyqtSignature, QDir, QString
 
-from settings import Settings
+from gereqi.storage.Settings import Settings
 from Ui_configuration import Ui_settings_dialog
 from myqdirmodel import MyQDirModel
 
