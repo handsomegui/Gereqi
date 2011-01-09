@@ -807,7 +807,20 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         add tracks from cd
         """
-        cd_tracks = self.acd.get_info()
+        try:
+            cd_tracks = self.acd.get_info()
+        except StandardError,err:
+            if str(err) == "No medium found":
+                msg_box = QMessageBox()
+                msg_box.setStandardButtons(QMessageBox.Cancel|QMessageBox.Ok)
+                msg_box.setText("Add a CD")
+                msg_box.setWindowTitle("No medium found")
+                if (msg_box.exec_() == QMessageBox.Ok):
+                    self.on_play_cd_actn_triggered()
+                else:
+                    return
+            else:
+                return
         self.playlisting.add_list_to_playlist(cd_tracks)                
         self.clear_trktbl_bttn.setEnabled(True)
                 

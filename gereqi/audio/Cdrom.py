@@ -41,7 +41,12 @@ class AudioCD:
     # ["title", "artist", "album", "date", "genre", "tracknumber" ]
     def get_info(self):
         cd_drive = DiscID.open()
-        disc_id = DiscID.disc_id(cd_drive)
+        try:
+            disc_id = DiscID.disc_id(cd_drive)
+        except cdrom.error,err:
+            msg = err[1]
+            raise StandardError(str(msg))
+            
         
         #query_status, query_info = CDDB.query(disc_id)
         query_info = CDDB.query(disc_id)[1]
