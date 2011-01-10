@@ -858,9 +858,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             new_par = item.parent().parent()            
             if new_par.text(0) == "Playlists":
-                artist, title = item.text(0).split(" - ")
-                track = self.media_db.search_by_titandart(artist, title)[0]
-                self.playlisting.add_to_playlist(track)
+                title, artist = item.text(0).split(" - ")
+                track = self.media_db.search_by_titandart(title, artist)
+                if len(track) > 0:
+                    self.playlisting.add_to_playlist(track[0])
                 
             
     @pyqtSignature("bool")

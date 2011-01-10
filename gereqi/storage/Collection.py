@@ -358,12 +358,12 @@ class CollectionDb:
                         WHERE name=?'''
         self.__execute_write(query, (name, ))
 
-    def search_by_titandart(self, art, tit):
-        args = (art, tit)
-        query = '''SELECT DISTINCT file_name   
-                        FROM media 
-                        WHERE artist=?
-                        AND title=?'''        
+    def search_by_titandart(self, tit, art):
+        args = (tit, art)
+        query = '''SELECT file_name   
+                    FROM media 
+                    WHERE title=?
+                    AND artist=?'''        
         self.__query_execute(query, args)
         result = self.__query_fetchall()
         return result
