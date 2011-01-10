@@ -1,0 +1,17 @@
+Source: gereqi
+Section: Multimedia
+Priority: extra
+Maintainer: Jon Noble <jonnobleuk@gmail.com>
+Build-Depends: debhelper (>= 7), python (>= 2.6), python-support
+Standards-Version: 3.8.1
+Homepage: http://code.google.com/p/gereqi/
+
+Package: gereqi
+Architecture: all
+Version: 0.5.0
+Depends: ${shlibs:Depends}, ${misc:Depends}, 
+    python-qt4 (>= 4.5.0), python-gst0.10, 
+    python-mutagen, gstreamer0.10-plugins-ugly, 
+    gstreamer0.10-plugins-bad, python-qt4-sql, 
+    libqt4-sql-sqlite, python-pyinotify, udisks
+Description: A music player based on Amarok-1.4
