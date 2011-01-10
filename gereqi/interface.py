@@ -575,27 +575,24 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                                          QString("Enter a name for the playlist:"),
                                          QLineEdit.Normal)
          
-          
-        if play_name[1]is None: # Boolean NonNull
+        if play_name[1] is None:
+            # User clicked cancel
             return
         
-        if len(self.media_db.playlist_tracks(play_name[0])) < 1:
-            return
-        
-        msg = QMessageBox.warning(None,
-            QString("Overwrite Playlist?"),
-            QString("""A playlist named '%s' already exists. Do you want to overwrite it?"""  
-                        % play_name[0]),
-                        QMessageBox.StandardButtons(
-                            QMessageBox.Cancel | 
-                            QMessageBox.No | 
-                            QMessageBox.Yes)
-                    )
-        
-        if msg == QMessageBox.Cancel:
-            return
-        elif msg == QMessageBox.No:
-            self.on_save_trktbl_bttn_clicked()
+        if len(self.media_db.playlist_tracks(play_name[0])) > 1:        
+            msg = QMessageBox.warning(None,
+                QString("Overwrite Playlist?"),
+                QString("""A playlist named '%s' already exists. Do you want to overwrite it?"""  
+                            % play_name[0]),
+                            QMessageBox.StandardButtons(
+                                QMessageBox.Cancel | 
+                                QMessageBox.No | 
+                                QMessageBox.Yes))
+            
+            if msg == QMessageBox.Cancel:
+                return
+            elif msg == QMessageBox.No:
+                self.on_save_trktbl_bttn_clicked()
                 
         tracks = self.playlisting.gen_file_list()            
         for track in tracks:
@@ -880,7 +877,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     @pyqtSignature("bool")
     def on_rename_playlist_bttn_clicked(self, checked):
         """
-        Rename the slected playlist
+        Rename the selected playlist
         """
         playlist = self.playlist_tree.selectedItems()
         try:
