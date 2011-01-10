@@ -1,7 +1,5 @@
 TODOLIST - In order of importance
 
-1. Settings dialog
-2. Settings database interaction
-3. Lyrics
-4. Ipod support
-5. Mtp support
+1. Lyrics
+2. Ipod support (remove bugs)
+3. Mtp support (unlikely to achieve. I have 1 device and has stopped working in Linux)
