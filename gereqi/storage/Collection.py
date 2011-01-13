@@ -377,7 +377,6 @@ class CollectionDb:
         """
         Disconnects db and removes connection
         """
-        #print "AVAIL: %s TOGO %s " % (self.__connections(), name)
         if name:
             CollectionDb.query.finish()
 #            del CollectionDb.query
@@ -400,6 +399,22 @@ class CollectionDb:
         for conn in conn_names:
             CollectionDb.media_db.database(QLatin1String(conn)).close()
             CollectionDb.media_db.removeDatabase(conn)
+            
+            
+    def update_tag(self,fname, field, val):
+        print fname,field,val
+        query = '''UPDATE media SET %s=? WHERE file_name=?''' % field
+        self.__execute_write(query, (val,fname))
+        
+        
+    def update_tags(self, fname, key_vals):
+        """
+            To be used once tag-editing is enabled
+        """
+        query = '''UPDATE media SET ? = ? WHERE file_name=?'''
+        for key in key_vals.iterkeys():
+            self.__execute_write(query, (key, key_vals[key]))
+            
             
         
             
