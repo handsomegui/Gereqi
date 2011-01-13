@@ -137,7 +137,7 @@ class Playlist:
                         for row in range(rows)]
         return file_list           
         
-    def del_track(self):
+    def del_tracks(self):
         """
         Deletes selected tracks from playlist
         """
@@ -145,12 +145,18 @@ class Playlist:
         for item in items:
             try:
                 row = item.row()
-                self.ui_main.track_tbl.removeRow(row)                
-                self.tracknow_colourise(self.current_row())
+                self.del_track(row)
             except RuntimeError:
                 # likely deleted already 
                 # i.e selected same row but multiple columns
                 return 
+     
+    def del_track(self,row):
+        """
+            Deletes a single, specified row from the playlist
+        """
+        self.ui_main.track_tbl.removeRow(row)                
+        self.tracknow_colourise(self.current_row())
         
     def header_search(self, val):
         """
