@@ -17,6 +17,7 @@
     <file>media-playback-stop.png</file>
     <file>media-skip-backward.png</file>
     <file>media-skip-forward.png</file>
+    <file>nocover.png</file>
     <file>process-stop.png</file>
     <file>window-new.png</file>
   </qresource>
