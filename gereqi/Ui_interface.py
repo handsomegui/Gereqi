@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'interface.ui'
 #
-# Created: Sat Jan  8 17:09:28 2011
+# Created: Thu Jan 13 20:40:53 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -72,7 +72,7 @@ class Ui_MainWindow(object):
         self.info_view.setAcceptDrops(False)
         self.info_view.setToolTip("None")
         self.info_view.setWhatsThis("None")
-        self.info_view.setUrl(QtCore.QUrl("about:blank"))
+        self.info_view.setProperty("url", QtCore.QUrl("about:blank"))
         self.info_view.setObjectName("info_view")
         self.gridLayout_12.addWidget(self.info_view, 0, 0, 1, 1)
         self.horizontal_tabs.addTab(self.musicTab, "")
@@ -89,8 +89,8 @@ class Ui_MainWindow(object):
         self.wiki_view.setSizePolicy(sizePolicy)
         self.wiki_view.setAutoFillBackground(True)
         self.wiki_view.setStyleSheet("")
-        self.wiki_view.setUrl(QtCore.QUrl("about:blank"))
-        self.wiki_view.setZoomFactor(1.0)
+        self.wiki_view.setProperty("url", QtCore.QUrl("about:blank"))
+        self.wiki_view.setProperty("zoomFactor", 1.0)
         self.wiki_view.setObjectName("wiki_view")
         self.gridLayout_4.addWidget(self.wiki_view, 0, 0, 1, 1)
         self.horizontal_tabs.addTab(self.wikipediaTab, "")
@@ -244,9 +244,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_6.addWidget(self.disconnect_dev)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_6.addItem(spacerItem1)
-        self.dev_refresh = QtGui.QToolButton(self.devTab)
-        self.dev_refresh.setObjectName("dev_refresh")
-        self.horizontalLayout_6.addWidget(self.dev_refresh)
         self.gridLayout_5.addLayout(self.horizontalLayout_6, 0, 0, 1, 1)
         self.devices_box = QtGui.QComboBox(self.devTab)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Fixed)
@@ -421,7 +418,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 799, 21))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 799, 28))
         self.menuBar.setObjectName("menuBar")
         self.menuActions = QtGui.QMenu(self.menuBar)
         self.menuActions.setObjectName("menuActions")
@@ -533,7 +530,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.vertical_tabs.setCurrentIndex(1)
-        self.horizontal_tabs.setCurrentIndex(1)
+        self.horizontal_tabs.setCurrentIndex(0)
         QtCore.QObject.connect(self.volume_sldr, QtCore.SIGNAL("valueChanged(int)"), self.volume_lbl.setNum)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -560,7 +557,6 @@ class Ui_MainWindow(object):
         self.vertical_tabs.setTabText(self.vertical_tabs.indexOf(self.filesTab), QtGui.QApplication.translate("MainWindow", "Files", None, QtGui.QApplication.UnicodeUTF8))
         self.connect_dev.setText(QtGui.QApplication.translate("MainWindow", "Connect", None, QtGui.QApplication.UnicodeUTF8))
         self.disconnect_dev.setText(QtGui.QApplication.translate("MainWindow", "Disconnect", None, QtGui.QApplication.UnicodeUTF8))
-        self.dev_refresh.setText(QtGui.QApplication.translate("MainWindow", "O", None, QtGui.QApplication.UnicodeUTF8))
         self.vertical_tabs.setTabText(self.vertical_tabs.indexOf(self.devTab), QtGui.QApplication.translate("MainWindow", "Devices", None, QtGui.QApplication.UnicodeUTF8))
         self.clear_trktbl_bttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Clear", None, QtGui.QApplication.UnicodeUTF8))
         self.clear_trktbl_bttn.setText(QtGui.QApplication.translate("MainWindow", "C", None, QtGui.QApplication.UnicodeUTF8))
