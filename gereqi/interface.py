@@ -741,7 +741,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 tracks.sort()
                 
                 for cnt in range(len(tracks)):
-                    track = QTreeWidgetItem([tracks[cnt][1]] )
+                    track = QTreeWidgetItem([tracks[cnt][1]] )                    
                     item.insertChild(cnt, track)
       
            # Adding albums to the artist 
@@ -752,6 +752,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 albums = sorted(albums, key=QString)             
                 for cnt in range(len(albums)):      
                     album = QTreeWidgetItem([albums[cnt]])
+                    album.setIcon(0,QIcon(":/icons/nocover.png"))
                     album.setChildIndicatorPolicy(0)
                     item.insertChild(cnt, album)
                 
