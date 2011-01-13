@@ -336,20 +336,75 @@ class WidgetManips:
     def __context_menu(self,pos):
         # do nothing if table is empty
         if self.ui.track_tbl.rowCount() > 0:
+            item_now = self.ui.track_tbl.itemAt(pos)
+            col_now = self.ui.track_tbl.column(item_now)
+            tag_name = self.ui.track_tbl.horizontalHeaderItem(col_now).text()
+            
             menu = QMenu()
             icon = QIcon().fromTheme("media-playback-start")
             play_action = menu.addAction(icon, "Play")
             menu.addSeparator()
+            
+            remove_action = menu.addAction("Remove From Playlist")
+            
+            menu.addSeparator()
+            
             icon = QIcon().fromTheme("document-open")
-            manage_action = menu.addAction(icon, "Manage File")
+            manage_menu = QMenu("Manage File")
+            manage_menu.setIcon(icon)
+            manage_organise = manage_menu.addAction("Organise File")
+            manage_delete = manage_menu.addAction("Delete File")
+            
+            menu.addMenu(manage_menu)
             
             icon = QIcon().fromTheme("edit-copy", QIcon(":/icon/edit-copy.png"))
+            # Can't change these aspects of the file
             copy_tags_action = menu.addAction(icon, "Copy Tags to Clipboard")
-            edit_action = menu.addAction("Edit Track Information")
+            if tag_name not in ["FileName","Length", "Bitrate"]:
+                edit_tag = menu.addAction("Edit Tag '%s'" % tag_name)
             
             action = menu.exec_(self.ui.track_tbl.mapToGlobal(pos))
+            if not action:
+                return
+                        
+            row = item_now.row()
+            
+            if action == play_action:
+                # Stop playback then start again 
+                self.ui.play_bttn.setChecked(False)
+                self.ui.play_bttn.setChecked(True)
+                
+            # Honestly, I have no idea what use this is. 
+            # At least it's easy to implement
+            elif action == copy_tags_action:
+                row = self.ui.track_tbl.itemAt(pos).row()
+                col = self.ui.playlisting.header_search("Title")
+                tag = self.ui.track_tbl.item(row,col).text()
+                clip = QApplication.clipboard()
+                clip.setText(tag)
+                
+            elif action == remove_action:
+                self.ui.playlisting.del_track(row)
+                
+            elif action == manage_organise:
+                print "ORGANISE?"
+                
+            elif action == manage_delete:
+                print "YEAH, I'M NOT DELETING"
+                
+            elif action == edit_tag:
+                text = QInputDialog.getText(None, QString(tag_name),
+                                         QString("Change the tag to:"),
+                                         QLineEdit.Normal,
+                                         item_now.text())
+                
+                if text[1]:
+                    col = self.ui.playlisting.header_search("FileName")
+                    fname = self.ui.track_tbl.item(row,col).text()
+                    self.ui.media_db.update_tag(fname,tag_name.toLower(),text[0])
+                    item_now.setText(text[0])
+                
 
-            print "CONTEXT MENU",pos,action
         
     def __time_filt_now(self):
         """
