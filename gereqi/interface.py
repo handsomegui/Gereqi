@@ -737,24 +737,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             
             if (album is not None) and (item.childCount() == 0):
                 # Adding tracks to album
-                tracks = self.media_db.get_titles(artist, album, 
-                                                            filt_time)
-
-                # Found this via Schwartzian transform. 
-                # Only 2/3rds of a full transform
-                tracks = [(trk["track"], trk["title"]) for trk in tracks]
-                tracks.sort()
-                
+                tracks = self.media_db.get_titles(artist, album, filt_time)
+               
                 for cnt in range(len(tracks)):
-                    track = QTreeWidgetItem([tracks[cnt][1]] )                    
+                    track = QTreeWidgetItem([tracks[cnt]["title"]] )                    
                     item.insertChild(cnt, track)
       
            # Adding albums to the artist 
            # i.e. the parent has no children    
             elif item.childCount() == 0: 
-                # FIXME: these sorts should be done in DB
                 albums = self.media_db.get_albums(artist, filt_time)                    
-                albums = sorted(albums, key=QString)             
                 for cnt in range(len(albums)):
                     cover = self.extras.get_cover_source(artist,albums[cnt],True, False)
                     
