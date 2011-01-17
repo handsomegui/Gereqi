@@ -752,11 +752,19 @@ class MainWindow(Ui_MainWindow, QMainWindow):
            # Adding albums to the artist 
            # i.e. the parent has no children    
             elif item.childCount() == 0: 
+                # FIXME: these sorts should be done in DB
                 albums = self.media_db.get_albums(artist, filt_time)                    
                 albums = sorted(albums, key=QString)             
-                for cnt in range(len(albums)):      
+                for cnt in range(len(albums)):
+                    cover = self.extras.get_cover_source(artist,albums[cnt],True, False)
+                    
+                    if not cover:
+                        cover = ":icons/nocover.png"
+                    else:
+                        cover = cover.remove("file://")
+                    
                     album = QTreeWidgetItem([albums[cnt]])
-                    album.setIcon(0,QIcon(":/icons/nocover.png"))
+                    album.setIcon(0,QIcon(cover))
                     album.setChildIndicatorPolicy(0)
                     item.insertChild(cnt, album)
                 
