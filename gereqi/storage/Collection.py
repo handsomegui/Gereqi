@@ -240,7 +240,8 @@ class CollectionDb:
         query = '''SELECT DISTINCT file_name   
                         FROM media 
                         WHERE artist=?
-                        AND album=?'''
+                        AND album=?
+                        ORDER BY track'''
         self.__query_execute(query, args)
         result = self.__query_fetchall()
         return result
@@ -298,12 +299,14 @@ class CollectionDb:
                         FROM media 
                         WHERE artist=?
                         AND album=?
-                        AND added>?'''
+                        AND added>?
+                        ORDER BY track'''
         self.__query_execute(query, args)
         result = self.__query_fetchall()
         return result
         
     def get_album_titles(self, album,filt=0):
+        # TODO: order by track#
         query = '''SELECT DISTINCT title
                         FROM media
                         WHERE album=?
@@ -416,5 +419,8 @@ class CollectionDb:
             self.__execute_write(query, (key, key_vals[key]))
             
             
+    def close_connection(self,name):
+        CollectionDb.media_db.database(QLatin1String(name)).close()
+        CollectionDb.media_db.removeDatabase(name)
         
             

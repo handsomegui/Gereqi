@@ -17,6 +17,7 @@ from PyQt4.QtCore import QString
 
 from gereqi.extraneous import Extraneous
 from gereqi.storage.Settings import Settings
+from gereqi.storage.Collection import CollectionDb
 
 import styles
 
@@ -31,20 +32,32 @@ HTML = QString('''
         <h1>%3 - %4</h1>
         <h2>%5</h2>
         <img class="cover" src="%6"/>
-    <h1>Albums by %4</h1>
-    %7
+    
+    <div id="albums">
+        <h1>Albums by %4</h1>
+            %7
+    </div>
     </body>
     </html>
             ''')
 
 ALB_HTML = QString('''
-    <div class="album">
+    <div id="album">
         <p>
-            <img class="mini" src="%1" />
-            %2
+            <a href="#"><img class="mini" src="%1"></a>
+            <a href="#">%2</a>
         </p>
+        <div class="tracks">
+        <ul>
+            %3
+        </ul>
+        </div>
     </div>
 
+''')
+
+TRACK_HTML = QString('''
+<li><b>%1 :</b> %2</li>
 ''')
             
 class InfoPage:
@@ -57,15 +70,23 @@ class InfoPage:
         # a function seems to be passing a pointer thus changes are
         # carried back through to its sort. Very unpythonic.
         artist = QString(artist)
-        extra = Extraneous()        
+        extra = Extraneous()
+        # TODO: close connection
+        media_db = CollectionDb("infopage")    
         
         for alb in albums:
+            t_info = QString()
+            tracks = media_db.get_titles(artist, alb)
+            for trk in tracks:
+                t_info.append(TRACK_HTML.arg(trk["track"],trk["title"]))
             cover = extra.get_cover_source(artist, QString(alb))
             if cover is not None:
-                thing = thing.append(ALB_HTML.arg(cover, alb))
+                thing = thing.append(ALB_HTML.arg(cover, alb, t_info))
             else:
-                thing = thing.append(ALB_HTML.arg("file://", alb))
-
+                thing = thing.append(ALB_HTML.arg("file://", alb, t_info))
+                
+        # FIXME: causes crash on track change
+#        media_db.close_connection("infopage")
         return thing
         
         

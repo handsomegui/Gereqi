@@ -24,27 +24,52 @@ p {
 
 infostyles = '''
 <style type="text/css">
+body {
+    text-align: center;
+    }
+    
 img.cover {
     width: %2px;
     border: 0;
+    margin: 0 auto;
+    text-align: center;
 }
 img.mini {
     width: 48px;
     height: 48px;
     border: 0;
 }
-h1 {
-    text-align: left;
-    font-size: 1em;
-    font-weight: bold;
-}
-h2 {
-    text-align: left;
-    font-size: 0.9em;
-}
+
+
 ul {
     list-style-type: none;
     font-size: 0.8em;
+}
+
+h1, h2 {
+    font-size: 1em;
+    color: white;
+    background-color: grey;
+    padding: 3px;
+    margin: 3px auto;
+    text-align: center;
+    font-weight: bold;
+    }
+    
+h2 {
+    font-size: 0.9em;
+}
+
+#albums {
+    text-align: left;
+    }
+    
+#album a {
+    text-decoration: none;
+    margin: 3px auto;
+    text-align: center;
+    color: black;
+    font-weight: bold;
 }
 </style>
 '''

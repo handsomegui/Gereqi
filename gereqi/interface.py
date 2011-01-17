@@ -194,6 +194,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.wdgt_manip.setup_db_tree()
         self.wdgt_manip.pop_playlist_view() 
         
+       
+        
     def __reset_db_default(self,err):
         err = "Database Error: %s. Setting Database to default" % str(err)
         err_msg = QErrorMessage()
@@ -750,8 +752,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
            # Adding albums to the artist 
            # i.e. the parent has no children    
             elif item.childCount() == 0: 
-                albums = self.media_db.get_albums(artist, filt_time)
-                    
+                albums = self.media_db.get_albums(artist, filt_time)                    
                 albums = sorted(albums, key=QString)             
                 for cnt in range(len(albums)):      
                     album = QTreeWidgetItem([albums[cnt]])
