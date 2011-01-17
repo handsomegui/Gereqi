@@ -15,57 +15,43 @@
 
 from PyQt4.QtCore import QString
 
-from extraneous import Extraneous
+from gereqi.extraneous import Extraneous
 from gereqi.storage.Settings import Settings
 
+import styles
 
 
 HTML = QString('''
-            <html>
-            <head>
-            
-            <style type="text/css">
-            img.cover{
-                width: %1px;
-                border: 0;
-            }
-            img.mini{
-                width: 48px;
-                height: 48px;
-                border: 0;
-            }
-            h1{
-                text-align: left;
-                font-size: 1em;
-                font-weight: bold;
-            }
-            h2{
-                text-align: left;
-                font-size: 0.9em;
-            }
-            ul{
-                list-style-type: none;
-                font-size: 0.8em;
-            }
-            </style>
-            </head>
-            
-            <body>
-            <h1>%2 - %3</h1>
-            <h2>%4</h2>
-            <img class="cover" src="%5"/>
-            <h1>Albums by %3</h1>
-            %6
-            </body>
-            </html>
+    <html>
+    <head>    
+        %1
+    </head>
+    
+    <body>
+        <h1>%3 - %4</h1>
+        <h2>%5</h2>
+        <img class="cover" src="%6"/>
+    <h1>Albums by %4</h1>
+    %7
+    </body>
+    </html>
             ''')
+
+ALB_HTML = QString('''
+    <div class="album">
+        <p>
+            <img class="mini" src="%1" />
+            %2
+        </p>
+    </div>
+
+''')
             
 class InfoPage:
     def __init__(self, parent=None):
         return
 
     def __gen_albs(self, artist, albums):
-        tmpl = QString('''<img class="mini" src="%1" /> %2<br>\n''')
         thing = QString()
         # Have to create a new qstring as passing a qstring into
         # a function seems to be passing a pointer thus changes are
@@ -76,12 +62,11 @@ class InfoPage:
         for alb in albums:
             cover = extra.get_cover_source(artist, QString(alb))
             if cover is not None:
-                thing = thing.append(tmpl.arg(cover, alb))
+                thing = thing.append(ALB_HTML.arg(cover, alb))
             else:
-                thing = thing.append(tmpl.arg("file://", alb))
+                thing = thing.append(ALB_HTML.arg("file://", alb))
 
-        html = QString("<p>%1</p>").arg(thing)
-        return html
+        return thing
         
         
     def gen_info(self, **params):
@@ -95,13 +80,15 @@ class InfoPage:
         
         cover = cover if cover is not None else "file://"
         
-        now = HTML.arg("%1").arg(coversize)
-        now = now.arg("%2").arg(params["title"])
-        now = now.arg("%3").arg(params["artist"])
-        now = now.arg("%4").arg(params["album"])
-        now = now.arg("%5").arg(cover)
-        now = now.arg("%6").arg(self.__gen_albs(params["artist"], 
+        now = HTML.arg("%1").arg(styles.infostyles)
+        now = now.arg("%2").arg(coversize)
+        now = now.arg("%3").arg(params["title"])
+        now = now.arg("%4").arg(params["artist"])
+        now = now.arg("%5").arg(params["album"])
+        now = now.arg("%6").arg(cover)
+        now = now.arg("%7").arg(self.__gen_albs(params["artist"], 
                                                 params["albums"]))
+        
         return now
         
         

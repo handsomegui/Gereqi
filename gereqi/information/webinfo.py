@@ -16,6 +16,8 @@
 
 from urllib2 import Request, urlopen, URLError
 
+import styles
+
 
 class Webinfo:
     def __init__(self):
@@ -83,26 +85,14 @@ class Webinfo:
                         <head>
                         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
                         <style type="text/css">
-                        a:link {text-decoration: none; color:black;font-size 11px}
-                        a:visited {text-decoration: none; color:black;font-size 11px}
-                        a:active {text-decoration: none; color:black;font-size 11px}
-                        a:hover {text-decoration: none; color:black;font-size 11px}
-                        body{font-size: 12px}
-                        h1 {font-size:12px}
-                        h2 {font-size:11px}
-                        h3 {font-size:11px}
-                        h4 {font-size:11px}
-                        p {font-size:11px}
-                        p.normal {font-size:11px}
-                        p.italic {font-size:11px}
-                        p.oblique {font-size:11px}
+                        %s
                         </style>
                         <body>
                         %s
                         </body>
                         </html>
-                        '''
-                    return base_html % unicode(result , "utf-8")
+                        ''' 
+                    return base_html % (styles.stylesheet, unicode(result , "utf-8"))
         
     def get_cover(self, artist, album):
         alb = str(album).partition("(")[0].partition("[")[0]

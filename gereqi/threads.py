@@ -29,7 +29,7 @@ import pyinotify
 
 from gereqi.information.webinfo import Webinfo
 from gereqi.information.tagging import Tagging
-from infopage import InfoPage
+from gereqi.information.infopage import InfoPage
 from gereqi.storage.Collection import CollectionDb
 from gereqi.storage.Settings import Settings
 
