@@ -40,7 +40,7 @@ class Extraneous:
         result = QString("%1-%2").arg(things[0]).arg(things[1])
         return result
 
-    def get_cover_source(self, artist, album, check=True):
+    def get_cover_source(self, artist, album, check=True,download=True):
         cover_dir = QString("%1/.gereqi/album-art/").arg(getenv["HOME"])
         # Need to create new qstring as sending without seems to be sending a 
         # pointer and the changes are pertinent
@@ -56,7 +56,7 @@ class Extraneous:
             
             if QFile(cover).exists():
                 return QString("file://%1").arg(cover)
-            else:                        
+            elif download == True:                        
                 web_info = Webinfo()
                 img = web_info.get_cover(artist, album)
                 if img is not None:
