@@ -24,7 +24,7 @@ class AudioBackend:
     recently_played = []
     
     def __init__(self, parent):
-        self.ui_main = parent
+        self.ui= parent
         self.just_finished = False
         self.__gstreamer_init()
             
@@ -39,7 +39,7 @@ class AudioBackend:
         self.audio_object.tick.connect(self.__prog_tick)
         self.audio_object.track_changed.connect(self.__track_changed)
         self.audio_object.finished.connect(self.__finished_playing)
-        self.ui_main.stop_bttn.pressed.connect(self.__finished_playing)       
+        self.ui.stop_bttn.pressed.connect(self.__finished_playing)       
         self.audio_object.pipe_line.connect("about-to-finish", self.__about_to_finish)
         
     def __about_to_finish(self, pipeline):
@@ -49,7 +49,7 @@ class AudioBackend:
         """
         self.recently_played.append(self.audio_object.current_source())
         self.just_finished = True
-        track = self.ui_main.tracking.generate_track("next")
+        track = self.ui.tracking.generate_track("next")
         #Not at end of  playlist
         if track is not None:
             self.audio_object.enqueue(track)
@@ -57,16 +57,13 @@ class AudioBackend:
     def __prog_tick(self, time):
         """
         Every second update time labels and progress slider
-        """
-        t_now = QTime(0, (time / 60000) % 60, (time / 1000) % 60)
-        now = t_now.toString('mm:ss')
-        max_time = self.ui_main.t_length.toString('mm:ss')
-        max_time = self.ui_main.t_length.toString('mm:ss')
-        self.ui_main.progress_lbl.setText("%s | %s" % (now, max_time))            
+        Time is millis
+        """       
+                   
         # Allows normal playback whilst slider still grabbed
-        if self.ui_main.progress_sldr.value() == self.ui_main.old_pos: 
-            self.ui_main.progress_sldr.setValue(time)
-        self.ui_main.old_pos = time
+        if not self.ui.progress_sldr.isSliderDown(): 
+            self.timeval_to_label(time)
+            self.ui.progress_sldr.setValue(time)
         
     def __track_changed(self):
         """
@@ -78,12 +75,11 @@ class AudioBackend:
             self.just_finished = False
             self.__inc_playcount()
         
-        self.ui_main.tracking.generate_info()
-        self.ui_main.set_info()
-        self.ui_main.set_prog_sldr()
-        self.ui_main.old_pos = 0
-        self.ui_main.progress_sldr.setValue(0)
-        self.ui_main.tray_tooltip()
+        self.ui.tracking.generate_info()
+        self.ui.set_info()
+        self.ui.set_prog_sldr()
+        self.ui.progress_sldr.setValue(0)
+        self.ui.tray_tooltip()
         
     def __finished_playing(self):
         """
@@ -91,25 +87,30 @@ class AudioBackend:
         """
         self.just_finished = False
         self.recently_played = []
-        self.ui_main.horizontal_tabs.setTabEnabled(1, False)
-        self.ui_main.horizontal_tabs.setTabEnabled(2, False)
-        self.ui_main.play_bttn.setChecked(False)
-        self.ui_main.stop_bttn.setEnabled(False)
-        self.ui_main.progress_sldr.setValue(0)
-        self.ui_main.old_pos = 0
-        self.ui_main.stat_lbl.setText("Stopped")
-        self.ui_main.progress_lbl.setText("00:00 | 00:00")
+        self.ui.horizontal_tabs.setTabEnabled(1, False)
+        self.ui.horizontal_tabs.setTabEnabled(2, False)
+        self.ui.play_bttn.setChecked(False)
+        self.ui.stop_bttn.setEnabled(False)
+        self.ui.progress_sldr.setValue(0)
+        self.ui.stat_lbl.setText("Stopped")
+        self.ui.progress_lbl.setText("00:00 | 00:00")
         # clear things like wiki and reset cover art to default        
-        self.ui_main.wiki_view.setHtml(QString(""))
-        self.ui_main.art_alb["oldart"] = self.ui_main.art_alb["oldalb"] = None
-        self.ui_main.tray_icon.setToolTip("Stopped")
+        self.ui.wiki_view.setHtml(QString(""))
+        self.ui.art_alb["oldart"] = self.ui.art_alb["oldalb"] = None
+        self.ui.tray_icon.setToolTip("Stopped")
         
     def __inc_playcount(self):
         """
         Doesn't actually change count. Adds notification
         of full-play into the historyDB table
         """
-        track = self.ui_main.tracking.generate_track("back")
+        track = self.ui.tracking.generate_track("back")
         timestamp = time.time()
-        self.ui_main.media_db.inc_count(timestamp, track)
+        self.ui.media_db.inc_count(timestamp, track)
+        
+    def timeval_to_label(self,val):
+        t_now = QTime(0, (val / 60000) % 60, (val / 1000) % 60)
+        now = t_now.toString('mm:ss')
+        max_time = self.ui.t_length.toString('mm:ss')
+        self.ui.progress_lbl.setText("%s | %s" % (now, max_time)) 
         

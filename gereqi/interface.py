@@ -684,6 +684,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if action in ok_actions:
             #Does what's needed
             self.on_progress_sldr_sliderReleased()
+        elif action == 7:
+            val = self.progress_sldr.value()
+            self.player.timeval_to_label(val)
 
     
     @pyqtSignature("")
