@@ -175,11 +175,11 @@ class CollectionDb:
         Here we add data into the media database
         """
         if self.db_type == "SQLITE":
-            query = '''INSERT INTO media 
+            query = '''INSERT OR IGNORE INTO media 
                             VALUES (?,?,?,?,?,?,?,?,?,?,?)'''
         elif self.db_type == "MYSQL":
             query = '''INSERT IGNORE INTO media
-                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''                        
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?)'''                        
             # Required as MYSQL will not accept a TEXT data-type as
             # a primary key. However, file_name needs to be a TEXT
             # as VARCHAR is limiting. Instead, an md5 hash of the file_name 
