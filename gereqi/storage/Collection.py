@@ -55,7 +55,7 @@ class CollectionDb:
         ok = CollectionDb.media_db.open()
         if ok is True:
             print "DATABASE OK",self.db_type
-            CollectionDb.query = QSqlQuery(CollectionDb.media_db)
+            self.query = QSqlQuery(CollectionDb.media_db)
             if self.db_type == "SQLITE":
                 self.__pragma()
             self.__setup_tables()
@@ -118,7 +118,7 @@ class CollectionDb:
         a list of dicts if more than 1 field
         otherwise, a list
         """
-        record = CollectionDb.query.record
+        record = self.query.record
         field_count = record().count()
         fields = []
         for cnt in range(field_count):
@@ -127,7 +127,7 @@ class CollectionDb:
         results = []
         row = 0
         
-        while CollectionDb.query.next():
+        while self.query.next():
             if len(fields) > 1:
                 row_result = {}
                 for field in fields:                    
@@ -141,17 +141,17 @@ class CollectionDb:
         
     def __query_execute(self, query, args=None):
         if args is not None:
-            CollectionDb.query.prepare(query)
+            self.query.prepare(query)
             for arg in args:
-                CollectionDb.query.addBindValue(arg)
-            CollectionDb.query.exec_()
+                self.query.addBindValue(arg)
+            self.query.exec_()
         else:
             # The execute() doesn't accept NoneTypes
-            CollectionDb.query.exec_(query)   
+            self.query.exec_(query)   
             
-        err = CollectionDb.query.lastError()
+        err = self.query.lastError()
         if err.isValid():
-            print err.text(),CollectionDb.query.lastQuery()
+            print err.text(),self.query.lastQuery()
             
     
     def __execute_write(self, query, args=None):
@@ -381,8 +381,8 @@ class CollectionDb:
         Disconnects db and removes connection
         """
         if name:
-            CollectionDb.query.finish()
-#            del CollectionDb.query
+            self.query.finish()
+#            del self.query
 #            db = CollectionDb.media_db.database(QLatin1String(name))
 #            db.close() 
             CollectionDb.media_db.removeDatabase(name)
@@ -397,8 +397,8 @@ class CollectionDb:
             Trying to shutdown cleanly. The Qt docs fail me.
         """
         conn_names = self.__connections()
-        CollectionDb.query.finish()
-        del CollectionDb.query
+        self.query.finish()
+        del self.query
         for conn in conn_names:
             CollectionDb.media_db.database(QLatin1String(conn)).close()
             CollectionDb.media_db.removeDatabase(conn)
