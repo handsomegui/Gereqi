@@ -131,6 +131,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         self.__settings_init()
         
+        
         self.build_lock = self.delete_lock = False
         self.art_alb = {"oldart":None, "oldalb":None, 
                         "nowart":None, "nowalb":None, 
@@ -150,6 +151,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.__reset_db_default(err)
             
         try:
+            # FIXME: why is this needed on startup?
             self.build_db_thread = Builddb(self)
         except StandardError, err:
             self.__reset_db_default(err)
@@ -193,8 +195,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.search_collect_edit.setFocus()
         self.wdgt_manip.setup_db_tree()
         self.wdgt_manip.pop_playlist_view() 
-        
-       
+        # It does increase the size but only in the y-axis
+        self.collect_tree.setIconSize(QSize(32,32))
+#        self.collect_tree.setStyleSheet('''
+#        QTreeView::item {
+#             icon-size: 2px;
+#         }
+#        ''')
         
     def __reset_db_default(self,err):
         err = "Database Error: %s. Setting Database to default" % str(err)
@@ -722,6 +729,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Generates the albums to go with the artists in
         the collection tree when expanded. Only if empty.
         """
+#        print self.collect_tree.iconSize()
         filt_time = self.__time_filt_now()
         par = item.parent()
         mode = self.__collection_mode()
@@ -754,10 +762,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                         cover = ":icons/nocover.png"
                     else:
                         cover = cover.remove("file://")
+                        
+#                    p = QPixmap(cover)
+#                    p = p.scaledToHeight(self.collect_tree.size().height()-4)
                     
                     album = QTreeWidgetItem([albums[cnt]])
+#                    album.setIcon(0,QIcon(p))
                     album.setIcon(0,QIcon(cover))
                     album.setChildIndicatorPolicy(0)
+#                    album.setSizeHint(0,QSize(32,32))
                     item.insertChild(cnt, album)
                 
         else:
