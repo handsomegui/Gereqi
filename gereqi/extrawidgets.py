@@ -509,27 +509,33 @@ class WidgetManips:
         playlists = self.ui.media_db.playlist_list()
 #        podcasts = None
 #        streams = None
-        hdr_names = ["Playlists"] # Podcasts Radio Streams
-        headers = [QTreeWidgetItem(["%s" % tit]) for tit in hdr_names ]
-        for hdr in headers:
-            hdr.setFont(0, font)
-            hdr.setChildIndicatorPolicy(2)
-         
-            if hdr.text(0) == "Playlists":
-                for play in playlists:
-                    # Ignore the auto-save playlist
-                    if play == "!!##gereqi.remembered##!!":
-                        continue
-                    now = QTreeWidgetItem([QString(play)])
-                    hdr.addChild(now)
-                    tracks = self.ui.media_db.playlist_tracks(play)
-                    for track in tracks:
-                        info = self.ui.media_db.get_info(track)
-                        if info is not None:
-                            now.addChild(QTreeWidgetItem([QString("%s - %s" %
-                                         (info["title"], info["artist"])) ]))       
-                                                                                      
-            self.ui.playlist_tree.addTopLevelItem(hdr)
+#        hdr_names = ["Playlists"] # Podcasts Radio Streams
+#        headers = [QTreeWidgetItem(["%s" % tit]) for tit in hdr_names ]
+        headers = []
+        
+        hdr = QTreeWidgetItem(["Playlists"])
+        hdr.setIcon(0,QIcon(":icons/files.png"))
+        
+#        for hdr in headers:
+        hdr.setFont(0, font)
+        hdr.setChildIndicatorPolicy(2)
+     
+        if hdr.text(0) == "Playlists":
+            for play in playlists:
+                # Ignore the auto-save playlist
+                if play == "!!##gereqi.remembered##!!":
+                    continue
+                now = QTreeWidgetItem([QString(play)])
+                now.setIcon(0,QIcon(":icons/files2.png"))
+                hdr.addChild(now)
+                tracks = self.ui.media_db.playlist_tracks(play)
+                for track in tracks:
+                    info = self.ui.media_db.get_info(track)
+                    if info is not None:
+                        now.addChild(QTreeWidgetItem([QString("%s - %s" %
+                                     (info["title"], info["artist"])) ]))       
+                                                                                  
+        self.ui.playlist_tree.addTopLevelItem(hdr)
                 
     def icon_change(self, state):
         """
