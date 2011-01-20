@@ -39,7 +39,6 @@ class Webinfo:
         elif site == "albumart.org":
             base_url = "http://www.albumart.org/index.php?srchkey=%s&itempage=1&newsearch=1&searchindex=Music"
             url = base_url % "+".join(things)
-            print url
             return url
         
     def __fetch(self, url):
