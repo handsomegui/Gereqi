@@ -1139,16 +1139,20 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # TODO: maybe change the delgate as in album mode the
         # tracks are v big
         text_now = self.collect_tree.headerItem().text(0)
-        if text_now == "Artist/Album":
+        if text_now == "Artist/Album":            
             return "artist"
         else:
+            
             return "album"
         
     def __collection_sort(self, p0):
         mode = self.__collection_mode()
         if mode == "artist":
+            self.wdgt_manip.mydel.mode = "album"
             self.collect_tree.headerItem().setText(0, "Album/Artist")
+            
         else:
+            self.wdgt_manip.mydel.mode = "artist"
             self.collect_tree.headerItem().setText(0, "Artist/Album")
 
         self.wdgt_manip.setup_db_tree()
