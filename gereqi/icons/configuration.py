@@ -11,30 +11,26 @@ class Setup:
                                                                   QIcon(":/icons/edit-clear.png")))
         parent.clear_search_bttn.setIcon(QIcon().fromTheme("edit-clear"
                                                                  ,QIcon(":/icons/edit-clear.png")))
-        parent.clear_trktbl_bttn.setIcon(QIcon().fromTheme("window-new",
-                                                                 QIcon(":/icons/window-new.png")))
-        parent.save_trktbl_bttn.setIcon(QIcon().fromTheme("document-save-as",
-                                                                QIcon(":/icons/document-save-as.png")))
-        parent.prev_trktbl_bttn.setIcon(QIcon().fromTheme("edit-undo",
-                                                               QIcon(":/icons/edit-undo.png")))
-        parent.next_trktbl_bttn.setIcon(QIcon().fromTheme("edit-redo",
-                                                                QIcon(":/icons/edit-redo.png")))
+        parent.clear_trktbl_bttn.setIcon(QIcon(":/icons/playlist-clear.png"))
+        parent.save_trktbl_bttn.setIcon(QIcon(":/icons/save.png"))
+        parent.prev_trktbl_bttn.setIcon(QIcon(":/icons/undo.png"))
+        parent.next_trktbl_bttn.setIcon(QIcon(":/icons/redo.png"))
         
-        parent.prev_bttn.setIcon(QIcon().fromTheme("media-skip-backward",
-                                                         QIcon(":/icons/media-skip-backward.png")))
-        parent.play_bttn.setIcon(QIcon().fromTheme("media-playback-start",
-                                                         QIcon(":/icons/media-playback-start.png")))
-        parent.stop_bttn.setIcon(QIcon().fromTheme("media-playback-stop",
-                                                         QIcon(":/icons/media-playback-stop.png")))
-        parent.next_bttn.setIcon(QIcon().fromTheme("media-skip-forward",
-                                                         QIcon(":/icons/media-skip-forward.png")))   
+        parent.prev_bttn.setIcon(QIcon(":/icons/back.png"))
+        parent.play_bttn.setIcon(QIcon(":/icons/play.png"))
+        parent.stop_bttn.setIcon(QIcon(":/icons/stop.png"))
+        parent.next_bttn.setIcon(QIcon(":/icons/next.png"))  
         
-#        parent.rename_playlist_bttn.setIcon(QIcon().fromTheme("edit-rename",
-#                                                                    QIcon(":/icons/document-properties")))
+        parent.play_cd_actn.setIcon(QIcon(":/icons/audiocd.png"))
+        parent.play_media_actn.setIcon(QIcon(":/icons/files2.png"))
+        parent.prev_track_actn.setIcon(QIcon(":/icons/back.png"))
+        parent.play_actn.setIcon(QIcon(":/icons/play.png"))
+        parent.stop_actn.setIcon(QIcon(":/icons/stop.png"))
+        parent.actionNext_Track.setIcon(QIcon(":/icons/next.png"))
+
         parent.rename_playlist_bttn.setIcon(QIcon().fromTheme("edit-rename",
                                                                     QIcon(":/icons/document-properties.png")))
-        parent.delete_playlist_bttn.setIcon(QIcon().fromTheme("edit-delete",
-                                                                    QIcon(":/icons/edit-delete.png")))
+        parent.delete_playlist_bttn.setIcon(QIcon(":/icons/remove.png"))
         
         parent.setWindowIcon(QIcon(":/icons/app.png"))
         

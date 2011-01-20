@@ -89,16 +89,16 @@ class SetupExtraWidgets:
         icon = QIcon().fromTheme("process-stop")
         quit_action = QAction(icon, QString("&Quit"), self.ui)
         
-        icon = QIcon().fromTheme("media-playback-start", QIcon(":/icons/media-playback-start.png"))
+        icon = QIcon(":/icons/play.png")
         self.ui.play_action = QAction(icon, QString("&Play"), self.ui)
         
-        icon = QIcon().fromTheme("media-skip-forward", QIcon(":/icons/media-skip-forward.png"))
+        icon = QIcon(":/icons/next.png")
         next_action = QAction(icon, QString("&Next"), self.ui)
         
-        icon = QIcon().fromTheme("media-skip-backward", QIcon(":/icons/media-skip-backward.png"))
+        icon = QIcon(":/icons/back.png")
         prev_action = QAction(icon, QString("&Previous"), self.ui)
         
-        icon = QIcon().fromTheme("media-playback-stop", QIcon(":/icons/media-playback-stop.png"))
+        icon = QIcon(":/icons/stop.png")
         stop_action = QAction(icon, QString("&Stop"), self.ui)
         
         self.ui.play_action.setCheckable(True)
@@ -514,7 +514,7 @@ class WidgetManips:
         headers = []
         
         hdr = QTreeWidgetItem(["Playlists"])
-        hdr.setIcon(0,QIcon(":icons/files.png"))
+        hdr.setIcon(0,QIcon(":/icons/files.png"))
         
 #        for hdr in headers:
         hdr.setFont(0, font)
@@ -526,7 +526,7 @@ class WidgetManips:
                 if play == "!!##gereqi.remembered##!!":
                     continue
                 now = QTreeWidgetItem([QString(play)])
-                now.setIcon(0,QIcon(":icons/files2.png"))
+                now.setIcon(0,QIcon(":/icons/playlist.png"))
                 hdr.addChild(now)
                 tracks = self.ui.media_db.playlist_tracks(play)
                 for track in tracks:
@@ -543,10 +543,10 @@ class WidgetManips:
         the play button's icon will vary
         """
         if state == "play":
-            icon = QIcon().fromTheme("media-playback-pause")
+            icon = QIcon(":/icons/pause.png")
             tray = QIcon(":/icons/app.png")
         elif state == "pause":            
-            icon = QIcon().fromTheme("media-playback-start")
+            icon = QIcon(":/icons/play.png")
             tray = QIcon(":/icons/app-paused.png")
 
         self.ui.play_bttn.setIcon(icon)
