@@ -46,6 +46,8 @@ class SetupExtraWidgets:
         self.ui.collect_tree.setUniformRowHeights(False)
         self.ui.collect_tree.setIconSize(QSize(46,46))
         
+        self.ui.track_tbl.horizontalHeader().setMovable(True)
+        
         self.__setup_filesystem_tree()
         self.__create_tray_menu()
         
