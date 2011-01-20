@@ -115,7 +115,7 @@
               <number>2</number>
              </property>
              <item row="0" column="0">
-              <widget class="QWebView" name="info_view" native="true">
+              <widget class="QWebView" name="info_view">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -131,7 +131,7 @@
                <property name="whatsThis">
                 <string notr="true"/>
                </property>
-               <property name="url" stdset="0">
+               <property name="url">
                 <url>
                  <string>about:blank</string>
                 </url>
@@ -149,7 +149,7 @@
               <number>2</number>
              </property>
              <item row="0" column="0">
-              <widget class="QWebView" name="wiki_view" native="true">
+              <widget class="QWebView" name="wiki_view">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -162,12 +162,12 @@
                <property name="styleSheet">
                 <string/>
                </property>
-               <property name="url" stdset="0">
+               <property name="url">
                 <url>
                  <string>about:blank</string>
                 </url>
                </property>
-               <property name="zoomFactor" stdset="0">
+               <property name="zoomFactor">
                 <double>1.000000000000000</double>
                </property>
               </widget>
@@ -224,6 +224,9 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
+                <string>Enter search terms here</string>
+               </property>
+               <property name="placeholderText">
                 <string>Enter search terms here</string>
                </property>
               </widget>
@@ -684,6 +687,9 @@
             <property name="toolTip">
              <string>Playlist Search</string>
             </property>
+            <property name="placeholderText">
+             <string>Playlist Search</string>
+            </property>
            </widget>
           </item>
          </layout>
@@ -957,7 +963,7 @@
      <x>0</x>
      <y>0</y>
      <width>799</width>
-     <height>28</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuActions">
