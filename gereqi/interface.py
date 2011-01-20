@@ -195,13 +195,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.search_collect_edit.setFocus()
         self.wdgt_manip.setup_db_tree()
         self.wdgt_manip.pop_playlist_view() 
-        # It does increase the size but only in the y-axis
-        self.collect_tree.setIconSize(QSize(32,32))
-#        self.collect_tree.setStyleSheet('''
-#        QTreeView::item {
-#             icon-size: 2px;
-#         }
-#        ''')
+
         
     def __reset_db_default(self,err):
         err = "Database Error: %s. Setting Database to default" % str(err)
@@ -729,7 +723,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Generates the albums to go with the artists in
         the collection tree when expanded. Only if empty.
         """
-#        print self.collect_tree.iconSize()
         filt_time = self.__time_filt_now()
         par = item.parent()
         mode = self.__collection_mode()
@@ -747,31 +740,26 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 # Adding tracks to album
                 tracks = self.media_db.get_titles(artist, album, filt_time)
                
-                for cnt in range(len(tracks)):
-                    track = QTreeWidgetItem([tracks[cnt]["title"]] )                    
-                    item.insertChild(cnt, track)
+                for trk in tracks:
+                    track = QTreeWidgetItem([ trk["title"] ] )                    
+                    item.addChild(track)
       
            # Adding albums to the artist 
            # i.e. the parent has no children    
             elif item.childCount() == 0: 
                 albums = self.media_db.get_albums(artist, filt_time)                    
-                for cnt in range(len(albums)):
-                    cover = self.extras.get_cover_source(artist,albums[cnt],True, False)
+                for alb in albums:
+                    cover = self.extras.get_cover_source(artist,alb,True, False)
                     
                     if not cover:
                         cover = ":icons/nocover.png"
                     else:
                         cover = cover.remove("file://")
-                        
-#                    p = QPixmap(cover)
-#                    p = p.scaledToHeight(self.collect_tree.size().height()-4)
                     
-                    album = QTreeWidgetItem([albums[cnt]])
-#                    album.setIcon(0,QIcon(p))
+                    album = QTreeWidgetItem([alb])
                     album.setIcon(0,QIcon(cover))
                     album.setChildIndicatorPolicy(0)
-#                    album.setSizeHint(0,QSize(32,32))
-                    item.insertChild(cnt, album)
+                    item.addChild(album)
                 
         else:
             if par is not None:
@@ -784,9 +772,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             if (track is None) and (item.childCount() == 0):
                 tracks = self.media_db.get_album_titles(album,filt_time) 
                              
-                for cnt in range(len(tracks)):      
-                    track = QTreeWidgetItem([tracks[cnt]])
-                    item.insertChild(cnt, track)
+                for trk in tracks:      
+                    track = QTreeWidgetItem([trk])
+                    item.addChild(track)
                 
                 
     @pyqtSignature("")
@@ -1148,6 +1136,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             return 0
         
     def __collection_mode(self):
+        # TODO: maybe change the delgate as in album mode the
+        # tracks are v big
         text_now = self.collect_tree.headerItem().text(0)
         if text_now == "Artist/Album":
             return "artist"

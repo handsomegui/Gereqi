@@ -22,6 +22,16 @@ import gereqi.devices
 import gereqi.icons.configuration
 import gereqi.icons.icons_resource
 
+class MyDelegate(QItemDelegate):
+    def __init__(self):
+        super(MyDelegate,self).__init__()
+        
+    def sizeHint(self,option,index):
+        parent = index.parent()
+        if parent.isValid() and  not parent.parent().isValid():            
+            return QSize(48,48)
+        return QSize(24,24)
+    
 
 class SetupExtraWidgets:
     """
@@ -31,8 +41,14 @@ class SetupExtraWidgets:
     def __init__(self, parent):
         self.ui = parent
         
+        mydel = MyDelegate()
+        self.ui.collect_tree.setItemDelegate(mydel)
+        self.ui.collect_tree.setUniformRowHeights(False)
+        self.ui.collect_tree.setIconSize(QSize(46,46))
+        
         self.__setup_filesystem_tree()
         self.__create_tray_menu()
+        
 
         self.__setup_misc()
         self.__key_shortcuts()
