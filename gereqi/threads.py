@@ -103,7 +103,7 @@ class Builddb(QThread):
     def __init__(self, parent):
         QThread.__init__(self, parent)
         self.ui_main = parent
-        self.media_db = CollectionDb("builder")
+        
         
     def __file_compat(self, dirpath, fname):
         now = os.path.join(dirpath, fname)
@@ -158,6 +158,7 @@ class Builddb(QThread):
         return tracks
         
     def run(self):
+        media_db = CollectionDb("builder")
         self.ui_main.build_lock = True
         while self.ui_main.delete_lock == True:
             print("WAITING: creation")
@@ -166,7 +167,7 @@ class Builddb(QThread):
         old_prog = 0
         
         if self.mode == "redo":
-            self.media_db.drop_media()
+            media_db.drop_media()
             print("FROM SCRATCH")
         elif self.mode == "update":
             print("UPDATE")
@@ -203,7 +204,7 @@ class Builddb(QThread):
                     
                     # The default rating
                     info.append(0)
-                    self.media_db.add_media(info)
+                    media_db.add_media(info)
                     cnt += 1
             else:
                 print("User terminated scan.")
