@@ -1,4 +1,12 @@
+from PyQt4.QtGui import QFont
+
+default_family = QFont().defaultFamily()
+
 stylesheet = '''
+body {
+    font-size: 12px;
+    font-family: %s;
+}
 
 a {
     text-decoration: none;
@@ -6,9 +14,7 @@ a {
     font-size: 11px;
 }
 
-body {
-    font-size: 12px;
-}
+
 
 h1,h2,h3,h4 {
     font-size:12px;
@@ -19,14 +25,17 @@ p {
     font-size:11px;
 }
 
-'''
+''' % default_family
 
-
-infostyles = '''
+body = '''
 <style type="text/css">
 body {
     text-align: center;
+    font-family: %s;
     }
+''' % default_family
+
+infostyles = body + '''
     
 img.cover {
     width: %2px;
@@ -72,4 +81,4 @@ h2 {
     font-weight: bold;
 }
 </style>
-'''
+''' 
