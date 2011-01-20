@@ -206,6 +206,15 @@ class CollectionDb:
         print("DELETING FROM DB: %s" % fname)
         self.__execute_write(query, args)
         
+    def get_artist(self,album):
+        query = '''SELECT artist
+                        FROM media
+                        WHERE album=?
+                        LIMIT(1)'''
+        self.__query_execute(query,(album,))
+        result = self.__query_fetchall()
+        return result
+        
     def get_artists(self, filt=0):
         query = '''SELECT DISTINCT artist 
                     FROM media

@@ -21,6 +21,7 @@ import time
 import gereqi.devices
 import gereqi.icons.configuration
 import gereqi.icons.icons_resource
+import extraneous
 
 class MyDelegate(QItemDelegate):
     mode = "artist"
@@ -466,6 +467,7 @@ class WidgetManips:
             mode = "artist"
         else:
             mode = "album"
+            extras = extraneous.Extraneous()
                 
         if mode == "artist":
             things = media_db.get_artists(time_filt)
@@ -480,9 +482,22 @@ class WidgetManips:
             #  allow certain things based on the filter.
             if (filt is not None) and (filt.toLower() not in thing.toLower()):
                 continue
-            thing = QTreeWidgetItem([thing])
-            thing.setChildIndicatorPolicy(0)
-            self.ui.collect_tree.addTopLevelItem(thing)
+            row = QTreeWidgetItem([thing])
+            # FIXME: slowwww
+            if mode == "album":
+                artist = media_db.get_artist(thing)
+                if len(artist) > 0:
+                    cover = extras.get_cover_source(artist[0],thing,True, False)                    
+                    if not cover:
+                        cover = ":icons/nocover.png"
+                    else:
+                        cover = cover.remove("file://")
+                else:
+                    cover = ":icons/nocover.png"
+                row.setIcon(0,QIcon(cover))
+            
+            row.setChildIndicatorPolicy(0)
+            self.ui.collect_tree.addTopLevelItem(row)
             
     def pop_playlist_view(self):
         """

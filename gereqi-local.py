@@ -25,6 +25,7 @@ no idea what yet.
 from PyQt4.QtGui import QApplication
 from PyQt4.QtCore import QString
 from gereqi.interface import MainWindow
+from gereqi.threads import GetCovers
 import sys
 __version__= "0.5.0" 
 
@@ -33,6 +34,8 @@ def main():
     """
     dummy
     """
+    cover_thread = GetCovers()
+    cover_thread.start()
     app = QApplication(sys.argv)
 
     app.setApplicationName(QString("Gereqi"))

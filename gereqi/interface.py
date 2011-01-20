@@ -126,8 +126,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Initialisation of key items. Some may be pulled
         from other files as this file is getting messy
         """ 
-        QMainWindow.__init__(self, parent)
-        Ui_MainWindow.__init__(self)
+        super(MainWindow,self).__init__()
+        
         
         self.__settings_init()
         

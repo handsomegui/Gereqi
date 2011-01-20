@@ -32,8 +32,23 @@ from gereqi.information.tagging import Tagging
 from gereqi.information.infopage import InfoPage
 from gereqi.storage.Collection import CollectionDb
 from gereqi.storage.Settings import Settings
+from extraneous import Extraneous
 
 build_lock = delete_lock = False
+
+class GetCovers(QThread):
+    def __init__(self):
+        super(GetCovers,self).__init__()
+        
+    def run(self):
+        db = CollectionDb("cover_crawl")
+        get_cover = Extraneous().get_cover_source
+        
+        artists = db.get_artists()
+        for artist in artists:
+            albums = db.get_albums(artist)
+            for album in albums:
+                get_cover(artist,album)
 
 
 class Getinfo(QThread):
