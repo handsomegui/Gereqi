@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'interface.ui'
 #
-# Created: Thu Jan 20 23:55:21 2011
+# Created: Sun Jan 23 12:39:20 2011
 #      by: PyQt4 UI code generator 4.8.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -558,8 +558,6 @@ class Ui_MainWindow(object):
         self.vertical_tabs.setTabText(self.vertical_tabs.indexOf(self.contentTab), QtGui.QApplication.translate("MainWindow", "Context", None, QtGui.QApplication.UnicodeUTF8))
         self.clear_collect_bttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Clear Search Field", None, QtGui.QApplication.UnicodeUTF8))
         self.clear_collect_bttn.setText(QtGui.QApplication.translate("MainWindow", "X", None, QtGui.QApplication.UnicodeUTF8))
-        self.search_collect_edit.setToolTip(QtGui.QApplication.translate("MainWindow", "Enter search terms here", None, QtGui.QApplication.UnicodeUTF8))
-        self.search_collect_edit.setPlaceholderText(QtGui.QApplication.translate("MainWindow", "Enter search terms here", None, QtGui.QApplication.UnicodeUTF8))
         self.collect_time_box.setItemText(0, QtGui.QApplication.translate("MainWindow", "Entire Collection", None, QtGui.QApplication.UnicodeUTF8))
         self.collect_time_box.setItemText(1, QtGui.QApplication.translate("MainWindow", "Added Today", None, QtGui.QApplication.UnicodeUTF8))
         self.collect_time_box.setItemText(2, QtGui.QApplication.translate("MainWindow", "Added Within 1 Week", None, QtGui.QApplication.UnicodeUTF8))
@@ -587,8 +585,6 @@ class Ui_MainWindow(object):
         self.clear_search_bttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Clear search field", None, QtGui.QApplication.UnicodeUTF8))
         self.clear_search_bttn.setText(QtGui.QApplication.translate("MainWindow", "X", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MainWindow", "Search:", None, QtGui.QApplication.UnicodeUTF8))
-        self.search_trktbl_edit.setToolTip(QtGui.QApplication.translate("MainWindow", "Playlist Search", None, QtGui.QApplication.UnicodeUTF8))
-        self.search_trktbl_edit.setPlaceholderText(QtGui.QApplication.translate("MainWindow", "Playlist Search", None, QtGui.QApplication.UnicodeUTF8))
         self.track_tbl.setSortingEnabled(True)
         self.prev_bttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Previous Track", None, QtGui.QApplication.UnicodeUTF8))
         self.play_bttn.setToolTip(QtGui.QApplication.translate("MainWindow", "Play/Pause", None, QtGui.QApplication.UnicodeUTF8))

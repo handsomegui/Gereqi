@@ -229,12 +229,6 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
-               <property name="toolTip">
-                <string>Enter search terms here</string>
-               </property>
-               <property name="placeholderText">
-                <string>Enter search terms here</string>
-               </property>
               </widget>
              </item>
             </layout>
@@ -719,12 +713,6 @@
               <width>200</width>
               <height>0</height>
              </size>
-            </property>
-            <property name="toolTip">
-             <string>Playlist Search</string>
-            </property>
-            <property name="placeholderText">
-             <string>Playlist Search</string>
             </property>
            </widget>
           </item>
