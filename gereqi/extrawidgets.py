@@ -367,7 +367,16 @@ class WidgetManips:
     def __context_menu(self,pos):
         # do nothing if table is empty
         if self.ui.track_tbl.rowCount() > 0:
+            rows = []
+            
+            for r in self.ui.track_tbl.selectedItems():
+                r_now = self.ui.track_tbl.row(r)
+                if r_now not in rows:
+                    rows.append(r_now)
+                    
+                    
             item_now = self.ui.track_tbl.itemAt(pos)
+            #The coulmn we clicked in
             col_now = self.ui.track_tbl.column(item_now)
             tag_name = self.ui.track_tbl.horizontalHeaderItem(col_now).text()
             
@@ -431,9 +440,10 @@ class WidgetManips:
                 
                 if text[1]:
                     col = self.ui.playlisting.header_search("FileName")
-                    fname = self.ui.track_tbl.item(row,col).text()
-                    self.ui.media_db.update_tag(fname,tag_name.toLower(),text[0])
-                    item_now.setText(text[0])
+                    for row in rows:                        
+                        fname = self.ui.track_tbl.item(row,col).text()
+                        self.ui.media_db.update_tag(fname,tag_name.toLower(),text[0])
+                        self.ui.track_tbl.item(row,col_now).setText(text[0])
                 
 
         
