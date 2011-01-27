@@ -15,9 +15,14 @@
 
 from PyQt4.QtCore import QString
 
-import CDDB
-import DiscID
-import cdrom
+try:
+    import CDDB
+    import DiscID
+    import cdrom
+except ImportError:
+    raise ImportError,"Missing CDRom dependencies"
+
+
 
 class AudioCD:
     def __init__(self):
