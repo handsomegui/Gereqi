@@ -17,10 +17,12 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-from gereqi.audio import Backend,Cdrom,Formats
+from gereqi.audio import Backend,Formats
 from gereqi.storage.Settings import Settings
 from gereqi.storage.Collection import CollectionDb
 from gereqi.information.tagging import Tagging
+
+
 
 from random import choice
 import time
@@ -300,11 +302,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         As pyCDDB is optional only load cd
         modules if possible
         """
+        
         try:
-            self.acd = Cdrom.AudioCD()
-        except:
-            print("Probably missing python-cddb")
+            from gereqi.audio import Cdrom
+        except ImportError:
+            print("Missing CDRom dependencies")
             self.play_cd_actn.setVisible(False)
+            
             
             
     def tray_tooltip(self):
