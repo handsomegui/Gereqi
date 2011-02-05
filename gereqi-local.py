@@ -49,7 +49,6 @@ def main():
     
 def setups():
     major,minor,rev  = PYQT_VERSION_STR.split('.')
-    print major, minor
     if (int(major) >= 4) and (int(minor) >=8):
         wnd.search_trktbl_edit.setPlaceholderText(QString("Playlist Search"))
         wnd.search_collect_edit.setPlaceholderText(QString("Enter search terms here"))

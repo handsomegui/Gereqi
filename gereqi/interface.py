@@ -537,11 +537,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Extract music files and shove into current playlist.
         """        
+        #FIMXE: filters are broken
+        filts  = " ".join(self.format_filter)
+
         mfiles = QFileDialog.getOpenFileNames(\
                         None, 
                         QString("Select Music Files"),
                         QDesktopServices.storageLocation(QDesktopServices.MusicLocation), 
-                        QString(" ".join(self.format_filter)), 
+                        QString("Audio Files : %(filt)s (%(filt)s)" % {'filt': filts} ), 
                         None)       
                         
         if mfiles is None:
