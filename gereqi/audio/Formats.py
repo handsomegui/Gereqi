@@ -13,18 +13,18 @@ class Formats:
         pass
     
     def available(self):
-        fmats = {"ogg": ["libgstvorbis.so*"],
-                 "flac": ["libgstflac.so*"],
-                 "mp3": ["libgstlame.so*","libgstflump3dec.so*"],
-                 "m4a": ["libfaac.so*"]}
+        fmats = {"ogg": ["libgstvorbis.so"],
+                 "flac": ["libgstflac.so"],
+                 "mp3": ["libgstlame.so","libgstflump3dec.so"],
+                 "m4a": ["libfaac.so"]}
         
-        cmd = "find /usr/lib/ -name %s"
+        cmd = "locate /usr/lib*%s*"
         avail = []
         for key in fmats.iterkeys():
             for lib in fmats[key]:
-                proc = Popen(cmd % lib, shell=True,stdout=PIPE)
+                now = cmd % lib
+                proc = Popen(now, shell=True,stdout=PIPE)
                 val = proc.communicate()[0].split()
                 if len(val) > 0:
                     avail.append(key)
-            
         return avail
