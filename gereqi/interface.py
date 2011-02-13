@@ -220,6 +220,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         needed as the signal cannot be directly connected to
         the webview for unknown reasons
         """    
+        self.horizontal_tabs.setTabEnabled(2,True)
         self.info_view.setHtml(html)
         
     def __setup_watcher(self):
@@ -537,7 +538,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Extract music files and shove into current playlist.
         """        
-        #FIMXE: filters are broken
         filts  = " ".join(self.format_filter)
 
         mfiles = QFileDialog.getOpenFileNames(\
