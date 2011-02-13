@@ -1,3 +1,3 @@
-from PyQt4.QtQui import QIcon
+from PySide.QtQui import QIcon
 
 class MyIcon(QIcon):

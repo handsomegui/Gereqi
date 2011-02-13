@@ -3,11 +3,11 @@
 # Form implementation generated from reading ui file 'interface.ui'
 #
 # Created: Sun Jan 23 12:39:20 2011
-#      by: PyQt4 UI code generator 4.8.2
+#      by: PySide UI code generator 4.8.2
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -629,4 +629,4 @@ class Ui_MainWindow(object):
         self.actionUndo.setText(QtGui.QApplication.translate("MainWindow", "Undo", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRedo.setText(QtGui.QApplication.translate("MainWindow", "Redo", None, QtGui.QApplication.UnicodeUTF8))
 
-from PyQt4 import QtWebKit
+from PySide import QtWebKit

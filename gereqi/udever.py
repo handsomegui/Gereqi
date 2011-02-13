@@ -2,7 +2,7 @@
 
 import pyudev as udev
 import pyudev.pyqt4 as qudev
-from PyQt4.QtCore import QThread
+from PySide.QtCore import QThread
 
 
 class Tester(QThread):

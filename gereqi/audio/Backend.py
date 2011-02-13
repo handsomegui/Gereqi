@@ -13,8 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtGui import QPixmap
-from PyQt4.QtCore import QObject, QTime,  QString
+from PySide.QtGui import QPixmap
+from PySide.QtCore import QObject, QTime,  QString
 
 import time
 

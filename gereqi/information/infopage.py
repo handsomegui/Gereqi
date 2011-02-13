@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtCore import QString
+from PySide.QtCore import QString
 
 from gereqi.extraneous import Extraneous
 from gereqi.storage.Settings import Settings

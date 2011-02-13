@@ -13,8 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtGui import QDirModel
-from PyQt4.QtCore import Qt, pyqtSignal, QModelIndex
+from PySide.QtGui import QDirModel
+from PySide.QtCore import Qt, pyqtSignal, QModelIndex
 
 
 # TODO: make readable and comment

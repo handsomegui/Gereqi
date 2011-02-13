@@ -3,11 +3,11 @@
 # Form implementation generated from reading ui file '/home/jon/Documents/Projects/Gereqi/gereqi/equaliser.ui'
 #
 # Created: Mon Jul 19 20:50:36 2010
-#      by: PyQt4 UI code generator 4.7.3
+#      by: PySide UI code generator 4.7.3
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):

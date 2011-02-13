@@ -14,7 +14,7 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from PyQt4.QtCore import QObject, pyqtSignal
+from PySide.QtCore import QObject, pyqtSignal
 
 import pygst
 pygst.require("0.10")

@@ -1,4 +1,4 @@
-from PyQt4.QtGui import QFont
+from PySide.QtGui import QFont
 
 default_family = QFont().defaultFamily()
 

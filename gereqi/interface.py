@@ -14,8 +14,8 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PySide.QtGui import *
+from PySide.QtCore import *
 
 from gereqi.audio import Backend,Formats
 from gereqi.storage.Settings import Settings

@@ -4,8 +4,8 @@
 Module implementing Equaliser.
 """
 
-from PyQt4.QtGui import QDialog
-from PyQt4.QtCore import pyqtSignature
+from PySide.QtGui import QDialog
+from PySide.QtCore import pyqtSignature
 
 from Ui_equaliser import Ui_Dialog
 

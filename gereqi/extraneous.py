@@ -14,7 +14,7 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from PyQt4.QtCore import QDir, QString, QFile, QIODevice
+from PySide.QtCore import QDir, QString, QFile, QIODevice
 
 from os import environ as getenv
 

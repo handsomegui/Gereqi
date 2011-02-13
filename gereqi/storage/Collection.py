@@ -13,9 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtCore import *
-from PyQt4.QtCore import QCryptographicHash as QHash
-from PyQt4.QtSql import *
+from PySide.QtCore import *
+from PySide.QtCore import QCryptographicHash as QHash
+from PySide.QtSql import *
 
 from gereqi.storage.Settings import Settings
 

@@ -14,8 +14,8 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PySide.QtGui import *
+from PySide.QtCore import *
 
 import time
 import gereqi.devices
@@ -177,7 +177,7 @@ class SetupExtraWidgets:
             self.ui.info_view.setRenderHint(1|4)
         except AttributeError,e:
             print('''WARNING: it's likely you are using an old\n
-            version of PyQt4 which lacks the option to antialias\n
+            version of PySide which lacks the option to antialias\n
             This means cover art will look rubbish.\n
             Full error:- %s''' % e)
 

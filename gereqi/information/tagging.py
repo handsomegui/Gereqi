@@ -15,8 +15,8 @@
 
 
 #TODO: Import based on gstreamer capabilities (#gstreamer says it's near impossible)
-from PyQt4.QtGui import QMessageBox
-from PyQt4.QtCore import QString
+from PySide.QtGui import QMessageBox
+from PySide.QtCore import QString
 
 from mutagen.flac import FLAC, FLACNoHeaderError, FLACVorbisError
 from mutagen.mp3 import MP3, HeaderNotFoundError

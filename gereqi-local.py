@@ -22,8 +22,8 @@ The main script to run the application
 More things could be done in here but i've 
 no idea what yet.
 """
-from PyQt4.QtGui import QApplication
-from PyQt4.QtCore import QString, PYQT_VERSION_STR
+from PySide.QtGui import QApplication
+from PySide.QtCore import PYQT_VERSION_STR
 from gereqi.interface import MainWindow
 from gereqi.threads import GetCovers
 import sys
@@ -39,7 +39,7 @@ def main():
     cover_thread.start()
     app = QApplication(sys.argv)
 
-    app.setApplicationName(QString("Gereqi"))
+    app.setApplicationName("Gereqi")
     app.setApplicationVersion(QString(__version__))
     wnd = MainWindow()
     
