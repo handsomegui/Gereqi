@@ -60,12 +60,12 @@ class Getinfo(QThread):
     
     def __init__(self, parent=None):
         QThread.__init__(self, parent)
-        self.ui_main = parent
+        self.ui = parent
         
     def set_values(self, **params):
         self.info = params
     def run(self):
-        html = InfoPage(self.ui_main).gen_info(**self.info)
+        html = InfoPage(self.ui).gen_info(**self.info)
         self.got_info.emit(html)
         
         
@@ -102,7 +102,7 @@ class Builddb(QThread):
     
     def __init__(self, parent):
         QThread.__init__(self, parent)
-        self.ui_main = parent
+        self.ui = parent
         
         
     def __file_compat(self, dirpath, fname):
@@ -159,8 +159,8 @@ class Builddb(QThread):
         
     def run(self):
         media_db = CollectionDb("builder")
-        self.ui_main.build_lock = True
-        while self.ui_main.delete_lock == True:
+        self.ui.build_lock = True
+        while self.ui.delete_lock == True:
             print("WAITING: creation")
             sleep(1)
             
@@ -209,13 +209,13 @@ class Builddb(QThread):
             else:
                 print("User terminated scan.")
                 self.finished.emit(QString("cancelled"))
-                self.ui_main.build_lock = False
+                self.ui.build_lock = False
                 return
             
         print("%u of %u tracks scanned in: %0.1f seconds" % (cnt, tracks_total,
                                                              (time() - strt)))
         self.finished.emit(QString("complete"))
-        self.ui_main.build_lock = False
+        self.ui.build_lock = False
         
         
 class Watcher(QThread, pyinotify.ProcessEvent):
@@ -228,7 +228,7 @@ class Watcher(QThread, pyinotify.ProcessEvent):
     def __init__(self, parent):
         QThread.__init__(self)
         pyinotify.ProcessEvent.__init__(self)       
-        self.ui_main = parent
+        self.ui = parent
         self.start_time = time()
         self.created = QStringList()
         self.deleted = QStringList()
@@ -242,14 +242,14 @@ class Watcher(QThread, pyinotify.ProcessEvent):
         be handled such as deleting/adding tracks from/to the DB.
         """
         if self.deleted.count() > 0:
-            if self.ui_main.delete_lock == False:
+            if self.ui.delete_lock == False:
                 self.deletions.emit(self.deleted)
                 self.deleted.clear()
             else:
                 print("WAITING: deletion list")
                 
         if self.created.count() > 0:
-            if self.ui_main.build_lock == False:
+            if self.ui.build_lock == False:
                 self.creations.emit(self.created)
                 self.created.clear()
             else:
@@ -331,15 +331,15 @@ class DeleteFiles(QThread):
     deleted = pyqtSignal()
     
     def __init__(self, parent):
-        self.ui_main = parent
+        self.ui = parent
         QThread.__init__(self)
         
     def set_values(self, deletions):
         self.file_list = deletions
         
     def run(self):        
-        self.ui_main.delete_lock = True
-        while self.ui_main.build_lock == True:
+        self.ui.delete_lock = True
+        while self.ui.build_lock == True:
             print("WAITING: deletion")
             sleep(1)     
         
@@ -350,7 +350,7 @@ class DeleteFiles(QThread):
         # Signals to indicate that items based on
         # DB should probably update
         self.deleted.emit()
-        self.ui_main.delete_lock = False       
+        self.ui.delete_lock = False       
 
 
 class Finishers:
@@ -361,21 +361,21 @@ class Finishers:
         """
         parent being MainWindow in interface.py
         """
-        self.ui_main = parent
+        self.ui = parent
 
     def db_build(self, status):
         """
         Things to perform when the media library
         has been built/cancelled 
         """
-        self.ui_main.stat_bttn.setEnabled(False)
+        self.ui.stat_bttn.setEnabled(False)
         if status == "cancelled":
-            self.ui_main.stat_lbl.setText("Cancelled")
+            self.ui.stat_lbl.setText("Cancelled")
         else:
-            self.ui_main.stat_lbl.setText("Finished")
-        self.ui_main.stat_prog.setValue(100)
-        self.ui_main.wdgt_manip.setup_db_tree()
-        self.ui_main.search_collect_edit.clear()
+            self.ui.stat_lbl.setText("Finished")
+        self.ui.stat_prog.setValue(100)
+        self.ui.wdgt_manip.setup_db_tree()
+        self.ui.search_collect_edit.clear()
         
         
     def set_wiki(self, html):
@@ -384,9 +384,9 @@ class Finishers:
         put into the wikipedia tab
         """
         if html != "None":
-            self.ui_main.horizontal_tabs.setTabEnabled(2, True)
-            self.ui_main.wiki_view.setHtml(html)
+            self.ui.horizontal_tabs.setTabEnabled(2, True)
+            self.ui.wiki_view.setHtml(html)
         else:
-            self.ui_main.horizontal_tabs.setTabEnabled(2, False)
+            self.ui.horizontal_tabs.setTabEnabled(2, False)
             
             
