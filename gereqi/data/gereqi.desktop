@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Gereqi
+GenericName=Music Player
+Comment=Play and organise your music collection
+Exec=gereqi
+Icon=gereqi
+Terminal=false
+Type=Application
+Categories=AudioVideo;Player;
+StartupNotify=true

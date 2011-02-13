@@ -1,7 +1,5 @@
 TODOLIST - In order of importance
 
-1. Playlist saving/loading
-2. Add trackItems to the media Library for each album
-3. Settings dialog
-4. Settings database interaction
-5. Lyrics
+1. Lyrics
+2. Ipod support (remove bugs)
+3. Mtp support (unlikely to achieve. I have 1 device and has stopped working in Linux)

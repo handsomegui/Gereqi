@@ -1,0 +1,40 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>add_playlist.png</file>
+    <file>app-paused.png</file>
+    <file>app.png</file>
+    <file>audiocd.png</file>
+    <file>back.png</file>
+    <file>audio-card.png</file>
+    <file>dice-icon.png</file>
+    <file>dice-icon2.png</file>
+    <file>document-properties.png</file>
+    <file>document-save-as.png</file>
+    <file>edit-clear.png</file>
+    <file>edit-copy.png</file>
+    <file>edit-delete.png</file>
+    <file>edit-redo.png</file>
+    <file>edit-undo.png</file>
+    <file>files.png</file>
+    <file>files2.png</file>
+    <file>media-playback-pause.png</file>
+    <file>media-playback-start.png</file>
+    <file>media-playback-stop.png</file>
+    <file>media-skip-backward.png</file>
+    <file>media-skip-forward.png</file>
+    <file>next.png</file>
+    <file>nocover.png</file>
+    <file>pause.png</file>
+    <file>play.png</file>
+    <file>playlist.png</file>
+    <file>playlist-clear.png</file>
+    <file>process-stop.png</file>
+    <file>redo.png</file>
+    <file>remove.png</file>
+    <file>rewind.png</file>
+    <file>save.png</file>
+    <file>stop.png</file>
+    <file>undo.png</file>
+    <file>window-new.png</file>
+  </qresource>
+</RCC>
