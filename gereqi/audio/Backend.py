@@ -14,7 +14,7 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 from PySide.QtGui import QPixmap
-from PySide.QtCore import QObject, QTime,  QString
+from PySide.QtCore import QObject, QTime
 
 import time
 
@@ -95,7 +95,7 @@ class AudioBackend:
         self.ui.stat_lbl.setText("Stopped")
         self.ui.progress_lbl.setText("00:00 | 00:00")
         # clear things like wiki and reset cover art to default        
-        self.ui.wiki_view.setHtml(QString(""))
+        self.ui.wiki_view.setHtml("")
         self.ui.art_alb["oldart"] = self.ui.art_alb["oldalb"] = None
         self.ui.tray_icon.setToolTip("Stopped")
         

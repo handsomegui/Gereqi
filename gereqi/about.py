@@ -5,7 +5,6 @@ Module implementing Equaliser.
 """
 
 from PySide.QtGui import QDialog, QColor, QDesktopServices
-from PySide.QtCore import pyqtSignature
 
 from Ui_about import Ui_About
 

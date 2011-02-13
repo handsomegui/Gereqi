@@ -321,14 +321,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             msg = "%s by %s" % (info["Title"], info["Artist"])
         self.tray_icon.setToolTip(msg) 
         
-    @pyqtSignature("QString")  
+    @Slot(str)
     def on_search_collect_edit_textChanged(self, srch_str):
         """
         This allows the filtering of the collection tree
         """
         self.wdgt_manip.setup_db_tree()       
     
-    @pyqtSignature("QTreeWidgetItem*, int")
+    @Slot(QTreeWidgetItem, int)
     def on_collect_tree_itemDoubleClicked(self, item, column):
         """
         When double click and abum in the collection browser
@@ -373,7 +373,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 file_names = self.media_db.get_album_files(now)
                 self.playlisting.add_list_to_playlist(file_names)
     
-    @pyqtSignature("")
+    @Slot()
     def on_prev_bttn_pressed(self):
         """
         Skip to previous track in viewable playlist
@@ -390,7 +390,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             self.playlisting.tracknow_colourise(self.playlisting.current_row())
 
-    @pyqtSignature("bool")
+    @Slot(bool)
     def on_play_bttn_toggled(self, checked):
         """
         The play button either resumes or starts playback.
@@ -449,7 +449,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.play_actn.setChecked(checked)
         self.tray_tooltip()
         
-    @pyqtSignature("")    
+    @Slot()   
     def on_stop_bttn_pressed(self):
         """
         To stop current track.
@@ -460,7 +460,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.play_bttn.setChecked(False)
         self.stop_bttn.setEnabled(False)
         
-    @pyqtSignature("")
+    @Slot()
     def on_next_bttn_pressed(self):
         """
         Go to next item in playlist(down)
@@ -477,7 +477,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             # TODO: some tidy up thing could go here
             return
      
-    @pyqtSignature("int")
+    @Slot(int)
     def on_volume_sldr_valueChanged(self, value):
         """
         Self explanatory
@@ -487,7 +487,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     
     #TODO: not sure if the DB changes are made
     # i.e going from sqlite to mysql or v'-v'
-    @pyqtSignature("")
+    @Slot()
     def on_actionConfigure_triggered(self):
         """
        Brings up the configuration Dialog
@@ -507,7 +507,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.wdgt_manip.pop_playlist_view()
             self.__tray_menu_appearance()
             
-    @pyqtSignature("")
+    @Slot()
     def on_actionRescan_Collection_triggered(self):
         """
         Scans through a directory and looks for supported media,
@@ -519,7 +519,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.collect_tree.clear()
         self.create_collection(fresh=True)
     
-    @pyqtSignature("")
+    @Slot()
     def on_actionQuit_triggered(self):
         """
         Closing Down. Maybe some database interaction.
@@ -533,7 +533,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.media_db.shutdown()
         exit()
     
-    @pyqtSignature("")
+    @Slot()
     def on_play_media_actn_triggered(self):
         """
         Extract music files and shove into current playlist.
@@ -555,11 +555,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             if ender.toLower() in self.audio_formats:
                 self.playlisting.add_to_playlist(item)
 
-    @pyqtSignature("bool")
+    @Slot(bool)
     def on_minimise_tray_actn_toggled(self, checked):
         self.minimise_to_tray(checked)
     
-    @pyqtSignature("")
+    @Slot()
     def on_actionClear_triggered(self):
         """
         Clear current playlist and if no music playing
@@ -572,7 +572,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.actionUndo.setEnabled(True)
         self.clear_trktbl_bttn.setEnabled(False)
         
-    @pyqtSignature("")
+    @Slot()
     def on_actionSave_triggered(self):
         """
         Save current playlist
@@ -610,7 +610,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.wdgt_manip.pop_playlist_view()
     
     
-    @pyqtSignature("")
+    @Slot()
     def on_clear_trktbl_bttn_clicked(self):
         """
         Clears current playlist and sets focus
@@ -622,7 +622,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.actionRedo.setEnabled(False)
         self.player.recently_played = []
     
-    @pyqtSignature("QString")
+    @Slot(str)
     def on_search_trktbl_edit_textChanged(self, srch_str):
         """
         Filters current playlist based on input.
@@ -663,7 +663,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             self.playlisting.tracknow_colourise()
                 
-    @pyqtSignature("bool")
+    @Slot(bool)
     def on_mute_bttn_toggled(self, checked):
         """
         Mutes audio output and changes button icon accordingly
@@ -679,7 +679,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             
         self.mute_bttn.setIcon(icon)
       
-    @pyqtSignature("")  
+    @Slot() 
     def on_progress_sldr_sliderReleased(self):
         """
         Set's an internal seek value for tick() to use
@@ -688,7 +688,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.player.audio_object.seek(val)
         self.old_pos = val
         
-    @pyqtSignature("int")
+    @Slot(int)
     def on_progress_sldr_actionTriggered(self,action):
         ok_actions = [1,2,3,4]
         if action in ok_actions:
@@ -699,7 +699,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.player.timeval_to_label(val)
 
     
-    @pyqtSignature("")
+    @Slot()
     def on_actionUpdate_Collection_triggered(self):
         """
         Updates collection for new files. Ignore files already in database
@@ -707,7 +707,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         self.create_collection()
 
-    @pyqtSignature("int, int")
+    @Slot(int,int)
     def on_track_tbl_cellDoubleClicked(self, row, column):
         """
         When item is doubleclicked. Play its row.
@@ -724,7 +724,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.play_bttn.setChecked(True) 
         self.play_action.setChecked(True)
         
-    @pyqtSignature("QTreeWidgetItem*")
+    @Slot(QTreeWidgetItem)
     def on_collect_tree_itemExpanded(self, item):
         """
         Generates the albums to go with the artists in
@@ -784,7 +784,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     item.addChild(track)
                 
                 
-    @pyqtSignature("")
+    @Slot()
     def on_clear_collect_bttn_clicked(self):
         """
         Clears the collection search widget and in turn
@@ -793,21 +793,21 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.search_collect_edit.clear()
         self.search_collect_edit.setFocus()
 
-    @pyqtSignature("int")
+    @Slot(int)
     def on_collect_time_box_currentIndexChanged(self, index):
         """
         Slot documentation goes here.
         """
         self.wdgt_manip.setup_db_tree()
         
-    @pyqtSignature("")
+    @Slot()
     def on_actionAbout_Gereqi_triggered(self):
         """
         The Gereqi about dialog
         """
         About(self).show()
             
-    @pyqtSignature("")
+    @Slot()
     def on_clear_search_bttn_clicked(self):
         """
         Clears the playlist search filter
@@ -816,7 +816,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.search_trktbl_edit.clear()
         self.playlisting.highlighted_track()
         
-    @pyqtSignature("")
+    @Slot()
     def on_play_cd_actn_triggered(self):
         """
         add tracks from cd
@@ -839,7 +839,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.playlisting.add_list_to_playlist(cd_tracks)                
         self.clear_trktbl_bttn.setEnabled(True)
                 
-    @pyqtSignature("")
+    @Slot()
     def on_save_trktbl_bttn_clicked(self):
         """
         Based on what is in the playlist and chosen name, it'll
@@ -847,7 +847,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         self.on_actionSave_triggered()
             
-    @pyqtSignature("QTreeWidgetItem*, int")
+    @Slot(QTreeWidgetItem, int)
     def on_playlist_tree_itemDoubleClicked(self, item, column):
         """
         Slot documentation goes here.
@@ -877,7 +877,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     self.playlisting.add_to_playlist(track[0])
                 
             
-    @pyqtSignature("bool")
+    @Slot(bool)
     def on_delete_playlist_bttn_clicked(self, checked):
         """
         Delete a selected playlist from the DB
@@ -888,7 +888,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.wdgt_manip.pop_playlist_view()
             
     
-    @pyqtSignature("bool")
+    @Slot(bool)
     def on_rename_playlist_bttn_clicked(self, checked):
         """
         Rename the selected playlist
@@ -923,7 +923,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.media_db.playlist_add(new_name[0], track)
         self.wdgt_manip.pop_playlist_view()
             
-    @pyqtSignature("bool")
+    @Slot(bool)
     def on_prev_trktbl_bttn_clicked(self, checked):
         """
         The previous-track button does various
@@ -943,7 +943,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.prev_trktbl_bttn.setEnabled(False)
             self.actionUndo.setEnabled(False)
         
-    @pyqtSignature("bool")
+    @Slot(bool)
     def on_next_trktbl_bttn_clicked(self, checked):
         """
         The next-track button does various
@@ -960,7 +960,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.next_trktbl_bttn.setEnabled(False)
             self.actionRedo.setEnabled(False)
             
-    @pyqtSignature("")
+    @Slot()
     def on_menuTools_aboutToShow(self):
         """
         Disables the db interaction actions if in useless state
@@ -974,7 +974,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.actionRescan_Collection.setEnabled(True)
             
         
-    @pyqtSignature("QModelIndex")
+    @Slot(QModelIndex)
     def on_filesystem_tree_doubleClicked(self, index):
         """
         This takes the filesystem_tree item and deduces whether
@@ -994,7 +994,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.playlisting.add_to_playlist(fname)
             self.clear_trktbl_bttn.setEnabled(True)
             
-    @pyqtSignature("QModelIndex")
+    @Slot(QModelIndex)
     def on_filesystem_tree_expanded(self):
         """
         Resizes the filesystem_tree to it's contents.
@@ -1002,11 +1002,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         self.filesystem_tree.resizeColumnToContents(0)
         
-    @pyqtSignature("")
+    @Slot()
     def on_actionUndo_triggered(self):
         self.prev_trktbl_bttn.click()
         
-    @pyqtSignature("")
+    @Slot()
     def on_actionRedo_triggered(self):
         self.next_trktbl_bttn.click()
 

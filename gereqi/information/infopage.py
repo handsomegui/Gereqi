@@ -13,8 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
-from PySide.QtCore import QString
-
 from gereqi.extraneous import Extraneous
 from gereqi.storage.Settings import Settings
 from gereqi.storage.Collection import CollectionDb
@@ -22,71 +20,62 @@ from gereqi.storage.Collection import CollectionDb
 import styles
 
 
-HTML = QString('''
+HTML = '''
     <html>
     <head>    
-        %1
+        %(style)s
     </head>
     
     <body>
-        <h1>%3 - %4</h1>
-        <h2>%5</h2>
-        <img class="cover" src="%6"/>
+        <h1>%(title)s - %(artist)s</h1>
+        <h2>%(album)s</h2>
+        <img class="cover" src="%(cover)s"/>
     
     <div id="albums">
-        <h1>Albums by %4</h1>
-            %7
+        <h1>Albums by %(artist)s</h1>
+            %(albums)s
     </div>
     </body>
     </html>
-            ''')
+            '''
 
-ALB_HTML = QString('''
+ALB_HTML = '''
     <div id="album">
         <p>
-            <a href="#"><img class="mini" src="%1"></a>
-            <a href="#">%2</a>
+            <a href="#"><img class="mini" src="%(cover)s"></a>
+            <a href="#">%(album)s</a>
         </p>
         <div class="tracks">
         <ul>
-            %3
+            %(tracks)s
         </ul>
         </div>
     </div>
 
-''')
+        '''
 
-TRACK_HTML = QString('''
-<li><b>%1 :</b> %2</li>
-''')
+TRACK_HTML = '''<li><b>%(track)s :</b> %(title)s</li>'''
+
             
 class InfoPage:
     def __init__(self, parent=None):
         return
 
     def __gen_albs(self, artist, albums):
-        thing = QString()
-        # Have to create a new qstring as passing a qstring into
-        # a function seems to be passing a pointer thus changes are
-        # carried back through to its sort. Very unpythonic.
-        artist = QString(artist)
+        thing = ""
         extra = Extraneous()
-        # TODO: close connection
         media_db = CollectionDb("infopage")    
         
         for alb in albums:
-            t_info = QString()
+            t_info = ""
             tracks = media_db.get_titles(artist, alb)
             for trk in tracks:
-                t_info.append(TRACK_HTML.arg(trk["track"],trk["title"]))
-            cover = extra.get_cover_source(artist, QString(alb))
-            if cover is not None:
-                thing = thing.append(ALB_HTML.arg(cover, alb, t_info))
-            else:
-                thing = thing.append(ALB_HTML.arg("file://", alb, t_info))
-                
-        # FIXME: causes crash on track change
-#        media_db.close_connection("infopage")
+                t_info += TRACK_HTML % {'track': trk["track"],'title': trk["title"]}
+            cover = extra.get_cover_source(artist, alb)
+            if cover is None:
+                cover = "file://"
+            thing += ALB_HTML % {'cover':cover, 'album' :alb, 'tracks': t_info}
+
         return thing
         
         
@@ -95,20 +84,22 @@ class InfoPage:
         coversize = sets_db.get_interface_setting("coversize")
         coversize = int(coversize) if coversize is not None else 200
         extra = Extraneous()
-        cover = extra.get_cover_source(QString(params["artist"]), 
-                                       QString(params["album"]), 
+        cover = extra.get_cover_source(params["artist"], 
+                                       params["album"], 
                                        params["check"])
         
         cover = cover if cover is not None else "file://"
         
-        now = HTML.arg("%1").arg(styles.infostyles)
-        now = now.arg("%2").arg(coversize)
-        now = now.arg("%3").arg(params["title"])
-        now = now.arg("%4").arg(params["artist"])
-        now = now.arg("%5").arg(params["album"])
-        now = now.arg("%6").arg(cover)
-        now = now.arg("%7").arg(self.__gen_albs(params["artist"], 
-                                                params["albums"]))
+        now = HTML % {}
+        
+#        now = HTML.arg("%1").arg(styles.infostyles)
+#        now = now.arg("%2").arg(coversize)
+#        now = now.arg("%3").arg(params["title"])
+#        now = now.arg("%4").arg(params["artist"])
+#        now = now.arg("%5").arg(params["album"])
+#        now = now.arg("%6").arg(cover)
+#        now = now.arg("%7").arg(self.__gen_albs(params["artist"], 
+#                                                params["albums"]))
         
         return now
         

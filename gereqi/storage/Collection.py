@@ -30,7 +30,7 @@ class CollectionDb:
         self.__config_db(name)
         
     def __config_db(self,name):
-        db_name = QLatin1String(name)
+        db_name = name
         sets_db = Settings()
         self.db_type = sets_db.get_database_setting("type")
         if self.db_type == "MYSQL":                            
@@ -131,11 +131,11 @@ class CollectionDb:
             if len(fields) > 1:
                 row_result = {}
                 for field in fields:                    
-                    row_result[str(field)] = record().value(field).toString()            
+                    row_result[str(field)] = record().value(field) 
                 results.append(row_result)
                 row+=1
             else:
-                results.append(record().value(0).toString())
+                results.append(record().value(0))
         
         return results
         

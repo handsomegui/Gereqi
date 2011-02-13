@@ -14,7 +14,7 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from PySide.QtCore import QDir, QString, QFile, QIODevice
+from PySide.QtCore import QDir, QFile, QIODevice
 
 from os import environ as getenv
 
@@ -34,18 +34,18 @@ class Extraneous:
         excludes = '''!,.%%$&(){}[]/"'''
         for item in params:
             for ch in excludes:
-                item.remove(ch)
+                item.replace(ch,'')
             item.replace(" ", "_")
             things.append(item)
-        result = QString("%1-%2").arg(things[0]).arg(things[1])
+        result = "%s-%s" % (things[0], things[1])
         return result
 
     def get_cover_source(self, artist, album, check=True,download=True):
-        cover_dir = QString("%1/.gereqi/album-art/").arg(getenv["HOME"])
+        cover_dir = "%s/.gereqi/album-art/" % getenv["HOME"]
         # Need to create new qstring as sending without seems to be sending a 
         # pointer and the changes are pertinent
-        fname = self.__filenamer(QString(artist), QString(album))
-        cover = QString("%1%2.jpg").arg(cover_dir).arg(fname)
+        fname = self.__filenamer(artist, album)
+        cover = "%s%s.jpg" % (cover_dir, fname)
         
         # Check=False just provides a filename creator. Used when track has
         # changed but not the album
@@ -55,7 +55,7 @@ class Extraneous:
                 QDir().mkdir(cover_dir)
             
             if QFile(cover).exists():
-                return QString("file://%1").arg(cover)
+                return "file://%s" % cover
             elif download == True:                        
                 web_info = Webinfo()
                 img = web_info.get_cover(artist, album)
@@ -64,6 +64,6 @@ class Extraneous:
                     now.open(QIODevice.WriteOnly)
                     now.writeData(img)
                     now.close()
-                    return QString("file://%1").arg(cover)
+                    return "file://%s" % cover
         else:
-            return QString("file://%1").arg(cover)
+            return "file://%s" % cover

@@ -23,7 +23,6 @@ More things could be done in here but i've
 no idea what yet.
 """
 from PySide.QtGui import QApplication
-from PySide.QtCore import PYQT_VERSION_STR
 from gereqi.interface import MainWindow
 from gereqi.threads import GetCovers
 import sys
@@ -40,7 +39,7 @@ def main():
     app = QApplication(sys.argv)
 
     app.setApplicationName("Gereqi")
-    app.setApplicationVersion(QString(__version__))
+    app.setApplicationVersion(__version__)
     wnd = MainWindow()
     
     setups()
@@ -48,10 +47,8 @@ def main():
     sys.exit(app.exec_())
     
 def setups():
-    major,minor,rev  = PYQT_VERSION_STR.split('.')
-    if (int(major) >= 4) and (int(minor) >=8):
-        wnd.search_trktbl_edit.setPlaceholderText(QString("Playlist Search"))
-        wnd.search_collect_edit.setPlaceholderText(QString("Enter search terms here"))
+    wnd.search_trktbl_edit.setPlaceholderText("Playlist Search")
+    wnd.search_collect_edit.setPlaceholderText("Enter search terms here")
     
     
 if __name__ == '__main__':

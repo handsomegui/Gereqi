@@ -20,8 +20,8 @@ class Playlist:
         
         # Not the default FileName+ascending sort
         if (self.sort_pos != fname_pos) or (self.sort_order != 0) :
-            hdr.setSortIndicator(fname_pos, 0)
-            
+            hdr.setSortIndicator(fname_pos, Qt.AscendingOrder)
+                    
     def __unsort(self):
         """
         Puts the playlist sorting back to what it was 

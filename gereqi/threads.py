@@ -56,7 +56,7 @@ class Getinfo(QThread):
     Retrieves the cover for an album
     from Amazon
     """
-    got_info = pyqtSignal(QString)
+    got_info = Signal(str)
     
     def __init__(self, parent=None):
         QThread.__init__(self, parent)
@@ -73,7 +73,7 @@ class Getwiki(QThread):
     """
     Retrieves the wiki info for an artist
     """
-    got_wiki = pyqtSignal(QString)
+    got_wiki = Signal(str)
     
     def __init__(self, parent=None):
         QThread.__init__(self, parent)
@@ -97,8 +97,8 @@ class Builddb(QThread):
     Gets files from a directory and build's a 
     media database from the filtered files
     """
-    progress = pyqtSignal(int)
-    finished = pyqtSignal(QString)
+    progress = Signal(int)
+    finished = Signal(str)
     
     def __init__(self, parent):
         QThread.__init__(self, parent)
@@ -222,16 +222,16 @@ class Watcher(QThread, pyinotify.ProcessEvent):
     """
     Watches a directory periodically for file changes
     """
-    deletions = pyqtSignal(QStringList)
-    creations = pyqtSignal(QStringList)
+    deletions = Signal(list)
+    creations = Signal(list)
     
     def __init__(self, parent):
         QThread.__init__(self)
         pyinotify.ProcessEvent.__init__(self)       
         self.ui = parent
         self.start_time = time()
-        self.created = QStringList()
-        self.deleted = QStringList()
+        self.created = []
+        self.deleted = []
         
     def __poller(self):
         """
@@ -328,7 +328,7 @@ class Watcher(QThread, pyinotify.ProcessEvent):
 
 
 class DeleteFiles(QThread):
-    deleted = pyqtSignal()
+    deleted = Signal()
     
     def __init__(self, parent):
         self.ui = parent

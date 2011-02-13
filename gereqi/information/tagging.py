@@ -16,7 +16,6 @@
 
 #TODO: Import based on gstreamer capabilities (#gstreamer says it's near impossible)
 from PySide.QtGui import QMessageBox
-from PySide.QtCore import QString
 
 from mutagen.flac import FLAC, FLACNoHeaderError, FLACVorbisError
 from mutagen.mp3 import MP3, HeaderNotFoundError
@@ -43,10 +42,10 @@ class Fixing:
         multiple comment blocks.
         """
         question = QMessageBox.question(None,
-            QString("Flac block fixing"),
-            QString("""It is likely a Flac file has multiple comment blocks. This is an incorrect use of this block-type and prevents metadata from being extracted unless fixed.
+            "Flac block fixing",
+            """It is likely a Flac file has multiple comment blocks. This is an incorrect use of this block-type and prevents metadata from being extracted unless fixed.
 
-Fixing this issue is an irreversible process, would you like to continue and fix the file %s?""" % fname),
+Fixing this issue is an irreversible process, would you like to continue and fix the file %s?""" % fname,
             QMessageBox.StandardButtons(\
                 QMessageBox.No | \
                 QMessageBox.Yes))
@@ -248,5 +247,5 @@ class Tagging:
                         year = int(year[0])
                 tags[3] = year
                 
-                final = [QString("%s" % tag) for tag in tags]
+                final = ["%s" % tag for tag in tags]
                 return final

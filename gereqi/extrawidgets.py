@@ -16,6 +16,7 @@
 
 from PySide.QtGui import *
 from PySide.QtCore import *
+from PySide.QtWebKit import QWebPage
 
 import time
 import gereqi.devices
@@ -87,26 +88,26 @@ class SetupExtraWidgets:
         """
         #FIXME: the icons do not show in Ubuntu
         icon = QIcon().fromTheme("process-stop")
-        quit_action = QAction(icon, QString("&Quit"), self.ui)
+        quit_action = QAction(icon, "&Quit", self.ui)
         
         icon = QIcon(":/icons/play.png")
-        self.ui.play_action = QAction(icon, QString("&Play"), self.ui)
+        self.ui.play_action = QAction(icon, "&Play", self.ui)
         
         icon = QIcon(":/icons/next.png")
-        next_action = QAction(icon, QString("&Next"), self.ui)
+        next_action = QAction(icon, "&Next", self.ui)
         
         icon = QIcon(":/icons/back.png")
-        prev_action = QAction(icon, QString("&Previous"), self.ui)
+        prev_action = QAction(icon, "&Previous", self.ui)
         
         icon = QIcon(":/icons/stop.png")
-        stop_action = QAction(icon, QString("&Stop"), self.ui)
+        stop_action = QAction(icon, "&Stop", self.ui)
         
         self.ui.play_action.setCheckable(True)
-        self.ui.view_action = QAction(QString("&Visible"), self.ui)
+        self.ui.view_action = QAction("&Visible", self.ui)
         self.ui.view_action.setCheckable(True)
         self.ui.view_action.setChecked(True)
         tray_menu = QMenu(self.ui)
-        tray_menu.addAction(QIcon(":/icons/app.png"), QString("Gereqi"))
+        tray_menu.addAction(QIcon(":/icons/app.png"), "Gereqi")
         tray_menu.addSeparator()
         tray_menu.addAction(prev_action)
         tray_menu.addAction(self.ui.play_action)
@@ -126,7 +127,8 @@ class SetupExtraWidgets:
         next_action.triggered.connect(self.ui.next_bttn.click)
         prev_action.triggered.connect(self.ui.prev_bttn.click)
         stop_action.triggered.connect(self.ui.stop_bttn.click)
-        quit_action.triggered.connect(qApp.quit)     
+        # FIXME: doesn't exist in PYside
+        #quit_action.triggered.connect(qApp.quit)     
        
     def __setup_misc(self):
         """
@@ -155,9 +157,9 @@ class SetupExtraWidgets:
         self.ui.statusBar.addPermanentWidget(self.ui.stat_bttn)
         self.ui.statusBar.addPermanentWidget(self.ui.play_type_bttn)
         # Headers for the Playlist widget
-        headers = [QString("Track"), QString("Title"), QString("Artist"),
-                   QString("Album"), QString("Year"), QString("Genre"),  
-                   QString("Length"), QString("Bitrate"), QString("FileName")]
+        headers = ["Track", "Title", "Artist",
+                  "Album", "Year", "Genre",  
+                   "Length", "Bitrate", "FileName"]
         for val in range(len(headers)):
             self.ui.track_tbl.insertColumn(val)
         self.ui.track_tbl.setHorizontalHeaderLabels(headers)
@@ -167,14 +169,14 @@ class SetupExtraWidgets:
         
         
         # Disables the webView link-clicks as we want to manually handle them
-        self.ui.info_view.page().setLinkDelegationPolicy(2)
-        self.ui.wiki_view.page().setLinkDelegationPolicy(2)
+        self.ui.info_view.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
+        self.ui.wiki_view.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
         
         # FIXME: will not work in PyQT <4.6 i.e. Ubuntu 9.10
         # The images are scaled smoothly using billinear interp and 
         # antialias edges of primitives(?)
         try:
-            self.ui.info_view.setRenderHint(1|4)
+            self.ui.info_view.setRenderHint(QPainter.HighQualityAntialiasing)
         except AttributeError,e:
             print('''WARNING: it's likely you are using an old\n
             version of PySide which lacks the option to antialias\n
@@ -186,7 +188,7 @@ class SetupExtraWidgets:
         various keyboard shortcuts 
         """
         # remove the selected track from the playlist
-        delete = QShortcut(QKeySequence(QString("Del")), self.ui)
+        delete = QShortcut(QKeySequence("Del"), self.ui)
         delete.activated.connect(self.ui.playlisting.del_tracks)
         
 
@@ -434,7 +436,7 @@ class WidgetManips:
                 
             elif action == edit_tag:
                 text = QInputDialog.getText(None, QString(tag_name),
-                                         QString("Change the tag to:"),
+                                         "Change the tag to:",
                                          QLineEdit.Normal,
                                          item_now.text())
                 
@@ -542,8 +544,8 @@ class WidgetManips:
                 for track in tracks:
                     info = self.ui.media_db.get_info(track)
                     if info is not None:
-                        now.addChild(QTreeWidgetItem([QString("%s - %s" %
-                                     (info["title"], info["artist"])) ]))       
+                        now.addChild(QTreeWidgetItem(["%s - %s" %
+                                     (info["title"], info["artist"]) ]))       
                                                                                   
         self.ui.playlist_tree.addTopLevelItem(hdr)
                 
