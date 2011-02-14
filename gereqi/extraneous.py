@@ -15,10 +15,11 @@
 
 
 from PySide.QtCore import QDir, QFile, QIODevice
-
 from os import environ as getenv
+from os import path
 
 from gereqi.information.webinfo import Webinfo
+
 
 
 class Extraneous:
@@ -42,9 +43,8 @@ class Extraneous:
 
     def get_cover_source(self, artist, album, check=True,download=True):
         cover_dir = "%s/.gereqi/album-art/" % getenv["HOME"]
-        # Need to create new qstring as sending without seems to be sending a 
-        # pointer and the changes are pertinent
         fname = self.__filenamer(artist, album)
+        fname = fname.replace('/','_')
         cover = "%s%s.jpg" % (cover_dir, fname)
         
         # Check=False just provides a filename creator. Used when track has
@@ -54,14 +54,13 @@ class Extraneous:
             if QDir(cover_dir).exists() is False:
                 QDir().mkdir(cover_dir)
             
-            if QFile(cover).exists():
+            if path.exists(cover):
                 return "file://%s" % cover
             elif download == True:                        
                 web_info = Webinfo()
                 img = web_info.get_cover(artist, album)
                 if img is not None:
-                    now = QFile(cover)
-                    now.open(QIODevice.WriteOnly)
+                    now = open(cover, "wb")
                     now.write(img)
                     now.close()
                     return "file://%s" % cover

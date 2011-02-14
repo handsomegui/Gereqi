@@ -98,16 +98,7 @@ class InfoPage:
                       'cover':cover,
                       'albums':self.__gen_albs(params["artist"],params["albums"])
                       }
-        
-#        now = HTML.arg("%1").arg(styles.infostyles)
-#        now = now.arg("%2").arg(coversize)
-#        now = now.arg("%3").arg(params["title"])
-#        now = now.arg("%4").arg(params["artist"])
-#        now = now.arg("%5").arg(params["album"])
-#        now = now.arg("%6").arg(cover)
-#        now = now.arg("%7").arg(self.__gen_albs(params["artist"], 
-#                                                params["albums"]))
-        print now
+
         return now
         
         
