@@ -84,10 +84,8 @@ class Getwiki(QThread):
     def run(self):
         info = Webinfo()
         result = info.get_info("info", self.artist)
-        if result is not None:
-            result = QString(result)
-        else:
-            result = QString("None")
+        if result is None:
+            result = "None"
         
         self.got_wiki.emit(result)
         

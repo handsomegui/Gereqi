@@ -492,7 +492,7 @@ class WidgetManips:
         for thing in things:
             # When creating collection tree only 
             #  allow certain things based on the filter.
-            if (filt is not None) and (filt.toLower() not in thing.toLower()):
+            if (filt is not None) and (filt.lower() not in thing.lower()):
                 continue
             row = QTreeWidgetItem([thing])
             # FIXME: slowwww
@@ -508,7 +508,7 @@ class WidgetManips:
                     cover = ":icons/nocover.png"
                 row.setIcon(0,QIcon(cover))
             
-            row.setChildIndicatorPolicy(0)
+            row.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
             self.ui.collect_tree.addTopLevelItem(row)
             
     def pop_playlist_view(self):
@@ -530,14 +530,14 @@ class WidgetManips:
         
 #        for hdr in headers:
         hdr.setFont(0, font)
-        hdr.setChildIndicatorPolicy(2)
+        hdr.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
      
         if hdr.text(0) == "Playlists":
             for play in playlists:
                 # Ignore the auto-save playlist
                 if play == "!!##gereqi.remembered##!!":
                     continue
-                now = QTreeWidgetItem([QString(play)])
+                now = QTreeWidgetItem([play])
                 now.setIcon(0,QIcon(":/icons/playlist.png"))
                 hdr.addChild(now)
                 tracks = self.ui.media_db.playlist_tracks(play)

@@ -65,23 +65,24 @@ class Playlist:
                 if metadata is None:
                     return
                 else:       
-                    trk = QString("%1").arg(metadata[5].toInt()[0], 2, 10, QChar('0'))
+                    trk = "%02u" % metadata[5]
                     metadata = {"Track": trk,  "Title": metadata[0],
                                 "Artist": metadata[1], "Album": metadata[2],
                                 "Year":metadata[3], "Genre": metadata[4],
                                 "Length": metadata[6], "Bitrate": metadata[7], 
                                 "FileName": file_name}
             else:
-               	trk = QString("%1").arg(metadata["track"].toInt()[0], 2,10, QChar('0')) 
+                trk = "%02u" % metadata["track"]
                 metadata = {'Track': trk, "Title": metadata["title"], "Artist": metadata["artist"], 
                             "Album": metadata["album"], "Year": metadata["year"], "Genre": metadata["genre"],
                             "Length": metadata["length"], "Bitrate": metadata["bitrate"], 
                             "FileName": file_name}
 
         else:
-            if isinstance(metadata['Track'],QString):
-                metadata['Track'] = metadata['Track'].toInt()[0]
-            metadata['Track'] = QString("%1").arg(metadata['Track'], 2,10, QChar('0'))    
+#            if isinstance(metadata['Track'],str):
+#                metadata['Track'] = metadata['Track'].toInt()[0]
+#            metadata['Track'] = QString("%1").arg(metadata['Track'], 2,10, QChar('0'))  
+            metadata['Track'] = "%02u" % metadata['Track']
                                   
         row = self.ui_main.track_tbl.rowCount()
         self.ui_main.track_tbl.insertRow(row)
@@ -185,14 +186,14 @@ class Playlist:
                 if row != now:
                     if row % 2:
                         # Odd-row
-                        item.setBackgroundColor(palette.alternateBase().color())
+                        item.setBackground(palette.alternateBase().color())
                     else:
                         # even row
-                        item.setBackgroundColor(palette.base().color())
+                        item.setBackground(palette.base().color())
                 else:
                     highlight = palette.highlight().color()
                     highlight.setAlpha(128)
-                    item.setBackgroundColor(highlight)
+                    item.setBackground(highlight)
                     self.ui_main.track_tbl.selectRow(now)
                         
     def highlighted_track(self):

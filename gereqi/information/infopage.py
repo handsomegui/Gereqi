@@ -90,7 +90,14 @@ class InfoPage:
         
         cover = cover if cover is not None else "file://"
         
-        now = HTML % {}
+        now = HTML % {
+                      'style':styles.infostyles,
+                      'title':params["title"],
+                      'album':params["album"],
+                      'artist':params["artist"],
+                      'cover':cover,
+                      'albums':self.__gen_albs(params["artist"],params["albums"])
+                      }
         
 #        now = HTML.arg("%1").arg(styles.infostyles)
 #        now = now.arg("%2").arg(coversize)
@@ -100,7 +107,7 @@ class InfoPage:
 #        now = now.arg("%6").arg(cover)
 #        now = now.arg("%7").arg(self.__gen_albs(params["artist"], 
 #                                                params["albums"]))
-        
+        print now
         return now
         
         

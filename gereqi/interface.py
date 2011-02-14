@@ -88,14 +88,14 @@ class Track:
         if track is None:
             return
         
-        result = str(track.toUtf8())
+#        result = str(track.toUtf8())
         
-        if path.exists(result) or result.startswith("cdda"):
-            return result
+        if path.exists(track) or track.startswith("cdda"):
+            return track
         else:
-            result = str(track.toLatin1())
-            if path.exists(result):
-                return result
+#            result = str(track.toLatin1())
+            if path.exists(track):
+                return track
             
     def generate_info(self):
         """
@@ -189,7 +189,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.html_thread.got_wiki.connect(self.finishes.set_wiki)
         self.build_db_thread.progress.connect(self.stat_prog.setValue)
         self.del_thread.deleted.connect(self.wdgt_manip.setup_db_tree)        
-        self.info_thread.got_info.connect(self.__bodger)
+        self.info_thread.got_info.connect(self.bodger)
         # Cannot do this for some reason
         #self.info_thread.got_info.connect(self.info_view.setHtml)
         
@@ -215,7 +215,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.tray_icon.hide()
         
     # FIXME: HACK ALERT!!!
-    def __bodger(self, html):
+    @Slot(str)
+    def bodger(self, html):
         """
         needed as the signal cannot be directly connected to
         the webview for unknown reasons
@@ -761,11 +762,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     if not cover:
                         cover = ":icons/nocover.png"
                     else:
-                        cover = cover.remove("file://")
+                        cover = cover.replace("file://", '')
                     
                     album = QTreeWidgetItem([alb])
                     album.setIcon(0,QIcon(cover))
-                    album.setChildIndicatorPolicy(0)
+                    album.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
                     item.addChild(album)
                 
         else:

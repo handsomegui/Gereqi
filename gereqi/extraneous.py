@@ -62,7 +62,7 @@ class Extraneous:
                 if img is not None:
                     now = QFile(cover)
                     now.open(QIODevice.WriteOnly)
-                    now.writeData(img)
+                    now.write(img)
                     now.close()
                     return "file://%s" % cover
         else:

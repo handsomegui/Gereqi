@@ -399,7 +399,7 @@ class CollectionDb:
 
     def __connections(self):
         db_names = CollectionDb.media_db.connectionNames()
-        return [str(db_names[cnt]) for cnt in range(db_names.count())]
+        return [str(db_names[cnt]) for cnt in range(len(db_names))]
     
     def shutdown(self):
         """
@@ -409,7 +409,7 @@ class CollectionDb:
         self.query.finish()
         del self.query
         for conn in conn_names:
-            CollectionDb.media_db.database(QLatin1String(conn)).close()
+            CollectionDb.media_db.database(conn).close()
             CollectionDb.media_db.removeDatabase(conn)
             
             
