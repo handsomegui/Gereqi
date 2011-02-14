@@ -15,8 +15,7 @@
 
 
 from PySide.QtCore import QDir, QFile, QIODevice
-from os import environ as getenv
-from os import path
+from os import path, mkdir, environ
 
 from gereqi.information.webinfo import Webinfo
 
@@ -42,7 +41,7 @@ class Extraneous:
         return result
 
     def get_cover_source(self, artist, album, check=True,download=True):
-        cover_dir = "%s/.gereqi/album-art/" % getenv["HOME"]
+        cover_dir = "%s/.gereqi/album-art/" % environ["HOME"]
         fname = self.__filenamer(artist, album)
         fname = fname.replace('/','_')
         cover = "%s%s.jpg" % (cover_dir, fname)
@@ -51,8 +50,8 @@ class Extraneous:
         # changed but not the album
         if check:
             # Place to save the covers doesn't exist
-            if QDir(cover_dir).exists() is False:
-                QDir().mkdir(cover_dir)
+            if path.exists(cover_dir) is False:
+                mkdir(cover_dir, 0700)
             
             if path.exists(cover):
                 return "file://%s" % cover
