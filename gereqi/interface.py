@@ -540,13 +540,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Extract music files and shove into current playlist.
         """        
         filts  = " ".join(self.format_filter)
-
+        # TODO: use the below. Returns a StandardLocation that won't convert
+        # to string so it's useless
+        #QDesktopServices.MusicLocation
         mfiles = QFileDialog.getOpenFileNames(\
-                        None, 
-                        QString("Select Music Files"),
-                        QDesktopServices.storageLocation(QDesktopServices.MusicLocation), 
-                        QString("Audio Files : %(filt)s (%(filt)s)" % {'filt': filts} ), 
-                        None)       
+                        self, 
+                        "Select Music Files",
+                        "/home/", 
+                        "Audio Files : %(filt)s (%(filt)s)" % {'filt': filts}
+                        )       
                         
         if mfiles is None:
             return
@@ -650,7 +652,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     item = self.track_tbl.item(row, col)
                     orig = palette.highlight().color().getRgb()
                     new_col = map(lambda x : 255-x, orig)
-                    item.setBackgroundColor(QColor(new_col[0],new_col[1],new_col[2], 128))
+                    item.setBackground(QColor(new_col[0],new_col[1],new_col[2], 128))
                         
             for row in range(self.track_tbl.rowCount()):
                 if row in rows:
@@ -658,9 +660,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 for col in range(columns):
                     item = self.track_tbl.item(row, col)
                     if row % 2:
-                        item.setBackgroundColor(palette.alternateBase().color())
+                        item.setBackground(palette.alternateBase().color())
                     else:
-                        item.setBackgroundColor(palette.base().color())
+                        item.setBackground(palette.base().color())
         else:
             self.playlisting.tracknow_colourise()
                 
