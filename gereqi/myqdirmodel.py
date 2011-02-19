@@ -29,7 +29,7 @@ class MyQDirModel(QDirModel):
         Checks to see if a child-dir is checked
         """
         for chk in self.check_list[0]:
-            if (chk.contains(dir_now)) and (dir_now != chk):
+            if (chk in dir_now and dir_now != chk):
                 return Qt.PartiallyChecked
        
     def data(self, index, role = Qt.DisplayRole):

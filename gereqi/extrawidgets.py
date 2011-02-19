@@ -124,10 +124,12 @@ class SetupExtraWidgets:
         self.ui.play_action.toggled.connect(self.ui.play_bttn.setChecked)
         self.ui.view_action.toggled.connect(self.ui.minimise_to_tray)
         self.ui.tray_icon.activated.connect(self.ui.tray_event)
-        next_action.triggered.connect(self.ui.next_bttn.click)
-        prev_action.triggered.connect(self.ui.prev_bttn.click)
-        stop_action.triggered.connect(self.ui.stop_bttn.click)
-        # FIXME: doesn't exist in PYside
+        
+        # FIXME: doesn't exist/work in PYside
+        next_action.triggered.connect(self.ui.on_next_bttn_pressed)
+        prev_action.triggered.connect(self.ui.on_prev_bttn_pressed)
+        stop_action.triggered.connect(self.ui.on_stop_bttn_pressed)
+        
         #quit_action.triggered.connect(qApp.quit)     
        
     def __setup_misc(self):
@@ -171,17 +173,8 @@ class SetupExtraWidgets:
         # Disables the webView link-clicks as we want to manually handle them
         self.ui.info_view.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
         self.ui.wiki_view.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
-        
-        # FIXME: will not work in PyQT <4.6 i.e. Ubuntu 9.10
-        # The images are scaled smoothly using billinear interp and 
-        # antialias edges of primitives(?)
-        try:
-            self.ui.info_view.setRenderHint(QPainter.HighQualityAntialiasing)
-        except AttributeError,e:
-            print('''WARNING: it's likely you are using an old\n
-            version of PySide which lacks the option to antialias\n
-            This means cover art will look rubbish.\n
-            Full error:- %s''' % e)
+        self.ui.info_view.setRenderHint(QPainter.HighQualityAntialiasing)
+
 
     def __key_shortcuts(self):
         """
@@ -503,7 +496,7 @@ class WidgetManips:
                     if not cover:
                         cover = ":icons/nocover.png"
                     else:
-                        cover = cover.remove("file://")
+                        cover = cover.replace("file://", '')
                 else:
                     cover = ":icons/nocover.png"
                 row.setIcon(0,QIcon(cover))

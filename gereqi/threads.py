@@ -212,7 +212,7 @@ class Builddb(QThread):
             
         print("%u of %u tracks scanned in: %0.1f seconds" % (cnt, tracks_total,
                                                              (time() - strt)))
-        self.finished.emit(QString("complete"))
+        self.finished.emit("complete")
         self.ui.build_lock = False
         
         

@@ -71,10 +71,12 @@ class Configuration(QDialog, Ui_settings_dialog):
         exc = []
         include = self.sets_db.get_collection_setting("include")
         exclude = self.sets_db.get_collection_setting("exclude")
+        
+        # TODO: are these needed?
         if include is not None:
-            inc = [QString(dir) for dir in include.split(",")]
+            inc = [dir for dir in include.split(",")]
         if exclude is not None:
-            exc = [QString(dir) for dir in exclude.split(",")]
+            exc = [dir for dir in exclude.split(",")]
         
         self.dir_model.check_list = [inc, exc]                                        
         filters = QDir.AllDirs|QDir.Readable|QDir.NoDotAndDotDot
@@ -135,10 +137,9 @@ class Configuration(QDialog, Ui_settings_dialog):
         
     def __set_collections(self):
         
-        incl = [ str(dir.toUtf8()) for dir in self.dir_model.check_list[0] ]
-        excl = [ str(dir.toUtf8()) for dir in self.dir_model.check_list[1] ]
-        incl = ",".join(incl)
-        excl = ",".join(excl)
+        self.dir_model.check_list[0]
+        incl = ",".join(self.dir_model.check_list[0])
+        excl = ",".join(self.dir_model.check_list[1])
         self.sets_db.add_collection_setting("include",incl)
         self.sets_db.add_collection_setting("exclude",excl)
             

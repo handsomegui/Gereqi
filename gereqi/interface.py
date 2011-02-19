@@ -185,7 +185,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.stat_bttn.pressed.connect(self.quit_build)
         hdr = self.track_tbl.horizontalHeader()
         hdr.sectionClicked.connect(self.playlisting.track_sorting)
-        self.collect_tree_hdr.sectionClicked.connect(self.__collection_sort)
+        self.collect_tree_hdr.sectionClicked.connect(self.collection_sort)
         self.html_thread.got_wiki.connect(self.finishes.set_wiki)
         self.build_db_thread.progress.connect(self.stat_prog.setValue)
         self.del_thread.deleted.connect(self.wdgt_manip.setup_db_tree)        
@@ -1154,8 +1154,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             
             return "album"
-        
-    def __collection_sort(self, p0):
+      
+    @Slot(int)  
+    def collection_sort(self, p0):
         mode = self.__collection_mode()
         if mode == "artist":
             self.wdgt_manip.mydel.mode = "album"
