@@ -13,8 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
-from PySide.QtCore import QString
-
 try:
     import CDDB
     import DiscID
@@ -73,8 +71,8 @@ class AudioCD:
 
             now = {"Title":read_info['TTITLE%d' % trk], "Artist": art, 
                    "Album": alb, "Year": year, "Genre": read_info['DGENRE'], 
-                   "Track": QString("%02u" % (trk+1)), "Length": time_now, 
-                   "Bitrate": QString("%02u" % 44100), "FileName": f_name}
+                   "Track": "%02u" % (trk+1), "Length": time_now, 
+                   "Bitrate": "%02u" % 44100, "FileName": f_name}
             
             items.append((f_name, now))
 
