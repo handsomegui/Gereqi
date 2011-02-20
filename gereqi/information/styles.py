@@ -38,7 +38,7 @@ body {
 infostyles = body + '''
     
 img.cover {
-    width: %2px;
+    width: %(width)spx;
     border: 0;
     margin: 0 auto;
     text-align: center;

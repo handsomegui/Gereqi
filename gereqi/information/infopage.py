@@ -91,7 +91,7 @@ class InfoPage:
         cover = cover if cover is not None else "file://"
         
         now = HTML % {
-                      'style':styles.infostyles,
+                      'style':styles.infostyles % {'width': coversize},
                       'title':params["title"],
                       'album':params["album"],
                       'artist':params["artist"],
