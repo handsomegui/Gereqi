@@ -22,6 +22,13 @@ from gereqi.storage.Settings import Settings
 from gereqi.storage.Collection import CollectionDb
 from gereqi.information.tagging import Tagging
 
+try:
+    from gereqi.audio import Cdrom
+    CDS_OK = True
+except ImportError:
+    print("Missing CDRom dependencies")
+    CDS_OK = False
+
 
 
 from random import choice
@@ -134,6 +141,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.__settings_init()
         
         
+        
         self.build_lock = self.delete_lock = False
         self.art_alb = {"oldart":None, "oldalb":None, 
                         "nowart":None, "nowalb":None, 
@@ -173,7 +181,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.finishes = Finishers(self)
         self.play_hist = PlaylistHistory()
         self.__playlist_remembered()
-        self.__audiocd_setup()
         self.__tray_menu_appearance()
         
         # new style signalling
@@ -189,14 +196,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.html_thread.got_wiki.connect(self.finishes.set_wiki)
         self.build_db_thread.progress.connect(self.stat_prog.setValue)
         self.del_thread.deleted.connect(self.wdgt_manip.setup_db_tree)        
-        self.info_thread.got_info.connect(self.bodger)
-        # Cannot do this for some reason
-        #self.info_thread.got_info.connect(self.info_view.setHtml)
+        self.info_thread.got_info.connect(self.setWiki)
         
         # Makes the collection search line-edit have the keyboard focus
         self.search_collect_edit.setFocus()
         self.wdgt_manip.setup_db_tree()
-        self.wdgt_manip.pop_playlist_view() 
+        self.wdgt_manip.pop_playlist_view()
+        
+        self.play_cd_actn.setVisible(CDS_OK)  
 
         
     def __reset_db_default(self,err):
@@ -214,15 +221,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             self.tray_icon.hide()
         
-    # FIXME: HACK ALERT!!!
     @Slot(str)
-    def bodger(self, html):
+    def setWiki(self, html):
         """
         needed as the signal cannot be directly connected to
         the webview for unknown reasons
         """    
-        self.horizontal_tabs.setTabEnabled(2,True)
+        
         self.info_view.setHtml(html)
+        self.horizontal_tabs.setTabEnabled(2,True)
         
     def __setup_watcher(self):
         watch = self.sets_db.get_collection_setting("watch")  == "True"
@@ -299,27 +306,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if len(tracks) > 0:
             self.playlisting.add_list_to_playlist(tracks)
                 
-    def __audiocd_setup(self):
-        """
-        As pyCDDB is optional only load cd
-        modules if possible
-        """
-        
-        try:
-            from gereqi.audio import Cdrom
-        except ImportError:
-            print("Missing CDRom dependencies")
-            self.play_cd_actn.setVisible(False)
-            
-            
-            
     def tray_tooltip(self):
-        if self.play_bttn.isChecked() == False:
-            msg = "Paused"
-        # Puts the current track info in tray tooltip
-        else:
+        if self.play_bttn.isChecked():
             info = self.playlisting.current_row_info()
             msg = "%s by %s" % (info["Title"], info["Artist"])
+            
+        # Puts the current track info in tray tooltip
+        else:
+            msg = "Paused"
         self.tray_icon.setToolTip(msg) 
         
     @Slot(str)
@@ -367,7 +361,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 tracks = self.media_db.get_files(artist, album)
                 self.playlisting.add_list_to_playlist(tracks)
         else:
-            if par is not None:
+            if par:
                 file_name = self.media_db.get_album_file(par.text(0), now)
                 self.playlisting.add_to_playlist(file_name)
             else:
@@ -824,8 +818,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         add tracks from cd
         """
+        acd = Cdrom.AudioCD()
         try:
-            cd_tracks = self.acd.get_info()
+            cd_tracks = acd.get_info()
         except StandardError,err:
             if str(err) == "No medium found":
                 msg_box = QMessageBox()
@@ -839,6 +834,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     return
             else:
                 return
+        print(cd_tracks)
         self.playlisting.add_list_to_playlist(cd_tracks)                
         self.clear_trktbl_bttn.setEnabled(True)
                 
