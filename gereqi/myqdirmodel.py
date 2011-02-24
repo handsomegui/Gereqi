@@ -32,7 +32,7 @@ class MyQDirModel(QDirModel):
             if (chk in dir_now and dir_now != chk):
                 return Qt.PartiallyChecked
        
-    def data(self, index, role = Qt.DisplayRole):
+    def data(self, index, role=Qt.DisplayRole):
         """
         This is called when mouse-over of the dirmodel sections
         """
@@ -46,7 +46,7 @@ class MyQDirModel(QDirModel):
                 return Qt.Checked
             
             elif self.recursive is True:
-                par_dir = dir_now.split("/")[:-1].join("/")
+                par_dir = "/".join(dir_now.split("/")[:-1])
                 # the item is checked only if we have stored its path
                 if dir_now in self.check_list[1]:
                     return Qt.Unchecked
@@ -58,7 +58,7 @@ class MyQDirModel(QDirModel):
                     # see if it should be included
                     checker = dir_now.split("/")
                     for val in range(1, len(checker)):
-                        dir_part = checker[:val+1].join("/")
+                        dir_part = "/".join(checker[:val+1])
                         if dir_part in self.check_list[0]:
                             return Qt.Checked 
                     # Nothing found
@@ -100,7 +100,7 @@ class MyQDirModel(QDirModel):
                                 
                 tmp_list = []
                 for dir in self.check_list[0]:
-                    if dir.contains(dir_now):
+                    if dir_now in dir:
                         tmp_list.append(dir)                        
                 for dir in tmp_list:
                     self.check_list[0].remove(dir)                   
@@ -109,7 +109,7 @@ class MyQDirModel(QDirModel):
                 checker = dir_now.split("/")
                 there = False
                 for val in range(len(checker)):
-                    thing = checker[:val+1].join("/")
+                    thing = "/".join(checker[:val+1])
                     if thing in self.check_list[0]:
                         there = True
                         break
@@ -132,7 +132,7 @@ class MyQDirModel(QDirModel):
             
             # Want to exclude dir
             else:
-                par_dir = dir_now.split("/")[:-1].join("/")                
+                par_dir = "/".join(dir_now.split("/")[:-1])                
                 tmp_list = (list(self.check_list[0]), list(self.check_list[1]))
                 
                 for item in tmp_list[0]:
@@ -143,7 +143,7 @@ class MyQDirModel(QDirModel):
                 # Only add to unchecked if anything above is checked
                 checker = dir_now.split("/")
                 for val in range(len(checker)):
-                    thing = checker[:val+1].join("/")
+                    thing = "/".join(checker[:val+1])
                     if thing in self.check_list[0]:
                         self.check_list[1].append(dir_now)
                 self.needsRefresh.emit(index)
