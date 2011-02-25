@@ -994,7 +994,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.clear_trktbl_bttn.setEnabled(True)
             
     @Slot(QModelIndex)
-    def on_filesystem_tree_expanded(self):
+    def on_filesystem_tree_expanded(self,index):
         """
         Resizes the filesystem_tree to it's contents.
         Because of the '0' this seperate method is needed
