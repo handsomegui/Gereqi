@@ -184,7 +184,7 @@ class CollectionDb:
             # a primary key. However, file_name needs to be a TEXT
             # as VARCHAR is limiting. Instead, an md5 hash of the file_name 
             # becomes the PRIMARY KEY instead.
-            hash = QHash.hash(meta[0],1).toHex()
+            hash = QHash.hash(meta[0],QHash.Md5).toHex()
             meta.insert(0,hash)            
         self.__execute_write(query, tuple(meta))
         
