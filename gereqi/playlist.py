@@ -61,11 +61,11 @@ class Playlist:
             metadata = self.ui_main.media_db.get_info(file_name)
             if metadata is None:
                 # get the info using the tag-extractor module
-                metadata = self.ui_main.meta.extract(str(file_name))
+                metadata = self.ui_main.meta.extract(file_name)
                 if metadata is None:
                     return
                 else:       
-                    trk = "%02u" % metadata[5]
+                    trk = "%02u" % int(metadata[5])
                     metadata = {"Track": trk,  "Title": metadata[0],
                                 "Artist": metadata[1], "Album": metadata[2],
                                 "Year":metadata[3], "Genre": metadata[4],
@@ -79,25 +79,20 @@ class Playlist:
                             "FileName": file_name}
 
         else:
-#            if isinstance(metadata['Track'],str):
-#                metadata['Track'] = metadata['Track'].toInt()[0]
-#            metadata['Track'] = QString("%1").arg(metadata['Track'], 2,10, QChar('0'))  
             metadata['Track'] = "%02u" % metadata['Track']
                                   
         row = self.ui_main.track_tbl.rowCount()
         self.ui_main.track_tbl.insertRow(row)
         # Creates each cell for a track based on info
         for key in metadata:
-            #val = metadata[key] and metadata[key] or ""
-            
             tbl_wdgt = QTableWidgetItem(metadata[key])
             column = self.header_search(key)
             self.ui_main.track_tbl.setItem(row, column, tbl_wdgt)
         self.ui_main.track_tbl.resizeColumnsToContents()   
         
         
-    # This is needed as the higlighted row can be different
-    # than the currentRow method of Qtableview.
+    # This is needed as the highlighted row can be different
+    # than the currentRow method of QTableview.
     def current_row(self):
         """
         Finds the playlist row of the
@@ -214,9 +209,8 @@ class Playlist:
         """
         self.ui_main.track_tbl.clearContents()
         rows = self.ui_main.track_tbl.rowCount()
-        # For some reason can only remove from bot to top
-        for cnt in range(rows, -1, -1):
-            self.ui_main.track_tbl.removeRow(cnt)
+        for cnt in range(rows):
+            self.ui_main.track_tbl.removeRow(0)
             
     def gen_full_list(self):
         """
