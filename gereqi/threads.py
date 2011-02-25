@@ -206,7 +206,7 @@ class Builddb(QThread):
                     cnt += 1
             else:
                 print("User terminated scan.")
-                self.finished.emit(QString("cancelled"))
+                self.finished.emit("cancelled")
                 self.ui.build_lock = False
                 return
             
