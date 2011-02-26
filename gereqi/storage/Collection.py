@@ -14,7 +14,6 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 from PySide.QtCore import *
-from PySide.QtCore import QCryptographicHash as QHash
 from PySide.QtSql import *
 
 from gereqi.storage.Settings import Settings
@@ -88,7 +87,7 @@ class CollectionDb:
         elif self.db_type == "MYSQL":
             # Mysql requires slightly different tables
             tables = ['''CREATE TABLE IF NOT EXISTS media (
-                                id VARCHAR(32) PRIMARY KEY,
+                                id INT(10) AUTO_INCREMENT  PRIMARY KEY,
                                 file_name    TEXT,
                                 title    VARCHAR(50),
                                 artist    VARCHAR(50),
@@ -178,15 +177,20 @@ class CollectionDb:
             query = '''INSERT OR IGNORE INTO media 
                             VALUES (?,?,?,?,?,?,?,?,?,?,?)'''
         elif self.db_type == "MYSQL":
-            query = '''INSERT IGNORE INTO media
-                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''                        
-            # Required as MYSQL will not accept a TEXT data-type as
-            # a primary key. However, file_name needs to be a TEXT
-            # as VARCHAR is limiting. Instead, an md5 hash of the file_name 
-            # becomes the PRIMARY KEY instead.
-            hash = QHash.hash(meta[0],QHash.Md5).toHex()
-            meta.insert(0,hash)            
-        self.__execute_write(query, tuple(meta))
+            query = '''
+                    INSERT INTO media(  file_name, title,
+                                        artist, album,
+                                        year, genre,
+                                        track, length,
+                                        bitrate, added) 
+                    SELECT ?,?,?,?,?,?,?,?,?,? FROM dual
+                    WHERE NOT EXISTS (
+                    SELECT * FROM media
+                    WHERE file_name=?)
+                    
+                    '''
+            meta[10] = meta[0]           
+        self.__execute_write(query, meta)
         
     def inc_count(self, timestamp, fname):
         """
