@@ -47,11 +47,8 @@ def main():
     sys.exit(app.exec_())
     
 def setups():
-    try:
-        wnd.search_trktbl_edit.setPlaceholderText("Playlist Search")
-        wnd.search_collect_edit.setPlaceholderText("Enter search terms here")
-    except:
-        return  
+    wnd.search_trktbl_edit.setPlaceholderText("Playlist Search")
+    wnd.search_collect_edit.setPlaceholderText("Enter search terms here")
     
     
 if __name__ == '__main__':
