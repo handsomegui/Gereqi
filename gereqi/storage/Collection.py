@@ -21,8 +21,6 @@ from gereqi.storage.Settings import Settings
 import os
 
 
-# TODO: remove the '_timed()' functions
-
 class CollectionDb:
     media_db = None
     def __init__(self, name):        
@@ -214,7 +212,7 @@ class CollectionDb:
         query = '''SELECT artist
                         FROM media
                         WHERE album=?
-                        LIMIT(1)'''
+                        LIMIT 1'''
         self.__query_execute(query,(album,))
         result = self.__query_fetchall()
         return result
