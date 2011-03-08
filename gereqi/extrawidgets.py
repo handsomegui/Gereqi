@@ -22,6 +22,7 @@ import time
 import gereqi.devices
 import gereqi.icons.configuration
 import gereqi.icons.icons_resource
+from gereqi.storage.Collection import CollectionDb
 import extraneous
 
 class MyDelegate(QItemDelegate):
@@ -204,6 +205,10 @@ class WidgetManips:
         self.ui.collect_tree.setItemDelegate(self.mydel)
         self.ui.collect_tree.setUniformRowHeights(False)
         self.ui.collect_tree.setIconSize(QSize(46,46))
+        
+        
+        self.threader = AlbumItem()
+        self.threader.new_item.connect(self.__add_album_item)
         
         
     def __play_mode_changed(self, check):
@@ -424,7 +429,7 @@ class WidgetManips:
                 print "YEAH, I'M NOT DELETING"
                 
             elif action == edit_tag:
-                text = QInputDialog.getText(None, QString(tag_name),
+                text = QInputDialog.getText(None, tag_name,
                                          "Change the tag to:",
                                          QLineEdit.Normal,
                                          item_now.text())
@@ -479,27 +484,24 @@ class WidgetManips:
         if things is None:
             return
         
+        if mode == "album":
+            self.threader.start()
+            return
+        
         for thing in things:
             # When creating collection tree only 
             #  allow certain things based on the filter.
             if (filt is not None) and (filt.lower() not in thing.lower()):
                 continue
             row = QTreeWidgetItem([thing])
-            # FIXME: slowwww
-            if mode == "album":
-                artist = media_db.get_artist(thing)
-                if len(artist) > 0:
-                    cover = extras.get_cover_source(artist[0],thing,True, False)                    
-                    if not cover:
-                        cover = ":icons/nocover.png"
-                    else:
-                        cover = cover.replace("file://", '')
-                else:
-                    cover = ":icons/nocover.png"
-                row.setIcon(0,QIcon(cover))
-            
             row.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
             self.ui.collect_tree.addTopLevelItem(row)
+            
+    def __add_album_item(self,item):
+        row = QTreeWidgetItem([item[0]])
+        row.setIcon(0,QIcon(item[1]))
+        row.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
+        self.ui.collect_tree.addTopLevelItem(row)
             
     def pop_playlist_view(self):
         """
@@ -553,3 +555,26 @@ class WidgetManips:
 
         self.ui.play_bttn.setIcon(icon)
         self.ui.tray_icon.setIcon(tray)
+        
+        
+        
+class AlbumItem(QThread):
+    new_item = Signal(tuple)
+    def __init__(self,parent=None):
+        QThread.__init__(self)
+        
+    def set_values(self):
+        return
+    
+    def run(self):
+        db = CollectionDb("album_items")
+        extras = extraneous.Extraneous()
+        for album in db.get_albums_all():            
+            artist = db.get_artist(album)
+            cover = extras.get_cover_source(artist[0],album,True, False)
+            if not cover:
+                cover = ":icons/nocover.png"
+            else:
+                cover = cover.replace("file://", '')
+            self.new_item.emit((album,cover))           
+
