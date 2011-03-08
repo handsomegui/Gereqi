@@ -53,7 +53,8 @@ class Webinfo:
             req = Request(url, None, headers)
             return urlopen(req, None, 10)
         except URLError, err:
-            print(err)
+            pass
+#            print(err)
         
     def __printable_wiki(self, url):
         """
@@ -78,7 +79,7 @@ class Webinfo:
             pre_html = self.__fetch(url)
             if pre_html is not None:
                 result =  self.__printable_wiki(pre_html.geturl())
-                if result is not None:
+                if result:
                     base_html = '''
                         <html>
                         <head>
