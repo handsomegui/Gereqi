@@ -124,11 +124,9 @@ class SetupExtraWidgets:
         self.ui.play_action.toggled.connect(self.ui.play_bttn.setChecked)
         self.ui.view_action.toggled.connect(self.ui.minimise_to_tray)
         self.ui.tray_icon.activated.connect(self.ui.tray_event)
-        
-        # FIXME: doesn't exist/work in PYside
-        next_action.triggered.connect(self.ui.on_next_bttn_pressed)
-        prev_action.triggered.connect(self.ui.on_prev_bttn_pressed)
-        stop_action.triggered.connect(self.ui.on_stop_bttn_pressed)
+        next_action.triggered.connect(self.ui.next_bttn.click)
+        prev_action.triggered.connect(self.ui.prev_bttn.click)
+        stop_action.triggered.connect(self.ui.stop_bttn.click)
         
         #quit_action.triggered.connect(qApp.quit)     
        
