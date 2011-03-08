@@ -16,33 +16,24 @@
 
 from PySide.QtGui import *
 from PySide.QtCore import *
-
 from gereqi.audio import Backend,Formats
 from gereqi.storage.Settings import Settings
 from gereqi.storage.Collection import CollectionDb
 from gereqi.information.tagging import Tagging
-
 try:
     from gereqi.audio import Cdrom
     CDS_OK = True
 except ImportError:
     print("Missing CDRom dependencies")
     CDS_OK = False
-
-
-
 from random import choice
 import time
 from os import path
-
 from threads import Getinfo, Getwiki, Builddb, Finishers, Watcher, DeleteFiles
 from Ui_interface import Ui_MainWindow
 from configuration import Configuration
 from extraneous import Extraneous
 from extrawidgets import SetupExtraWidgets, WidgetManips
-
-#from settings import Settings
-#from collection import CollectionDb
 from about import About
 from playlist import Playlist, PlaylistHistory
 
@@ -548,9 +539,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             return
         
         for item in mfiles:
-            ender = item.split(".")[-1]
-            if ender.toLower() in self.audio_formats:
-                self.playlisting.add_to_playlist(item)
+            self.playlisting.add_to_playlist(item[0])
 
     @Slot(bool)
     def on_minimise_tray_actn_toggled(self, checked):
@@ -683,7 +672,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         val = self.progress_sldr.value()
         self.player.audio_object.seek(val)
-        self.old_pos = val
         
     @Slot(int)
     def on_progress_sldr_actionTriggered(self,action):
