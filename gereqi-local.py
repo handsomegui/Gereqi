@@ -40,7 +40,7 @@ def main():
 
     app.setApplicationName("Gereqi")
     app.setApplicationVersion(__version__)
-    wnd = MainWindow()
+    wnd = MainWindow(app)
     
     setups()
     wnd.show()

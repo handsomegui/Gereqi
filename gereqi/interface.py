@@ -127,7 +127,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         from other files as this file is getting messy
         """ 
         super(MainWindow,self).__init__()
-        
+        self.parent = parent
         
         self.__settings_init()
         
@@ -188,6 +188,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.build_db_thread.progress.connect(self.stat_prog.setValue)
         self.del_thread.deleted.connect(self.wdgt_manip.setup_db_tree)        
         self.info_thread.got_info.connect(self.setWiki)
+        self.actionQuit.triggered.connect(self.shutdown)
         
         # Makes the collection search line-edit have the keyboard focus
         self.search_collect_edit.setFocus()
@@ -236,16 +237,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             
             return "album"
    
-    @Slot(str)
-    def setWiki(self, html):
-        """
-        needed as the signal cannot be directly connected to
-        the webview for unknown reasons
-        """    
-        
-        self.info_view.setHtml(html)
-        self.horizontal_tabs.setTabEnabled(2,True)
-        
     def __setup_watcher(self):
         watch = self.sets_db.get_collection_setting("watch")  == "True"
         recur = self.sets_db.get_collection_setting("recursive")  == "True"
@@ -330,6 +321,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             msg = "Paused"
         self.tray_icon.setToolTip(msg) 
+        
+        
+    @Slot(str)
+    def setWiki(self, html):
+        """
+        needed as the signal cannot be directly connected to
+        the webview for unknown reasons
+        """            
+        self.info_view.setHtml(html)
+        self.horizontal_tabs.setTabEnabled(2,True)
         
     @Slot(str)
     def on_search_collect_edit_textChanged(self, srch_str):
@@ -528,12 +529,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         print("Deleting media DB and rebuilding") 
         self.collect_tree.clear()
         self.create_collection(fresh=True)
+
     
-    @Slot()
-    def on_actionQuit_triggered(self):
-        """
-        Closing Down. Maybe some database interaction.
-        """
+    def shutdown(self):
+        self.parent.setOverrideCursor(QCursor(Qt.BusyCursor))
         if self.sets_db.get_interface_setting("remember") == "True":
             play_name = "!!##gereqi.remembered##!!"
             tracks = self.playlisting.gen_file_list()

@@ -127,8 +127,7 @@ class SetupExtraWidgets:
         next_action.triggered.connect(self.ui.next_bttn.click)
         prev_action.triggered.connect(self.ui.prev_bttn.click)
         stop_action.triggered.connect(self.ui.stop_bttn.click)
-        
-        #quit_action.triggered.connect(qApp.quit)     
+        quit_action.triggered.connect(self.ui.shutdown)     
        
     def __setup_misc(self):
         """
@@ -165,8 +164,7 @@ class SetupExtraWidgets:
         self.ui.track_tbl.setHorizontalHeaderLabels(headers)
         
         self.ui.collect_tree_hdr = self.ui.collect_tree.header()
-        self.ui.collect_tree_hdr.setClickable(True)
-        
+        self.ui.collect_tree_hdr.setClickable(True)        
         
         # Disables the webView link-clicks as we want to manually handle them
         self.ui.info_view.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
@@ -457,7 +455,8 @@ class WidgetManips:
         
     def setup_db_tree(self):
         """
-        viewing the media database in the QTreeView
+        Viewing the media database in the QTreeView.
+        Can show per album or per artist
         """
         media_db = self.ui.media_db
         self.ui.collect_tree.clear()
