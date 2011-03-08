@@ -212,6 +212,30 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             self.tray_icon.hide()
         
+        
+    def __time_filt_now(self):
+        """
+        Based on the combobox selection, the collection
+        browser is filtered by addition date
+        """
+        index = self.collect_time_box.currentIndex()
+        calc = lambda val: int(round(time.time() - val))
+        now = time.localtime()
+        today_secs = ( ( (now[3] * 60) + now[4] ) * 60 ) + now[5]
+        filts = [ today_secs, 604800, 2419200, 7257600, 31557600]   
+        if index > 0:
+            return calc(filts[index - 1])
+        else:
+            return 0
+        
+    def __collection_mode(self):
+        text_now = self.collect_tree.headerItem().text(0)
+        if text_now == "Artist/Album":            
+            return "artist"
+        else:
+            
+            return "album"
+   
     @Slot(str)
     def setWiki(self, html):
         """
@@ -672,6 +696,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         val = self.progress_sldr.value()
         self.player.audio_object.seek(val)
+        self.old_pos = val
         
     @Slot(int)
     def on_progress_sldr_actionTriggered(self,action):
@@ -1114,31 +1139,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.hide()
             event.ignore()
 
-    def __time_filt_now(self):
-        """
-        Based on the combobox selection, the collection
-        browser is filtered by addition date
-        """
-        index = self.collect_time_box.currentIndex()
-        calc = lambda val: int(round(time.time() - val))
-        now = time.localtime()
-        today_secs = ( ( (now[3] * 60) + now[4] ) * 60 ) + now[5]
-        filts = [ today_secs, 604800, 2419200, 7257600, 31557600]   
-        if index > 0:
-            return calc(filts[index - 1])
-        else:
-            return 0
-        
-    def __collection_mode(self):
-        # TODO: maybe change the delgate as in album mode the
-        # tracks are v big
-        text_now = self.collect_tree.headerItem().text(0)
-        if text_now == "Artist/Album":            
-            return "artist"
-        else:
-            
-            return "album"
-      
+   
     @Slot(int)  
     def collection_sort(self, p0):
         mode = self.__collection_mode()
