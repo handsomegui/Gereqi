@@ -438,7 +438,7 @@ class WidgetManips:
                     col = self.ui.playlisting.header_search("FileName")
                     for row in rows:                        
                         fname = self.ui.track_tbl.item(row,col).text()
-                        self.ui.media_db.update_tag(fname,tag_name.toLower(),text[0])
+                        self.ui.media_db.update_tag(fname,tag_name.lower(),text[0])
                         self.ui.track_tbl.item(row,col_now).setText(text[0])
                 
 
@@ -485,6 +485,8 @@ class WidgetManips:
             return
         
         if mode == "album":
+            self.threader.exit()
+            self.threader.set_values(time_filt,filt)
             self.threader.start()
             return
         
@@ -563,13 +565,16 @@ class AlbumItem(QThread):
     def __init__(self,parent=None):
         QThread.__init__(self)
         
-    def set_values(self):
-        return
+    def set_values(self,time_filt, filter):
+        self.filter = filter
+        self.time_filt = time_filt
     
     def run(self):
         db = CollectionDb("album_items")
         extras = extraneous.Extraneous()
-        for album in db.get_albums_all():            
+        for album in db.get_albums_all(self.time_filt):    
+            if (self.filter is not None) and (self.filter.lower() not in album.lower()):
+                continue        
             artist = db.get_artist(album)
             cover = extras.get_cover_source(artist[0],album,True, False)
             if not cover:
