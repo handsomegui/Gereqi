@@ -23,15 +23,21 @@ import os
 
 class CollectionDb:
     media_db = None
-    def __init__(self, name):        
-        self.__config_db(name)
+    def __init__(self, name):
+        self.name = name  
+        self.__config_db()
         
-    def __config_db(self,name):
-        db_name = name
+    def __del__(self):
+        """
+        To ensure the db-connection is closed
+        """
+        self.close_connection()
+        
+    def __config_db(self):
         sets_db = Settings()
         self.db_type = sets_db.get_database_setting("type")
         if self.db_type == "MYSQL":                            
-            CollectionDb.media_db = QSqlDatabase.addDatabase("QMYSQL", db_name)
+            CollectionDb.media_db = QSqlDatabase.addDatabase("QMYSQL", self.name)
             CollectionDb.media_db.setHostName(sets_db.get_database_setting("hostname"))
             CollectionDb.media_db.setDatabaseName(sets_db.get_database_setting("dbname"))
             CollectionDb.media_db.setUserName(sets_db.get_database_setting("username"))
@@ -45,7 +51,7 @@ class CollectionDb:
             db_loc = "%smedia.db" % app_dir
             if QDir(app_dir).exists is False:
                 QDir().mkdir(app_dir)                
-            CollectionDb.media_db = QSqlDatabase.addDatabase("QSQLITE", db_name)
+            CollectionDb.media_db = QSqlDatabase.addDatabase("QSQLITE", self.name)
             CollectionDb.media_db.setDatabaseName(db_loc)
         
         
@@ -391,13 +397,10 @@ class CollectionDb:
         """
         Disconnects db and removes connection
         """
-        if name:
-            self.query.finish()
-#            del self.query
-#            db = CollectionDb.media_db.database(QLatin1String(name))
-#            db.close() 
-            CollectionDb.media_db.removeDatabase(name)
-            self.__config_db(name) 
+        name = name if name else self.name
+        self.query.finish()
+        CollectionDb.media_db.removeDatabase(name)
+        self.__config_db() 
 
     def __connections(self):
         db_names = CollectionDb.media_db.connectionNames()
@@ -416,7 +419,6 @@ class CollectionDb:
             
             
     def update_tag(self,fname, field, val):
-        print fname,field,val
         query = '''UPDATE media SET %s=? WHERE file_name=?''' % field
         self.__execute_write(query, (val,fname))
         
@@ -430,8 +432,11 @@ class CollectionDb:
             self.__execute_write(query, (key, key_vals[key]))
             
             
-    def close_connection(self,name):
+    def close_connection(self,name=None):
+        name = name if name else self.name
         CollectionDb.media_db.database(QLatin1String(name)).close()
         CollectionDb.media_db.removeDatabase(name)
+        
+    
         
             

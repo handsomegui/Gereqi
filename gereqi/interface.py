@@ -1035,7 +1035,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Cancels the collection build if running
         """
-        print(self.build_db_thread.stop_now())
+        self.build_db_thread.stop()
 
     def set_prog_sldr(self):
         """

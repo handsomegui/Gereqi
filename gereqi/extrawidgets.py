@@ -51,16 +51,12 @@ class SetupExtraWidgets:
     e.g. on app initialisation
     """
     def __init__(self, parent):
-        self.ui = parent
-        
-
-        
+        self.ui = parent        
         self.ui.track_tbl.horizontalHeader().setMovable(True)
         
         self.__setup_filesystem_tree()
         self.__create_tray_menu()
         
-
         self.__setup_misc()
         self.__key_shortcuts()
         # Load all the button/action icons
@@ -180,7 +176,6 @@ class SetupExtraWidgets:
         # remove the selected track from the playlist
         delete = QShortcut(QKeySequence("Del"), self.ui)
         delete.activated.connect(self.ui.playlisting.del_tracks)
-        
 
         
 
@@ -204,8 +199,7 @@ class WidgetManips:
         self.mydel.mode = "artist"
         self.ui.collect_tree.setItemDelegate(self.mydel)
         self.ui.collect_tree.setUniformRowHeights(False)
-        self.ui.collect_tree.setIconSize(QSize(46,46))
-        
+        self.ui.collect_tree.setIconSize(QSize(46,46))        
         
         self.threader = AlbumItem()
         self.threader.new_item.connect(self.__add_album_item)
@@ -485,10 +479,13 @@ class WidgetManips:
             return
         
         if mode == "album":
-            self.threader.exit()
+#            self.threader.stop()
+#            self.threader.exit()
             self.threader.set_values(time_filt,filt)
             self.threader.start()
             return
+        else:
+            self.threader.stop()
         
         for thing in things:
             # When creating collection tree only 
@@ -564,22 +561,40 @@ class AlbumItem(QThread):
     new_item = Signal(tuple)
     def __init__(self,parent=None):
         QThread.__init__(self)
+        self.db = CollectionDb("album_items")
+        self.exiting = False
+    
+    def __del__(self):
+        self.exiting = True
+        self.wait()
+            
+    def stop(self):
+        self.exiting = True
+        self.exit()
         
     def set_values(self,time_filt, filter):
+        self.exiting = False   
         self.filter = filter
         self.time_filt = time_filt
     
     def run(self):
-        db = CollectionDb("album_items")
+        self.exiting = False      
         extras = extraneous.Extraneous()
-        for album in db.get_albums_all(self.time_filt):    
+        for album in self.db.get_albums_all(self.time_filt):
+            # We need this so that if the album mode is selected soon, the
+            # treeview is populated from the start otherwise it continues from
+            # where it stopped last
+            if self.exiting:
+                self.exit()
+                return
             if (self.filter is not None) and (self.filter.lower() not in album.lower()):
                 continue        
-            artist = db.get_artist(album)
+            artist = self.db.get_artist(album)
             cover = extras.get_cover_source(artist[0],album,True, False)
             if not cover:
                 cover = ":icons/nocover.png"
             else:
                 cover = cover.replace("file://", '')
-            self.new_item.emit((album,cover))           
+            self.new_item.emit((album,cover))
+        self.exec_()        
 

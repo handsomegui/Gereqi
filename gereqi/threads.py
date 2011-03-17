@@ -42,13 +42,13 @@ class GetCovers(QThread):
         
     def run(self):
         db = CollectionDb("cover_crawl")
-        get_cover = Extraneous().get_cover_source
-        
+        get_cover = Extraneous().get_cover_source        
         artists = db.get_artists()
         for artist in artists:
             albums = db.get_albums(artist)
             for album in albums:
                 get_cover(artist,album)
+        self.exec_()
 
 
 class Getinfo(QThread):
@@ -62,11 +62,16 @@ class Getinfo(QThread):
         QThread.__init__(self, parent)
         self.ui = parent
         
+    def __del__(self):
+        self.exit()
+        
     def set_values(self, **params):
         self.info = params
+        
     def run(self):
         html = InfoPage(self.ui).gen_info(**self.info)
         self.got_info.emit(html)
+        self.exec_()
         
         
 class Getwiki(QThread):
@@ -77,17 +82,18 @@ class Getwiki(QThread):
     
     def __init__(self, parent=None):
         QThread.__init__(self, parent)
+        
+    def __del__(self):
+        self.exit()
     
     def set_values(self, art):
         self.artist = art
         
     def run(self):
         info = Webinfo()
-        result = info.get_info("info", self.artist)
-        if result is None:
-            result = "None"
-        
+        result = info.get_info("info", self.artist) if not None else "None"
         self.got_wiki.emit(result)
+        self.exec_()
         
         
 class Builddb(QThread):
@@ -101,7 +107,7 @@ class Builddb(QThread):
     def __init__(self, parent):
         QThread.__init__(self, parent)
         self.ui = parent
-        
+        self.db = CollectionDb("builder")
         
     def __file_compat(self, dirpath, fname):
         now = os.path.join(dirpath, fname)
@@ -111,7 +117,7 @@ class Builddb(QThread):
         if ender in self.a_formats: 
             return now  
         
-    def stop_now(self):
+    def stop(self):
         self.exiting = True
         
     def set_values(self, dirs, formats, mode, tracks=None):
@@ -139,11 +145,12 @@ class Builddb(QThread):
             for dirpath, dirnames, filenames in os.walk(dir):
                 # The exclusion part
                 #FIXME: although this means you exclude the dirpath you don't exclude it's subdirs
-                if dirpath not in not_need:
-                    for fname in filenames:
-                        trk = self.__file_compat(dirpath, fname)
-                        if trk is not None:
-                            tracks.append(trk)
+                if dirpath in not_need:
+                    pass
+                for fname in filenames:
+                    trk = self.__file_compat(dirpath, fname)
+                    if trk is not None:
+                        tracks.append(trk)
                             
         else:
             # Cannot use the loop for both as one is the above is a generator
@@ -156,7 +163,7 @@ class Builddb(QThread):
         return tracks
         
     def run(self):
-        media_db = CollectionDb("builder")
+        
         self.ui.build_lock = True
         while self.ui.delete_lock == True:
             print("WAITING: creation")
@@ -165,7 +172,7 @@ class Builddb(QThread):
         old_prog = 0
         
         if self.mode == "redo":
-            media_db.drop_media()
+            self.db.drop_media()
             print("FROM SCRATCH")
         elif self.mode == "update":
             print("UPDATE")
@@ -186,7 +193,7 @@ class Builddb(QThread):
         strt = time()
         cnt = 0
         for trk in tracks:
-            if self.exiting == False:
+            if not self.exiting:
                 ratio = float(cnt ) /  float(tracks_total)
                 prog = int(round(100 * ratio))
                 if prog > old_prog:
@@ -194,7 +201,7 @@ class Builddb(QThread):
                     self.progress.emit(prog)
 
                 info = self.meta.extract(trk)
-                if info is not None:
+                if info:
                     # prepends the fileName as the DB function expects
                     # a certain order to the args passed
                     info.insert(0, trk) 
@@ -202,12 +209,13 @@ class Builddb(QThread):
                     
                     # The default rating
                     info.append(0)
-                    media_db.add_media(info)
+                    self.db.add_media(info)
                     cnt += 1
             else:
                 print("User terminated scan.")
                 self.finished.emit("cancelled")
                 self.ui.build_lock = False
+                self.exit()
                 return
             
         print("%u of %u tracks scanned in: %0.1f seconds" % (cnt, tracks_total,
@@ -329,8 +337,9 @@ class DeleteFiles(QThread):
     deleted = Signal()
     
     def __init__(self, parent):
-        self.ui = parent
         QThread.__init__(self)
+        self.ui = parent
+        self.db = CollectionDb("deleter")
         
     def set_values(self, deletions):
         self.file_list = deletions
@@ -339,16 +348,14 @@ class DeleteFiles(QThread):
         self.ui.delete_lock = True
         while self.ui.build_lock == True:
             print("WAITING: deletion")
-            sleep(1)     
-        
-        media_db = media_db = CollectionDb("deleter")
+            sleep(1)
         for trk in self.file_list:
-            media_db.delete_track(trk)
-         
+            self.db.delete_track(trk)         
         # Signals to indicate that items based on
         # DB should probably update
         self.deleted.emit()
-        self.ui.delete_lock = False       
+        self.ui.delete_lock = False
+        self.exec_()   
 
 
 class Finishers:
