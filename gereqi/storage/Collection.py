@@ -434,7 +434,7 @@ class CollectionDb:
             
     def close_connection(self,name=None):
         name = name if name else self.name
-        CollectionDb.media_db.database(QLatin1String(name)).close()
+        CollectionDb.media_db.database(name).close()
         CollectionDb.media_db.removeDatabase(name)
         
     
