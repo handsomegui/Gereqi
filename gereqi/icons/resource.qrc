@@ -1,40 +1,59 @@
 <RCC>
-  <qresource prefix="icons">
-    <file>add_playlist.png</file>
-    <file>app-paused.png</file>
-    <file>app.png</file>
-    <file>audiocd.png</file>
-    <file>back.png</file>
-    <file>audio-card.png</file>
-    <file>dice-icon.png</file>
-    <file>dice-icon2.png</file>
-    <file>document-properties.png</file>
-    <file>document-save-as.png</file>
-    <file>edit-clear.png</file>
-    <file>edit-copy.png</file>
-    <file>edit-delete.png</file>
-    <file>edit-redo.png</file>
-    <file>edit-undo.png</file>
-    <file>files.png</file>
-    <file>files2.png</file>
-    <file>media-playback-pause.png</file>
-    <file>media-playback-start.png</file>
-    <file>media-playback-stop.png</file>
-    <file>media-skip-backward.png</file>
-    <file>media-skip-forward.png</file>
-    <file>next.png</file>
-    <file>nocover.png</file>
-    <file>pause.png</file>
-    <file>play.png</file>
-    <file>playlist.png</file>
-    <file>playlist-clear.png</file>
-    <file>process-stop.png</file>
-    <file>redo.png</file>
-    <file>remove.png</file>
-    <file>rewind.png</file>
-    <file>save.png</file>
-    <file>stop.png</file>
-    <file>undo.png</file>
-    <file>window-new.png</file>
+  <qresource prefix="legacy-icons">
+    <file>legacy/add_playlist.png</file>
+    <file>legacy/audiocd.png</file>
+    <file>legacy/back.png</file>
+    <file>legacy/fastforward.png</file>
+    <file>legacy/files.png</file>
+    <file>legacy/files2.png</file>
+    <file>legacy/next.png</file>
+    <file>legacy/nocover.png</file>
+    <file>legacy/pause.png</file>
+    <file>legacy/play.png</file>
+    <file>legacy/playlist-clear.png</file>
+    <file>legacy/playlist.png</file>
+    <file>legacy/redo.png</file>
+    <file>legacy/remove.png</file>
+    <file>legacy/rewind.png</file>
+    <file>legacy/save.png</file>
+    <file>legacy/stop.png</file>
+    <file>legacy/undo.png</file>
+  </qresource>
+  <qresource prefix="default-icons">
+    <file alias="open-folder.png">default/folder-open.png</file>
+    <file alias="folder.png">default/folder.png</file>
+    <file alias="undo.png">default/edit-undo.png</file>
+    <file alias="redo.png">default/edit-redo.png</file>
+    <file>default/edit-delete.png</file>
+    <file>default/folder-new.png</file>
+    <file>default/edit-clear.png</file>
+    <file>default/document-save.png</file>
+    <file alias="new-window.png">default/window-new.png</file>
+    <file>default/drive-removable-media.png</file>
+    <file>default/process-stop.png</file>
+    <file>default/multimedia-player.png</file>       
+    
+    <file alias="stop.png">default/media-playback-stop.png</file>
+    <file alias="audiocd.png">default/media-optical.png</file>
+    <file alias="pause.png">default/media-playback-pause.png</file>
+    <file alias="volume-muted.png">default/audio-volume-muted.png</file>
+    <file alias="volume-low.png">default/audio-volume-low.png</file>
+    <file alias="volume-high.png">default/audio-volume-high.png</file>
+    <file alias="volume-medium.png">default/audio-volume-medium.png</file>
+    <file>default/media-eject.png</file>
+    <file alias="save-as.png">default/document-save-as.png</file>
+    <file>default/image-missing.png</file>
+    <file alias="back.png">default/media-skip-backward.png</file>
+    <file alias="next.png">default/media-skip-forward.png</file>
+    <file alias="play.png">default/media-playback-start.png</file>
+    <file alias="delete.png">default/user-trash.png</file>
+  </qresource>
+  <qresource prefix="application">
+    <file>application/dice-icon2.png</file>
+    <file>application/drawing.png</file>
+    <file>application/dice-icon.png</file>
+    <file>application/app-paused.png</file>
+    <file>application/icon.png</file>
+    <file alias="app.png">application/app.png</file>
   </qresource>
 </RCC>
