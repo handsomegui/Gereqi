@@ -557,9 +557,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                         "Audio Files : %(filt)s (%(filt)s)" % {'filt': filts}
                         )       
                         
-        if len(mfiles[0]) < 1:
-            return
-        for item in mfiles:
+        for item in mfiles[0]:
             self.playlisting.add_to_playlist(item[0])
 
     @Slot(bool)
