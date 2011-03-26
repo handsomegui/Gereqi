@@ -926,9 +926,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             "Rename Playlist",
             "Rename the playlist to:",
             QLineEdit.Normal)
-        
         # Checks if you entered a non-zero length name and that you clicked 'ok'
-        if (new_name[1] is None) and (len(new_name[0]) < 1):
+        if (new_name[1] is False) or (len(new_name[0]) < 1):
             return
         
         #get all the tracks in the selected playlist
