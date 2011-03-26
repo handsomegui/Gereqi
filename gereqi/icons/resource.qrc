@@ -30,7 +30,7 @@
     <file alias="save.png">default/document-save.png</file>
     <file alias="new-window.png">default/window-new.png</file>
     <file>default/drive-removable-media.png</file>
-    <file>default/process-stop.png</file>
+    <file alias="quit.png">default/process-stop.png</file>
     <file>default/multimedia-player.png</file>       
     
     <file alias="stop.png">default/media-playback-stop.png</file>
@@ -49,10 +49,10 @@
     <file alias="delete.png">default/user-trash.png</file>
   </qresource>
   <qresource prefix="application">
-    <file>application/dice-icon2.png</file>
+    <file alias="normal.png">application/dice-icon2.png</file>
     <file>application/drawing.png</file>
-    <file>application/dice-icon.png</file>
-    <file>application/app-paused.png</file>
+    <file alias="random.png">application/dice-icon.png</file>
+    <file alias="paused.png">application/app-paused.png</file>
     <file>application/icon.png</file>
     <file alias="app.png">application/app.png</file>
   </qresource>

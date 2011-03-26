@@ -35,6 +35,8 @@ class Setup:
         
         parent.setWindowIcon(QIcon(":/application/app.png"))        
         parent.mute_bttn.setIcon(icons.icon("volume-max"))
+        parent.actionQuit.setIcon(icons.icon("quit"))
+        
         
 class MyIcons:
     icons = dict()
@@ -42,9 +44,12 @@ class MyIcons:
     icons['stop'] = (":/default-icons/stop.png", ":/legacy-icons/stop.png")
     icons['back'] = (":/default-icons/back.png", ":/legacy-icons/back.png")
     icons['next'] = (":/default-icons/next.png", ":/legacy-icons/next.png")
+    icons["pause"] = (":/default-icons/pause.png",)
     icons['audiocd'] = (":/default-icons/audiocd.png", ":/legacy-icons/audiocd.png")
     icons["mute"] = (":/default-icons/volume-muted.png",)
     icons["volume-max"] = (":/default-icons/volume-high.png",)
+    icons["volume-mid"] = (":/default-icons/volume-medium.png",)
+    icons["volume-low"] = (":/default-icons/volume-low.png",)
     icons["undo"] = (":/default-icons/undo.png",)
     icons["redo"] = (":/default-icons/redo.png",)
     icons["clear-playlist"] = (":/default-icons/new-window.png",)
@@ -53,6 +58,8 @@ class MyIcons:
     icons["save-playlist"] = (":/default-icons/save.png",)
     icons["clear"] = (":/default-icons/clear.png",)
     icons["open-folder"] = (":/default-icons/open-folder.png",)
+    icons["folder"] = (":/default-icons/folder.png",)
+    icons["quit"] = (":/default-icons/quit.png",)
     
     def  __init__(self, mode=0):
         self.mode = mode

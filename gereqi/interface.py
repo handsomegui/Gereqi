@@ -235,6 +235,18 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             
             return "album"
+        
+    def __volume_icon(self,value=None):
+        value = value if value else self.volume_sldr.value()
+        if value > 66:
+            key = "volume-max"
+        elif value > 33:
+            key = "volume-mid"
+        elif value> 0:
+            key = "volume-low"
+        else:
+            key = "mute"
+        return self.icons.icon(key)
    
     def __setup_watcher(self):
         watch = self.sets_db.get_collection_setting("watch")  == "True"
@@ -491,9 +503,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def on_volume_sldr_valueChanged(self, value):
         """
         Self explanatory
-        """        
-        value = (value / 100.0)
+        """
+        if not self.mute_bttn.isChecked():
+            self.mute_bttn.setIcon(self.__volume_icon(value))
+        value /= 100.0
         self.player.audio_object.set_volume(value)
+
     
     #TODO: not sure if the DB changes are made
     # i.e going from sqlite to mysql or v'-v'
@@ -676,7 +691,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Mutes audio output and changes button icon accordingly
         """
         self.player.audio_object.mute(checked)
-        icon = self.icons.icon("mute") if checked else self.icons.icon("volume-max")      
+        icon = self.icons.icon("mute") if checked else self.__volume_icon()      
         self.mute_bttn.setIcon(icon)
       
     @Slot() 

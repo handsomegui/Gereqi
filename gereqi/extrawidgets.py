@@ -23,6 +23,7 @@ import gereqi.devices
 import gereqi.icons.configuration
 import gereqi.icons.icons_resource
 from gereqi.storage.Collection import CollectionDb
+from gereqi.icons.configuration import MyIcons
 import extraneous
 
 class MyDelegate(QItemDelegate):
@@ -83,28 +84,19 @@ class SetupExtraWidgets:
         The tray menu contains shortcuts to features
         in the main UI
         """
-        #FIXME: the icons do not show in Ubuntu
-        icon = QIcon().fromTheme("process-stop")
-        quit_action = QAction(icon, "&Quit", self.ui)
-        
-        icon = QIcon(":/icons/play.png")
-        self.ui.play_action = QAction(icon, "&Play", self.ui)
-        
-        icon = QIcon(":/icons/next.png")
-        next_action = QAction(icon, "&Next", self.ui)
-        
-        icon = QIcon(":/icons/back.png")
-        prev_action = QAction(icon, "&Previous", self.ui)
-        
-        icon = QIcon(":/icons/stop.png")
-        stop_action = QAction(icon, "&Stop", self.ui)
+        icons = MyIcons()
+        quit_action = QAction(icons.icon("quit"), "&Quit", self.ui)
+        self.ui.play_action = QAction(icons.icon("play"), "&Play", self.ui)
+        next_action = QAction(icons.icon("next"), "&Next", self.ui)
+        prev_action = QAction(icons.icon("back"), "&Previous", self.ui)
+        stop_action = QAction(icons.icon("stop"), "&Stop", self.ui)
         
         self.ui.play_action.setCheckable(True)
         self.ui.view_action = QAction("&Visible", self.ui)
         self.ui.view_action.setCheckable(True)
         self.ui.view_action.setChecked(True)
         tray_menu = QMenu(self.ui)
-        tray_menu.addAction(QIcon(":/icons/app.png"), "Gereqi")
+        tray_menu.addAction(QIcon(":/application/app.png"), "Gereqi")
         tray_menu.addSeparator()
         tray_menu.addAction(prev_action)
         tray_menu.addAction(self.ui.play_action)
@@ -114,7 +106,7 @@ class SetupExtraWidgets:
         tray_menu.addAction(self.ui.view_action)
         tray_menu.addAction(quit_action)
         self.ui.tray_icon = QSystemTrayIcon(self.ui)
-        self.ui.tray_icon.setIcon(QIcon(":/icons/app-paused.png"))
+        self.ui.tray_icon.setIcon(QIcon(":/application/paused.png"))
         self.ui.tray_icon.setContextMenu(tray_menu)
         self.ui.tray_icon.setToolTip("Stopped")    
         
@@ -130,6 +122,7 @@ class SetupExtraWidgets:
         """
         Extra __init__ things to add to the UI
         """
+        icons = MyIcons()
         self.ui.stat_lbl = QLabel("Finished")
         self.ui.stat_prog = QProgressBar()
         
@@ -139,14 +132,14 @@ class SetupExtraWidgets:
         
         
         self.ui.stat_bttn = QToolButton()
-        self.ui.stat_bttn.setIcon(QIcon().fromTheme("application-exit"))
+        self.ui.stat_bttn.setIcon(icons.icon("quit"))
         self.ui.stat_bttn.setAutoRaise(True)
         self.ui.stat_bttn.setEnabled(False)
         
         self.ui.play_type_bttn = QToolButton()  
         self.ui.play_type_bttn.setCheckable(True)
         self.ui.play_type_bttn.setAutoRaise(True)
-        self.ui.play_type_bttn.setIcon(QIcon(":/icons/dice-icon2.png"))
+        self.ui.play_type_bttn.setIcon(QIcon(":/application/normal.png"))
         
         self.ui.statusBar.addPermanentWidget(self.ui.stat_lbl)
         self.ui.statusBar.addPermanentWidget(self.ui.stat_prog)
@@ -211,10 +204,10 @@ class WidgetManips:
         if checked or not
         """
         if check:
-            icon = QIcon(":/icons/dice-icon.png")
+            icon = ":/application/random.png"
         else:
-            icon = QIcon(":/icons/dice-icon2.png")            
-        self.ui.play_type_bttn.setIcon(icon)
+            icon = ":/application/normal.png"            
+        self.ui.play_type_bttn.setIcon(QIcon(icon))
         
         
     def __add_from_dev(self, item):
@@ -517,7 +510,7 @@ class WidgetManips:
         headers = []
         
         hdr = QTreeWidgetItem(["Playlists"])
-        hdr.setIcon(0,QIcon(":/icons/files.png"))
+        hdr.setIcon(0,QIcon(":/application/files.png"))
         
 #        for hdr in headers:
         hdr.setFont(0, font)
@@ -526,10 +519,11 @@ class WidgetManips:
         if hdr.text(0) == "Playlists":
             for play in playlists:
                 # Ignore the auto-save playlist
+                #TODO: replace with dedicated DB-table
                 if play == "!!##gereqi.remembered##!!":
                     continue
                 now = QTreeWidgetItem([play])
-                now.setIcon(0,QIcon(":/icons/playlist.png"))
+                now.setIcon(0,QIcon(MyIcons().icon("folder")))
                 hdr.addChild(now)
                 tracks = self.ui.media_db.playlist_tracks(play)
                 for track in tracks:
@@ -545,12 +539,13 @@ class WidgetManips:
         Depending on the specific state of the program
         the play button's icon will vary
         """
+        icons = MyIcons()
         if state == "play":
-            icon = QIcon(":/icons/pause.png")
-            tray = QIcon(":/icons/app.png")
+            icon = icons.icon("pause")
+            tray = QIcon(":/application/app.png")
         elif state == "pause":            
-            icon = QIcon(":/icons/play.png")
-            tray = QIcon(":/icons/app-paused.png")
+            icon = icons.icon("play")
+            tray = QIcon(":/application/app-paused.png")
 
         self.ui.play_bttn.setIcon(icon)
         self.ui.tray_icon.setIcon(tray)
