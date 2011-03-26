@@ -557,9 +557,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                         "Audio Files : %(filt)s (%(filt)s)" % {'filt': filts}
                         )       
                         
-        if mfiles is None:
+        if len(mfiles[0]) < 1:
             return
-        
         for item in mfiles:
             self.playlisting.add_to_playlist(item[0])
 
@@ -680,13 +679,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Mutes audio output and changes button icon accordingly
         """
         self.player.audio_object.mute(checked)
-        if checked:
-            icon = self.icons.icon("mute")
-        else:
-#            vol = (self.volume_sldr.value() / 100.0)
-            icon = self.icons.icon("volume-max")
-            # The volume-slider may have changed since being muted            
-#            self.player.audio_object.set_volume(vol)            
+        icon = self.icons.icon("mute") if checked else self.icons.icon("volume-max")      
         self.mute_bttn.setIcon(icon)
       
     @Slot() 
