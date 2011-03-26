@@ -20,6 +20,7 @@ from gereqi.audio import Backend,Formats
 from gereqi.storage.Settings import Settings
 from gereqi.storage.Collection import CollectionDb
 from gereqi.information.tagging import Tagging
+from gereqi.icons.configuration import MyIcons
 try:
     from gereqi.audio import Cdrom
     CDS_OK = True
@@ -192,7 +193,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.wdgt_manip.setup_db_tree()
         self.wdgt_manip.pop_playlist_view()
         
-        self.play_cd_actn.setVisible(CDS_OK)  
+        self.play_cd_actn.setVisible(CDS_OK)
+        self.icons = MyIcons()
 
         
     def __reset_db_default(self,err):
@@ -679,13 +681,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         self.player.audio_object.mute(checked)
         if checked:
-            icon = QIcon(QIcon().fromTheme("process-stop"))
+            icon = self.icons.icon("mute")
         else:
-            vol = (self.volume_sldr.value() / 100.0)
-            icon = QIcon().fromTheme("player-volume",QIcon(":/icons/audio-card.png"))
+#            vol = (self.volume_sldr.value() / 100.0)
+            icon = self.icons.icon("volume-max")
             # The volume-slider may have changed since being muted            
-            self.player.audio_object.set_volume(vol)
-            
+#            self.player.audio_object.set_volume(vol)            
         self.mute_bttn.setIcon(icon)
       
     @Slot() 
