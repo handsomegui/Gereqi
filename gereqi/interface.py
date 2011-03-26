@@ -131,8 +131,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         self.__settings_init()
         
-        
-        
         self.build_lock = self.delete_lock = False
         self.art_alb = {"oldart":None, "oldalb":None, 
                         "nowart":None, "nowalb":None, 
@@ -158,8 +156,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.__reset_db_default(err)
             
         self.info_thread = Getinfo(self)
-        self.html_thread = Getwiki()
-        
+        self.html_thread = Getwiki()        
             
         self.del_thread = DeleteFiles(self)
         self.extras = Extraneous()
@@ -920,8 +917,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         new_name = QInputDialog.getText(\
             None,
-            QString("Rename Playlist"),
-            QString("Rename the playlist to:"),
+            "Rename Playlist",
+            "Rename the playlist to:",
             QLineEdit.Normal)
         
         # Checks if you entered a non-zero length name and that you clicked 'ok'
