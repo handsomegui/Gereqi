@@ -11,12 +11,10 @@ class Setup:
     def __config_icons(self,parent):
         icons = MyIcons()
         
-        parent.clear_collect_bttn.setIcon(QIcon().fromTheme("edit-clear",
-                                                                  QIcon(":/icons/edit-clear.png")))
-        parent.clear_search_bttn.setIcon(QIcon().fromTheme("edit-clear"
-                                                                 ,QIcon(":/icons/edit-clear.png")))
+        parent.clear_collect_bttn.setIcon(icons.icon("clear"))
+        parent.clear_search_bttn.setIcon(icons.icon("clear"))
         parent.clear_trktbl_bttn.setIcon(icons.icon("clear-playlist"))
-        parent.save_trktbl_bttn.setIcon(QIcon(":/icons/save.png"))
+        parent.save_trktbl_bttn.setIcon(icons.icon("save-playlist"))
         parent.prev_trktbl_bttn.setIcon(icons.icon("undo"))
         parent.next_trktbl_bttn.setIcon(icons.icon("redo"))
         
@@ -26,11 +24,11 @@ class Setup:
         parent.next_bttn.setIcon(icons.icon("next"))  
         
         parent.play_cd_actn.setIcon(icons.icon("audiocd"))
-        parent.play_media_actn.setIcon(QIcon(":/icons/files2.png"))
-        parent.prev_track_actn.setIcon(QIcon(":/icons/back.png"))
-        parent.play_actn.setIcon(QIcon(":/icons/play.png"))
-        parent.stop_actn.setIcon(QIcon(":/icons/stop.png"))
-        parent.actionNext_Track.setIcon(QIcon(":/icons/next.png"))
+        parent.play_media_actn.setIcon(icons.icon("open-folder"))
+        parent.prev_track_actn.setIcon(icons.icon("back"))
+        parent.play_actn.setIcon(icons.icon("play"))
+        parent.stop_actn.setIcon(icons.icon("stop"))
+        parent.actionNext_Track.setIcon(icons.icon("next"))
 
         parent.rename_playlist_bttn.setIcon(icons.icon("rename-playlist"))
         parent.delete_playlist_bttn.setIcon(icons.icon("delete-playlist"))
@@ -52,6 +50,9 @@ class MyIcons:
     icons["clear-playlist"] = (":/default-icons/new-window.png",)
     icons["delete-playlist"] = (":/default-icons/delete.png",)
     icons["rename-playlist"] = (":/default-icons/save-as.png",)
+    icons["save-playlist"] = (":/default-icons/save.png",)
+    icons["clear"] = (":/default-icons/clear.png",)
+    icons["open-folder"] = (":/default-icons/open-folder.png",)
     
     def  __init__(self, mode=0):
         self.mode = mode

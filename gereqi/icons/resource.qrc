@@ -26,8 +26,8 @@
     <file alias="redo.png">default/edit-redo.png</file>
     <file>default/edit-delete.png</file>
     <file>default/folder-new.png</file>
-    <file>default/edit-clear.png</file>
-    <file>default/document-save.png</file>
+    <file alias="clear.png">default/edit-clear.png</file>
+    <file alias="save.png">default/document-save.png</file>
     <file alias="new-window.png">default/window-new.png</file>
     <file>default/drive-removable-media.png</file>
     <file>default/process-stop.png</file>
