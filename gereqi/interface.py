@@ -589,8 +589,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                                          "Save Playlist",
                                          "Enter a name for the playlist:",
                                          QLineEdit.Normal)
-         
-        if play_name[1] is None:
+        if play_name[1] == False:
             # User clicked cancel
             return
         
