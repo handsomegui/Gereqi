@@ -545,7 +545,7 @@ class WidgetManips:
             tray = QIcon(":/application/app.png")
         elif state == "pause":            
             icon = icons.icon("play")
-            tray = QIcon(":/application/app-paused.png")
+            tray = QIcon(":/application/paused.png")
 
         self.ui.play_bttn.setIcon(icon)
         self.ui.tray_icon.setIcon(tray)
