@@ -518,10 +518,6 @@ class WidgetManips:
      
         if hdr.text(0) == "Playlists":
             for play in playlists:
-                # Ignore the auto-save playlist
-                #TODO: replace with dedicated DB-table
-                if play == "!!##gereqi.remembered##!!":
-                    continue
                 now = QTreeWidgetItem([play])
                 now.setIcon(0,QIcon(MyIcons().icon("folder")))
                 hdr.addChild(now)

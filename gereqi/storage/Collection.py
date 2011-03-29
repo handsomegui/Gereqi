@@ -30,6 +30,7 @@ class CollectionDb:
     def __del__(self):
         """
         To ensure the db-connection is closed
+        Seems to calm down the QSqlDatabasePrivate::removeDatabase warnings
         """
         self.close_connection()
         
@@ -86,7 +87,10 @@ class CollectionDb:
                         file_name TEXT)''',
                     '''CREATE TABLE IF NOT EXISTS history (
                         timestamp    INT(10) PRIMARY KEY,
-                        file_name    TEXT)''']
+                        file_name    TEXT)''',
+                    '''CREATE TABLE IF NOT EXISTS last_playlist (
+                        id INT(3) PRIMARY KEY,
+                        file_name TEXT)''']
                   
         elif self.db_type == "MYSQL":
             # Mysql requires slightly different tables
@@ -103,13 +107,16 @@ class CollectionDb:
                                 bitrate    SMALLINT(4) UNSIGNED,
                                 added    INT(10) UNSIGNED ,
                                 rating    TINYINT(1) UNSIGNED) DEFAULT CHARSET=utf8 ''', 
-                            '''CREATE TABLE IF NOT EXISTS playlist (
-                                id SMALLINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                                name VARCHAR(255),
-                                file_name TEXT) DEFAULT CHARSET=utf8 ''',
-                            '''CREATE TABLE IF NOT EXISTS history (
-                                timestamp    INT(10) PRIMARY KEY,
-                                file_name    TEXT) DEFAULT CHARSET=utf8 ''']
+                        '''CREATE TABLE IF NOT EXISTS playlist (
+                            id SMALLINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                            name VARCHAR(255),
+                            file_name TEXT) DEFAULT CHARSET=utf8 ''',
+                        '''CREATE TABLE IF NOT EXISTS history (
+                            timestamp    INT(10) PRIMARY KEY,
+                            file_name    TEXT) DEFAULT CHARSET=utf8 ''',
+                        '''CREATE TABLE IF NOT EXISTS last_playlist (
+                            id INT(3) PRIMARY KEY,
+                            file_name TEXT)''']
             
         for table in tables:
             self.__query_execute(table)
@@ -138,8 +145,7 @@ class CollectionDb:
                 results.append(row_result)
                 row+=1
             else:
-                results.append(record().value(0))
-        
+                results.append(record().value(0))        
         return results
         
     def __query_execute(self, query, args=None):
@@ -388,10 +394,10 @@ class CollectionDb:
         result = self.__query_fetchall()
         return result
    
+   #TODO: replace name to reflect new operation
     def drop_media(self):
-        query = '''DROP TABLE media'''
+        query = '''DELETE FROM media'''
         self.__execute_write(query)
-        self.__setup_tables()
         
     def restart_db(self,name=None):
         """
@@ -437,6 +443,20 @@ class CollectionDb:
         CollectionDb.media_db.database(name).close()
         CollectionDb.media_db.removeDatabase(name)
         
+        
+    def save_last_playlist(self, items):
+        self.__query_execute("DELETE FROM last_playlist")
+        query = '''INSERT INTO last_playlist
+                    (id,file_name)
+                    VALUES(?,?)'''        
+        for item in items:
+            self.__execute_write(query, (items.index(item), item))
+        return
+        
+    def last_playlist(self):
+        query = "SELECT file_name FROM last_playlist ORDER BY id"
+        self.__query_execute(query)
+        return self.__query_fetchall()
     
         
             

@@ -319,7 +319,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         if self.sets_db.get_interface_setting("remember") == "False":
             return
-        tracks = self.media_db.playlist_tracks("!!##gereqi.remembered##!!")
+        tracks = self.media_db.last_playlist()
         if len(tracks) > 0:
             self.playlisting.add_list_to_playlist(tracks)
                 
@@ -548,11 +548,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def shutdown(self):
         self.parent.setOverrideCursor(QCursor(Qt.BusyCursor))
         if self.sets_db.get_interface_setting("remember") == "True":
-            play_name = "!!##gereqi.remembered##!!"
             tracks = self.playlisting.gen_file_list()
-            self.media_db.playlist_delete(play_name)
-            for trk in tracks:
-                self.media_db.playlist_add(play_name,trk)
+            self.media_db.save_last_playlist(tracks)
         self.media_db.shutdown()
         exit()
     
