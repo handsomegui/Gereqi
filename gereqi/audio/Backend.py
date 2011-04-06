@@ -49,7 +49,7 @@ class AudioBackend:
         """
         self.recently_played.append(self.audio_object.current_source())
         self.just_finished = True
-        track = self.ui.tracking.generate_track("next")
+        track = self.ui.tracking.next()
         #Not at end of  playlist
         if track is not None:
             self.audio_object.enqueue(track)
@@ -104,7 +104,7 @@ class AudioBackend:
         Doesn't actually change count. Adds notification
         of full-play into the historyDB table
         """
-        track = self.ui.tracking.generate_track("back")
+        track = self.ui.tracking.previous()
         timestamp = time.time()
         self.ui.media_db.inc_count(timestamp, track)
         

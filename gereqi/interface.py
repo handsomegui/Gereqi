@@ -16,7 +16,7 @@
 
 from PySide.QtGui import *
 from PySide.QtCore import *
-from gereqi.audio import Backend,Formats
+from gereqi.audio import Backend, Formats
 from gereqi.storage.Settings import Settings
 from gereqi.storage.Collection import CollectionDb
 from gereqi.information.tagging import Tagging
@@ -44,57 +44,50 @@ WATCHTIME = 30
 
 
 class Track:
+    """
+    This is needed as the track's filename is held in the playlist
+    and the FileName column can be moved anywhere
+    """
+    
     def __init__(self, parent):
         self.ui_main = parent
         
-    def generate_track(self, mode, row=None):
-        """
-        As the playlist changes on sorting, the playlist (the immediately 
-        next/previous tracks) has to be regenerated before the queing of 
-        the next track
-        """
-        column = self.ui_main.playlisting.header_search("FileName")
-        track = None
-        if mode == "now":
-            track = self.ui_main.track_tbl.item(row, column).text()
-        else:
-            # If 0 then the playlist is empty
-            rows = self.ui_main.track_tbl.rowCount() 
-            if rows < 1:
-                return
-            
-            row_now = self.ui_main.playlisting.current_row()
-            if row_now is None:
-                return
-            
-            if mode == "back":
-                if (row_now - 1) >= 0:
-                    track = self.ui_main.track_tbl.item(row_now - 1 , column)
-                    track = track.text()
-            elif mode == "next":
-                # Random playback mode selected
-                if self.ui_main.play_type_bttn.isChecked():
-                    file_list = self.ui_main.playlisting.gen_track_list()
-                    track = [trk for trk in file_list
-                             if trk not in self.ui_main.player.recently_played]
-                    if len(track) > 0:
-                        track = choice(track)
-                        
-                elif (row_now + 1) < rows:
-                    track = self.ui_main.track_tbl.item(row_now + 1, column)
-                    track = track.text()
-                    
-        if track is None:
-            return
-        
-#        result = str(track.toUtf8())
-        
+    def __checks(self,track):
         if path.exists(track) or track.startswith("cdda"):
             return track
-        else:
-#            result = str(track.toLatin1())
-            if path.exists(track):
-                return track
+        
+    def previous(self):
+        column = self.ui_main.playlisting.header_search("FileName")
+        row_now = self.ui_main.playlisting.current_row()
+        if row_now is None:
+            return        
+        if (row_now - 1) >= 0:
+            track = self.ui_main.track_tbl.item(row_now - 1 , column)
+            track = track.text()
+            return self.__checks(track)
+    
+    def next(self):
+        column = self.ui_main.playlisting.header_search("FileName")
+        row_now = self.ui_main.playlisting.current_row()
+        if row_now is None:
+            return   
+        # Random playback mode selected
+        if self.ui_main.play_type_bttn.isChecked():
+            file_list = self.ui_main.playlisting.gen_track_list()
+            track = [trk for trk in file_list
+                     if trk not in self.ui_main.player.recently_played]
+            if len(track) > 0:
+                return self.__checks(choice(track))
+                
+        elif (row_now + 1) < rows:
+            track = self.ui_main.track_tbl.item(row_now + 1, column)
+            return self.__checks(track.text())
+        
+    
+    def now(self, row):
+        column = self.ui_main.playlisting.header_search("FileName")
+        return self.__checks(self.ui_main.track_tbl.item(row, column).text())
+    
             
     def generate_info(self):
         """
@@ -232,8 +225,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         text_now = self.collect_tree.headerItem().text(0)
         if text_now == "Artist/Album":            
             return "artist"
-        else:
-            
+        else:            
             return "album"
         
     def __volume_icon(self,value=None):
@@ -401,7 +393,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Skip to previous track in viewable playlist
         if possible
         """
-        track = self.tracking.generate_track("back")
+        track = self.tracking.previous()
         if track is None:
             return
         self.player.audio_object.stop()
@@ -435,7 +427,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     selected = self.track_tbl.currentRow()
                     # A row is selected
                     if selected >= 0:
-                        selected = self.tracking.generate_track("now", selected)
+                        selected = self.tracking.now(selected)
                         self.player.audio_object.load(selected)
                     # Nothing to play
                     else:
@@ -487,7 +479,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Go to next item in playlist(down)
         """
-        track = self.tracking.generate_track("next")
+        track = self.tracking.next()
         if track is not None:
             self.player.audio_object.stop() 
             self.player.audio_object.load(track)
@@ -724,11 +716,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         When item is doubleclicked. Play its row.
         """
-        #This won't actualy stop. It'll pause instead.
         self.play_bttn.setChecked(False)
-        
+
         self.player.audio_object.stop()
-        track = self.tracking.generate_track("now", row)
+        track = self.tracking.now(row)
 
         self.player.audio_object.load(track)
         # Checking the button is the same
@@ -1008,7 +999,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.clear_trktbl_bttn.setEnabled(True)
             
     @Slot(QModelIndex)
-    def on_filesystem_tree_expanded(self,index):
+    def on_filesystem_tree_expanded(self, index):
         """
         Resizes the filesystem_tree to it's contents.
         Because of the '0' this seperate method is needed
