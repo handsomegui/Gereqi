@@ -79,7 +79,7 @@ class Track:
             if len(track) > 0:
                 return self.__checks(choice(track))
                 
-        elif (row_now + 1) < rows:
+        elif (row_now + 1) < self.ui_main.track_tbl.rowCount():
             track = self.ui_main.track_tbl.item(row_now + 1, column)
             return self.__checks(track.text())
         
