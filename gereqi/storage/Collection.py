@@ -170,15 +170,21 @@ class CollectionDb:
         row into DB with a file_name the row_count (play count)
         would increase
         """
-        args = (timestamp, fname)
-        query = '''INSERT INTO history
-                    VALUES(?,?)'''
-        self.__execute_write(query, args)
+        query = '''SELECT * FROM playcount
+                    WHERE file_name=?'''
+        self.__query_execute(query,(fname,))
+        go = self.__query_fetchall() 
+             
+        if len(go) < 1: 
+            query = '''INSERT INTO playcount (file_name,count) VALUES(?,1)'''
+            self.__execute_write(query, (fname,))
+        else:
+            query = '''UPDATE playcount SET count=count+1 WHERE id=?'''
+            self.__execute_write(query, (go[0]['id'],) )
         
     def delete_track(self, fname):
         args = (fname, )
-        query = '''DELETE FROM media
-                        WHERE file_name=?'''
+        query = '''DELETE FROM media WHERE file_name=?'''
         print("DELETING FROM DB: %s" % fname)
         self.__execute_write(query, args)
         
