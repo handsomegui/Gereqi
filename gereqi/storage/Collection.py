@@ -17,6 +17,7 @@ from PySide.QtCore import *
 from PySide.QtSql import *
 
 from gereqi.storage.Settings import Settings
+import Tables
 
 import os
 
@@ -69,54 +70,12 @@ class CollectionDb:
         
     def __setup_tables(self):
         if self.db_type == "SQLITE":
-            tables = ['''CREATE TABLE IF NOT EXISTS media (
-                        file_name    TEXT ,
-                        title   VARCHAR(50),
-                        artist  VARCHAR(50),
-                        album   VARCHAR(50),
-                        year   SMALLINT(4),
-                        genre  VARCHAR(20),
-                        track UNSIGNED TINYINT(2),
-                        length  VARCHAR(5),
-                        bitrate SMALLINT(4),
-                        added UNSIGNED INT(10),
-                        rating TINYINT(1),
-                        PRIMARY KEY (file_name) )''', 
-                    '''CREATE TABLE IF NOT EXISTS playlist (
-                        name TEXT,
-                        file_name TEXT)''',
-                    '''CREATE TABLE IF NOT EXISTS history (
-                        timestamp    INT(10) PRIMARY KEY,
-                        file_name    TEXT)''',
-                    '''CREATE TABLE IF NOT EXISTS last_playlist (
-                        id INT(3) PRIMARY KEY,
-                        file_name TEXT)''']
+            tables = Tables.Sqlite().tables
                   
         elif self.db_type == "MYSQL":
             # Mysql requires slightly different tables
-            tables = ['''CREATE TABLE IF NOT EXISTS media (
-                                id INT(10) AUTO_INCREMENT  PRIMARY KEY,
-                                file_name    TEXT,
-                                title    VARCHAR(50),
-                                artist    VARCHAR(50),
-                                album    VARCHAR(50),
-                                year    SMALLINT(4) UNSIGNED,
-                                genre    VARCHAR(20),
-                                track    TINYINT(2) UNSIGNED,
-                                length    VARCHAR(5),
-                                bitrate    SMALLINT(4) UNSIGNED,
-                                added    INT(10) UNSIGNED ,
-                                rating    TINYINT(1) UNSIGNED) DEFAULT CHARSET=utf8 ''', 
-                        '''CREATE TABLE IF NOT EXISTS playlist (
-                            id SMALLINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                            name VARCHAR(255),
-                            file_name TEXT) DEFAULT CHARSET=utf8 ''',
-                        '''CREATE TABLE IF NOT EXISTS history (
-                            timestamp    INT(10) PRIMARY KEY,
-                            file_name    TEXT) DEFAULT CHARSET=utf8 ''',
-                        '''CREATE TABLE IF NOT EXISTS last_playlist (
-                            id INT(3) PRIMARY KEY,
-                            file_name TEXT)''']
+            tables = Tables.Mysql.tables
+
             
         for table in tables:
             self.__query_execute(table)
@@ -130,6 +89,8 @@ class CollectionDb:
         """
         record = self.query.record
         field_count = record().count()
+        # To populate with the fields from the last execute.
+        # Array of dicts
         fields = []
         for cnt in range(field_count):
             fields.append( record().field(cnt).name() )
@@ -141,7 +102,7 @@ class CollectionDb:
             if len(fields) > 1:
                 row_result = {}
                 for field in fields:                    
-                    row_result[str(field)] = record().value(field) 
+                    row_result[field] = record().value(field) 
                 results.append(row_result)
                 row+=1
             else:
