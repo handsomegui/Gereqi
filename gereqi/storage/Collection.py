@@ -148,6 +148,7 @@ class CollectionDb:
             query = '''INSERT OR IGNORE INTO media 
                             VALUES (?,?,?,?,?,?,?,?,?,?,?)'''
         elif self.db_type == "MYSQL":
+            # To overcome the lack of an IGNORE
             query = '''
                     INSERT INTO media(  file_name, title,
                                         artist, album,
@@ -357,7 +358,8 @@ class CollectionDb:
    
    #TODO: replace name to reflect new operation
     def drop_media(self):
-        query = '''DELETE FROM media'''
+        query = '''DELETE FROM media; DELETE FROM playcount; 
+                    DELETE FROM last_playlist'''
         self.__execute_write(query)
         
     def restart_db(self,name=None):
