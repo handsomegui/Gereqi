@@ -427,5 +427,12 @@ class CollectionDb:
         self.__query_execute(query)
         return self.__query_fetchall()
     
+    def top_tracks(self,amount=10):
+        query = '''SELECT file_name FROM playcount
+                   ORDER BY count DESC 
+                   LIMIT ? '''
+                   
+        self.__query_execute(query, (amount,))
+        return self.__query_fetchall()         
         
             

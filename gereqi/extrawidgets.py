@@ -507,28 +507,41 @@ class WidgetManips:
 #        streams = None
 #        hdr_names = ["Playlists"] # Podcasts Radio Streams
 #        headers = [QTreeWidgetItem(["%s" % tit]) for tit in hdr_names ]
-        headers = []
+        headers = ["Playlists","Auto"]
         
-        hdr = QTreeWidgetItem(["Playlists"])
-        hdr.setIcon(0,QIcon(":/application/files.png"))
         
-#        for hdr in headers:
-        hdr.setFont(0, font)
-        hdr.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
-     
-        if hdr.text(0) == "Playlists":
-            for play in playlists:
-                now = QTreeWidgetItem([play])
+        
+        for item in headers:
+            hdr = QTreeWidgetItem([item])
+            hdr.setIcon(0,QIcon(":/application/files.png")) 
+            hdr.setFont(0, font)
+            hdr.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
+         
+            if item == "Playlists":
+                for play in playlists:
+                    now = QTreeWidgetItem([play])
+                    now.setIcon(0,QIcon(MyIcons().icon("folder")))
+                    hdr.addChild(now)
+                    tracks = self.ui.media_db.playlist_tracks(play)
+                    for track in tracks:
+                        info = self.ui.media_db.get_info(track)
+                        if info is not None:
+                            now.addChild(QTreeWidgetItem(["%s - %s" %
+                                         (info["title"], info["artist"]) ]))
+            #TODO: make dynamic e.g. populate on open of playlist
+            # instead of program load                
+            if item == "Auto":
+                now = QTreeWidgetItem(["Top 10"])
                 now.setIcon(0,QIcon(MyIcons().icon("folder")))
                 hdr.addChild(now)
-                tracks = self.ui.media_db.playlist_tracks(play)
+                tracks = self.ui.media_db.top_tracks()
                 for track in tracks:
                     info = self.ui.media_db.get_info(track)
                     if info is not None:
                         now.addChild(QTreeWidgetItem(["%s - %s" %
-                                     (info["title"], info["artist"]) ]))       
-                                                                                  
-        self.ui.playlist_tree.addTopLevelItem(hdr)
+                                     (info["title"], info["artist"]) ]))
+                                                                                      
+            self.ui.playlist_tree.addTopLevelItem(hdr)
                 
     def icon_change(self, state):
         """
