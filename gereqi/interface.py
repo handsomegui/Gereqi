@@ -352,6 +352,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         par = item.parent()
         track = album = artist = None
         mode = self.__collection_mode()
+        filt = self.__time_filt_now()
         
         if mode == "artist":
             # When we haven't selected an artist
@@ -371,13 +372,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             # Just an artist selected
             if artist is None:
                 artist = now
-                tracks = self.media_db.get_artists_files(artist)
+                tracks = self.media_db.get_artists_files(artist, filt)
                 self.playlisting.add_list_to_playlist(tracks)
             elif track is not None:
-                file_name = self.media_db.get_file(artist, album, track)
+                file_name = self.media_db.get_file(artist, album, track, filt)
                 self.playlisting.add_to_playlist(file_name)
             elif album is not None:
-                tracks = self.media_db.get_files(artist, album)
+                tracks = self.media_db.get_files(artist, album, filt)
                 self.playlisting.add_list_to_playlist(tracks)
         else:
             if par:

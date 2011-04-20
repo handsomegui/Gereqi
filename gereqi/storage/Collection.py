@@ -226,12 +226,13 @@ class CollectionDb:
         result = self.__query_fetchall()
         return result
         
-    def get_files(self, artist, album):
-        args = (artist, album)
+    def get_files(self, artist, album,filt=0):
+        args = (artist, album, filt)
         query = '''SELECT DISTINCT file_name   
                         FROM media 
                         WHERE artist=?
                         AND album=?
+                        AND added>?
                         ORDER BY track'''
         self.__query_execute(query, args)
         result = self.__query_fetchall()
@@ -245,13 +246,14 @@ class CollectionDb:
         result = self.__query_fetchall()
         return result
         
-    def get_file(self, artist, album, title):
-        args = (artist, album, title)
+    def get_file(self, artist, album, title,filt=0):
+        args = (artist, album, title,filt)
         query = '''SELECT DISTINCT file_name 
                         FROM media 
                         WHERE artist=?
                         AND album=?
-                        AND title=?'''
+                        AND title=?
+                        AND added>?'''
         self.__query_execute(query, args)
         result = self.__query_fetchall()[0]
         return result
@@ -271,16 +273,17 @@ class CollectionDb:
                         FROM media
                         WHERE album=?
                         AND added>?'''
-        self.__query_execute(query, (album, filt ))
+        self.__query_execute(query, (album, filt))
         result = self.__query_fetchall()
         return result
         
        
-    def get_artists_files(self, artist):
+    def get_artists_files(self, artist,filt=0):
         query = '''SELECT DISTINCT file_name 
                             FROM media
-                            WHERE artist=?'''
-        self.__query_execute(query, (artist, ))
+                            WHERE artist=?
+                            AND added>?'''
+        self.__query_execute(query, (artist, filt))
         result = self.__query_fetchall()
         return result
                         
@@ -301,7 +304,8 @@ class CollectionDb:
         query = '''SELECT DISTINCT title
                         FROM media
                         WHERE album=?
-                        AND added>?'''
+                        AND added>
+                        ORDER BY track?'''
         self.__query_execute(query,(album, filt))
         result = self.__query_fetchall()
         return result
