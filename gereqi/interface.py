@@ -874,6 +874,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             tracks = self.media_db.playlist_tracks(playlist)
             self.playlisting.add_list_to_playlist(tracks)
             self.clear_trktbl_bttn.setEnabled(True)
+            
+        elif par == "Auto":
+            if item.text(0) == "Top 10":
+                tracks = self.media_db.top_tracks()
+                self.playlisting.add_list_to_playlist(tracks)
+                self.clear_trktbl_bttn.setEnabled(True)
         else:
             new_par = item.parent().parent()            
             if new_par.text(0) == "Playlists":
