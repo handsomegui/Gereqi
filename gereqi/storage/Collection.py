@@ -439,4 +439,10 @@ class CollectionDb:
         self.__query_execute(query, (amount,))
         return self.__query_fetchall()         
         
-            
+    def all_files(self):
+        """
+        Return all the filenames of tracks in the DB
+        """
+        query = ''' SELECT file_name FROM media'''
+        self.__query_execute(query)
+        return self.__query_fetchall()            
