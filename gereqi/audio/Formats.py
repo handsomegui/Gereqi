@@ -18,7 +18,7 @@ class Formats:
                  "mp3": ["libgstlame.so","libgstflump3dec.so"],
                  "m4a": ["libfaac.so"]}
         
-        cmd = "locate /usr/lib*%s*"
+        cmd = "find /usr/lib/ -name %s"
         avail = []
         for key in fmats.iterkeys():
             for lib in fmats[key]:
