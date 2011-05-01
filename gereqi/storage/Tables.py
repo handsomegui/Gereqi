@@ -16,7 +16,7 @@ class Sqlite:
                 name TEXT,
                 file_name TEXT)''',
             '''CREATE TABLE IF NOT EXISTS playcount (
-                id INT(10) AUTO_INCREMENT PRIMARY KEY,
+                id INT(10) PRIMARY KEY,
                 file_name    TEXT,
                 count INT(10) )''',
             '''CREATE TABLE IF NOT EXISTS last_playlist (
