@@ -149,8 +149,11 @@ class Builddb(QThread):
                     pass
                 for fname in filenames:
                     trk = self.__file_compat(dirpath, fname)
-                    if trk is not None:
-                        tracks.append(trk)
+                    if trk:
+                        try:
+                            tracks.append(unicode(trk))
+                        except UnicodeDecodeError:
+                            continue
                             
         else:
             # Cannot use the loop for both as one is the above is a generator
@@ -158,9 +161,9 @@ class Builddb(QThread):
             for fname in os.listdir(dir):
                 trk = self.__file_compat(dir, fname)
                 if trk is not None:
-                    tracks.append(trk)
-                         
-        return tracks
+                    tracks.append(trk) 
+       
+        return list(set(tracks) - set(self.db.all_files() ))
         
     def run(self):
         
