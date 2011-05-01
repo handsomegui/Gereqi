@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'interface.ui'
 #
-# Created: Tue Mar  8 21:59:52 2011
-#      by: pyside-uic 0.2.7 running on PySide 1.0.1
+# Created: Sun May  1 17:47:38 2011
+#      by: pyside-uic 0.2.8 running on PySide 1.0.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -17,7 +17,7 @@ class Ui_MainWindow(object):
         self.centralWidget = QtGui.QWidget(MainWindow)
         self.centralWidget.setObjectName("centralWidget")
         self.gridLayout = QtGui.QGridLayout(self.centralWidget)
-        self.gridLayout.setMargin(2)
+        self.gridLayout.setContentsMargins(2, 2, 2, 2)
         self.gridLayout.setObjectName("gridLayout")
         self.splitter = QtGui.QSplitter(self.centralWidget)
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
@@ -42,7 +42,7 @@ class Ui_MainWindow(object):
         self.contentTab.setSizePolicy(sizePolicy)
         self.contentTab.setObjectName("contentTab")
         self.gridLayout_2 = QtGui.QGridLayout(self.contentTab)
-        self.gridLayout_2.setMargin(1)
+        self.gridLayout_2.setContentsMargins(1, 1, 1, 1)
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.horizontal_tabs = QtGui.QTabWidget(self.contentTab)
         self.horizontal_tabs.setEnabled(True)
@@ -61,7 +61,7 @@ class Ui_MainWindow(object):
         self.musicTab = QtGui.QWidget()
         self.musicTab.setObjectName("musicTab")
         self.gridLayout_12 = QtGui.QGridLayout(self.musicTab)
-        self.gridLayout_12.setMargin(2)
+        self.gridLayout_12.setContentsMargins(2, 2, 2, 2)
         self.gridLayout_12.setObjectName("gridLayout_12")
         self.info_view = QtWebKit.QWebView(self.musicTab)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Preferred)
@@ -79,7 +79,7 @@ class Ui_MainWindow(object):
         self.wikipediaTab = QtGui.QWidget()
         self.wikipediaTab.setObjectName("wikipediaTab")
         self.gridLayout_4 = QtGui.QGridLayout(self.wikipediaTab)
-        self.gridLayout_4.setMargin(2)
+        self.gridLayout_4.setContentsMargins(2, 2, 2, 2)
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.wiki_view = QtWebKit.QWebView(self.wikipediaTab)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Preferred)
@@ -104,7 +104,7 @@ class Ui_MainWindow(object):
         self.collectionTab.setSizePolicy(sizePolicy)
         self.collectionTab.setObjectName("collectionTab")
         self.gridLayout_3 = QtGui.QGridLayout(self.collectionTab)
-        self.gridLayout_3.setMargin(2)
+        self.gridLayout_3.setContentsMargins(2, 2, 2, 2)
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.verticalLayout_2 = QtGui.QVBoxLayout()
         self.verticalLayout_2.setObjectName("verticalLayout_2")
@@ -275,7 +275,7 @@ class Ui_MainWindow(object):
         self.layoutWidget = QtGui.QWidget(self.splitter)
         self.layoutWidget.setObjectName("layoutWidget")
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.layoutWidget)
-        self.verticalLayout_3.setMargin(0)
+        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.horizontalLayout_4 = QtGui.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")

@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'configuration.ui'
 #
-# Created: Thu Sep  2 21:45:11 2010
-#      by: PySide UI code generator 4.7.3
+# Created: Sun May  1 17:50:45 2011
+#      by: pyside-uic 0.2.8 running on PySide 1.0.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -26,7 +26,7 @@ class Ui_settings_dialog(object):
         self.verticalLayout_5 = QtGui.QVBoxLayout(settings_dialog)
         self.verticalLayout_5.setSpacing(2)
         self.verticalLayout_5.setSizeConstraint(QtGui.QLayout.SetMinimumSize)
-        self.verticalLayout_5.setMargin(1)
+        self.verticalLayout_5.setContentsMargins(1, 1, 1, 1)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
         self.tabWidget = QtGui.QTabWidget(settings_dialog)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
@@ -42,13 +42,13 @@ class Ui_settings_dialog(object):
         self.tab.setObjectName("tab")
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.tab)
         self.verticalLayout_3.setSpacing(4)
-        self.verticalLayout_3.setMargin(2)
+        self.verticalLayout_3.setContentsMargins(2, 2, 2, 2)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.groupBox = QtGui.QGroupBox(self.tab)
         self.groupBox.setObjectName("groupBox")
         self.verticalLayout = QtGui.QVBoxLayout(self.groupBox)
         self.verticalLayout.setSpacing(4)
-        self.verticalLayout.setMargin(2)
+        self.verticalLayout.setContentsMargins(2, 2, 2, 2)
         self.verticalLayout.setObjectName("verticalLayout")
         self.tray_icon = QtGui.QCheckBox(self.groupBox)
         self.tray_icon.setChecked(True)
@@ -73,7 +73,7 @@ class Ui_settings_dialog(object):
         self.groupBox_3.setObjectName("groupBox_3")
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.groupBox_3)
         self.verticalLayout_2.setSpacing(4)
-        self.verticalLayout_2.setMargin(2)
+        self.verticalLayout_2.setContentsMargins(2, 2, 2, 2)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.remember_current = QtGui.QCheckBox(self.groupBox_3)
         self.remember_current.setObjectName("remember_current")
@@ -89,12 +89,12 @@ class Ui_settings_dialog(object):
         self.tab_6.setObjectName("tab_6")
         self.verticalLayout_6 = QtGui.QVBoxLayout(self.tab_6)
         self.verticalLayout_6.setSpacing(4)
-        self.verticalLayout_6.setMargin(2)
+        self.verticalLayout_6.setContentsMargins(2, 2, 2, 2)
         self.verticalLayout_6.setObjectName("verticalLayout_6")
         self.groupBox_4 = QtGui.QGroupBox(self.tab_6)
         self.groupBox_4.setObjectName("groupBox_4")
         self.gridLayout_2 = QtGui.QGridLayout(self.groupBox_4)
-        self.gridLayout_2.setMargin(2)
+        self.gridLayout_2.setContentsMargins(2, 2, 2, 2)
         self.gridLayout_2.setHorizontalSpacing(2)
         self.gridLayout_2.setVerticalSpacing(4)
         self.gridLayout_2.setObjectName("gridLayout_2")
@@ -121,7 +121,7 @@ class Ui_settings_dialog(object):
         self.groupBox_5.setObjectName("groupBox_5")
         self.verticalLayout_8 = QtGui.QVBoxLayout(self.groupBox_5)
         self.verticalLayout_8.setSpacing(4)
-        self.verticalLayout_8.setMargin(2)
+        self.verticalLayout_8.setContentsMargins(2, 2, 2, 2)
         self.verticalLayout_8.setObjectName("verticalLayout_8")
         self.horizontalLayout_6 = QtGui.QHBoxLayout()
         self.horizontalLayout_6.setSpacing(4)
@@ -143,7 +143,7 @@ class Ui_settings_dialog(object):
         self.mysql_config.setObjectName("mysql_config")
         self.verticalLayout_4 = QtGui.QVBoxLayout(self.mysql_config)
         self.verticalLayout_4.setSpacing(4)
-        self.verticalLayout_4.setMargin(2)
+        self.verticalLayout_4.setContentsMargins(2, 2, 2, 2)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.horizontalLayout_7 = QtGui.QHBoxLayout()
         self.horizontalLayout_7.setSpacing(4)
