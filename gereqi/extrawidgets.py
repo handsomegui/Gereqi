@@ -465,14 +465,12 @@ class WidgetManips:
                 
         if mode == "artist":
             things = media_db.get_artists(time_filt)
-        elif mode == "album":
-            things = media_db.get_albums_all(time_filt)
-        
-        if things is None:
-            return
+            if things is None:
+                return   
+
         
         if mode == "album":
-#            self.threader.stop()
+            self.threader.stop()
 #            self.threader.exit()
             self.threader.set_values(time_filt,filt)
             self.threader.start()
@@ -503,13 +501,7 @@ class WidgetManips:
         font.setBold(True)        
         self.ui.playlist_tree.clear()
         playlists = self.ui.media_db.playlist_list()
-#        podcasts = None
-#        streams = None
-#        hdr_names = ["Playlists"] # Podcasts Radio Streams
-#        headers = [QTreeWidgetItem(["%s" % tit]) for tit in hdr_names ]
-        headers = ["Playlists","Auto"]
-        
-        
+        headers = ["Playlists","Auto"]       
         
         for item in headers:
             hdr = QTreeWidgetItem([item])
@@ -574,31 +566,23 @@ class AlbumItem(QThread):
             
     def stop(self):
         self.exiting = True
-        self.exit()
         
     def set_values(self,time_filt, filter):
-        self.exiting = False   
+        self.exiting = False  
         self.filter = filter
         self.time_filt = time_filt
     
     def run(self):
-        self.exiting = False      
+        self.exiting = False
         extras = extraneous.Extraneous()
-        for album in self.db.get_albums_all(self.time_filt):
-            # We need this so that if the album mode is selected soon, the
-            # treeview is populated from the start otherwise it continues from
-            # where it stopped last
+        for item in self.db.get_albums_all(self.time_filt, self.filter):
             if self.exiting:
-                self.exit()
-                return
-            if (self.filter is not None) and (self.filter.lower() not in album.lower()):
-                continue        
-            artist = self.db.get_artist(album)
-            cover = extras.get_cover_source(artist[0],album,True, False)
+                break       
+            cover = extras.get_cover_source(item['artist'],item['album'],True, False)
             if not cover:
                 cover = ":icons/nocover.png"
             else:
                 cover = cover.replace("file://", '')
-            self.new_item.emit((album,cover))
-        self.exec_()        
+            self.new_item.emit((item['album'],cover))
+#            self.exec_()        
 

@@ -217,12 +217,14 @@ class CollectionDb:
         result = self.__query_fetchall()
         return result
         
-    def get_albums_all(self, filt=0):
-        query = '''SELECT DISTINCT album
+    def get_albums_all(self, time_filt=0, filt=''):
+        filt = "%%%s%%" % filt
+        query = '''SELECT DISTINCT album,artist
                         FROM media   
                         WHERE added>?
+                        AND album LIKE ?
                         ORDER BY lower(album)'''
-        self.__query_execute(query, (filt, ))
+        self.__query_execute(query, (time_filt, filt))
         result = self.__query_fetchall()
         return result
         
@@ -333,7 +335,6 @@ class CollectionDb:
             query = '''INSERT INTO playlist 
                         (name,file_name)
                         VALUES (?,?)'''
-
         self.__execute_write(query, params)
         
     def playlist_list(self):
@@ -387,7 +388,7 @@ class CollectionDb:
     
     def shutdown(self):
         """
-            Trying to shutdown cleanly. The Qt docs fail me.
+        Trying to shutdown cleanly. The Qt docs fail me.
         """
         conn_names = self.__connections()
         self.query.finish()
@@ -404,7 +405,7 @@ class CollectionDb:
         
     def update_tags(self, fname, key_vals):
         """
-            To be used once tag-editing is enabled
+        To be used once tag-editing is enabled
         """
         query = '''UPDATE media SET ? = ? WHERE file_name=?'''
         for key in key_vals.iterkeys():
