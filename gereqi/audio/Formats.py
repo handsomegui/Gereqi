@@ -16,7 +16,7 @@ class Formats:
         fmats = {"ogg": ["libgstvorbis.so"],
                  "flac": ["libgstflac.so"],
                  "mp3": ["libgstlame.so","libgstflump3dec.so"],
-                 "m4a": ["libfaac.so"]}
+                 "m4a": ["libfaad.so"]}
         
         cmd = "find /usr/lib/ -name %s"
         avail = []
