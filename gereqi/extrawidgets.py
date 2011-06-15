@@ -24,6 +24,7 @@ import gereqi.icons.configuration
 import gereqi.icons.icons_resource
 from gereqi.storage.Collection import CollectionDb
 from gereqi.icons.configuration import MyIcons
+from gereqi.playlist.Auto import Unplayed,Top
 import extraneous
 
 class MyDelegate(QItemDelegate):
@@ -523,16 +524,9 @@ class WidgetManips:
             #TODO: make dynamic e.g. populate on open of playlist
             # instead of program load                
             if item == "Auto":
-                now = QTreeWidgetItem(["Top 10"])
-                now.setIcon(0,QIcon(MyIcons().icon("folder")))
-                hdr.addChild(now)
-                tracks = self.ui.media_db.top_tracks()
-                for track in tracks:
-                    info = self.ui.media_db.get_info(track)
-                    if info is not None:
-                        now.addChild(QTreeWidgetItem(["%s - %s" %
-                                     (info["title"], info["artist"]) ]))
-                                                                                      
+                hdr.addChild(Top())
+                hdr.addChild(Unplayed())
+                                                                                     
             self.ui.playlist_tree.addTopLevelItem(hdr)
                 
     def icon_change(self, state):

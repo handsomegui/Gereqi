@@ -36,7 +36,7 @@ from configuration import Configuration
 from extraneous import Extraneous
 from extrawidgets import SetupExtraWidgets, WidgetManips
 from about import About
-from playlist import Playlist, PlaylistHistory
+from gereqi.playlist.playlist import Playlist, PlaylistHistory
 
 
 # The folder watcher poll-time in seconds
@@ -1144,8 +1144,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         mode = self.__collection_mode()
         if mode == "artist":
             self.wdgt_manip.mydel.mode = "album"
-            self.collect_tree.headerItem().setText(0, "Album/Artist")
-            
+            self.collect_tree.headerItem().setText(0, "Album/Artist")            
         else:
             self.wdgt_manip.mydel.mode = "artist"
             self.collect_tree.headerItem().setText(0, "Artist/Album")

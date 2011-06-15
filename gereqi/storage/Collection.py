@@ -185,7 +185,6 @@ class CollectionDb:
     def delete_track(self, fname):
         args = (fname, )
         query = '''DELETE FROM media WHERE file_name=?'''
-        print("DELETING FROM DB: %s" % fname)
         self.__execute_write(query, args)
         
     def get_artist(self,album):
@@ -369,8 +368,10 @@ class CollectionDb:
    
    #TODO: replace name to reflect new operation
     def drop_media(self):
-        query = '''DELETE FROM media; DELETE FROM playcount; 
-                    DELETE FROM last_playlist'''
+        query = '''DELETE FROM media; 
+                    DELETE FROM playcount; 
+                    DELETE FROM last_playlist; 
+                    DELETE FROM playlist'''
         self.__execute_write(query)
         
     def restart_db(self,name=None):
@@ -433,12 +434,25 @@ class CollectionDb:
         return self.__query_fetchall()
     
     def top_tracks(self,amount=10):
-        query = '''SELECT file_name FROM playcount
-                   ORDER BY count DESC 
-                   LIMIT ? '''
+        query = '''SELECT * FROM media 
+                    WHERE EXISTS ( 
+                        SELECT file_name FROM playcount 
+                        WHERE playcount.file_name = media.file_name) 
+                        LIMIT ?
+                    '''
                    
         self.__query_execute(query, (amount,))
-        return self.__query_fetchall()         
+        return self.__query_fetchall()
+
+    def unplayed(self):
+        query = '''SELECT * FROM media 
+                    WHERE NOT EXISTS ( 
+                        SELECT file_name FROM playcount 
+                        WHERE playcount.file_name = media.file_name) 
+                        LIMIT 10
+                    '''
+        self.__query_execute(query)
+        return self.__query_fetchall()
         
     def all_files(self):
         """
