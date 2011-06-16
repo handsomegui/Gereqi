@@ -48,7 +48,8 @@ class Webinfo:
         """
         url = url.encode("utf-8")
         try:
-            user_agent = "Googlebot/2.1 (+http://www.google.com/bot.html)"
+            #TODO: use an app constant
+            user_agent = "Gereqi-0.5.0" 
             headers = { 'User-Agent' : user_agent }
             req = Request(url, None, headers)
             return urlopen(req, None, 10)
