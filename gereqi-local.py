@@ -47,9 +47,11 @@ class Main:
         sys.exit(app.exec_())
     
     def setups(self):
-        self.wnd.search_trktbl_edit.setPlaceholderText("Playlist Search")
-        self.wnd.search_collect_edit.setPlaceholderText("Enter search terms here")
-    
+	try:
+	        self.wnd.search_trktbl_edit.setPlaceholderText("Playlist Search")
+	        self.wnd.search_collect_edit.setPlaceholderText("Enter search terms here")	
+    	except AttributeError,e:
+		print e
     
 if __name__ == '__main__':
     Main()
