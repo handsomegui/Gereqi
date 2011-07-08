@@ -3,11 +3,11 @@
 # Form implementation generated from reading ui file '/home/jono/Gereqi/ui/setting_dialog.ui'
 #
 # Created: Wed Nov 25 11:39:06 2009
-#      by: PySide UI code generator 4.6
+#      by: PyQt4 UI code generator 4.6
 #
 # WARNING! All changes made in this file will be lost!
 
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):

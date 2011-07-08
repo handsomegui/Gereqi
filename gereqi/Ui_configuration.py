@@ -3,11 +3,11 @@
 # Form implementation generated from reading ui file 'configuration.ui'
 #
 # Created: Sun May  1 17:50:45 2011
-#      by: pyside-uic 0.2.8 running on PySide 1.0.1
+#      by: pyside-uic 0.2.8 running on PyQt4 1.0.1
 #
 # WARNING! All changes made in this file will be lost!
 
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 
 class Ui_settings_dialog(object):
     def setupUi(self, settings_dialog):

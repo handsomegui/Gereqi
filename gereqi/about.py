@@ -4,7 +4,7 @@
 Module implementing Equaliser.
 """
 
-from PySide.QtGui import QDialog, QColor, QDesktopServices
+from PyQt4.QtGui import QDialog, QColor, QDesktopServices
 
 from Ui_about import Ui_About
 

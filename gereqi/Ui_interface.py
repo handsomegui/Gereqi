@@ -3,11 +3,11 @@
 # Form implementation generated from reading ui file 'interface.ui'
 #
 # Created: Sun May  1 17:47:38 2011
-#      by: pyside-uic 0.2.8 running on PySide 1.0.1
+#      by: pyside-uic 0.2.8 running on PyQt4 1.0.1
 #
 # WARNING! All changes made in this file will be lost!
 
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -624,4 +624,4 @@ class Ui_MainWindow(object):
         self.actionUndo.setText(QtGui.QApplication.translate("MainWindow", "Undo", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRedo.setText(QtGui.QApplication.translate("MainWindow", "Redo", None, QtGui.QApplication.UnicodeUTF8))
 
-from PySide import QtWebKit
+from PyQt4 import QtWebKit

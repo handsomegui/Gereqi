@@ -14,9 +14,9 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from PySide.QtGui import *
-from PySide.QtCore import *
-from PySide.QtWebKit import QWebPage
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
+from PyQt4.QtWebKit import QWebPage
 
 import time
 import gereqi.devices

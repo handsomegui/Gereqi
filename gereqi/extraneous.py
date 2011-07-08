@@ -14,7 +14,7 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from PySide.QtCore import QDir, QFile, QIODevice
+from PyQt4.QtCore import QDir, QFile, QIODevice
 from os import path, mkdir, environ
 
 from gereqi.information.webinfo import Webinfo

@@ -17,8 +17,8 @@
 Module implementing Configuration.
 """
 
-from PySide.QtGui import QDialog,QAbstractButton
-from PySide.QtCore import QDir, Slot
+from PyQt4.QtGui import QDialog,QAbstractButton
+from PyQt4.QtCore import QDir, Slot
 
 from gereqi.storage.Settings import Settings
 from Ui_configuration import Ui_settings_dialog
@@ -47,7 +47,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         If mysql support was built into QSql then allow
         the backend to be used
         """
-        from PySide.QtSql import QSqlDatabase
+        from PyQt4.QtSql import QSqlDatabase
         avails = QSqlDatabase.drivers()
         if "QMYSQL" in avails:
             self.database_type.addItem("MYSQL")
