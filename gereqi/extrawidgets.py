@@ -548,7 +548,7 @@ class WidgetManips:
         
         
 class AlbumItem(QThread):
-    new_item = Signal(tuple)
+    new_item = pyqtSignal(tuple)
     def __init__(self,parent=None):
         QThread.__init__(self)
         self.db = CollectionDb("album_items")
@@ -578,5 +578,4 @@ class AlbumItem(QThread):
             else:
                 cover = cover.replace("file://", '')
             self.new_item.emit((item['album'],cover))
-#            self.exec_()        
 

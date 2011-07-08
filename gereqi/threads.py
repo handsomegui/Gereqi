@@ -47,7 +47,7 @@ class GetCovers(QThread):
         for artist in artists:
             albums = db.get_albums(artist)
             for album in albums:
-                get_cover(artist,album)
+                get_cover(artist.toString(),album.toString())
         self.exec_()
 
 
@@ -56,7 +56,7 @@ class Getinfo(QThread):
     Retrieves the cover for an album
     from Amazon
     """
-    got_info = Signal(str)
+    got_info = pyqtSignal(str)
     
     def __init__(self, parent=None):
         QThread.__init__(self, parent)
@@ -78,7 +78,7 @@ class Getwiki(QThread):
     """
     Retrieves the wiki info for an artist
     """
-    got_wiki = Signal(str)
+    got_wiki = pyqtSignal(str)
     
     def __init__(self, parent=None):
         QThread.__init__(self, parent)
@@ -101,8 +101,8 @@ class Builddb(QThread):
     Gets files from a directory and build's a 
     media database from the filtered files
     """
-    progress = Signal(int)
-    finished = Signal(str)
+    progress = pyqtSignal(int)
+    finished = pyqtSignal(str)
     
     def __init__(self, parent):
         QThread.__init__(self, parent)
@@ -231,8 +231,8 @@ class Watcher(QThread, pyinotify.ProcessEvent):
     """
     Watches a directory periodically for file changes
     """
-    deletions = Signal(list)
-    creations = Signal(list)
+    deletions = pyqtSignal(list)
+    creations = pyqtSignal(list)
     
     def __init__(self, parent):
         QThread.__init__(self)
@@ -337,7 +337,7 @@ class Watcher(QThread, pyinotify.ProcessEvent):
 
 
 class DeleteFiles(QThread):
-    deleted = Signal()
+    deleted = pyqtSignal()
     
     def __init__(self, parent):
         QThread.__init__(self)

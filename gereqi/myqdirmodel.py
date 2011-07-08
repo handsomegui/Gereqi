@@ -14,13 +14,13 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt4.QtGui import QDirModel
-from PyQt4.QtCore import Qt, Signal, QModelIndex
+from PyQt4.QtCore import Qt, pyqtSignal, QModelIndex
 
 
 # TODO: make readable and comment
 
 class MyQDirModel(QDirModel):
-    needsRefresh = Signal(QModelIndex)
+    needsRefresh = pyqtSignal(QModelIndex)
     check_list = []
     recursive = True
     

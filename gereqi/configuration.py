@@ -18,7 +18,7 @@ Module implementing Configuration.
 """
 
 from PyQt4.QtGui import QDialog,QAbstractButton
-from PyQt4.QtCore import QDir, Slot
+from PyQt4.QtCore import QDir, pyqtSignature
 
 from gereqi.storage.Settings import Settings
 from Ui_configuration import Ui_settings_dialog
@@ -162,8 +162,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.__set_database()
         self.__save_settings()
             
-#    @pyqtSignature("QAbstractButton*")
-    @Slot(QAbstractButton)
+    @pyqtSignature("QAbstractButton")
     def on_buttonBox_clicked(self, button):
         """
         Slot documentation goes here.
@@ -171,7 +170,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         if button.text() == "Apply":
             self.__apply_settings()
     
-    @Slot()
+    @pyqtSignature("")
     def on_buttonBox_accepted(self):
         """
         Slot documentation goes here.
@@ -179,11 +178,11 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.__apply_settings()
         QDialog.accept(self)
     
-    @Slot()
+    @pyqtSignature("")
     def on_buttonBox_rejected(self):
         QDialog.reject(self)
         
-    @Slot(str)
+    @pyqtSignature("QString")
     def on_database_type_currentIndexChanged(self, val):
         """
         Prevent mysql info entry if sqlite dbtype is selected
@@ -193,7 +192,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         elif val == "MYSQL":
             self.mysql_config.setEnabled(True)
             
-    @Slot(bool)
+    @pyqtSignature("bool")
     def on_scan_recursively_toggled(self, check):
         """
         sets the myqdirmodel in a certain mode

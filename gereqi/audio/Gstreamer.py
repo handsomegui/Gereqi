@@ -14,7 +14,7 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from PyQt4.QtCore import QObject, Signal
+from PyQt4.QtCore import QObject, pyqtSignal
 
 import pygst
 pygst.require("0.10")
@@ -56,9 +56,9 @@ class Utilities:
             
             
 class Gstbe(QObject):
-    finished = Signal()
-    tick = Signal(int)
-    track_changed = Signal()
+    finished = pyqtSignal()
+    tick = pyqtSignal(int)
+    track_changed = pyqtSignal()
     
     
     def __init__(self):
