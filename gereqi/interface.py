@@ -398,7 +398,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if track is None:
             return
         self.player.audio_object.stop()
-        self.player.audio_object.load(track)
+        self.player.audio_object.load(unicode(track))
         # Checks to see if the playbutton is in play state
         if self.play_bttn.isChecked():
             self.player.audio_object.play()
@@ -429,7 +429,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     # A row is selected
                     if selected >= 0:
                         selected = self.tracking.now(selected)
-                        self.player.audio_object.load(selected)
+                        self.player.audio_object.load(unicode(selected))
                     # Nothing to play
                     else:
                         # Just reset the play button and stop here
@@ -483,7 +483,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         track = self.tracking.next()
         if track is not None:
             self.player.audio_object.stop() 
-            self.player.audio_object.load(track)
+            self.player.audio_object.load(unicode(track))
             if self.play_bttn.isChecked():
                 self.player.audio_object.play()
             else:
@@ -722,7 +722,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.player.audio_object.stop()
         track = self.tracking.now(row)
 
-        self.player.audio_object.load(track)
+        self.player.audio_object.load(unicode(track))
         # Checking the button is the same
         # as self.player.audio_object.play(), just cleaner overall
         self.play_bttn.setChecked(True) 

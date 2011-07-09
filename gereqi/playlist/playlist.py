@@ -61,7 +61,7 @@ class Playlist:
             metadata = self.ui_main.media_db.get_info(file_name)
             if metadata is None:
                 # get the info using the tag-extractor module
-                metadata = self.ui_main.meta.extract(file_name)
+                metadata = self.ui_main.meta.extract(unicode(file_name))
                 if metadata is None:
                     return
                 else:       

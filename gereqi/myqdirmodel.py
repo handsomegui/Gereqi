@@ -46,7 +46,9 @@ class MyQDirModel(QDirModel):
                 return Qt.Checked
             
             elif self.recursive is True:
-                par_dir = "/".join(dir_now.split("/")[:-1])
+#                par_dir = "/".join(dir_now.split("/")[:-1])
+                par_dir = dir_now.split('/')[:-1]
+                print type(par_dir)
                 # the item is checked only if we have stored its path
                 if dir_now in self.check_list[1]:
                     return Qt.Unchecked
@@ -89,7 +91,7 @@ class MyQDirModel(QDirModel):
         """
         # user trying to do something to the checkbox
         if index.isValid() and (index.column() == 0) and (role == Qt.CheckStateRole):
-            dir_now = self.filePath(index)        
+            dir_now = unicode(self.filePath(index))      
             
             # store checked paths, remove unchecked paths
             if value == Qt.Checked:             

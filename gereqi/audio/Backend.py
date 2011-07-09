@@ -52,7 +52,7 @@ class AudioBackend:
         track = self.ui.tracking.next()
         #Not at end of  playlist
         if track is not None:
-            self.audio_object.enqueue(track)
+            self.audio_object.enqueue(unicode(track))
 
     def __prog_tick(self, time):
         """
