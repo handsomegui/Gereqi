@@ -47,7 +47,7 @@ class GetCovers(QThread):
         for artist in artists:
             albums = db.get_albums(artist)
             for album in albums:
-                get_cover(artist.toString(),album.toString())
+                get_cover(artist,album)
         self.exec_()
 
 

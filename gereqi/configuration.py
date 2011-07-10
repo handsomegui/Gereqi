@@ -78,7 +78,8 @@ class Configuration(QDialog, Ui_settings_dialog):
         if exclude is not None:
             exc = [dir for dir in exclude.split(",")]
         
-        self.dir_model.check_list = [inc, exc]                                        
+        self.dir_model.check_list = {'includes':inc,
+                                     'excludes':exc}                                        
         filters = QDir.AllDirs|QDir.Readable|QDir.NoDotAndDotDot
         self.dir_model.setFilter(filters)
         self.dir_model.setReadOnly(True)
@@ -135,11 +136,9 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.sets_db.add_collection_setting("watch", watch_dirs)
         self.sets_db.add_collection_setting("recursive", recursive_dirs)
         
-    def __set_collections(self):
-        
-        self.dir_model.check_list[0]
-        incl = ",".join(self.dir_model.check_list[0])
-        excl = ",".join(self.dir_model.check_list[1])
+    def __set_collections(self):        
+        incl = ','.join(self.dir_model.check_list['includes'])
+        excl = ','.join(self.dir_model.check_list['excludes'])
         self.sets_db.add_collection_setting("include",incl)
         self.sets_db.add_collection_setting("exclude",excl)
             

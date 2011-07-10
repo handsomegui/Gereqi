@@ -102,11 +102,11 @@ class CollectionDb:
             if len(fields) > 1:
                 row_result = {}
                 for field in fields:                    
-                    row_result[field] = record().value(field) 
+                    row_result[unicode(field)] = unicode(record().value(field).toString()) 
                 results.append(row_result)
                 row+=1
             else:
-                results.append(record().value(0))        
+                results.append(unicode(record().value(0).toString()))        
         return results
         
     def __query_execute(self, query, args=None):

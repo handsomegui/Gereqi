@@ -72,7 +72,7 @@ class Playlist:
                                 "Length": metadata[6], "Bitrate": metadata[7], 
                                 "FileName": file_name}
             else:
-                trk = "%02u" % metadata["track"]
+                trk = "%02u" % int(metadata["track"])
                 metadata = {'Track': trk, "Title": metadata["title"], "Artist": metadata["artist"], 
                             "Album": metadata["album"], "Year": metadata["year"], "Genre": metadata["genre"],
                             "Length": metadata["length"], "Bitrate": metadata["bitrate"], 

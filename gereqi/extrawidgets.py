@@ -482,9 +482,9 @@ class WidgetManips:
         for thing in things:
             # When creating collection tree only 
             #  allow certain things based on the filter.
-            if (filt is not None) and (filt.lower() not in thing.lower()):
+            if (filt is not None) and (unicode(filt).lower() not in unicode(thing).lower()):
                 continue
-            row = QTreeWidgetItem([thing])
+            row = QTreeWidgetItem(QStringList(unicode(thing)))
             row.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
             self.ui.collect_tree.addTopLevelItem(row)
             
