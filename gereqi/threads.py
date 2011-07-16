@@ -21,9 +21,11 @@ to make it easier to manage
 
 from PyQt4.QtCore import *
 
-from urllib import pathname2url
 from time import time, sleep
 
+import urllib
+import urllib2
+import json
 import os
 import pyinotify
 
@@ -71,28 +73,6 @@ class Getinfo(QThread):
     def run(self):
         html = InfoPage(self.ui).gen_info(**self.info)
         self.got_info.emit(html)
-        self.exec_()
-        
-        
-class Getwiki(QThread):
-    """
-    Retrieves the wiki info for an artist
-    """
-    got_wiki = pyqtSignal(str)
-    
-    def __init__(self, parent=None):
-        QThread.__init__(self, parent)
-        
-    def __del__(self):
-        self.exit()
-    
-    def set_values(self, art):
-        self.artist = art
-        
-    def run(self):
-        info = Webinfo()
-        result = info.get_info("info", self.artist) if not None else "None"
-        self.got_wiki.emit(result)
         self.exec_()
         
         
@@ -361,6 +341,7 @@ class DeleteFiles(QThread):
         self.exec_()   
 
 
+#TODO: remove this. These activities should be performed here
 class Finishers:
     """
     Things to do when the threads finish
@@ -384,17 +365,35 @@ class Finishers:
         self.ui.stat_prog.setValue(100)
         self.ui.wdgt_manip.setup_db_tree()
         self.ui.search_collect_edit.clear()
-        
-        
-    def set_wiki(self, html):
-        """
-        The printable wikipedia page (if found) is
-        put into the wikipedia tab
-        """
-        if html != "None":
-            self.ui.horizontal_tabs.setTabEnabled(2, True)
-            self.ui.wiki_view.setHtml(html)
-        else:
-            self.ui.horizontal_tabs.setTabEnabled(2, False)
             
+
             
+class InfoPage(QThread):
+    html = pyqtSignal(unicode) 
+    def __init__(self, parent=None):
+        QThread.__init__(self,parent)
+    def set_values(self):
+        pass
+    def run(self):
+        pass
+    
+class WikiPage(QThread):
+    html = pyqtSignal(unicode)
+    artist = None
+     
+    def __init__(self, parent=None):
+        QThread.__init__(self,parent)
+    
+    def fetch(self, url):
+        ua = "gereqi-0.5.0"
+        hdrs = {"User-Agent": ua}
+        req = urllib2.Request(url, None, hdrs)
+        resp = urllib2.urlopen(req,None,10)
+        return resp.read()
+        
+    def run(self):
+        urls = ["http://en.wikipedia.org/w/api.php?action=opensearch&search=%s&format=json&limit=3",
+                "http://en.wikipedia.org/w/index.php?title=%s&printable=yes"]
+        jo = json.loads(self.fetch(urls[0] % urllib.quote(self.artist) ))
+        html_out = self.fetch(urls[1] % urllib.quote(jo[1][0]))
+        self.html.emit(html_out)

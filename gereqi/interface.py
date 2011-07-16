@@ -30,7 +30,7 @@ except ImportError:
 from random import choice
 import time
 from os import path
-from threads import Getinfo, Getwiki, Builddb, Finishers, Watcher, DeleteFiles
+from threads import Builddb, Finishers, Watcher, DeleteFiles, WikiPage
 from Ui_interface import Ui_MainWindow
 from configuration import Configuration
 from extraneous import Extraneous
@@ -149,8 +149,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         except StandardError, err:
             self.__reset_db_default(err)
             
-        self.info_thread = Getinfo(self)
-        self.html_thread = Getwiki()        
+#        self.info_thread = Getinfo(self)
+                
             
         self.del_thread = DeleteFiles(self)
         self.extras = Extraneous()
@@ -164,6 +164,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.play_hist = PlaylistHistory()
         self.__playlist_remembered()
         self.__tray_menu_appearance()
+        self.wiki_thread = WikiPage()
         
         # new style signalling
         self.build_db_thread.finished.connect(self.finishes.db_build)
@@ -175,10 +176,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.track_tbl.horizontalHeader().sectionClicked.connect(
                                                  self.playlisting.track_sorting)
         self.collect_tree_hdr.sectionClicked.connect(self.collection_sort)
-        self.html_thread.got_wiki.connect(self.finishes.set_wiki)
+        
         self.build_db_thread.progress.connect(self.stat_prog.setValue)
         self.del_thread.deleted.connect(self.wdgt_manip.setup_db_tree)        
-        self.info_thread.got_info.connect(self.setWiki)
+        self.wiki_thread.html.connect(self.setWiki)
         self.actionQuit.triggered.connect(self.shutdown)
         
         # Makes the collection search line-edit have the keyboard focus
@@ -188,6 +189,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         self.play_cd_actn.setVisible(CDS_OK)
         self.icons = MyIcons()
+        
 
         
     def __reset_db_default(self,err):
@@ -326,14 +328,27 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.tray_icon.setToolTip(msg) 
         
         
+        
     @pyqtSignature("QString")
-    def setWiki(self, html):
+    def setInfo(self, html):
         """
         needed as the signal cannot be directly connected to
         the webview for unknown reasons
         """            
         self.info_view.setHtml(html)
         self.horizontal_tabs.setTabEnabled(2,True)
+        
+        
+    def setWiki(self,html):
+        """
+        Things to perform when a new wikipedia page is retrieved
+        """
+        if html != "None":
+            self.horizontal_tabs.setTabEnabled(2, True)
+            self.wiki_view.setHtml(html)
+        else:
+            self.horizontal_tabs.setTabEnabled(2, False)
+        
         
     @pyqtSignature("QString")
     def on_search_collect_edit_textChanged(self, srch_str):
@@ -1073,41 +1088,46 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.build_db_thread.start()
     
     # FIXME: this looks horrendously crap
+    # FIXME: broken. only works for 1st track that is played
     def set_info(self):
         """
+
         The wikipedia page + album art to current artist playing
         Typically done on track-change
         """
         art_change = self.art_alb["nowart"] != self.art_alb["oldart"] 
         alb_change = self.art_alb["nowalb"] != self.art_alb["oldalb"]
         tit_change = self.art_alb["title"] != self.art_alb["oldtit"]
+#        art_change = alb_change = tit_change = True
         albs = self.media_db.get_albums(self.art_alb["nowart"])
+        
+        
+        
+        
+        
         
         # Wikipedia info
         if art_change and (self.art_alb["nowart"] is not None):
             # passes the artist to the thread
-            self.html_thread.set_values(self.art_alb["nowart"]) 
-            # starts the thread
-            self.html_thread.start() 
+            self.wiki_thread.artist = unicode(self.art_alb["nowart"])
+            self.wiki_thread.start()
             self.art_alb["oldart"] = self.art_alb["nowart"]
 
         # Album art
         if alb_change and (self.art_alb["nowalb"] is not None):           
-            self.info_thread.set_values(artist=self.art_alb["nowart"],  
-                                        album=self.art_alb["nowalb"], 
-                                        title=self.art_alb["title"],
-                                        check=True, albums=albs,
-                                        )
-            self.info_thread.start()
+#            self.info_thread.set_values(artist=self.art_alb["nowart"],  
+#                                        album=self.art_alb["nowalb"], 
+#                                        title=self.art_alb["title"],
+#                                        check=True, albums=albs)
+#            self.info_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
             
         elif tit_change and (self.art_alb["title"] is not None):
-            self.info_thread.set_values(artist=self.art_alb["nowart"],
-                                        album=self.art_alb["nowalb"],
-                                        title=self.art_alb["title"],
-                                        check=False, albums=albs,
-                                        )
-            self.info_thread.start()
+#            self.info_thread.set_values(artist=self.art_alb["nowart"],
+#                                        album=self.art_alb["nowalb"],
+#                                        title=self.art_alb["title"],
+#                                        check=False, albums=albs)
+#            self.info_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
             
         # Show the context browser
