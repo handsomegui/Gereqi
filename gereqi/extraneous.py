@@ -52,7 +52,6 @@ class Extraneous:
             # Place to save the covers doesn't exist
             if path.exists(cover_dir) is False:
                 mkdir(cover_dir, 0700)
-            
             if path.exists(cover):
                 return "file://%s" % cover
             elif download == True:                        

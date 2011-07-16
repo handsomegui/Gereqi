@@ -172,8 +172,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.prev_track_actn.triggered.connect(self.prev_bttn.click)
         self.stop_actn.triggered.connect(self.prev_bttn.click)
         self.stat_bttn.pressed.connect(self.quit_build)
-        hdr = self.track_tbl.horizontalHeader()
-        hdr.sectionClicked.connect(self.playlisting.track_sorting)
+        self.track_tbl.horizontalHeader().sectionClicked.connect(
+                                                 self.playlisting.track_sorting)
         self.collect_tree_hdr.sectionClicked.connect(self.collection_sort)
         self.html_thread.got_wiki.connect(self.finishes.set_wiki)
         self.build_db_thread.progress.connect(self.stat_prog.setValue)
@@ -739,25 +739,24 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         mode = self.__collection_mode()
         
         if mode == "artist":
-        # If we've expanded an album
+            # If we've expanded an album
             if par is not None:
-                artist = par.text(0)
-                album = item.text(0)
+                artist = unicode(par.text(0))
+                album = unicode(item.text(0))
             else:
-                artist = item.text(0)
+                artist = unicode(item.text(0))
                 album = None
             
-            if (album is not None) and (item.childCount() == 0):
-                # Adding tracks to album
-                tracks = self.media_db.get_titles(artist, album, filt_time)
-               
+            # Adding tracks to album
+            if (album is not None) and (item.childCount() == 0):                
+                tracks = self.media_db.get_titles(artist, album, filt_time)               
                 for trk in tracks:
                     track = QTreeWidgetItem([ trk["title"] ] )                    
                     item.addChild(track)
       
            # Adding albums to the artist 
            # i.e. the parent has no children    
-            elif item.childCount() == 0: 
+            elif item.childCount() == 0:
                 albums = self.media_db.get_albums(artist, filt_time)                    
                 for alb in albums:
                     cover = self.extras.get_cover_source(artist,alb,True, False)
@@ -771,7 +770,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     album.setIcon(0,QIcon(cover))
                     album.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
                     item.addChild(album)
-                
+               
+        # ALbum mode 
         else:
             if par is not None:
                 album = par.text(0)

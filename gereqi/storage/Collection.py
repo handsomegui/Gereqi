@@ -59,7 +59,7 @@ class CollectionDb:
         
         ok = CollectionDb.media_db.open()
         if ok is True:
-            print "DATABASE OK",self.db_type
+            print "DATABASE OK: %s - %s" % (self.db_type,self.name)
             self.query = QSqlQuery(CollectionDb.media_db)
             if self.db_type == "SQLITE":
                 self.__pragma()
@@ -138,8 +138,9 @@ class CollectionDb:
         query = '''PRAGMA synchronous = OFF'''
         self.__query_execute(query)
         
-#######################################################################################
-
+#===============================================================================
+# 
+#===============================================================================
     def add_media(self, meta):
         """
         Here we add data into the media database
