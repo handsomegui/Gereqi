@@ -31,7 +31,7 @@ import pyinotify
 
 from gereqi.information.webinfo import Webinfo
 from gereqi.information.tagging import Tagging
-from gereqi.information.infopage import InfoPage
+from gereqi.information.infopage import Information
 from gereqi.storage.Collection import CollectionDb
 from gereqi.storage.Settings import Settings
 from extraneous import Extraneous
@@ -53,29 +53,6 @@ class GetCovers(QThread):
         self.exec_()
 
 
-class Getinfo(QThread):
-    """
-    Retrieves the cover for an album
-    from Amazon
-    """
-    got_info = pyqtSignal(str)
-    
-    def __init__(self, parent=None):
-        QThread.__init__(self, parent)
-        self.ui = parent
-        
-    def __del__(self):
-        self.exit()
-        
-    def set_values(self, **params):
-        self.info = params
-        
-    def run(self):
-        html = InfoPage(self.ui).gen_info(**self.info)
-        self.got_info.emit(html)
-        self.exec_()
-        
-        
 class Builddb(QThread):
     """
     Gets files from a directory and build's a 
@@ -369,13 +346,24 @@ class Finishers:
 
             
 class InfoPage(QThread):
-    html = pyqtSignal(unicode) 
+    html = pyqtSignal(unicode)
+    artist = ""
+    album = ""
+    title = ""
+    albums = []
+    use_web = False
+    
     def __init__(self, parent=None):
         QThread.__init__(self,parent)
-    def set_values(self):
-        pass
+        
     def run(self):
-        pass
+        data = Information().gen_info(artist=self.artist,
+                                      album=self.album,
+                                      title=self.title,
+                                      albums=self.albums,
+                                      use_web=self.use_web)
+        self.html.emit(data)
+        
     
 class WikiPage(QThread):
     html = pyqtSignal(unicode)

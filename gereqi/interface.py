@@ -30,7 +30,7 @@ except ImportError:
 from random import choice
 import time
 from os import path
-from threads import Builddb, Finishers, Watcher, DeleteFiles, WikiPage
+from threads import Builddb, Finishers, Watcher, DeleteFiles, WikiPage, InfoPage
 from Ui_interface import Ui_MainWindow
 from configuration import Configuration
 from extraneous import Extraneous
@@ -148,8 +148,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.build_db_thread = Builddb(self)
         except StandardError, err:
             self.__reset_db_default(err)
-            
-#        self.info_thread = Getinfo(self)
                 
             
         self.del_thread = DeleteFiles(self)
@@ -165,6 +163,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.__playlist_remembered()
         self.__tray_menu_appearance()
         self.wiki_thread = WikiPage()
+        self.infopage_thread = InfoPage()
         
         # new style signalling
         self.build_db_thread.finished.connect(self.finishes.db_build)
@@ -180,6 +179,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.build_db_thread.progress.connect(self.stat_prog.setValue)
         self.del_thread.deleted.connect(self.wdgt_manip.setup_db_tree)        
         self.wiki_thread.html.connect(self.setWiki)
+        self.infopage_thread.html.connect(self.info_view.setHtml)
         self.actionQuit.triggered.connect(self.shutdown)
         
         # Makes the collection search line-edit have the keyboard focus
@@ -1091,43 +1091,47 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     # FIXME: broken. only works for 1st track that is played
     def set_info(self):
         """
-
         The wikipedia page + album art to current artist playing
         Typically done on track-change
         """
+        
         art_change = self.art_alb["nowart"] != self.art_alb["oldart"] 
         alb_change = self.art_alb["nowalb"] != self.art_alb["oldalb"]
         tit_change = self.art_alb["title"] != self.art_alb["oldtit"]
-#        art_change = alb_change = tit_change = True
-        albs = self.media_db.get_albums(self.art_alb["nowart"])
-        
-        
-        
-        
-        
-        
-        # Wikipedia info
+
+        # Artist change
         if art_change and (self.art_alb["nowart"] is not None):
-            # passes the artist to the thread
+            
+            print self.art_alb["nowart"]
+            # Sort out wiki
             self.wiki_thread.artist = unicode(self.art_alb["nowart"])
             self.wiki_thread.start()
+            
+            self.infopage_thread.artist = self.art_alb["nowart"]
+            self.infopage_thread.album = self.art_alb["nowalb"]
+            self.infopage_thread.title = self.art_alb["title"]
+            self.infopage_thread.albums =  self.media_db.get_albums(self.art_alb["nowart"])  
+            self.infopage_thread.use_web = True
+            self.infopage_thread.start()
             self.art_alb["oldart"] = self.art_alb["nowart"]
 
-        # Album art
-        if alb_change and (self.art_alb["nowalb"] is not None):           
-#            self.info_thread.set_values(artist=self.art_alb["nowart"],  
-#                                        album=self.art_alb["nowalb"], 
-#                                        title=self.art_alb["title"],
-#                                        check=True, albums=albs)
-#            self.info_thread.start()
+        # Album change
+        elif alb_change and (self.art_alb["nowalb"] is not None):
+            self.infopage_thread.artist = self.art_alb["nowart"]
+            self.infopage_thread.album = self.art_alb["nowalb"]
+            self.infopage_thread.title = self.art_alb["title"]
+            self.infopage_thread.albums =  self.media_db.get_albums(self.art_alb["nowart"])  
+            self.infopage_thread.use_web = True
+            self.infopage_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
-            
+        # track change only   
         elif tit_change and (self.art_alb["title"] is not None):
-#            self.info_thread.set_values(artist=self.art_alb["nowart"],
-#                                        album=self.art_alb["nowalb"],
-#                                        title=self.art_alb["title"],
-#                                        check=False, albums=albs)
-#            self.info_thread.start()
+            self.infopage_thread.artist = self.art_alb["nowart"]
+            self.infopage_thread.album = self.art_alb["nowalb"]
+            self.infopage_thread.title = self.art_alb["title"]
+            self.infopage_thread.albums =  self.media_db.get_albums(self.art_alb["nowart"])  
+            self.infopage_thread.use_web = False
+            self.infopage_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
             
         # Show the context browser

@@ -22,34 +22,36 @@ The main script to run the application
 More things could be done in here but i've 
 no idea what yet.
 """
-from PySide.QtGui import QApplication
+from PyQt4.QtGui import QApplication
 from gereqi.interface import MainWindow
 from gereqi.threads import GetCovers
 import sys
-__version__= "0.5.0" 
+__version__ = "0.5.0" 
 
-
-def main():
-    """
-    dummy
-    """
-    global wnd 
-    cover_thread = GetCovers()
-    cover_thread.start()
-    app = QApplication(sys.argv)
-
-    app.setApplicationName("Gereqi")
-    app.setApplicationVersion(__version__)
-    wnd = MainWindow(app)
+class Main:
     
-    setups()
-    wnd.show()
-    sys.exit(app.exec_())
+    def __init__(self):
+        """
+        dummy
+        """
+#        cover_thread = GetCovers()
+#        cover_thread.start()
+        app = QApplication(sys.argv)
     
-def setups():
-    wnd.search_trktbl_edit.setPlaceholderText("Playlist Search")
-    wnd.search_collect_edit.setPlaceholderText("Enter search terms here")
+        app.setApplicationName("Gereqi")
+        app.setApplicationVersion(__version__)
+        self.wnd = MainWindow(app)
+        
+        self.setups()
+        self.wnd.show()
+        sys.exit(app.exec_())
     
+    def setups(self):
+	try:
+	        self.wnd.search_trktbl_edit.setPlaceholderText("Playlist Search")
+        	self.wnd.search_collect_edit.setPlaceholderText("Enter search terms here")
+    	except:
+		pass
     
 if __name__ == '__main__':
-    main()
+    Main()
