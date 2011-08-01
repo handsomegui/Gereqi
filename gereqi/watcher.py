@@ -18,7 +18,7 @@ A lot of this was taken from a tutorial at
 http://trac.dbzteam.org/pyinotify/wiki/Tutorial
 """
 
-from PySide.QtCore import QThread
+from PyQt4.QtCore import QThread
 
 import pyinotify
 

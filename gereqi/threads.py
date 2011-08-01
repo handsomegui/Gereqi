@@ -19,17 +19,19 @@ This file contains all the necessary threads for the app
 to make it easier to manage
 """
 
-from PySide.QtCore import *
+from PyQt4.QtCore import *
 
-from urllib import pathname2url
 from time import time, sleep
 
+import urllib
+import urllib2
+import json
 import os
 import pyinotify
 
 from gereqi.information.webinfo import Webinfo
 from gereqi.information.tagging import Tagging
-from gereqi.information.infopage import InfoPage
+from gereqi.information.infopage import Information
 from gereqi.storage.Collection import CollectionDb
 from gereqi.storage.Settings import Settings
 from extraneous import Extraneous
@@ -51,58 +53,13 @@ class GetCovers(QThread):
         self.exec_()
 
 
-class Getinfo(QThread):
-    """
-    Retrieves the cover for an album
-    from Amazon
-    """
-    got_info = Signal(str)
-    
-    def __init__(self, parent=None):
-        QThread.__init__(self, parent)
-        self.ui = parent
-        
-    def __del__(self):
-        self.exit()
-        
-    def set_values(self, **params):
-        self.info = params
-        
-    def run(self):
-        html = InfoPage(self.ui).gen_info(**self.info)
-        self.got_info.emit(html)
-        self.exec_()
-        
-        
-class Getwiki(QThread):
-    """
-    Retrieves the wiki info for an artist
-    """
-    got_wiki = Signal(str)
-    
-    def __init__(self, parent=None):
-        QThread.__init__(self, parent)
-        
-    def __del__(self):
-        self.exit()
-    
-    def set_values(self, art):
-        self.artist = art
-        
-    def run(self):
-        info = Webinfo()
-        result = info.get_info("info", self.artist) if not None else "None"
-        self.got_wiki.emit(result)
-        self.exec_()
-        
-        
 class Builddb(QThread):
     """
     Gets files from a directory and build's a 
     media database from the filtered files
     """
-    progress = Signal(int)
-    finished = Signal(str)
+    progress = pyqtSignal(int)
+    finished = pyqtSignal(str)
     
     def __init__(self, parent):
         QThread.__init__(self, parent)
@@ -231,8 +188,8 @@ class Watcher(QThread, pyinotify.ProcessEvent):
     """
     Watches a directory periodically for file changes
     """
-    deletions = Signal(list)
-    creations = Signal(list)
+    deletions = pyqtSignal(list)
+    creations = pyqtSignal(list)
     
     def __init__(self, parent):
         QThread.__init__(self)
@@ -337,7 +294,7 @@ class Watcher(QThread, pyinotify.ProcessEvent):
 
 
 class DeleteFiles(QThread):
-    deleted = Signal()
+    deleted = pyqtSignal()
     
     def __init__(self, parent):
         QThread.__init__(self)
@@ -361,6 +318,7 @@ class DeleteFiles(QThread):
         self.exec_()   
 
 
+#TODO: remove this. These activities should be performed here
 class Finishers:
     """
     Things to do when the threads finish
@@ -384,17 +342,46 @@ class Finishers:
         self.ui.stat_prog.setValue(100)
         self.ui.wdgt_manip.setup_db_tree()
         self.ui.search_collect_edit.clear()
-        
-        
-    def set_wiki(self, html):
-        """
-        The printable wikipedia page (if found) is
-        put into the wikipedia tab
-        """
-        if html != "None":
-            self.ui.horizontal_tabs.setTabEnabled(2, True)
-            self.ui.wiki_view.setHtml(html)
-        else:
-            self.ui.horizontal_tabs.setTabEnabled(2, False)
             
+
             
+class InfoPage(QThread):
+    html = pyqtSignal(unicode)
+    artist = ""
+    album = ""
+    title = ""
+    albums = []
+    use_web = False
+    
+    def __init__(self, parent=None):
+        QThread.__init__(self,parent)
+        
+    def run(self):
+        data = Information().gen_info(artist=self.artist,
+                                      album=self.album,
+                                      title=self.title,
+                                      albums=self.albums,
+                                      use_web=self.use_web)
+        self.html.emit(data)
+        
+    
+class WikiPage(QThread):
+    html = pyqtSignal(unicode)
+    artist = None
+     
+    def __init__(self, parent=None):
+        QThread.__init__(self,parent)
+    
+    def fetch(self, url):
+        ua = "gereqi-0.5.0"
+        hdrs = {"User-Agent": ua}
+        req = urllib2.Request(url, None, hdrs)
+        resp = urllib2.urlopen(req,None,10)
+        return resp.read()
+        
+    def run(self):
+        urls = ["http://en.wikipedia.org/w/api.php?action=opensearch&search=%s&format=json&limit=3",
+                "http://en.wikipedia.org/w/index.php?title=%s&printable=yes"]
+        jo = json.loads(self.fetch(urls[0] % urllib.quote(self.artist) ))
+        html_out = self.fetch(urls[1] % urllib.quote(jo[1][0]))
+        self.html.emit(html_out)

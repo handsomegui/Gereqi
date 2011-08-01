@@ -13,8 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
-from PySide.QtCore import *
-from PySide.QtSql import *
+from PyQt4.QtCore import *
+from PyQt4.QtSql import *
 
 from gereqi.storage.Settings import Settings
 import Tables
@@ -59,7 +59,7 @@ class CollectionDb:
         
         ok = CollectionDb.media_db.open()
         if ok is True:
-            print "DATABASE OK",self.db_type
+            print "DATABASE OK: %s - %s" % (self.db_type,self.name)
             self.query = QSqlQuery(CollectionDb.media_db)
             if self.db_type == "SQLITE":
                 self.__pragma()
@@ -102,11 +102,11 @@ class CollectionDb:
             if len(fields) > 1:
                 row_result = {}
                 for field in fields:                    
-                    row_result[field] = record().value(field) 
+                    row_result[unicode(field)] = unicode(record().value(field).toString()) 
                 results.append(row_result)
                 row+=1
             else:
-                results.append(record().value(0))        
+                results.append(unicode(record().value(0).toString()))        
         return results
         
     def __query_execute(self, query, args=None):
@@ -138,8 +138,9 @@ class CollectionDb:
         query = '''PRAGMA synchronous = OFF'''
         self.__query_execute(query)
         
-#######################################################################################
-
+#===============================================================================
+# 
+#===============================================================================
     def add_media(self, meta):
         """
         Here we add data into the media database

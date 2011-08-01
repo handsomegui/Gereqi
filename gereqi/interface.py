@@ -14,8 +14,8 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from PySide.QtGui import *
-from PySide.QtCore import *
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 from gereqi.audio import Backend, Formats
 from gereqi.storage.Settings import Settings
 from gereqi.storage.Collection import CollectionDb
@@ -30,7 +30,7 @@ except ImportError:
 from random import choice
 import time
 from os import path
-from threads import Getinfo, Getwiki, Builddb, Finishers, Watcher, DeleteFiles
+from threads import Builddb, Finishers, Watcher, DeleteFiles, WikiPage, InfoPage
 from Ui_interface import Ui_MainWindow
 from configuration import Configuration
 from extraneous import Extraneous
@@ -148,9 +148,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.build_db_thread = Builddb(self)
         except StandardError, err:
             self.__reset_db_default(err)
-            
-        self.info_thread = Getinfo(self)
-        self.html_thread = Getwiki()        
+                
             
         self.del_thread = DeleteFiles(self)
         self.extras = Extraneous()
@@ -164,6 +162,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.play_hist = PlaylistHistory()
         self.__playlist_remembered()
         self.__tray_menu_appearance()
+        self.wiki_thread = WikiPage()
+        self.infopage_thread = InfoPage()
         
         # new style signalling
         self.build_db_thread.finished.connect(self.finishes.db_build)
@@ -172,13 +172,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.prev_track_actn.triggered.connect(self.prev_bttn.click)
         self.stop_actn.triggered.connect(self.prev_bttn.click)
         self.stat_bttn.pressed.connect(self.quit_build)
-        hdr = self.track_tbl.horizontalHeader()
-        hdr.sectionClicked.connect(self.playlisting.track_sorting)
+        self.track_tbl.horizontalHeader().sectionClicked.connect(
+                                                 self.playlisting.track_sorting)
         self.collect_tree_hdr.sectionClicked.connect(self.collection_sort)
-        self.html_thread.got_wiki.connect(self.finishes.set_wiki)
+        
         self.build_db_thread.progress.connect(self.stat_prog.setValue)
         self.del_thread.deleted.connect(self.wdgt_manip.setup_db_tree)        
-        self.info_thread.got_info.connect(self.setWiki)
+        self.wiki_thread.html.connect(self.setWiki)
+        self.infopage_thread.html.connect(self.info_view.setHtml)
         self.actionQuit.triggered.connect(self.shutdown)
         
         # Makes the collection search line-edit have the keyboard focus
@@ -188,6 +189,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         self.play_cd_actn.setVisible(CDS_OK)
         self.icons = MyIcons()
+        
 
         
     def __reset_db_default(self,err):
@@ -326,8 +328,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.tray_icon.setToolTip(msg) 
         
         
-    @Slot(str)
-    def setWiki(self, html):
+        
+    @pyqtSignature("QString")
+    def setInfo(self, html):
         """
         needed as the signal cannot be directly connected to
         the webview for unknown reasons
@@ -335,14 +338,26 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.info_view.setHtml(html)
         self.horizontal_tabs.setTabEnabled(2,True)
         
-    @Slot(str)
+        
+    def setWiki(self,html):
+        """
+        Things to perform when a new wikipedia page is retrieved
+        """
+        if html != "None":
+            self.horizontal_tabs.setTabEnabled(2, True)
+            self.wiki_view.setHtml(html)
+        else:
+            self.horizontal_tabs.setTabEnabled(2, False)
+        
+        
+    @pyqtSignature("QString")
     def on_search_collect_edit_textChanged(self, srch_str):
         """
         This allows the filtering of the collection tree
         """
         self.wdgt_manip.setup_db_tree()       
     
-    @Slot(QTreeWidgetItem, int)
+    @pyqtSignature("QTreeWidgetItem*, int")
     def on_collect_tree_itemDoubleClicked(self, item, column):
         """
         When double click and abum in the collection browser
@@ -388,7 +403,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 file_names = self.media_db.get_album_files(now)
                 self.playlisting.add_list_to_playlist(file_names)
     
-    @Slot()
+    @pyqtSignature("")
     def on_prev_bttn_pressed(self):
         """
         Skip to previous track in viewable playlist
@@ -398,14 +413,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if track is None:
             return
         self.player.audio_object.stop()
-        self.player.audio_object.load(track)
+        self.player.audio_object.load(unicode(track))
         # Checks to see if the playbutton is in play state
         if self.play_bttn.isChecked():
             self.player.audio_object.play()
         else:
             self.playlisting.tracknow_colourise(self.playlisting.current_row())
 
-    @Slot(bool)
+    @pyqtSignature("bool")
     def on_play_bttn_toggled(self, checked):
         """
         The play button either resumes or starts playback.
@@ -429,7 +444,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     # A row is selected
                     if selected >= 0:
                         selected = self.tracking.now(selected)
-                        self.player.audio_object.load(selected)
+                        self.player.audio_object.load(unicode(selected))
                     # Nothing to play
                     else:
                         # Just reset the play button and stop here
@@ -464,7 +479,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.play_actn.setChecked(checked)
         self.tray_tooltip()
         
-    @Slot()   
+    @pyqtSignature("")   
     def on_stop_bttn_pressed(self):
         """
         To stop current track.
@@ -475,7 +490,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.play_bttn.setChecked(False)
         self.stop_bttn.setEnabled(False)
         
-    @Slot()
+    @pyqtSignature("")
     def on_next_bttn_pressed(self):
         """
         Go to next item in playlist(down)
@@ -483,7 +498,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         track = self.tracking.next()
         if track is not None:
             self.player.audio_object.stop() 
-            self.player.audio_object.load(track)
+            self.player.audio_object.load(unicode(track))
             if self.play_bttn.isChecked():
                 self.player.audio_object.play()
             else:
@@ -492,7 +507,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             # TODO: some tidy up thing could go here
             return
      
-    @Slot(int)
+    @pyqtSignature("int")
     def on_volume_sldr_valueChanged(self, value):
         """
         Self explanatory
@@ -505,7 +520,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     
     #TODO: not sure if the DB changes are made
     # i.e going from sqlite to mysql or v'-v'
-    @Slot()
+    @pyqtSignature("")
     def on_actionConfigure_triggered(self):
         """
        Brings up the configuration Dialog
@@ -525,7 +540,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.wdgt_manip.pop_playlist_view()
             self.__tray_menu_appearance()
             
-    @Slot()
+    @pyqtSignature("")
     def on_actionRescan_Collection_triggered(self):
         """
         Scans through a directory and looks for supported media,
@@ -546,7 +561,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.media_db.shutdown()
         exit()
     
-    @Slot()
+    @pyqtSignature("")
     def on_play_media_actn_triggered(self):
         """
         Extract music files and shove into current playlist.
@@ -565,11 +580,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         for item in mfiles[0]:
             self.playlisting.add_to_playlist(item[0])
 
-    @Slot(bool)
+    @pyqtSignature("bool")
     def on_minimise_tray_actn_toggled(self, checked):
         self.minimise_to_tray(checked)
     
-    @Slot()
+    @pyqtSignature("")
     def on_actionClear_triggered(self):
         """
         Clear current playlist and if no music playing
@@ -582,7 +597,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.actionUndo.setEnabled(True)
         self.clear_trktbl_bttn.setEnabled(False)
         
-    @Slot()
+    @pyqtSignature("")
     def on_actionSave_triggered(self):
         """
         Save current playlist
@@ -622,7 +637,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.wdgt_manip.pop_playlist_view()
     
     
-    @Slot()
+    @pyqtSignature("")
     def on_clear_trktbl_bttn_clicked(self):
         """
         Clears current playlist and sets focus
@@ -634,7 +649,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.actionRedo.setEnabled(False)
         self.player.recently_played = []
     
-    @Slot(str)
+    @pyqtSignature("QString")
     def on_search_trktbl_edit_textChanged(self, srch_str):
         """
         Filters current playlist based on input.
@@ -675,7 +690,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             self.playlisting.tracknow_colourise()
                 
-    @Slot(bool)
+    @pyqtSignature("bool")
     def on_mute_bttn_toggled(self, checked):
         """
         Mutes audio output and changes button icon accordingly
@@ -684,7 +699,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         icon = self.icons.icon("mute") if checked else self.__volume_icon()      
         self.mute_bttn.setIcon(icon)
       
-    @Slot() 
+    @pyqtSignature("") 
     def on_progress_sldr_sliderReleased(self):
         """
         Set's an internal seek value for tick() to use
@@ -693,7 +708,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.player.audio_object.seek(val)
         self.old_pos = val
         
-    @Slot(int)
+    @pyqtSignature("int")
     def on_progress_sldr_actionTriggered(self,action):
         ok_actions = [1,2,3,4]
         if action in ok_actions:
@@ -704,7 +719,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.player.timeval_to_label(val)
 
     
-    @Slot()
+    @pyqtSignature("")
     def on_actionUpdate_Collection_triggered(self):
         """
         Updates collection for new files. Ignore files already in database
@@ -712,7 +727,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         self.create_collection()
 
-    @Slot(int,int)
+    @pyqtSignature("int,int")
     def on_track_tbl_cellDoubleClicked(self, row, column):
         """
         When item is doubleclicked. Play its row.
@@ -722,13 +737,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.player.audio_object.stop()
         track = self.tracking.now(row)
 
-        self.player.audio_object.load(track)
+        self.player.audio_object.load(unicode(track))
         # Checking the button is the same
         # as self.player.audio_object.play(), just cleaner overall
         self.play_bttn.setChecked(True) 
         self.play_action.setChecked(True)
         
-    @Slot(QTreeWidgetItem)
+    @pyqtSignature("QTreeWidgetItem*")
     def on_collect_tree_itemExpanded(self, item):
         """
         Generates the albums to go with the artists in
@@ -739,25 +754,24 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         mode = self.__collection_mode()
         
         if mode == "artist":
-        # If we've expanded an album
+            # If we've expanded an album
             if par is not None:
-                artist = par.text(0)
-                album = item.text(0)
+                artist = unicode(par.text(0))
+                album = unicode(item.text(0))
             else:
-                artist = item.text(0)
+                artist = unicode(item.text(0))
                 album = None
             
-            if (album is not None) and (item.childCount() == 0):
-                # Adding tracks to album
-                tracks = self.media_db.get_titles(artist, album, filt_time)
-               
+            # Adding tracks to album
+            if (album is not None) and (item.childCount() == 0):                
+                tracks = self.media_db.get_titles(artist, album, filt_time)               
                 for trk in tracks:
                     track = QTreeWidgetItem([ trk["title"] ] )                    
                     item.addChild(track)
       
            # Adding albums to the artist 
            # i.e. the parent has no children    
-            elif item.childCount() == 0: 
+            elif item.childCount() == 0:
                 albums = self.media_db.get_albums(artist, filt_time)                    
                 for alb in albums:
                     cover = self.extras.get_cover_source(artist,alb,True, False)
@@ -771,7 +785,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     album.setIcon(0,QIcon(cover))
                     album.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
                     item.addChild(album)
-                
+               
+        # ALbum mode 
         else:
             if par is not None:
                 album = par.text(0)
@@ -788,7 +803,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     item.addChild(track)
                 
                 
-    @Slot()
+    @pyqtSignature("")
     def on_clear_collect_bttn_clicked(self):
         """
         Clears the collection search widget and in turn
@@ -797,21 +812,21 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.search_collect_edit.clear()
         self.search_collect_edit.setFocus()
 
-    @Slot(int)
+    @pyqtSignature("int")
     def on_collect_time_box_currentIndexChanged(self, index):
         """
         Slot documentation goes here.
         """
         self.wdgt_manip.setup_db_tree()
         
-    @Slot()
+    @pyqtSignature("")
     def on_actionAbout_Gereqi_triggered(self):
         """
         The Gereqi about dialog
         """
         About(self).show()
             
-    @Slot()
+    @pyqtSignature("")
     def on_clear_search_bttn_clicked(self):
         """
         Clears the playlist search filter
@@ -820,7 +835,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.search_trktbl_edit.clear()
         self.playlisting.highlighted_track()
         
-    @Slot()
+    @pyqtSignature("")
     def on_play_cd_actn_triggered(self):
         """
         add tracks from cd
@@ -845,7 +860,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.playlisting.add_list_to_playlist(cd_tracks)                
         self.clear_trktbl_bttn.setEnabled(True)
                 
-    @Slot()
+    @pyqtSignature("")
     def on_save_trktbl_bttn_clicked(self):
         """
         Based on what is in the playlist and chosen name, it'll
@@ -853,7 +868,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         self.on_actionSave_triggered()
             
-    @Slot(QTreeWidgetItem, int)
+    @pyqtSignature("QTreeWidgetItem*, int")
     def on_playlist_tree_itemDoubleClicked(self, item, column):
         """
         Slot documentation goes here.
@@ -889,7 +904,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     self.playlisting.add_to_playlist(track[0])
                 
             
-    @Slot(bool)
+    @pyqtSignature("bool")
     def on_delete_playlist_bttn_clicked(self, checked):
         """
         Delete a selected playlist from the DB
@@ -900,7 +915,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.wdgt_manip.pop_playlist_view()
             
     
-    @Slot(bool)
+    @pyqtSignature("bool")
     def on_rename_playlist_bttn_clicked(self, checked):
         """
         Rename the selected playlist
@@ -934,7 +949,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.media_db.playlist_add(new_name[0], track)
         self.wdgt_manip.pop_playlist_view()
             
-    @Slot(bool)
+    @pyqtSignature("bool")
     def on_prev_trktbl_bttn_clicked(self, checked):
         """
         The previous-track button does various
@@ -954,7 +969,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.prev_trktbl_bttn.setEnabled(False)
             self.actionUndo.setEnabled(False)
         
-    @Slot(bool)
+    @pyqtSignature("bool")
     def on_next_trktbl_bttn_clicked(self, checked):
         """
         The next-track button does various
@@ -971,7 +986,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.next_trktbl_bttn.setEnabled(False)
             self.actionRedo.setEnabled(False)
             
-    @Slot()
+    @pyqtSignature("")
     def on_menuTools_aboutToShow(self):
         """
         Disables the db interaction actions if in useless state
@@ -985,7 +1000,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.actionRescan_Collection.setEnabled(True)
             
         
-    @Slot(QModelIndex)
+    @pyqtSignature("QModelIndex")
     def on_filesystem_tree_doubleClicked(self, index):
         """
         This takes the filesystem_tree item and deduces whether
@@ -1005,7 +1020,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.playlisting.add_to_playlist(fname)
             self.clear_trktbl_bttn.setEnabled(True)
             
-    @Slot(QModelIndex)
+    @pyqtSignature("QModelIndex")
     def on_filesystem_tree_expanded(self, index):
         """
         Resizes the filesystem_tree to it's contents.
@@ -1013,11 +1028,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         self.filesystem_tree.resizeColumnToContents(0)
         
-    @Slot()
+    @pyqtSignature("")
     def on_actionUndo_triggered(self):
         self.prev_trktbl_bttn.click()
         
-    @Slot()
+    @pyqtSignature("")
     def on_actionRedo_triggered(self):
         self.next_trktbl_bttn.click()
 
@@ -1073,41 +1088,50 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.build_db_thread.start()
     
     # FIXME: this looks horrendously crap
+    # FIXME: broken. only works for 1st track that is played
     def set_info(self):
         """
         The wikipedia page + album art to current artist playing
         Typically done on track-change
         """
+        
         art_change = self.art_alb["nowart"] != self.art_alb["oldart"] 
         alb_change = self.art_alb["nowalb"] != self.art_alb["oldalb"]
         tit_change = self.art_alb["title"] != self.art_alb["oldtit"]
-        albs = self.media_db.get_albums(self.art_alb["nowart"])
-        
-        # Wikipedia info
+
+        # Artist change
         if art_change and (self.art_alb["nowart"] is not None):
-            # passes the artist to the thread
-            self.html_thread.set_values(self.art_alb["nowart"]) 
-            # starts the thread
-            self.html_thread.start() 
+            
+            print self.art_alb["nowart"]
+            # Sort out wiki
+            self.wiki_thread.artist = unicode(self.art_alb["nowart"])
+            self.wiki_thread.start()
+            
+            self.infopage_thread.artist = self.art_alb["nowart"]
+            self.infopage_thread.album = self.art_alb["nowalb"]
+            self.infopage_thread.title = self.art_alb["title"]
+            self.infopage_thread.albums =  self.media_db.get_albums(self.art_alb["nowart"])  
+            self.infopage_thread.use_web = True
+            self.infopage_thread.start()
             self.art_alb["oldart"] = self.art_alb["nowart"]
 
-        # Album art
-        if alb_change and (self.art_alb["nowalb"] is not None):           
-            self.info_thread.set_values(artist=self.art_alb["nowart"],  
-                                        album=self.art_alb["nowalb"], 
-                                        title=self.art_alb["title"],
-                                        check=True, albums=albs,
-                                        )
-            self.info_thread.start()
+        # Album change
+        elif alb_change and (self.art_alb["nowalb"] is not None):
+            self.infopage_thread.artist = self.art_alb["nowart"]
+            self.infopage_thread.album = self.art_alb["nowalb"]
+            self.infopage_thread.title = self.art_alb["title"]
+            self.infopage_thread.albums =  self.media_db.get_albums(self.art_alb["nowart"])  
+            self.infopage_thread.use_web = True
+            self.infopage_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
-            
+        # track change only   
         elif tit_change and (self.art_alb["title"] is not None):
-            self.info_thread.set_values(artist=self.art_alb["nowart"],
-                                        album=self.art_alb["nowalb"],
-                                        title=self.art_alb["title"],
-                                        check=False, albums=albs,
-                                        )
-            self.info_thread.start()
+            self.infopage_thread.artist = self.art_alb["nowart"]
+            self.infopage_thread.album = self.art_alb["nowalb"]
+            self.infopage_thread.title = self.art_alb["title"]
+            self.infopage_thread.albums =  self.media_db.get_albums(self.art_alb["nowart"])  
+            self.infopage_thread.use_web = False
+            self.infopage_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
             
         # Show the context browser
@@ -1139,7 +1163,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             event.ignore()
 
    
-    @Slot(int)  
+    @pyqtSignature("int")  
     def collection_sort(self, p0):
         mode = self.__collection_mode()
         if mode == "artist":

@@ -13,8 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
-from PySide.QtGui import QPixmap
-from PySide.QtCore import QObject, QTime
+from PyQt4.QtGui import QPixmap
+from PyQt4.QtCore import QObject, QTime
 
 import time
 
@@ -52,7 +52,7 @@ class AudioBackend:
         track = self.ui.tracking.next()
         #Not at end of  playlist
         if track is not None:
-            self.audio_object.enqueue(track)
+            self.audio_object.enqueue(unicode(track))
 
     def __prog_tick(self, time):
         """

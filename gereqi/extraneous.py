@@ -14,7 +14,7 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from PySide.QtCore import QDir, QFile, QIODevice
+from PyQt4.QtCore import QDir, QFile, QIODevice
 from os import path, mkdir, environ
 
 from gereqi.information.webinfo import Webinfo
@@ -52,7 +52,6 @@ class Extraneous:
             # Place to save the covers doesn't exist
             if path.exists(cover_dir) is False:
                 mkdir(cover_dir, 0700)
-            
             if path.exists(cover):
                 return "file://%s" % cover
             elif download == True:                        

@@ -1,4 +1,4 @@
-from PySide.QtGui import QTreeWidgetItem,QIcon,QFont
+from PyQt4.QtGui import QTreeWidgetItem,QIcon,QFont
 from gereqi.storage.Collection import CollectionDb
 from gereqi.icons.configuration import MyIcons
 

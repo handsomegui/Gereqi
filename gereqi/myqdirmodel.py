@@ -13,22 +13,22 @@
 # You should have received a copy of the GNU General Public License
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
-from PySide.QtGui import QDirModel
-from PySide.QtCore import Qt, Signal, QModelIndex
+from PyQt4.QtGui import QDirModel
+from PyQt4.QtCore import Qt, pyqtSignal, QModelIndex
 
 
 # TODO: make readable and comment
 
 class MyQDirModel(QDirModel):
-    needsRefresh = Signal(QModelIndex)
-    check_list = []
+    needsRefresh = pyqtSignal(QModelIndex)
+    check_list = {}
     recursive = True
     
     def __partial_check(self, dir_now):
         """
         Checks to see if a child-dir is checked
         """
-        for chk in self.check_list[0]:
+        for chk in self.check_list['includes']:
             if (chk in dir_now and dir_now != chk):
                 return Qt.PartiallyChecked
        
@@ -37,20 +37,20 @@ class MyQDirModel(QDirModel):
         This is called when mouse-over of the dirmodel sections
         """
         if index.isValid() and (index.column() == 0) and (role == Qt.CheckStateRole):
-            dir_now = self.filePath(index)
+            dir_now = unicode(self.filePath(index))
             
             partial = self.__partial_check(dir_now)
             if partial is not None:
                         return partial
-            elif dir_now in self.check_list[0]:
+            elif dir_now in self.check_list['includes']:
                 return Qt.Checked
             
             elif self.recursive is True:
-                par_dir = "/".join(dir_now.split("/")[:-1])
+                par_dir = "/".join(unicode(dir_now).split("/")[:-1])
                 # the item is checked only if we have stored its path
-                if dir_now in self.check_list[1]:
+                if dir_now in self.check_list['excludes']:
                     return Qt.Unchecked
-                elif par_dir in self.check_list[1]:
+                elif par_dir in self.check_list['excludes']:
                     return Qt.Unchecked                 
                     
                 else:                    
@@ -59,7 +59,7 @@ class MyQDirModel(QDirModel):
                     checker = dir_now.split("/")
                     for val in range(1, len(checker)):
                         dir_part = "/".join(checker[:val+1])
-                        if dir_part in self.check_list[0]:
+                        if dir_part in self.check_list['includes']:
                             return Qt.Checked 
                     # Nothing found
                     return Qt.Unchecked
@@ -89,34 +89,34 @@ class MyQDirModel(QDirModel):
         """
         # user trying to do something to the checkbox
         if index.isValid() and (index.column() == 0) and (role == Qt.CheckStateRole):
-            dir_now = self.filePath(index)        
+            dir_now = unicode(self.filePath(index))      
             
             # store checked paths, remove unchecked paths
             if value == Qt.Checked:             
                 if self.recursive is False:
-                    if dir_now not in self.check_list[0]:
-                        self.check_list[0].append(dir_now)                        
+                    if dir_now not in self.check_list['includes']:
+                        self.check_list['includes'].append(dir_now)                        
                     return True
                                 
                 tmp_list = []
-                for dir in self.check_list[0]:
+                for dir in self.check_list['includes']:
                     if dir_now in dir:
                         tmp_list.append(dir)                        
                 for dir in tmp_list:
-                    self.check_list[0].remove(dir)                   
+                    self.check_list['includes'].remove(dir)                   
                     
                 # No point adding if it's root dir is already there
                 checker = dir_now.split("/")
                 there = False
                 for val in range(len(checker)):
                     thing = "/".join(checker[:val+1])
-                    if thing in self.check_list[0]:
+                    if thing in self.check_list['includes']:
                         there = True
                         break
                         
                 try:
                     tmp_list = []
-                    for exc_dir in self.check_list[1]:
+                    for exc_dir in self.check_list['excludes']:
                         if dir_now in exc_dir:
                             tmp_list.append(exc_dir)
                     for thing in tmp_list:
@@ -126,26 +126,27 @@ class MyQDirModel(QDirModel):
                     pass
                     
                 if there is False:
-                    self.check_list[0].append(self.filePath(index))
+                    self.check_list['includes'].append(unicode(self.filePath(index)))
                 self.needsRefresh.emit(index)
                 return True           
             
             # Want to exclude dir
             else:
                 par_dir = "/".join(dir_now.split("/")[:-1])                
-                tmp_list = (list(self.check_list[0]), list(self.check_list[1]))
+                tmp_list = (list(self.check_list['includes']), 
+                            list(self.check_list['excludes']))
                 
                 for item in tmp_list[0]:
                     # removes if we've already checked it
                     if dir_now in item:
-                        self.check_list[0].remove(item)            
+                        self.check_list['includes'].remove(item)            
                  
                 # Only add to unchecked if anything above is checked
                 checker = dir_now.split("/")
                 for val in range(len(checker)):
                     thing = "/".join(checker[:val+1])
-                    if thing in self.check_list[0]:
-                        self.check_list[1].append(dir_now)
+                    if thing in self.check_list['includes']:
+                        self.check_list['excludes'].append(dir_now)
                 self.needsRefresh.emit(index)
                 return True
          

@@ -1,5 +1,5 @@
 
-from PySide.QtGui import QIcon
+from PyQt4.QtGui import QIcon
 import icons_resource
 
 class Setup:

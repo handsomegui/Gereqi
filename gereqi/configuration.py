@@ -17,8 +17,8 @@
 Module implementing Configuration.
 """
 
-from PySide.QtGui import QDialog,QAbstractButton
-from PySide.QtCore import QDir, Slot
+from PyQt4.QtGui import QDialog,QAbstractButton
+from PyQt4.QtCore import QDir, pyqtSignature
 
 from gereqi.storage.Settings import Settings
 from Ui_configuration import Ui_settings_dialog
@@ -47,7 +47,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         If mysql support was built into QSql then allow
         the backend to be used
         """
-        from PySide.QtSql import QSqlDatabase
+        from PyQt4.QtSql import QSqlDatabase
         avails = QSqlDatabase.drivers()
         if "QMYSQL" in avails:
             self.database_type.addItem("MYSQL")
@@ -78,7 +78,8 @@ class Configuration(QDialog, Ui_settings_dialog):
         if exclude is not None:
             exc = [dir for dir in exclude.split(",")]
         
-        self.dir_model.check_list = [inc, exc]                                        
+        self.dir_model.check_list = {'includes':inc,
+                                     'excludes':exc}                                        
         filters = QDir.AllDirs|QDir.Readable|QDir.NoDotAndDotDot
         self.dir_model.setFilter(filters)
         self.dir_model.setReadOnly(True)
@@ -135,11 +136,9 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.sets_db.add_collection_setting("watch", watch_dirs)
         self.sets_db.add_collection_setting("recursive", recursive_dirs)
         
-    def __set_collections(self):
-        
-        self.dir_model.check_list[0]
-        incl = ",".join(self.dir_model.check_list[0])
-        excl = ",".join(self.dir_model.check_list[1])
+    def __set_collections(self):        
+        incl = ','.join(self.dir_model.check_list['includes'])
+        excl = ','.join(self.dir_model.check_list['excludes'])
         self.sets_db.add_collection_setting("include",incl)
         self.sets_db.add_collection_setting("exclude",excl)
             
@@ -162,8 +161,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.__set_database()
         self.__save_settings()
             
-#    @pyqtSignature("QAbstractButton*")
-    @Slot(QAbstractButton)
+    @pyqtSignature("QAbstractButton")
     def on_buttonBox_clicked(self, button):
         """
         Slot documentation goes here.
@@ -171,7 +169,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         if button.text() == "Apply":
             self.__apply_settings()
     
-    @Slot()
+    @pyqtSignature("")
     def on_buttonBox_accepted(self):
         """
         Slot documentation goes here.
@@ -179,11 +177,11 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.__apply_settings()
         QDialog.accept(self)
     
-    @Slot()
+    @pyqtSignature("")
     def on_buttonBox_rejected(self):
         QDialog.reject(self)
         
-    @Slot(str)
+    @pyqtSignature("QString")
     def on_database_type_currentIndexChanged(self, val):
         """
         Prevent mysql info entry if sqlite dbtype is selected
@@ -193,7 +191,7 @@ class Configuration(QDialog, Ui_settings_dialog):
         elif val == "MYSQL":
             self.mysql_config.setEnabled(True)
             
-    @Slot(bool)
+    @pyqtSignature("bool")
     def on_scan_recursively_toggled(self, check):
         """
         sets the myqdirmodel in a certain mode

@@ -14,9 +14,9 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from PySide.QtGui import *
-from PySide.QtCore import *
-from PySide.QtWebKit import QWebPage
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
+from PyQt4.QtWebKit import QWebPage
 
 import time
 import gereqi.devices
@@ -482,9 +482,9 @@ class WidgetManips:
         for thing in things:
             # When creating collection tree only 
             #  allow certain things based on the filter.
-            if (filt is not None) and (filt.lower() not in thing.lower()):
+            if (filt is not None) and (unicode(filt).lower() not in unicode(thing).lower()):
                 continue
-            row = QTreeWidgetItem([thing])
+            row = QTreeWidgetItem(QStringList(unicode(thing)))
             row.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
             self.ui.collect_tree.addTopLevelItem(row)
             
@@ -548,7 +548,7 @@ class WidgetManips:
         
         
 class AlbumItem(QThread):
-    new_item = Signal(tuple)
+    new_item = pyqtSignal(tuple)
     def __init__(self,parent=None):
         QThread.__init__(self)
         self.db = CollectionDb("album_items")
@@ -578,5 +578,4 @@ class AlbumItem(QThread):
             else:
                 cover = cover.replace("file://", '')
             self.new_item.emit((item['album'],cover))
-#            self.exec_()        
 

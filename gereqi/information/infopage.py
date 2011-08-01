@@ -57,9 +57,7 @@ ALB_HTML = '''
 TRACK_HTML = '''<li><b>%(track)s :</b> %(title)s</li>'''
 
             
-class InfoPage:
-    def __init__(self, parent=None):
-        return
+class Information:
 
     def __gen_albs(self, artist, albums):
         thing = ""
@@ -86,7 +84,7 @@ class InfoPage:
         extra = Extraneous()
         cover = extra.get_cover_source(params["artist"], 
                                        params["album"], 
-                                       params["check"])
+                                       params["use_web"])
         
         cover = cover if cover is not None else "file://"
         

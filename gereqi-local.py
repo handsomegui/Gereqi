@@ -22,7 +22,7 @@ The main script to run the application
 More things could be done in here but i've 
 no idea what yet.
 """
-from PySide.QtGui import QApplication
+from PyQt4.QtGui import QApplication
 from gereqi.interface import MainWindow
 from gereqi.threads import GetCovers
 import sys
@@ -34,8 +34,8 @@ class Main:
         """
         dummy
         """
-        cover_thread = GetCovers()
-        cover_thread.start()
+#        cover_thread = GetCovers()
+#        cover_thread.start()
         app = QApplication(sys.argv)
     
         app.setApplicationName("Gereqi")
@@ -47,11 +47,11 @@ class Main:
         sys.exit(app.exec_())
     
     def setups(self):
-	try:
+        try:
 	        self.wnd.search_trktbl_edit.setPlaceholderText("Playlist Search")
-	        self.wnd.search_collect_edit.setPlaceholderText("Enter search terms here")	
-    	except AttributeError,e:
-		print e
+        	self.wnd.search_collect_edit.setPlaceholderText("Enter search terms here")
+    	except:
+		    pass
     
 if __name__ == '__main__':
     Main()

@@ -1,5 +1,5 @@
-from PySide.QtGui import *
-from PySide.QtCore import *
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 
 
 class Playlist:
@@ -61,7 +61,7 @@ class Playlist:
             metadata = self.ui_main.media_db.get_info(file_name)
             if metadata is None:
                 # get the info using the tag-extractor module
-                metadata = self.ui_main.meta.extract(file_name)
+                metadata = self.ui_main.meta.extract(unicode(file_name))
                 if metadata is None:
                     return
                 else:       
@@ -72,7 +72,7 @@ class Playlist:
                                 "Length": metadata[6], "Bitrate": metadata[7], 
                                 "FileName": file_name}
             else:
-                trk = "%02u" % metadata["track"]
+                trk = "%02u" % int(metadata["track"])
                 metadata = {'Track': trk, "Title": metadata["title"], "Artist": metadata["artist"], 
                             "Album": metadata["album"], "Year": metadata["year"], "Genre": metadata["genre"],
                             "Length": metadata["length"], "Bitrate": metadata["bitrate"], 
