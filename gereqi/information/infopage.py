@@ -58,19 +58,19 @@ TRACK_HTML = '''<li><b>%(track)s :</b> %(title)s</li>'''
 
             
 class Information:
+    _media_db = CollectionDb("infopage") 
 
     def __gen_albs(self, artist, albums):
         thing = ""
         extra = Extraneous()
-        media_db = CollectionDb("infopage")    
         
         for alb in albums:
             t_info = ""
-            tracks = media_db.get_titles(artist, alb)
+            tracks = self._media_db.get_titles(artist, alb)
             for trk in tracks:
                 t_info += TRACK_HTML % {'track': trk["track"],'title': trk["title"]}
             cover = extra.get_cover_source(artist, alb)
-            if cover is None:
+            if not cover:
                 cover = "file://"
             thing += ALB_HTML % {'cover':cover, 'album' :alb, 'tracks': t_info}
 
@@ -80,13 +80,13 @@ class Information:
     def gen_info(self, **params):
         sets_db = Settings()
         coversize = sets_db.get_interface_setting("coversize")
-        coversize = int(coversize) if coversize is not None else 200
+        coversize = int(coversize) if coversize else 200
         extra = Extraneous()
         cover = extra.get_cover_source(params["artist"], 
                                        params["album"], 
                                        params["use_web"])
         
-        cover = cover if cover is not None else "file://"
+        cover = cover if cover else "file://"
         
         now = HTML % {
                       'style':styles.infostyles % {'width': coversize},
@@ -97,10 +97,4 @@ class Information:
                       'albums':self.__gen_albs(params["artist"],params["albums"])
                       }
 
-        return now
-        
-        
-        
-        
-        
-        
+        return now        
