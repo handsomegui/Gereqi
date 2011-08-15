@@ -290,9 +290,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         exclude = []
         inc = self.sets_db.get_collection_setting("include")
         exc = self.sets_db.get_collection_setting("exclude")        
-        if inc is not None:
+        if inc:
             include = inc.split(",")
-        if exc is not None:
+        if exc:
             exclude = exc.split(",")
         self.media_dir = (include, exclude)
         
@@ -371,10 +371,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         if mode == "artist":
             # When we haven't selected an artist
-            if par is not None:
+            if par:
                 par_par = par.parent()
                 # When we select an individual track
-                if par_par is not None:
+                if par_par:
                     artist = par_par.text(0)
                     album = par.text(0)
                     track = now
@@ -389,10 +389,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 artist = now
                 tracks = self.media_db.get_artists_files(artist, filt)
                 self.playlisting.add_list_to_playlist(tracks)
-            elif track is not None:
+            elif track:
                 file_name = self.media_db.get_file(artist, album, track, filt)
                 self.playlisting.add_to_playlist(file_name)
-            elif album is not None:
+            elif album:
                 tracks = self.media_db.get_files(artist, album, filt)
                 self.playlisting.add_list_to_playlist(tracks)
         else:
@@ -430,11 +430,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         playing = self.player.audio_object.is_playing()
         
         # The button is set
-        if checked is True:
+        if checked:
             queued = self.player.audio_object.current_source()
             highlighted = self.playlisting.highlighted_track()            
             # Something in the playlist is selected
-            if highlighted is not None:      
+            if highlighted:      
                 # The track in backend is not the same as selected and paused
                 if (queued != highlighted) and paused: 
                     self.player.audio_object.load(str(highlighted.toUtf8()))
@@ -465,7 +465,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 
         # The button is unset
         else:
-            if playing is True:
+            if playing:
                 self.player.audio_object.pause()
             self.wdgt_manip.icon_change("pause")
             if self.track_tbl.currentRow() >= 0:
@@ -496,7 +496,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Go to next item in playlist(down)
         """
         track = self.tracking.next()
-        if track is not None:
+        if track:
             self.player.audio_object.stop() 
             self.player.audio_object.load(unicode(track))
             if self.play_bttn.isChecked():
@@ -609,7 +609,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                                          "Save Playlist",
                                          "Enter a name for the playlist:",
                                          QLineEdit.Normal)
-        if play_name[1] == False:
+        if not play_name[1]:
             # User clicked cancel
             return
         
@@ -657,7 +657,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         # Resets before searching again
         now = self.playlisting.current_row()
-        if now is not None:
+        if now:
             self.playlisting.highlighted_track()
         
         # Checks if the search edit isn't empty
@@ -755,7 +755,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         if mode == "artist":
             # If we've expanded an album
-            if par is not None:
+            if par:
                 artist = unicode(par.text(0))
                 album = unicode(item.text(0))
             else:
@@ -788,14 +788,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                
         # ALbum mode 
         else:
-            if par is not None:
+            if par:
                 album = par.text(0)
                 track = item.text(0)
             else:
                 album = item.text(0)
                 track = None
             
-            if (track is None) and (item.childCount() == 0):
+            if (not track) and (item.childCount() == 0):
                 tracks = self.media_db.get_album_titles(album,filt_time) 
                              
                 for trk in tracks:      
@@ -937,7 +937,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             "Rename the playlist to:",
             QLineEdit.Normal)
         # Checks if you entered a non-zero length name and that you clicked 'ok'
-        if (new_name[1] is False) or (len(new_name[0]) < 1):
+        if (not new_name[1]) or (len(new_name[0]) < 1):
             return
         
         #get all the tracks in the selected playlist
@@ -1079,7 +1079,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         mode = "redo" if fresh else "update"
         # If the dialog is cancelled in last if statement the below is ignored
-        if self.media_dir is not None:
+        if self.media_dir:
             self.stat_bttn.setEnabled(True)
             self.build_db_thread.set_values(self.media_dir, self.audio_formats,
                                             mode)
@@ -1100,9 +1100,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         tit_change = self.art_alb["title"] != self.art_alb["oldtit"]
 
         # Artist change
-        if art_change and (self.art_alb["nowart"] is not None):
-            
-            print self.art_alb["nowart"]
+        if art_change and self.art_alb["nowart"]:
             # Sort out wiki
             self.wiki_thread.artist = unicode(self.art_alb["nowart"])
             self.wiki_thread.start()
@@ -1116,7 +1114,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.art_alb["oldart"] = self.art_alb["nowart"]
 
         # Album change
-        elif alb_change and (self.art_alb["nowalb"] is not None):
+        elif alb_change and self.art_alb["nowalb"]:
             self.infopage_thread.artist = self.art_alb["nowart"]
             self.infopage_thread.album = self.art_alb["nowalb"]
             self.infopage_thread.title = self.art_alb["title"]
@@ -1125,7 +1123,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.infopage_thread.start()
             self.art_alb["oldalb"] = self.art_alb["nowalb"]
         # track change only   
-        elif tit_change and (self.art_alb["title"] is not None):
+        elif tit_change and self.art_alb["title"]:
             self.infopage_thread.artist = self.art_alb["nowart"]
             self.infopage_thread.album = self.art_alb["nowalb"]
             self.infopage_thread.title = self.art_alb["title"]
@@ -1145,11 +1143,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         # Left click to hide/show program
         if event == 3:
-            hidden = self.isVisible() is False
-            self.minimise_to_tray(hidden)
+            self.minimise_to_tray(self.isHidden())
         # Middle-click to pause/play
         elif event == 4:
-            stopped = self.player.audio_object.is_playing() is False
+            stopped =  (not self.player.audio_object.is_playing())
             self.play_bttn.setChecked(stopped)
 
     def closeEvent(self, event):
