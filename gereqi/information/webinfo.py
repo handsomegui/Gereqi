@@ -17,6 +17,7 @@
 from urllib2 import Request, urlopen, URLError
 
 import styles
+import socket
 
 
 class Webinfo:
