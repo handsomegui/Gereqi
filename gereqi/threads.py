@@ -101,7 +101,8 @@ class Builddb(QThread):
         # No point trying to speed this up. os.walk is a generator function
             for dirpath, dirnames, filenames in os.walk(dir):
                 # The exclusion part
-                #FIXME: although this means you exclude the dirpath you don't exclude it's subdirs
+                #FIXME: although this means you exclude the dirpath you don't 
+                # exclude it's subdirs
                 if dirpath in not_need:
                     pass
                 for fname in filenames:
