@@ -444,6 +444,9 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
            <property name="indentation">
             <number>15</number>
            </property>
@@ -1017,7 +1020,7 @@
      <x>0</x>
      <y>0</y>
      <width>799</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuActions">
