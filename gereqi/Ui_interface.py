@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'interface.ui'
 #
-# Created: Tue Aug 16 20:42:51 2011
+# Created: Wed Aug 31 22:56:18 2011
 #      by: PyQt4 UI code generator 4.8.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -206,6 +206,7 @@ class Ui_MainWindow(object):
         self.playlist_tree.setSizePolicy(sizePolicy)
         self.playlist_tree.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.playlist_tree.setProperty(_fromUtf8("showDropIndicator"), False)
+        self.playlist_tree.setAlternatingRowColors(True)
         self.playlist_tree.setObjectName(_fromUtf8("playlist_tree"))
         self.verticalLayout_5.addWidget(self.playlist_tree)
         self.gridLayout_6.addLayout(self.verticalLayout_5, 0, 0, 1, 1)
