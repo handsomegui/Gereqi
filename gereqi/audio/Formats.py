@@ -13,13 +13,17 @@ class Formats:
         pass
     
     def available(self):
+        # In order for certain filetypes to play the correct gstreamer
+        # codecs have to be present        
         fmats = {"ogg": ["libgstvorbis.so"],
                  "flac": ["libgstflac.so"],
                  "mp3": ["libgstlame.so","libgstflump3dec.so"],
                  "m4a": ["libfaad.so"]}
         
+        # Search for the codecs using find()
         cmd = "find /usr/lib/ -name %s"
-        avail = []
+        # Allow cuefiles by default
+        avail = ["cue"]
         for key in fmats.iterkeys():
             for lib in fmats[key]:
                 now = cmd % lib

@@ -20,6 +20,7 @@ from gereqi.audio import Backend, Formats
 from gereqi.storage.Settings import Settings
 from gereqi.storage.Collection import CollectionDb
 from gereqi.information.tagging import Tagging
+from gereqi.information.cue_sheet import CueSheet
 from gereqi.icons.configuration import MyIcons
 try:
     from gereqi.audio import Cdrom
@@ -887,7 +888,22 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         elif par == "Playlists":
             playlist = item.text(column)
             tracks = self.media_db.playlist_tracks(playlist)
-            self.playlisting.add_list_to_playlist(tracks)
+            if path.splitext(tracks[0])[-1].lower() == ".cue":
+                # sort out the cuesheet
+                cue_now = CueSheet(tracks[0])
+                for track in cue_now.tracks:
+                    info =  {"Track":   track.number,  
+                            "Title":    track.title,
+                            "Artist":   track.performer, 
+                            "Album":    cue_now.title,
+                            "Year":     cue_now.year, 
+                            "Genre":    cue_now.genre,
+                            "Length":   "0", 
+                            "Bitrate":  "0", 
+                            "FileName": cue_now.path + track.file_name}
+                    self.playlisting.add_to_playlist(track.file_name, info)
+            else:
+                self.playlisting.add_list_to_playlist(tracks)
             self.clear_trktbl_bttn.setEnabled(True)
             
         elif par == "Auto":

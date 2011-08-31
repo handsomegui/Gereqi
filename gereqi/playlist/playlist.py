@@ -66,16 +66,25 @@ class Playlist:
                     return
                 else:       
                     trk = "%02u" % int(metadata[5])
-                    metadata = {"Track": trk,  "Title": metadata[0],
-                                "Artist": metadata[1], "Album": metadata[2],
-                                "Year":metadata[3], "Genre": metadata[4],
-                                "Length": metadata[6], "Bitrate": metadata[7], 
+                    metadata = {"Track":    trk,  
+                                "Title":    metadata[0],
+                                "Artist":   metadata[1], 
+                                "Album":    metadata[2],
+                                "Year":     metadata[3], 
+                                "Genre":    metadata[4],
+                                "Length":   metadata[6], 
+                                "Bitrate":  metadata[7], 
                                 "FileName": file_name}
             else:
                 trk = "%02u" % int(metadata["track"])
-                metadata = {'Track': trk, "Title": metadata["title"], "Artist": metadata["artist"], 
-                            "Album": metadata["album"], "Year": metadata["year"], "Genre": metadata["genre"],
-                            "Length": metadata["length"], "Bitrate": metadata["bitrate"], 
+                metadata = {'Track':    trk, 
+                            "Title":    metadata["title"], 
+                            "Artist":   metadata["artist"], 
+                            "Album":    metadata["album"], 
+                            "Year":     metadata["year"], 
+                            "Genre":    metadata["genre"],
+                            "Length":   metadata["length"], 
+                            "Bitrate":  metadata["bitrate"], 
                             "FileName": file_name}
 
         else:

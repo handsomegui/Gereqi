@@ -345,9 +345,9 @@ class CollectionDb:
         return result
         
     def playlist_tracks(self, name):
-        query = '''SELECT file_name 
-                            FROM playlist
-                            WHERE name=?'''
+        query = '''SELECT DISTINCT file_name 
+                    FROM playlist
+                    WHERE name=?'''
         self.__query_execute(query, (name, ))
         result = self.__query_fetchall()
         return result

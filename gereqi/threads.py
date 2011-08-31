@@ -34,6 +34,7 @@ from gereqi.information.tagging import Tagging
 from gereqi.information.infopage import Information
 from gereqi.storage.Collection import CollectionDb
 from gereqi.storage.Settings import Settings
+from gereqi.information.cue_sheet import CueSheet
 from extraneous import Extraneous
 
 build_lock = delete_lock = False
@@ -67,6 +68,9 @@ class Builddb(QThread):
         self.db = CollectionDb("builder")
         
     def __file_compat(self, dirpath, fname):
+        """
+        Identifies if the file is compatible with supported codecs
+        """
         now = os.path.join(dirpath, fname)
         ender = os.path.splitext(now)[-1].strip(".")
         ender = ender.lower() 
@@ -123,6 +127,16 @@ class Builddb(QThread):
        
         return list(set(tracks) - set(self.db.all_files() ))
         
+    def __process_cue(self,file_name):
+        """
+        Cue sheets need to be handled differently to normal audio files
+        """
+        print("CUEFILE: %s" % file_name)
+        cue_now = CueSheet(file_name)
+        cue_name = "%s - %s" % (cue_now.title, cue_now.performer)
+        self.db.playlist_add(cue_name,file_name)
+        
+        
     def run(self):
         
         self.ui.build_lock = True
@@ -155,6 +169,11 @@ class Builddb(QThread):
         cnt = 0
         for trk in tracks:
             if not self.exiting:
+                # Find cuesheets
+                if os.path.splitext(trk)[-1].lower() == ".cue":                    
+                    self.__process_cue(trk)
+                    continue                   
+                
                 ratio = float(cnt ) /  float(tracks_total)
                 prog = int(round(100 * ratio))
                 if prog > old_prog:
@@ -179,8 +198,8 @@ class Builddb(QThread):
                 self.exit()
                 return
             
-        print("%u of %u tracks scanned in: %0.1f seconds" % (cnt, tracks_total,
-                                                             (time() - strt)))
+        print("%u of %u tracks scanned in: %0.1f seconds" % \
+              (cnt, tracks_total, (time() - strt)))
         self.finished.emit("complete")
         self.ui.build_lock = False
         
