@@ -24,10 +24,10 @@ from PyQt4.QtCore import *
 from time import time, sleep
 
 import urllib
-import urllib2
 import json
 import os
 import pyinotify
+import networking
 
 from gereqi.information.webinfo import Webinfo
 from gereqi.information.tagging import Tagging
@@ -391,17 +391,10 @@ class WikiPage(QThread):
      
     def __init__(self, parent=None):
         QThread.__init__(self,parent)
-    
-    def fetch(self, url):
-        ua = "gereqi-0.5.0"
-        hdrs = {"User-Agent": ua}
-        req = urllib2.Request(url, None, hdrs)
-        resp = urllib2.urlopen(req,None,10)
-        return resp.read()
         
     def run(self):
         urls = ["http://en.wikipedia.org/w/api.php?action=opensearch&search=%s&format=json&limit=3",
                 "http://en.wikipedia.org/w/index.php?title=%s&printable=yes"]
-        jo = json.loads(self.fetch(urls[0] % urllib.quote(self.artist) ))
-        html_out = self.fetch(urls[1] % urllib.quote(jo[1][0]))
+        jo = json.loads(networking.fetch(urls[0] % urllib.quote(self.artist) ))
+        html_out = networking.fetch(urls[1] % urllib.quote(jo[1][0]))
         self.html.emit(html_out)
