@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'interface.ui'
 #
-# Created: Wed Aug 31 22:56:18 2011
-#      by: PyQt4 UI code generator 4.8.4
+# Created: Sat Sep 10 18:00:44 2011
+#      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -148,23 +148,6 @@ class Ui_MainWindow(object):
         self.collect_time_box.addItem(_fromUtf8(""))
         self.collect_time_box.addItem(_fromUtf8(""))
         self.verticalLayout_2.addWidget(self.collect_time_box)
-        self.collect_tree = QtGui.QTreeWidget(self.collectionTab)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.collect_tree.sizePolicy().hasHeightForWidth())
-        self.collect_tree.setSizePolicy(sizePolicy)
-        self.collect_tree.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        self.collect_tree.setProperty(_fromUtf8("showDropIndicator"), False)
-        self.collect_tree.setAlternatingRowColors(True)
-        self.collect_tree.setSelectionMode(QtGui.QAbstractItemView.ContiguousSelection)
-        self.collect_tree.setIndentation(15)
-        self.collect_tree.setRootIsDecorated(True)
-        self.collect_tree.setUniformRowHeights(True)
-        self.collect_tree.setAnimated(True)
-        self.collect_tree.setExpandsOnDoubleClick(False)
-        self.collect_tree.setObjectName(_fromUtf8("collect_tree"))
-        self.verticalLayout_2.addWidget(self.collect_tree)
         self.gridLayout_3.addLayout(self.verticalLayout_2, 0, 0, 1, 1)
         self.vertical_tabs.addTab(self.collectionTab, _fromUtf8(""))
         self.playlistsTab = QtGui.QWidget()
@@ -437,7 +420,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 799, 24))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 799, 25))
         self.menuBar.setObjectName(_fromUtf8("menuBar"))
         self.menuActions = QtGui.QMenu(self.menuBar)
         self.menuActions.setObjectName(_fromUtf8("menuActions"))
@@ -566,7 +549,6 @@ class Ui_MainWindow(object):
         self.collect_time_box.setItemText(3, QtGui.QApplication.translate("MainWindow", "Added Within 1 Month", None, QtGui.QApplication.UnicodeUTF8))
         self.collect_time_box.setItemText(4, QtGui.QApplication.translate("MainWindow", "Added Within 3 Months", None, QtGui.QApplication.UnicodeUTF8))
         self.collect_time_box.setItemText(5, QtGui.QApplication.translate("MainWindow", "Added Within 1 Year", None, QtGui.QApplication.UnicodeUTF8))
-        self.collect_tree.headerItem().setText(0, QtGui.QApplication.translate("MainWindow", "Artist/Album", None, QtGui.QApplication.UnicodeUTF8))
         self.vertical_tabs.setTabText(self.vertical_tabs.indexOf(self.collectionTab), QtGui.QApplication.translate("MainWindow", "Collection", None, QtGui.QApplication.UnicodeUTF8))
         self.rename_playlist_bttn.setText(QtGui.QApplication.translate("MainWindow", "_", None, QtGui.QApplication.UnicodeUTF8))
         self.delete_playlist_bttn.setText(QtGui.QApplication.translate("MainWindow", "x", None, QtGui.QApplication.UnicodeUTF8))

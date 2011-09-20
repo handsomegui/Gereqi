@@ -197,12 +197,13 @@ class CollectionDb:
         result = self.__query_fetchall()
         return result
         
-    def get_artists(self, filt=0):
+    def get_artists(self, time_filt=0,filt=''):
+        filt = "%%%s%%" % filt
         query = '''SELECT DISTINCT artist 
                     FROM media
-                    WHERE added > ?
+                    WHERE added > ? AND artist LIKE ?
                     ORDER BY lower(artist)'''
-        self.__query_execute(query, (filt, ))
+        self.__query_execute(query, (time_filt, filt))
         result = self.__query_fetchall()
         return result
         
@@ -227,6 +228,13 @@ class CollectionDb:
         self.__query_execute(query, (time_filt, filt))
         result = self.__query_fetchall()
         return result
+    
+    def get_album_count(self,album):
+        query = '''SELECT DISTINCT artist
+                    FROM media
+                    WHERE album=?'''
+        self.__query_execute(query, (album,))
+        return len(self.__query_fetchall())
         
     def get_files(self, artist, album,filt=0):
         args = (artist, album, filt)
@@ -288,10 +296,11 @@ class CollectionDb:
         self.__query_execute(query, (artist, filt))
         result = self.__query_fetchall()
         return result
+    
                         
     def get_titles(self, artist, album, filt=0):
         args = (artist, album, filt)
-        query = '''SELECT DISTINCT title,track 
+        query = '''SELECT DISTINCT title,track
                         FROM media 
                         WHERE artist=?
                         AND album=?
@@ -325,6 +334,17 @@ class CollectionDb:
             return result
         except IndexError:
             return
+        
+    # Can't think of a better name. I wanted to overload get_info
+    def get_info_from_info(self,artist,album,title):
+        query = '''SELECT file_name,year,genre,track,length,bitrate,added,rating
+                    FROM media
+                    WHERE artist=? AND album=? AND title=?'''
+        
+        self.__query_execute(query, (artist,album,title))
+        result = self.__query_fetchall()
+        if len(result) > 0:
+            return result[0]
         
     def playlist_add(self, *params):
         if self.db_type == "SQLITE":

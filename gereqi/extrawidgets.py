@@ -19,32 +19,13 @@ from PyQt4.QtCore import *
 from PyQt4.QtWebKit import QWebPage
 
 import time
-import gereqi.devices
-import gereqi.icons.configuration
-import gereqi.icons.icons_resource
-from gereqi.storage.Collection import CollectionDb
-from gereqi.icons.configuration import MyIcons
-from gereqi.playlist.Auto import Unplayed,Top
-import extraneous
+import devices
+import icons.configuration
+from storage.Collection import CollectionDb
+from icons.configuration import MyIcons
+from playlist.Auto import Unplayed,Top
 
-class MyDelegate(QItemDelegate):
-    mode = "artist"
-    def __init__(self):
-        super(MyDelegate,self).__init__()
-        
-    def sizeHint(self,option,index):
-        parent = index.parent()
-        if parent.isValid() and  not parent.parent().isValid():
-            if self.mode == "artist":
-                return QSize(48,48)
-            else:
-                return QSize(24,24)
-            
-        if self.mode == "artist":
-            return QSize(24,24)
-        else:
-            return QSize(48,48)
-            
+import extraneous
     
 
 class SetupExtraWidgets:
@@ -62,7 +43,7 @@ class SetupExtraWidgets:
         self.__setup_misc()
         self.__key_shortcuts()
         # Load all the button/action icons
-        gereqi.icons.configuration.Setup(self.ui)
+        icons.configuration.Setup(self.ui)
         
     def __setup_filesystem_tree(self):
         """
@@ -153,10 +134,7 @@ class SetupExtraWidgets:
         for val in range(len(headers)):
             self.ui.track_tbl.insertColumn(val)
         self.ui.track_tbl.setHorizontalHeaderLabels(headers)
-        
-        self.ui.collect_tree_hdr = self.ui.collect_tree.header()
-        self.ui.collect_tree_hdr.setClickable(True)        
-        
+      
         # Disables the webView link-clicks as we want to manually handle them
         self.ui.info_view.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
         self.ui.wiki_view.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
@@ -189,11 +167,11 @@ class WidgetManips:
         self.ui = parent
         self.dev_man = None
         
-        self.mydel = MyDelegate()
-        self.mydel.mode = "artist"
-        self.ui.collect_tree.setItemDelegate(self.mydel)
-        self.ui.collect_tree.setUniformRowHeights(False)
-        self.ui.collect_tree.setIconSize(QSize(46,46))        
+#        self.mydel = MyDelegate()
+#        self.mydel.mode = "artist"
+#        self.ui.collect_tree.setItemDelegate(self.mydel)
+#        self.ui.collect_tree.setUniformRowHeights(False)
+#        self.ui.collect_tree.setIconSize(QSize(46,46))        
         
         self.threader = AlbumItem()
         self.threader.new_item.connect(self.__add_album_item)
@@ -292,7 +270,7 @@ class WidgetManips:
     def __tab_changed(self,pos):
         if (pos == 4):
             if not self.dev_man:
-                self.dev_man = gereqi.devices.Devices()
+                self.dev_man = devices.Devices()
                 
             self.ui.connect_dev.clicked.connect(self.__mount_dev)
             self.ui.disconnect_dev.clicked.connect(self.__umount_dev)
@@ -318,7 +296,7 @@ class WidgetManips:
             Shows the iPods contents in the treeview
         """
         self.ui.device_view.clear()
-        self.dev_interface = gereqi.devices.Ipod(m_point)
+        self.dev_interface = devices.Ipod(m_point)
         self.__pop_dev_view()
         
     def __mount_dev(self):
@@ -430,8 +408,13 @@ class WidgetManips:
                         self.ui.track_tbl.item(row,col_now).setText(text[0])
                 
 
+    def __add_album_item(self,item):
+        row = QTreeWidgetItem([item[0]])
+        row.setIcon(0,QIcon(item[1]))
+        row.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
+        self.ui.collect_tree.addTopLevelItem(row)
         
-    def __time_filt_now(self):
+    def time_filter_value(self):
         """
         Based on the combobox selection, the collection
         browser is filtered by addition date
@@ -445,54 +428,6 @@ class WidgetManips:
             return calc(filts[index - 1])
         else:
             return 0
-        
-    def setup_db_tree(self):
-        """
-        Viewing the media database in the QTreeView.
-        Can show per album or per artist
-        """
-        media_db = self.ui.media_db
-        self.ui.collect_tree.clear()
-        # This gives multiples of the same thing i.e albums
-        filt = self.ui.search_collect_edit.text()
-        time_filt = self.__time_filt_now()
-        
-        text_now = self.ui.collect_tree.headerItem().text(0)
-        if text_now == "Artist/Album":
-            mode = "artist"
-        else:
-            mode = "album"
-            extras = extraneous.Extraneous()
-                
-        if mode == "artist":
-            things = media_db.get_artists(time_filt)
-            if things is None:
-                return   
-
-        
-        if mode == "album":
-            self.threader.stop()
-#            self.threader.exit()
-            self.threader.set_values(time_filt,filt)
-            self.threader.start()
-            return
-        else:
-            self.threader.stop()
-        
-        for thing in things:
-            # When creating collection tree only 
-            #  allow certain things based on the filter.
-            if (filt is not None) and (unicode(filt).lower() not in unicode(thing).lower()):
-                continue
-            row = QTreeWidgetItem(QStringList(unicode(thing)))
-            row.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
-            self.ui.collect_tree.addTopLevelItem(row)
-            
-    def __add_album_item(self,item):
-        row = QTreeWidgetItem([item[0]])
-        row.setIcon(0,QIcon(item[1]))
-        row.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
-        self.ui.collect_tree.addTopLevelItem(row)
             
     def pop_playlist_view(self):
         """

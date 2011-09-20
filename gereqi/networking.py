@@ -10,5 +10,12 @@ def fetch(url):
     try:
         resp = urllib2.urlopen(req,None,TIMEOUT)
     except urllib2.URLError, err:
+        return None
+    return resp
+
+def read(url):
+    result = fetch(url)
+    if result:
+        return result.read()
+    else:
         return ""
-    return resp.read()

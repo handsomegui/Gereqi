@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
-from gereqi.extraneous import Extraneous
+from .. import extraneous
 from gereqi.storage.Settings import Settings
 from gereqi.storage.Collection import CollectionDb
 
@@ -62,14 +62,12 @@ class Information:
 
     def __gen_albs(self, artist, albums):
         thing = ""
-        extra = Extraneous()
-        
         for alb in albums:
             t_info = ""
             tracks = self._media_db.get_titles(artist, alb)
             for trk in tracks:
                 t_info += TRACK_HTML % {'track': trk["track"],'title': trk["title"]}
-            cover = extra.get_cover_source(artist, alb)
+            cover = extraneous.get_cover_source(artist, alb)
             if not cover:
                 cover = "file://"
             thing += ALB_HTML % {'cover':cover, 'album' :alb, 'tracks': t_info}
@@ -81,8 +79,7 @@ class Information:
         sets_db = Settings()
         coversize = sets_db.get_interface_setting("coversize")
         coversize = int(coversize) if coversize else 200
-        extra = Extraneous()
-        cover = extra.get_cover_source(params["artist"], 
+        cover = extraneous.get_cover_source(params["artist"], 
                                        params["album"], 
                                        params["use_web"])
         

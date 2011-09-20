@@ -14,10 +14,9 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from urllib2 import Request, urlopen, URLError
-
 import styles
 import socket
+from gereqi import networking
 
 
 class Webinfo:
@@ -42,34 +41,20 @@ class Webinfo:
             url = base_url % "+".join(things)
             return url
         
-    def __fetch(self, url):
-        """
-        Using urllib2 the html is retrieved via an url
-        generated via create_url.
-        """
-        url = url.encode("utf-8")
-        try:
-            #TODO: use an app constant
-            user_agent = "Gereqi-0.5.0" 
-            headers = { 'User-Agent' : user_agent }
-            req = Request(url, None, headers)
-            return urlopen(req, None, 10)
-        except URLError, err:
-            pass
-#            print(err)
-        
+       
     def __printable_wiki(self, url):
         """
         Takes the main wiki page and returns the html
         of the printable version
         """
         title = url.split("http://en.wikipedia.org/wiki/")[-1]
-        url_now = "http://en.wikipedia.org/w/index.php?title=%s&printable=yes" % title
-        html = self.__fetch(url_now)
-        if html is not None:
-            splitter = '''<h2><span class="mw-headline" id="References">References</span></h2>'''
-            html = html.read().partition("<!-- content -->")[2].partition(splitter)[0]
-            return html
+        url_now = "http://en.wikipedia.org/w/index.php?title=%s&printable=yes"
+        html = networking.read(url_now % title)
+        if not html:
+            return
+        splitter = '''<h2><span class="mw-headline" id="References">References</span></h2>'''
+        html = html.partition("<!-- content -->")[2].partition(splitter)[0]
+        return html
         
     def get_info(self, thing, *params):
         """
@@ -78,43 +63,48 @@ class Webinfo:
         if thing == "info":
             site = "wikipedia.org"
             url = self.__create_url(site, *params)
-            pre_html = self.__fetch(url)
-            if pre_html is not None:
-                result =  self.__printable_wiki(pre_html.geturl())
-                if result:
-                    base_html = '''
-                        <html>
-                        <head>
-                        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
-                        <style type="text/css">
-                        %s
-                        </style>
-                        <body>
-                        %s
-                        </body>
-                        </html>
-                        ''' 
-                    return base_html % (styles.stylesheet, unicode(result , "utf-8"))
+            pre_html = networking.fetch(url)
+            if not pre_html:
+                return
+            result = self.__printable_wiki(pre_html.geturl())
+            if not result:
+                return
+            base_html = '''
+                <html>
+                <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+                <style type="text/css">
+                %s
+                </style>
+                <body>
+                %s
+                </body>
+                </html>
+                ''' 
+            return base_html % (styles.stylesheet, unicode(result, "utf-8"))
         
     def get_cover(self, artist, album):
+        """
+        Retrieve the album art for a given album by an artist
+        """
         alb = str(album).partition("(")[0].partition("[")[0]
         site = "albumart.org"
         url = self.__create_url(site, artist, alb)
-        pre_html = self.__fetch(url)
-        if pre_html is not None:
-            srch = "http://www.albumart.org/images/zoom-icon.jpg"
-            try:
-                html = pre_html.read().split("\n")
-                html = filter(lambda x: srch in x,  html)
-                images = [line.partition('</a><a href="')[2].partition('"')[0] 
-                          for line in html]
-                if len(images) < 0:
-                    return
-                img = self.__fetch(images[0])
-                if not img:
-                    return
-                if img.info()['Content-type'] == "image/jpeg":
-                    return img.read()
-            except socket.timeout:
-                return
+        pre_html = networking.fetch(url)
+        # Failed to load
+        if not pre_html:
+            return        
+        srch = "http://www.albumart.org/images/zoom-icon.jpg"
+        html = pre_html.read().split("\n")
+        html = filter(lambda x: srch in x,  html)
+        images = [line.partition('</a><a href="')[2].partition('"')[0] 
+                  for line in html]
+        if len(images) == 0:
+            return
+        img = networking.fetch(images[0])
+        # Failed to load
+        if not img:
+            return
+        if img.info()['Content-type'] == "image/jpeg":
+            return img.read()
 

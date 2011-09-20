@@ -34,8 +34,8 @@ class Main:
         """
         dummy
         """
-#        cover_thread = GetCovers()
-#        cover_thread.start()
+        cover_thread = GetCovers()
+        cover_thread.start()
         app = QApplication(sys.argv)
     
         app.setApplicationName("Gereqi")

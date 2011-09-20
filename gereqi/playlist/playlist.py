@@ -53,7 +53,6 @@ class Playlist:
         """
         # This allows to manually put in info for things we know
         # mutagen cannot handle things like urls for podcasts
-        self.ui_main.clear_trktbl_bttn.setEnabled(True)
         metadata = info
         # FIXME: ugly, ugly, ugly
         if metadata is None:
@@ -90,6 +89,11 @@ class Playlist:
         else:
             metadata['Track'] = "%02u" % metadata['Track']
                                   
+        self.add_item_to_playlist(metadata)   
+        
+    def add_item_to_playlist(self,metadata):
+        # Ensure track number is zero-padded
+        metadata['Track'] = "%02u" % int(metadata['Track'])
         row = self.ui_main.track_tbl.rowCount()
         self.ui_main.track_tbl.insertRow(row)
         # Creates each cell for a track based on info
@@ -97,8 +101,13 @@ class Playlist:
             tbl_wdgt = QTableWidgetItem(metadata[key])
             column = self.header_search(key)
             self.ui_main.track_tbl.setItem(row, column, tbl_wdgt)
-        self.ui_main.track_tbl.resizeColumnsToContents()   
+        self.ui_main.track_tbl.resizeColumnsToContents()
+        # Enable the button that clears playlist widget
+        self.ui_main.clear_trktbl_bttn.setEnabled(True)
         
+    def add_items_to_playlist(self,items):
+        for item in items:
+            self.add_item_to_playlist(item)
         
     # This is needed as the highlighted row can be different
     # than the currentRow method of QTableview.

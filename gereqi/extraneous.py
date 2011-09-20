@@ -17,50 +17,44 @@
 from PyQt4.QtCore import QDir, QFile, QIODevice
 from os import path, mkdir, environ
 
-from gereqi.information.webinfo import Webinfo
+from information.webinfo import Webinfo
 
 
+def __filenamer(*params):
+    things = []
+    excludes = '''!,.%%$&(){}[]/"'''
+    for item in params:
+        for ch in excludes:
+            item.replace(ch,'')
+        item.replace(" ", "_")
+        things.append(item)
+    result = "%s-%s" % (things[0], things[1])
+    return result
 
-class Extraneous:
-    """
-    Miscellaneous functions that have no real place to
-    go but are used in various Classes.
-    """
-    def __init__(self, parent=None):
-        self.ui_main = parent
-        
-    def __filenamer(self, *params):
-        things = []
-        excludes = '''!,.%%$&(){}[]/"'''
-        for item in params:
-            for ch in excludes:
-                item.replace(ch,'')
-            item.replace(" ", "_")
-            things.append(item)
-        result = "%s-%s" % (things[0], things[1])
-        return result
-
-    def get_cover_source(self, artist, album, check=True,download=True):
-        cover_dir = "%s/.gereqi/album-art/" % environ["HOME"]
-        fname = self.__filenamer(artist, album)
-        fname = fname.replace('/','_')
-        cover = "%s%s.jpg" % (cover_dir, fname)
-        
-        # Check=False just provides a filename creator. Used when track has
-        # changed but not the album
-        if check:
-            # Place to save the covers doesn't exist
-            if path.exists(cover_dir) is False:
-                mkdir(cover_dir, 0700)
-            if path.exists(cover):
-                return "file://%s" % cover
-            elif download == True:                        
-                web_info = Webinfo()
-                img = web_info.get_cover(artist, album)
-                if img is not None:
-                    now = open(cover, "wb")
-                    now.write(img)
-                    now.close()
-                    return "file://%s" % cover
-        else:
+#TODO: look in the item's folder for cover.jpg etc if the album is in the dir-name
+def get_cover_source(artist, album, check=True,download=True):
+    
+    
+    cover_dir = "%s/.gereqi/album-art/" % environ["HOME"]
+    fname = __filenamer(artist, album)
+    fname = fname.replace('/','_')
+    cover = "%s%s.jpg" % (cover_dir, fname)
+    
+    # Check=False just provides a filename creator. Used when track has
+    # changed but not the album
+    if check:
+        # Place to save the covers doesn't exist
+        if path.exists(cover_dir) is False:
+            mkdir(cover_dir, 0700)
+        if path.exists(cover):
             return "file://%s" % cover
+        elif download == True:                        
+            web_info = Webinfo()
+            img = web_info.get_cover(artist, album)
+            if img is not None:
+                now = open(cover, "wb")
+                now.write(img)
+                now.close()
+                return "file://%s" % cover
+    else:
+        return "file://%s" % cover

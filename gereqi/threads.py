@@ -29,28 +29,29 @@ import os
 import pyinotify
 import networking
 
-from gereqi.information.webinfo import Webinfo
-from gereqi.information.tagging import Tagging
-from gereqi.information.infopage import Information
-from gereqi.storage.Collection import CollectionDb
-from gereqi.storage.Settings import Settings
-from gereqi.information.cue_sheet import CueSheet
-from extraneous import Extraneous
+from information.webinfo import Webinfo
+from information.tagging import Tagging
+from information.infopage import Information
+from storage.Collection import CollectionDb
+from storage.Settings import Settings
+from information.cue_sheet import CueSheet
+import extraneous
 
 build_lock = delete_lock = False
 
 class GetCovers(QThread):
+    cover_found = pyqtSignal(str,str)
     def __init__(self):
         super(GetCovers,self).__init__()
         
     def run(self):
         db = CollectionDb("cover_crawl")
-        get_cover = Extraneous().get_cover_source        
         artists = db.get_artists()
         for artist in artists:
             albums = db.get_albums(artist)
             for album in albums:
-                get_cover(artist,album)
+                if extraneous.get_cover_source(artist,album):
+                    cover_found.emit(artist,album)
         self.exec_()
 
 
@@ -111,11 +112,12 @@ class Builddb(QThread):
                     pass
                 for fname in filenames:
                     trk = self.__file_compat(dirpath, fname)
-                    if trk:
-                        try:
-                            tracks.append(unicode(trk))
-                        except UnicodeDecodeError:
-                            continue
+                    if not trk:
+                        continue
+                    try:
+                        tracks.append(unicode(trk))
+                    except UnicodeDecodeError:
+                        continue
                             
         else:
             # Cannot use the loop for both as one is the above is a generator
@@ -360,7 +362,7 @@ class Finishers:
         else:
             self.ui.stat_lbl.setText("Finished")
         self.ui.stat_prog.setValue(100)
-        self.ui.wdgt_manip.setup_db_tree()
+        self.ui.collect_tree.populate()
         self.ui.search_collect_edit.clear()
             
 
@@ -395,6 +397,6 @@ class WikiPage(QThread):
     def run(self):
         urls = ["http://en.wikipedia.org/w/api.php?action=opensearch&search=%s&format=json&limit=3",
                 "http://en.wikipedia.org/w/index.php?title=%s&printable=yes"]
-        jo = json.loads(networking.fetch(urls[0] % urllib.quote(self.artist) ))
-        html_out = networking.fetch(urls[1] % urllib.quote(jo[1][0]))
+        jo = json.loads(networking.read(urls[0] % urllib.quote(self.artist) ))
+        html_out = networking.read(urls[1] % urllib.quote(jo[1][0]))
         self.html.emit(html_out)

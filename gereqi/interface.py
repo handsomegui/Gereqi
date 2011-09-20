@@ -16,14 +16,15 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-from gereqi.audio import Backend, Formats
-from gereqi.storage.Settings import Settings
-from gereqi.storage.Collection import CollectionDb
-from gereqi.information.tagging import Tagging
-from gereqi.information.cue_sheet import CueSheet
-from gereqi.icons.configuration import MyIcons
+from audio import Backend, Formats
+from storage.Settings import Settings
+from storage.Collection import CollectionDb
+from information.tagging import Tagging
+from information.cue_sheet import CueSheet
+from icons.configuration import MyIcons
+from widgets.collection_tree import CollectionTree,CollectionTreeItem
 try:
-    from gereqi.audio import Cdrom
+    from audio import Cdrom
     CDS_OK = True
 except ImportError:
     print("Missing CDRom dependencies")
@@ -34,10 +35,10 @@ from os import path
 from threads import Builddb, Finishers, Watcher, DeleteFiles, WikiPage, InfoPage
 from Ui_interface import Ui_MainWindow
 from configuration import Configuration
-from extraneous import Extraneous
+import extraneous
 from extrawidgets import SetupExtraWidgets, WidgetManips
 from about import About
-from gereqi.playlist.playlist import Playlist, PlaylistHistory
+from playlist.playlist import Playlist, PlaylistHistory
 
 
 # The folder watcher poll-time in seconds
@@ -136,6 +137,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.audio_formats = Formats.Formats().available()
         self.format_filter = ["*.%s" % fmat for fmat in self.audio_formats]
         
+
+        
         
         # TODO: change ui settings based on saved states/options. QSession
         self.setupUi(self)
@@ -150,9 +153,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         except StandardError, err:
             self.__reset_db_default(err)
                 
+                
+        self.collect_tree = CollectionTree(self.collectionTab)
+        self.verticalLayout_2.addWidget(self.collect_tree)
+        self.collect_tree.populate()
+
             
         self.del_thread = DeleteFiles(self)
-        self.extras = Extraneous()
         self.meta = Tagging(self.audio_formats)
         self.player = Backend.AudioBackend(self)
         self.playlisting = Playlist(self)
@@ -173,26 +180,26 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.prev_track_actn.triggered.connect(self.prev_bttn.click)
         self.stop_actn.triggered.connect(self.prev_bttn.click)
         self.stat_bttn.pressed.connect(self.quit_build)
-        self.track_tbl.horizontalHeader().sectionClicked.connect(
-                                                 self.playlisting.track_sorting)
-        self.collect_tree_hdr.sectionClicked.connect(self.collection_sort)
+        self.track_tbl.horizontalHeader()\
+            .sectionClicked.connect(self.playlisting.track_sorting)
+        self.collect_tree.header().sectionClicked.connect(self.collection_sort)
+        self.collect_tree.items_for_playlist\
+            .connect(self.playlisting.add_items_to_playlist)
         
         self.build_db_thread.progress.connect(self.stat_prog.setValue)
-        self.del_thread.deleted.connect(self.wdgt_manip.setup_db_tree)        
+        self.del_thread.deleted.connect(self.collect_tree.populate)        
         self.wiki_thread.html.connect(self.setWiki)
         self.infopage_thread.html.connect(self.info_view.setHtml)
         self.actionQuit.triggered.connect(self.shutdown)
         
         # Makes the collection search line-edit have the keyboard focus
         self.search_collect_edit.setFocus()
-        self.wdgt_manip.setup_db_tree()
         self.wdgt_manip.pop_playlist_view()
         
         self.play_cd_actn.setVisible(CDS_OK)
         self.icons = MyIcons()
         
 
-        
     def __reset_db_default(self,err):
         err = "Database Error: %s. Setting Database to default" % str(err)
         err_msg = QErrorMessage()
@@ -208,22 +215,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         else:
             self.tray_icon.hide()
         
-        
-    def __time_filt_now(self):
-        """
-        Based on the combobox selection, the collection
-        browser is filtered by addition date
-        """
-        index = self.collect_time_box.currentIndex()
-        calc = lambda val: int(round(time.time() - val))
-        now = time.localtime()
-        today_secs = ( ( (now[3] * 60) + now[4] ) * 60 ) + now[5]
-        filts = [ today_secs, 604800, 2419200, 7257600, 31557600]   
-        if index > 0:
-            return calc(filts[index - 1])
-        else:
-            return 0
-        
     def __collection_mode(self):
         text_now = self.collect_tree.headerItem().text(0)
         if text_now == "Artist/Album":            
@@ -234,14 +225,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def __volume_icon(self,value=None):
         value = value if value else self.volume_sldr.value()
         if value > 66:
-            key = "volume-max"
+            return self.icons.icon("volume-max")
         elif value > 33:
-            key = "volume-mid"
+            return self.icons.icon("volume-mid")
         elif value> 0:
-            key = "volume-low"
+            return self.icons.icon("volume-low")
         else:
-            key = "mute"
-        return self.icons.icon(key)
+            return self.icons.icon("mute")
    
     def __setup_watcher(self):
         watch = self.sets_db.get_collection_setting("watch")  == "True"
@@ -356,53 +346,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         This allows the filtering of the collection tree
         """
-        self.wdgt_manip.setup_db_tree()       
-    
-    @pyqtSignature("QTreeWidgetItem*, int")
-    def on_collect_tree_itemDoubleClicked(self, item, column):
-        """
-        When double click and abum in the collection browser
-        add the album's tracks to the playlist.
-        """
-        now = item.text(0)
-        par = item.parent()
-        track = album = artist = None
-        mode = self.__collection_mode()
-        filt = self.__time_filt_now()
-        
-        if mode == "artist":
-            # When we haven't selected an artist
-            if par:
-                par_par = par.parent()
-                # When we select an individual track
-                if par_par:
-                    artist = par_par.text(0)
-                    album = par.text(0)
-                    track = now
-                # When we've selected an album
-                else:
-                    album = now
-                    artist = par.text(0)
-                    
-            # In any case we'll have an artist
-            # Just an artist selected
-            if artist is None:
-                artist = now
-                tracks = self.media_db.get_artists_files(artist, filt)
-                self.playlisting.add_list_to_playlist(tracks)
-            elif track:
-                file_name = self.media_db.get_file(artist, album, track, filt)
-                self.playlisting.add_to_playlist(file_name)
-            elif album:
-                tracks = self.media_db.get_files(artist, album, filt)
-                self.playlisting.add_list_to_playlist(tracks)
-        else:
-            if par:
-                file_name = self.media_db.get_album_file(par.text(0), now)
-                self.playlisting.add_to_playlist(file_name)
-            else:
-                file_names = self.media_db.get_album_files(now)
-                self.playlisting.add_list_to_playlist(file_names)
+        self.collect_tree.text_filter = srch_str
+        self.collect_tree.populate()
     
     @pyqtSignature("")
     def on_prev_bttn_pressed(self):
@@ -744,64 +689,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.play_bttn.setChecked(True) 
         self.play_action.setChecked(True)
         
-    @pyqtSignature("QTreeWidgetItem*")
-    def on_collect_tree_itemExpanded(self, item):
-        """
-        Generates the albums to go with the artists in
-        the collection tree when expanded. Only if empty.
-        """
-        filt_time = self.__time_filt_now()
-        par = item.parent()
-        mode = self.__collection_mode()
-        
-        if mode == "artist":
-            # If we've expanded an album
-            if par:
-                artist = unicode(par.text(0))
-                album = unicode(item.text(0))
-            else:
-                artist = unicode(item.text(0))
-                album = None
-            
-            # Adding tracks to album
-            if (album is not None) and (item.childCount() == 0):                
-                tracks = self.media_db.get_titles(artist, album, filt_time)               
-                for trk in tracks:
-                    track = QTreeWidgetItem([ trk["title"] ] )                    
-                    item.addChild(track)
-      
-           # Adding albums to the artist 
-           # i.e. the parent has no children    
-            elif item.childCount() == 0:
-                albums = self.media_db.get_albums(artist, filt_time)                    
-                for alb in albums:
-                    cover = self.extras.get_cover_source(artist,alb,True, False)
-                    
-                    if not cover:
-                        cover = ":icons/nocover.png"
-                    else:
-                        cover = cover.replace("file://", '')
-                    
-                    album = QTreeWidgetItem([alb])
-                    album.setIcon(0,QIcon(cover))
-                    album.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
-                    item.addChild(album)
-               
-        # ALbum mode 
-        else:
-            if par:
-                album = par.text(0)
-                track = item.text(0)
-            else:
-                album = item.text(0)
-                track = None
-            
-            if (not track) and (item.childCount() == 0):
-                tracks = self.media_db.get_album_titles(album,filt_time) 
-                             
-                for trk in tracks:      
-                    track = QTreeWidgetItem([trk])
-                    item.addChild(track)
+
                 
                 
     @pyqtSignature("")
@@ -818,7 +706,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Slot documentation goes here.
         """
-        self.wdgt_manip.setup_db_tree()
+        self.collect_tree.time_filter = self.wdgt_manip.time_filter_value()
+        self.collect_tree.populate()
+        
         
     @pyqtSignature("")
     def on_actionAbout_Gereqi_triggered(self):
@@ -1178,12 +1068,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
    
     @pyqtSignature("int")  
     def collection_sort(self, p0):
-        mode = self.__collection_mode()
-        if mode == "artist":
-            self.wdgt_manip.mydel.mode = "album"
+#        mode = self.__collection_mode()
+        if self.collect_tree.mode == 0:
+            self.collect_tree.set_mode(1)
             self.collect_tree.headerItem().setText(0, "Album/Artist")            
         else:
-            self.wdgt_manip.mydel.mode = "artist"
+            self.collect_tree.set_mode(0)
             self.collect_tree.headerItem().setText(0, "Artist/Album")
 
-        self.wdgt_manip.setup_db_tree()
+        self.collect_tree.populate()

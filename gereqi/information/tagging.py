@@ -28,9 +28,6 @@ from os import stat, path
 
 import subprocess
 
-from gereqi.extraneous import Extraneous
-
-
 class Fixing:
     def __init__(self):
         return
@@ -99,8 +96,9 @@ class Manipulations:
                 if hdr in ["tracknumber", "trkn"]:
                     val = self.__treat_tracknum(item[hdr][0])
                 else:
-                    val = item[hdr][0]
-            # Used to use KeyError exception but got very odd  list-index error about 'val'
+                    val = item[hdr][0].strip()
+            # Used to use KeyError exception but got very odd  list-index error
+            # about 'val'
             except:
                 val = None
             if not val:
@@ -135,7 +133,6 @@ class Tagging:
         # the '.' and in lower-case
         self.a_formats = formats
         self.manip = Manipulations()
-        self.extras = Extraneous()
         
     def __mp3_extract(self, fname):
         """
@@ -232,7 +229,7 @@ class Tagging:
             elif ext == "m4a":
                 tags = self.__m4a_extract(fname)
             
-            if tags is not None:
+            if tags:
                 # 'unknown' is the output from mutagen
                 # also to do the conversion here last for other formats
                 if tags[0].lower() == "unknown":
