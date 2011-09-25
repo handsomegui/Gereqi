@@ -51,7 +51,7 @@ class GetCovers(QThread):
             albums = db.get_albums(artist)
             for album in albums:
                 if extraneous.get_cover_source(artist,album):
-                    cover_found.emit(artist,album)
+                    self.cover_found.emit(artist,album)
         self.exec_()
 
 
@@ -397,6 +397,12 @@ class WikiPage(QThread):
     def run(self):
         urls = ["http://en.wikipedia.org/w/api.php?action=opensearch&search=%s&format=json&limit=3",
                 "http://en.wikipedia.org/w/index.php?title=%s&printable=yes"]
-        jo = json.loads(networking.read(urls[0] % urllib.quote(self.artist) ))
+        try:
+            jo = json.loads(networking.read(urls[0] % urllib.quote(self.artist) ))            
+        except ValueError:
+            # Probable because networking.read() returned nothing
+            self.html.emit("")
+            return
         html_out = networking.read(urls[1] % urllib.quote(jo[1][0]))
         self.html.emit(html_out)
+        
