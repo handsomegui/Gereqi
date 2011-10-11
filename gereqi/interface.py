@@ -482,7 +482,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 # The user has entered duff DB values
                 self.__reset_db_default(err)
                 
-            self.wdgt_manip.setup_db_tree()
             self.wdgt_manip.pop_playlist_view()
             self.__tray_menu_appearance()
             
