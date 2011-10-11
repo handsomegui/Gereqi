@@ -189,7 +189,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.build_db_thread.progress.connect(self.stat_prog.setValue)
         self.del_thread.deleted.connect(self.collect_tree.populate)        
         self.wiki_thread.html.connect(self.setWiki)
-        self.infopage_thread.html.connect(self.info_view.setHtml)
+        self.infopage_thread.html.connect(self.__set_infopage)
         self.actionQuit.triggered.connect(self.shutdown)
         
         # Makes the collection search line-edit have the keyboard focus
@@ -198,6 +198,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         self.play_cd_actn.setVisible(CDS_OK)
         self.icons = MyIcons()
+
+
+    def __set_infopage(self, html):
+        self.info_view.setHtml(html)        
         
 
     def __reset_db_default(self,err):
