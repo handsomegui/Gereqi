@@ -16,7 +16,7 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-from audio import Backend, Formats
+from audio import Backend, Formats, MediaTypes
 from storage.Settings import Settings
 from storage.Collection import CollectionDb
 from information.tagging import Tagging
@@ -71,7 +71,7 @@ class Track:
     def next(self):
         column = self.ui_main.playlisting.header_search("FileName")
         row_now = self.ui_main.playlisting.current_row()
-        if row_now is None:
+        if not row_now:
             return   
         # Random playback mode selected
         if self.ui_main.play_type_bttn.isChecked():
@@ -161,9 +161,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             
         self.del_thread = DeleteFiles(self)
         self.meta = Tagging(self.audio_formats)
-        self.player = Backend.AudioBackend(self)
+        
         self.playlisting = Playlist(self)
         self.xtrawdgt = SetupExtraWidgets(self)
+        self.player = Backend.AudioBackend(self)
         self.tracking = Track(self)
         self.wdgt_manip = WidgetManips(self)
         self.finishes = Finishers(self)
@@ -360,10 +361,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if possible
         """
         track = self.tracking.previous()
-        if track is None:
+        # See if there is a track previous
+        if not track:
             return
         self.player.audio_object.stop()
-        self.player.audio_object.load(unicode(track))
+        self.player.audio_object.clear()
+        self.player.audio_object.load(track)
         # Checks to see if the playbutton is in play state
         if self.play_bttn.isChecked():
             self.player.audio_object.play()
@@ -386,15 +389,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             # Something in the playlist is selected
             if highlighted:      
                 # The track in backend is not the same as selected and paused
-                if (queued != highlighted) and paused: 
-                    self.player.audio_object.load(str(highlighted.toUtf8()))
+                if (queued['source'] != highlighted) and paused: 
+                    self.player.audio_object.load(highlighted)
                 # Nothing already loaded into playbin
-                elif queued is None:
+                elif queued['type'] == MediaTypes.EMPTY:
                     selected = self.track_tbl.currentRow()
                     # A row is selected
                     if selected >= 0:
                         selected = self.tracking.now(selected)
-                        self.player.audio_object.load(unicode(selected))
+                        self.player.audio_object.load(selected)
                     # Nothing to play
                     else:
                         # Just reset the play button and stop here
@@ -437,6 +440,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.horizontal_tabs.setTabEnabled(1, False)
         self.horizontal_tabs.setTabEnabled(2, False)
         self.player.audio_object.stop()
+        self.player.audio_object.clearQueue()
         self.play_bttn.setChecked(False)
         self.stop_bttn.setEnabled(False)
         
@@ -448,7 +452,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         track = self.tracking.next()
         if track:
             self.player.audio_object.stop() 
-            self.player.audio_object.load(unicode(track))
+            self.player.audio_object.clearQueue() 
+            self.player.audio_object.load(track)
             if self.play_bttn.isChecked():
                 self.player.audio_object.play()
             else:
@@ -686,7 +691,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.player.audio_object.stop()
         track = self.tracking.now(row)
 
-        self.player.audio_object.load(unicode(track))
+        self.player.audio_object.load(track)
         # Checking the button is the same
         # as self.player.audio_object.play(), just cleaner overall
         self.play_bttn.setChecked(True) 
@@ -963,7 +968,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Linked to the current time of
         track being played
         """
-        self.progress_sldr.setRange(0, self.tracking.play_time)
         self.progress_sldr.setPageStep(self.tracking.play_time/10)
         self.progress_sldr.setSingleStep(self.tracking.play_time/25)
         self.t_length = QTime(0, (self.tracking.play_time / 60000) % 60, 

@@ -119,10 +119,12 @@ class Playlist:
         file_list = self.gen_file_list()
         current_file = self.ui_main.player.audio_object.current_source()
         
-        if current_file is None:
+        if current_file['source'] is None:
             return self.ui_main.track_tbl.currentRow()
-        elif current_file in file_list:
-            return file_list.index(current_file)
+        elif current_file['source'] in file_list:
+            return file_list.index(current_file['source'])
+        else:
+            raise Exception("Cannot find playing track in playlist")
         
         
     def current_row_info(self):

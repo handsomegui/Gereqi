@@ -16,6 +16,7 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+from PyQt4.phonon import *
 from PyQt4.QtWebKit import QWebPage
 
 import time
@@ -139,6 +140,10 @@ class SetupExtraWidgets:
         self.ui.info_view.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
         self.ui.wiki_view.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
         self.ui.info_view.setRenderHint(QPainter.HighQualityAntialiasing)
+        
+        self.ui.progress_sldr = Phonon.SeekSlider(self.ui)
+        self.ui.progress_sldr.setIconVisible(False)
+        self.ui.progressLayout.insertWidget(0, self.ui.progress_sldr)
 
 
     def __key_shortcuts(self):
@@ -165,13 +170,7 @@ class WidgetManips:
         parent.play_type_bttn.toggled.connect(self.__play_mode_changed)
         self.__hdr_menu_setup()
         self.ui = parent
-        self.dev_man = None
-        
-#        self.mydel = MyDelegate()
-#        self.mydel.mode = "artist"
-#        self.ui.collect_tree.setItemDelegate(self.mydel)
-#        self.ui.collect_tree.setUniformRowHeights(False)
-#        self.ui.collect_tree.setIconSize(QSize(46,46))        
+        self.dev_man = None       
         
         self.threader = AlbumItem()
         self.threader.new_item.connect(self.__add_album_item)
