@@ -25,6 +25,7 @@ import icons.configuration
 from storage.Collection import CollectionDb
 from icons.configuration import MyIcons
 from playlist.Auto import Unplayed,Top
+from widgets.PlaylistTable import PlaylistTable
 
 import extraneous
     
@@ -36,7 +37,8 @@ class SetupExtraWidgets:
     """
     def __init__(self, parent):
         self.ui = parent        
-        self.ui.track_tbl.horizontalHeader().setMovable(True)
+        parent.playlist_table = PlaylistTable(parent)
+        parent.rightSideLayout.insertWidget(1,parent.playlist_table)
         
         self.__setup_filesystem_tree()
         self.__create_tray_menu()
@@ -128,13 +130,6 @@ class SetupExtraWidgets:
         self.ui.statusBar.addPermanentWidget(self.ui.stat_prog)
         self.ui.statusBar.addPermanentWidget(self.ui.stat_bttn)
         self.ui.statusBar.addPermanentWidget(self.ui.play_type_bttn)
-        # Headers for the Playlist widget
-        headers = ["Track", "Title", "Artist",
-                  "Album", "Year", "Genre",  
-                   "Length", "Bitrate", "FileName"]
-        for val in range(len(headers)):
-            self.ui.track_tbl.insertColumn(val)
-        self.ui.track_tbl.setHorizontalHeaderLabels(headers)
       
         # Disables the webView link-clicks as we want to manually handle them
         self.ui.info_view.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
@@ -152,7 +147,7 @@ class SetupExtraWidgets:
         """
         # remove the selected track from the playlist
         delete = QShortcut(QKeySequence("Del"), self.ui)
-        delete.activated.connect(self.ui.playlisting.del_tracks)
+        delete.activated.connect(self.ui.playlist_table.del_tracks)
 
         
 
@@ -161,14 +156,8 @@ class WidgetManips:
     For repeated custom widget actions
     """
     def __init__(self, parent):
-        parent.track_tbl.setContextMenuPolicy(Qt.CustomContextMenu)
-        parent.track_tbl.horizontalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
-        
-        parent.track_tbl.customContextMenuRequested.connect(self.__context_menu)
-        parent.track_tbl.horizontalHeader().customContextMenuRequested.connect(self.__header_menu)
         parent.vertical_tabs.currentChanged.connect(self.__tab_changed)
         parent.play_type_bttn.toggled.connect(self.__play_mode_changed)
-        self.__hdr_menu_setup()
         self.ui = parent
         self.dev_man = None       
         
@@ -243,29 +232,7 @@ class WidgetManips:
                 item.addChild(now)
             return
         
-    def __hdr_menu_setup(self):
-        """
-            Setup the Context Menu for the table headers.
-            Needed to keep the checkbox states
-        """        
-        self.hdr_menu = QMenu()
-        hdrs = ["Track","Title","Artist","Album","Year","Genre","Length",
-                "Bitrate","FileName"]
-        for hdr in hdrs:
-            action = self.hdr_menu.addAction(hdr)
-            action.setCheckable(True)
-            action.setChecked(True)
-        
-    def __header_menu(self,pos): 
-        """
-            The names of each header column is checkable
-            for viewing of its column
-        """
-        action = self.hdr_menu.exec_(self.ui.track_tbl.horizontalHeader().mapToGlobal(pos))
-        hdr_pos = self.ui.playlisting.header_search(action.iconText())
-        hdr_view = False if action.isChecked() else True
-        self.ui.track_tbl.setColumnHidden(hdr_pos,hdr_view)
-        
+
     def __tab_changed(self,pos):
         if (pos == 4):
             if not self.dev_man:

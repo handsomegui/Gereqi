@@ -124,7 +124,8 @@ class Playlist:
         elif current_file['source'] in file_list:
             return file_list.index(current_file['source'])
         else:
-            raise Exception("Cannot find playing track in playlist")
+            err = "Cannot find playing track in playlist %s" % current_file['source']
+            raise Exception(err)
         
         
     def current_row_info(self):
@@ -174,16 +175,7 @@ class Playlist:
         self.ui_main.track_tbl.removeRow(row)                
         self.tracknow_colourise(self.current_row())
         
-    def header_search(self, val):
-        """
-        This will eventually allows the column order of the 
-        playlist view to be changed.
-        Returns the position of the header
-        """
-        cols = self.ui_main.track_tbl.columnCount()
-        headers = [self.ui_main.track_tbl.horizontalHeaderItem(col).text() 
-                   for col in range(cols)]
-        return headers.index(val)
+
         
     def tracknow_colourise(self, now=None):
         """

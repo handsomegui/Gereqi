@@ -38,7 +38,7 @@ from configuration import Configuration
 import extraneous
 from extrawidgets import SetupExtraWidgets, WidgetManips
 from about import About
-from playlist.playlist import Playlist, PlaylistHistory
+#from playlist.playlist import Playlist, PlaylistHistory
 
 
 # The folder watcher poll-time in seconds
@@ -162,13 +162,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.del_thread = DeleteFiles(self)
         self.meta = Tagging(self.audio_formats)
         
-        self.playlisting = Playlist(self)
         self.xtrawdgt = SetupExtraWidgets(self)
         self.player = Backend.AudioBackend(self)
         self.tracking = Track(self)
         self.wdgt_manip = WidgetManips(self)
         self.finishes = Finishers(self)
-        self.play_hist = PlaylistHistory()
+#        self.play_hist = PlaylistHistory()
         self.__playlist_remembered()
         self.__tray_menu_appearance()
         self.wiki_thread = WikiPage()
@@ -181,17 +180,18 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.prev_track_actn.triggered.connect(self.prev_bttn.click)
         self.stop_actn.triggered.connect(self.prev_bttn.click)
         self.stat_bttn.pressed.connect(self.quit_build)
-        self.track_tbl.horizontalHeader()\
-            .sectionClicked.connect(self.playlisting.track_sorting)
+#        self.track_tbl.horizontalHeader()\
+#            .sectionClicked.connect(self.playlist_table.track_sorting)
         self.collect_tree.header().sectionClicked.connect(self.collection_sort)
         self.collect_tree.items_for_playlist\
-            .connect(self.playlisting.add_items_to_playlist)
+            .connect(self.__items_for_playlist)
         
         self.build_db_thread.progress.connect(self.stat_prog.setValue)
         self.del_thread.deleted.connect(self.collect_tree.populate)        
         self.wiki_thread.html.connect(self.setWiki)
         self.infopage_thread.html.connect(self.__set_infopage)
         self.actionQuit.triggered.connect(self.shutdown)
+        self.playlist_table.play_this.connect(self.__load_and_play)
         
         # Makes the collection search line-edit have the keyboard focus
         self.search_collect_edit.setFocus()
@@ -199,7 +199,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         self.play_cd_actn.setVisible(CDS_OK)
         self.icons = MyIcons()
+        
+    def __load_and_play(self, track, type):
+        self.player.audio_object.load(track,type)
+        self.player.audio_object.play()
 
+    def __items_for_playlist(self, items):
+        self.playlist_table.tracks += items
+        self.playlist_table.update()
 
     def __set_infopage(self, html):
         self.info_view.setHtml(html)        
@@ -311,11 +318,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             return
         tracks = self.media_db.last_playlist()
         if len(tracks) > 0:
-            self.playlisting.add_list_to_playlist(tracks)
+            self.playlist_table.add_list_to_playlist(tracks)
                 
     def tray_tooltip(self):
         if self.play_bttn.isChecked():
-            info = self.playlisting.current_row_info()
+            info = self.playlist_table.current_row_info()
             msg = "%s by %s" % (info["Title"], info["Artist"])
             
         # Puts the current track info in tray tooltip
@@ -371,7 +378,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if self.play_bttn.isChecked():
             self.player.audio_object.play()
         else:
-            self.playlisting.tracknow_colourise(self.playlisting.current_row())
+            self.playlist_table.tracknow_colourise(self.playlist_table.current_row())
 
     @pyqtSignature("bool")
     def on_play_bttn_toggled(self, checked):
@@ -385,7 +392,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # The button is set
         if checked:
             queued = self.player.audio_object.current_source()
-            highlighted = self.playlisting.highlighted_track()            
+            highlighted = self.playlist_table.highlighted_track()            
             # Something in the playlist is selected
             if highlighted:      
                 # The track in backend is not the same as selected and paused
@@ -457,7 +464,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             if self.play_bttn.isChecked():
                 self.player.audio_object.play()
             else:
-                self.playlisting.tracknow_colourise(self.playlisting.current_row())
+                self.playlist_table.tracknow_colourise(self.playlist_table.current_row())
         else:
             # TODO: some tidy up thing could go here
             return
@@ -510,7 +517,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def shutdown(self):
         self.parent.setOverrideCursor(QCursor(Qt.BusyCursor))
         if self.sets_db.get_interface_setting("remember") == "True":
-            tracks = self.playlisting.gen_file_list()
+            tracks = self.playlist_table.gen_file_list()
             self.media_db.save_last_playlist(tracks)
         self.media_db.shutdown()
         exit()
@@ -532,7 +539,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                         )       
                         
         for item in mfiles[0]:
-            self.playlisting.add_to_playlist(item[0])
+            self.playlist_table.add_to_playlist(item[0])
 
     @pyqtSignature("bool")
     def on_minimise_tray_actn_toggled(self, checked):
@@ -544,9 +551,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Clear current playlist and if no music playing
         clear self.player.audio_object
         """
-        tracks = self.playlisting.gen_file_list()
+        tracks = self.playlist_table.gen_file_list()
         self.play_hist.update(tracks)
-        self.playlisting.clear()
+        self.playlist_table.clear()
         self.prev_trktbl_bttn.setEnabled(True)
         self.actionUndo.setEnabled(True)
         self.clear_trktbl_bttn.setEnabled(False)
@@ -585,7 +592,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             elif msg == QMessageBox.No:
                 self.on_save_trktbl_bttn_clicked()
                 
-        tracks = self.playlisting.gen_file_list()            
+        tracks = self.playlist_table.gen_file_list()            
         for track in tracks:
             self.media_db.playlist_add(play_name[0], track)
         self.wdgt_manip.pop_playlist_view()
@@ -610,9 +617,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Not sure whether to highlight row or item
         """
         # Resets before searching again
-        now = self.playlisting.current_row()
+        now = self.playlist_table.current_row()
         if now:
-            self.playlisting.highlighted_track()
+            self.playlist_table.highlighted_track()
         
         # Checks if the search edit isn't empty
         if len(str(srch_str).strip()) > 0:
@@ -642,7 +649,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     else:
                         item.setBackground(palette.base().color())
         else:
-            self.playlisting.tracknow_colourise()
+            self.playlist_table.tracknow_colourise()
                 
     @pyqtSignature("bool")
     def on_mute_bttn_toggled(self, checked):
@@ -681,25 +688,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         self.create_collection()
 
-    @pyqtSignature("int,int")
-    def on_track_tbl_cellDoubleClicked(self, row, column):
-        """
-        When item is doubleclicked. Play its row.
-        """
-        self.play_bttn.setChecked(False)
-
-        self.player.audio_object.stop()
-        track = self.tracking.now(row)
-
-        self.player.audio_object.load(track)
-        # Checking the button is the same
-        # as self.player.audio_object.play(), just cleaner overall
-        self.play_bttn.setChecked(True) 
-        self.play_action.setChecked(True)
-        
-
-                
-                
     @pyqtSignature("")
     def on_clear_collect_bttn_clicked(self):
         """
@@ -732,7 +720,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         # FIXME: the current track needs to re-highlighted
         self.search_trktbl_edit.clear()
-        self.playlisting.highlighted_track()
+        self.playlist_table.highlighted_track()
         
     @pyqtSignature("")
     def on_play_cd_actn_triggered(self):
@@ -756,7 +744,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             else:
                 return
         print(cd_tracks)
-        self.playlisting.add_list_to_playlist(cd_tracks)                
+        self.playlist_table.add_list_to_playlist(cd_tracks)                
         self.clear_trktbl_bttn.setEnabled(True)
                 
     @pyqtSignature("")
@@ -799,15 +787,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                             "Length":   "0", 
                             "Bitrate":  "0", 
                             "FileName": cue_now.path + track.file_name}
-                    self.playlisting.add_to_playlist(track.file_name, info)
+                    self.playlist_table.add_to_playlist(track.file_name, info)
             else:
-                self.playlisting.add_list_to_playlist(tracks)
+                self.playlist_table.add_list_to_playlist(tracks)
             self.clear_trktbl_bttn.setEnabled(True)
             
         elif par == "Auto":
             if item.text(0) == "Top 10":
                 tracks = self.media_db.top_tracks()
-                self.playlisting.add_list_to_playlist(tracks)
+                self.playlist_table.add_list_to_playlist(tracks)
                 self.clear_trktbl_bttn.setEnabled(True)
         else:
             new_par = item.parent().parent()            
@@ -815,7 +803,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 title, artist = item.text(0).split(" - ")
                 track = self.media_db.search_by_titandart(title, artist)
                 if len(track) > 0:
-                    self.playlisting.add_to_playlist(track[0])
+                    self.playlist_table.add_to_playlist(track[0])
                 
             
     @pyqtSignature("bool")
@@ -869,14 +857,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         The previous-track button does various
         actions dependin of the payback state
         """
-        self.playlisting.clear()
+        self.playlist_table.clear()
 
         if self.play_hist.position < len(self.play_hist.stack):
             self.next_trktbl_bttn.setEnabled(True)
             self.actionRedo.setEnabled(True)
             
         tracks, last = self.play_hist.last_list()
-        self.playlisting.add_list_to_playlist(tracks)
+        self.playlist_table.add_list_to_playlist(tracks)
         self.clear_trktbl_bttn.setEnabled(True)
         
         if last:
@@ -889,11 +877,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         The next-track button does various
         actions dependin of the payback state
         """
-        self.playlisting.clear()
+        self.playlist_table.clear()
         self.prev_trktbl_bttn.setEnabled(True)
         self.actionUndo.setEnabled(True)
         tracks, first = self.play_hist.next_list()
-        self.playlisting.add_list_to_playlist(tracks)
+        self.playlist_table.add_list_to_playlist(tracks)
         self.clear_trktbl_bttn.setEnabled(True)
         
         if first:
@@ -927,11 +915,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             searcher.setFilter(QDir.Files)
             searcher.setNameFilters(self.format_filter)
             tracks = [item.absoluteFilePath() for item in searcher.entryInfoList()]
-            self.playlisting.add_list_to_playlist(tracks)
+            self.playlist_table.add_list_to_playlist(tracks)
             self.clear_trktbl_bttn.setEnabled(True)
         else:
             fname = self.dir_model.filePath(index)
-            self.playlisting.add_to_playlist(fname)
+            self.playlist_table.add_to_playlist(fname)
             self.clear_trktbl_bttn.setEnabled(True)
             
     @pyqtSignature("QModelIndex")

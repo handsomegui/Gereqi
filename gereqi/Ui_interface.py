@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'interface.ui'
 #
-# Created: Thu Oct 20 23:05:37 2011
+# Created: Wed Nov  2 21:00:37 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -278,9 +278,9 @@ class Ui_MainWindow(object):
         self.vertical_tabs.addTab(self.devTab, _fromUtf8(""))
         self.layoutWidget = QtGui.QWidget(self.splitter)
         self.layoutWidget.setObjectName(_fromUtf8("layoutWidget"))
-        self.verticalLayout_3 = QtGui.QVBoxLayout(self.layoutWidget)
-        self.verticalLayout_3.setMargin(0)
-        self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
+        self.rightSideLayout = QtGui.QVBoxLayout(self.layoutWidget)
+        self.rightSideLayout.setMargin(0)
+        self.rightSideLayout.setObjectName(_fromUtf8("rightSideLayout"))
         self.horizontalLayout_4 = QtGui.QHBoxLayout()
         self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
         self.clear_trktbl_bttn = QtGui.QToolButton(self.layoutWidget)
@@ -339,33 +339,7 @@ class Ui_MainWindow(object):
         self.search_trktbl_edit.setMinimumSize(QtCore.QSize(200, 0))
         self.search_trktbl_edit.setObjectName(_fromUtf8("search_trktbl_edit"))
         self.horizontalLayout_4.addWidget(self.search_trktbl_edit)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_4)
-        self.track_tbl = QtGui.QTableWidget(self.layoutWidget)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.track_tbl.sizePolicy().hasHeightForWidth())
-        self.track_tbl.setSizePolicy(sizePolicy)
-        self.track_tbl.setMinimumSize(QtCore.QSize(400, 0))
-        self.track_tbl.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        self.track_tbl.setProperty("showDropIndicator", False)
-        self.track_tbl.setDragEnabled(True)
-        self.track_tbl.setDragDropOverwriteMode(False)
-        self.track_tbl.setDragDropMode(QtGui.QAbstractItemView.DragOnly)
-        self.track_tbl.setAlternatingRowColors(True)
-        self.track_tbl.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
-        self.track_tbl.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
-        self.track_tbl.setHorizontalScrollMode(QtGui.QAbstractItemView.ScrollPerPixel)
-        self.track_tbl.setShowGrid(False)
-        self.track_tbl.setGridStyle(QtCore.Qt.DashLine)
-        self.track_tbl.setWordWrap(False)
-        self.track_tbl.setCornerButtonEnabled(True)
-        self.track_tbl.setObjectName(_fromUtf8("track_tbl"))
-        self.track_tbl.setColumnCount(0)
-        self.track_tbl.setRowCount(0)
-        self.track_tbl.horizontalHeader().setVisible(True)
-        self.track_tbl.verticalHeader().setVisible(False)
-        self.verticalLayout_3.addWidget(self.track_tbl)
+        self.rightSideLayout.addLayout(self.horizontalLayout_4)
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.horizontalLayout_3 = QtGui.QHBoxLayout()
@@ -443,7 +417,7 @@ class Ui_MainWindow(object):
         self.progress_lbl.setObjectName(_fromUtf8("progress_lbl"))
         self.progressLayout.addWidget(self.progress_lbl)
         self.verticalLayout.addLayout(self.progressLayout)
-        self.verticalLayout_3.addLayout(self.verticalLayout)
+        self.rightSideLayout.addLayout(self.verticalLayout)
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
@@ -606,6 +580,5 @@ class Ui_MainWindow(object):
         self.vertical_tabs.setTabText(self.vertical_tabs.indexOf(self.playlistsTab), QtGui.QApplication.translate("MainWindow", "Playlists", None, QtGui.QApplication.UnicodeUTF8))
         self.vertical_tabs.setTabText(self.vertical_tabs.indexOf(self.filesTab), QtGui.QApplication.translate("MainWindow", "Files", None, QtGui.QApplication.UnicodeUTF8))
         self.vertical_tabs.setTabText(self.vertical_tabs.indexOf(self.devTab), QtGui.QApplication.translate("MainWindow", "Devices", None, QtGui.QApplication.UnicodeUTF8))
-        self.track_tbl.setSortingEnabled(True)
 
 from PyQt4 import QtWebKit
