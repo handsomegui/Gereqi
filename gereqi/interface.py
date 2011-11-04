@@ -64,7 +64,7 @@ class Track:
         if row_now is None:
             return        
         if (row_now - 1) >= 0:
-            track = self.ui_main.track_tbl.item(row_now - 1 , column)
+            track = self.ui_main.playlist_table.item(row_now - 1 , column)
             track = track.text()
             return self.__checks(track)
     
@@ -81,14 +81,14 @@ class Track:
             if len(track) > 0:
                 return self.__checks(choice(track))
                 
-        elif (row_now + 1) < self.ui_main.track_tbl.rowCount():
-            track = self.ui_main.track_tbl.item(row_now + 1, column)
+        elif (row_now + 1) < self.ui_main.playlist_table.rowCount():
+            track = self.ui_main.playlist_table.item(row_now + 1, column)
             return self.__checks(track.text())
         
     
     def now(self, row):
         column = self.ui_main.playlisting.header_search("FileName")
-        return self.__checks(self.ui_main.track_tbl.item(row, column).text())
+        return self.__checks(self.ui_main.playlist_table.item(row, column).text())
     
             
     def generate_info(self):
@@ -96,20 +96,20 @@ class Track:
         This retrieves data from the playlist table, not the database. 
         This is because the playlist may contain tracks added locally.        
         """
-        row = self.ui_main.playlisting.current_row()
-        hdr = self.ui_main.playlisting.header_search
-        title = self.ui_main.track_tbl.item(row, hdr("Title")).text()
-        artist = self.ui_main.track_tbl.item(row, hdr("Artist")).text()
-        album = self.ui_main.track_tbl.item(row, hdr("Album")).text()
-        minu, sec = self.ui_main.track_tbl.item(row, hdr("Length")).text().split(":")
+        row = self.ui_main.playlist_table.currentRow()
+        track       = self.ui_main.playlist_table.current_track()
+        title       = track["Title"]
+        artist      = track["Artist"]
+        album       = track["Album"]
+        minu, sec   = track["Length"].split(":")
+        
         self.play_time = 1000 * ((int(minu) * 60) + int(sec))
         
         self.msg_status = "Playing: %s by %s on %s" % (title, artist, album)
         self.ui_main.stat_lbl.setText(self.msg_status)
-        self.ui_main.playlisting.tracknow_colourise(row)
-        self.ui_main.art_alb["nowart"] = artist
-        self.ui_main.art_alb["nowalb"] = album
-        self.ui_main.art_alb["title"] = title
+        self.ui_main.art_alb["nowart"]  = artist
+        self.ui_main.art_alb["nowalb"]  = album
+        self.ui_main.art_alb["title"]   = title
         
 
 class MainWindow(Ui_MainWindow, QMainWindow): 
@@ -180,7 +180,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.prev_track_actn.triggered.connect(self.prev_bttn.click)
         self.stop_actn.triggered.connect(self.prev_bttn.click)
         self.stat_bttn.pressed.connect(self.quit_build)
-#        self.track_tbl.horizontalHeader()\
+#        self.playlist_table.horizontalHeader()\
 #            .sectionClicked.connect(self.playlist_table.track_sorting)
         self.collect_tree.header().sectionClicked.connect(self.collection_sort)
         self.collect_tree.items_for_playlist\
@@ -322,7 +322,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 
     def tray_tooltip(self):
         if self.play_bttn.isChecked():
-            info = self.playlist_table.current_row_info()
+            info = self.playlist_table.current_track()
             msg = "%s by %s" % (info["Title"], info["Artist"])
             
         # Puts the current track info in tray tooltip
@@ -392,15 +392,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # The button is set
         if checked:
             queued = self.player.audio_object.current_source()
-            highlighted = self.playlist_table.highlighted_track()            
+            trk = self.playlist_table.current_track()            
             # Something in the playlist is selected
-            if highlighted:      
+            if trk:      
                 # The track in backend is not the same as selected and paused
-                if (queued['source'] != highlighted) and paused: 
-                    self.player.audio_object.load(highlighted)
+                if (queued['source'] != trk["FileName"]) and paused: 
+                    self.player.audio_object.load(trk["FileName"])
                 # Nothing already loaded into playbin
                 elif queued['type'] == MediaTypes.EMPTY:
-                    selected = self.track_tbl.currentRow()
+                    selected = self.playlist_table.currentRow()
                     # A row is selected
                     if selected >= 0:
                         selected = self.tracking.now(selected)
@@ -428,7 +428,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             if playing:
                 self.player.audio_object.pause()
             self.wdgt_manip.icon_change("pause")
-            if self.track_tbl.currentRow() >= 0:
+            if self.playlist_table.currentRow() >= 0:
                 self.stat_lbl.setText("Paused")
             else:
                 self.stat_lbl.setText("Finished")
@@ -563,7 +563,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Save current playlist
         """
-        if self.track_tbl.rowCount() < 1:
+        if self.playlist_table.rowCount() < 1:
             return
         
         play_name = QInputDialog.getText(None,
@@ -624,9 +624,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # Checks if the search edit isn't empty
         if len(str(srch_str).strip()) > 0:
             rows = []
-            palette = self.track_tbl.palette()
-            columns = self.track_tbl.columnCount()
-            searched = self.track_tbl.findItems(srch_str, Qt.MatchContains)
+            palette = self.playlist_table.palette()
+            columns = self.playlist_table.columnCount()
+            searched = self.playlist_table.findItems(srch_str, Qt.MatchContains)
             # TODO: make readable
             for search in searched:
                 row = search.row()
@@ -634,16 +634,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     continue
                 rows.append(row)
                 for col in range(columns):
-                    item = self.track_tbl.item(row, col)
+                    item = self.playlist_table.item(row, col)
                     orig = palette.highlight().color().getRgb()
                     new_col = map(lambda x : 255-x, orig)
                     item.setBackground(QColor(new_col[0],new_col[1],new_col[2], 128))
                         
-            for row in range(self.track_tbl.rowCount()):
+            for row in range(self.playlist_table.rowCount()):
                 if row in rows:
                     continue
                 for col in range(columns):
-                    item = self.track_tbl.item(row, col)
+                    item = self.playlist_table.item(row, col)
                     if row % 2:
                         item.setBackground(palette.alternateBase().color())
                     else:

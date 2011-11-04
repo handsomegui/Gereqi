@@ -1,5 +1,6 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import Qt, QSize, pyqtSignal
+import operator
 
 #import audio.MediaTypes 
 
@@ -7,6 +8,8 @@ class PlaylistTable(QTableWidget):
     headers = ["Track", "Title", "Artist",
                "Album", "Year", "Genre",  
                "Length", "Bitrate", "FileName"]
+    
+    sort_mode = "FileName"
     
     play_this = pyqtSignal(str, int)
     populated = pyqtSignal()
@@ -29,11 +32,13 @@ class PlaylistTable(QTableWidget):
         self.setAlternatingRowColors(True)
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.setEditTriggers(QAbstractItemView.NoEditTriggers)     
+        self.setEditTriggers(QAbstractItemView.NoEditTriggers)
         
         self.customContextMenuRequested.connect(self.__context_menu)
         self.horizontalHeader().customContextMenuRequested.connect(self.__header_menu)
+        self.horizontalHeader().sectionClicked.connect(self.__resort)
         self.cellDoubleClicked.connect(self.__throw_track_now)
+        self.horizontalHeader().setSortIndicatorShown(True)
         
         self.__init_headers()
     
@@ -47,6 +52,12 @@ class PlaylistTable(QTableWidget):
             action.setCheckable(True)
             action.setChecked(True)            
         self.setHorizontalHeaderLabels(self.headers)
+        
+    def __resort(self, pos):
+        self.sort_mode = unicode(self.horizontalHeaderItem(pos).text())
+        self.update()
+        self.horizontalHeader().setSortIndicator(pos, Qt.AscendingOrder)        
+        
         
     def __context_menu(self,pos):
         # do nothing if table is empty
@@ -145,12 +156,21 @@ class PlaylistTable(QTableWidget):
         item_now = self.item(row,col).text()
         self.play_this.emit(item_now, 0)
         
+        
+    def clear_rows(self):
+        self.clearContents()
+        for i in range(self.rowCount(),0,-1):
+            self.removeRow(i-1)
+            
+        
     def header_search(self, val):
         headers_now = [self.horizontalHeaderItem(col).text() 
                    for col in range(self.columnCount())]
-        return headers_now.index(val)
+        return headers_now.index(val)   
     
     def update(self):
+        self.tracks.sort(key=operator.itemgetter(self.sort_mode))
+        self.clear_rows()
         for trk in self._tracks:
             # Ensure track number is zero-padded
             trk['Track'] = "%02u" % int(trk['Track'])
@@ -165,6 +185,9 @@ class PlaylistTable(QTableWidget):
             # Enable the button that clears playlist widget
 #            self.ui_main.clear_trktbl_bttn.setEnabled(True)
 
+    def current_track(self):
+        return self.tracks[self.currentRow()]
+    
     def del_tracks(self):
         pass
     
