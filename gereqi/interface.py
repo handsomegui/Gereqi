@@ -59,31 +59,36 @@ class Track:
             return track
         
     def previous(self):
-        column = self.ui_main.playlisting.header_search("FileName")
-        row_now = self.ui_main.playlisting.current_row()
-        if row_now is None:
-            return        
-        if (row_now - 1) >= 0:
-            track = self.ui_main.playlist_table.item(row_now - 1 , column)
-            track = track.text()
-            return self.__checks(track)
+        row = self.ui_main.playlist_table.currentRow()
+        if row is None:
+            return     
+        if (row - 1) >= 0:
+            trk = self.ui_main.playlist_table.tracks[row-1]["FileName"]
+            return self.__checks(trk)
+
     
     def next(self):
-        column = self.ui_main.playlisting.header_search("FileName")
-        row_now = self.ui_main.playlisting.current_row()
-        if not row_now:
+        row = self.ui_main.playlist_table.currentRow()
+        if row < 0:
+            # nothing selected
             return   
-        # Random playback mode selected
-        if self.ui_main.play_type_bttn.isChecked():
-            file_list = self.ui_main.playlisting.gen_track_list()
-            track = [trk for trk in file_list
-                     if trk not in self.ui_main.player.recently_played]
-            if len(track) > 0:
-                return self.__checks(choice(track))
-                
-        elif (row_now + 1) < self.ui_main.playlist_table.rowCount():
-            track = self.ui_main.playlist_table.item(row_now + 1, column)
-            return self.__checks(track.text())
+        
+        if (row + 1) < self.ui_main.playlist_table.rowCount():
+            # There is a next track possible
+            trk = self.ui_main.playlist_table.tracks[row+1]["FileName"]
+            return self.__checks(trk)
+
+#        # Random playback mode selected
+#        if self.ui_main.play_type_bttn.isChecked():
+#            file_list = self.ui_main.playlisting.gen_track_list()
+#            track = [trk for trk in file_list
+#                     if trk not in self.ui_main.player.recently_played]
+#            if len(track) > 0:
+#                return self.__checks(choice(track))
+#                
+#        elif (row_now + 1) < self.ui_main.playlist_table.rowCount():
+#            track = self.ui_main.playlist_table.item(row_now + 1, column)
+#            return self.__checks(track.text())
         
     
     def now(self, row):
@@ -201,8 +206,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.icons = MyIcons()
         
     def __load_and_play(self, track, type):
-        self.player.audio_object.load(track,type)
+        print track
+        self.player.audio_object.stop()
+        self.player.audio_object.clear()
+        self.player.audio_object.load(track, type)
         self.player.audio_object.play()
+        self.stop_bttn.setEnabled(True)
+        self.play_bttn.setChecked(True)
+        self.wdgt_manip.icon_change("play")
 
     def __items_for_playlist(self, items):
         self.playlist_table.tracks += items
@@ -389,28 +400,33 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         paused = self.player.audio_object.is_paused()
         playing = self.player.audio_object.is_playing()
         
-        # The button is set
+        
         if checked:
+            # The button is set
             queued = self.player.audio_object.current_source()
             trk = self.playlist_table.current_track()            
-            # Something in the playlist is selected
+            
             if trk:      
-                # The track in backend is not the same as selected and paused
+                # Something in the playlist is selected
+                
                 if (queued['source'] != trk["FileName"]) and paused: 
+                    # The track in backend is not the same as selected and paused
                     self.player.audio_object.load(trk["FileName"])
-                # Nothing already loaded into playbin
+                
                 elif queued['type'] == MediaTypes.EMPTY:
-                    selected = self.playlist_table.currentRow()
-                    # A row is selected
+                    # Nothing already loaded into playbin
+                    selected = self.playlist_table.currentRow()                    
                     if selected >= 0:
+                        # A row is selected
                         selected = self.tracking.now(selected)
-                        self.player.audio_object.load(selected)
-                    # Nothing to play
+                        self.player.audio_object.load(selected)                    
                     else:
+                        # Nothing to play
                         # Just reset the play button and stop here
                         self.play_bttn.setChecked(False)                        
-                # Just unpausing
+                
                 elif paused:
+                    # Just unpausing
                     # Makes sure the statusbar text changes from
                     # paused back to the artist/album/track string
                     self.stat_lbl.setText(self.tracking.msg_status)                    
@@ -418,14 +434,18 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 self.stop_bttn.setEnabled(True)
                 self.wdgt_manip.icon_change("play")
         
-            # Nothing to play
+            
             else:
+                # Nothing to play
                 self.play_bttn.setChecked(False)
                 return
                 
-        # The button is unset
+        
         else:
+            # The button is unset
             if playing:
+                # pause playback
+                print "PAUSING"
                 self.player.audio_object.pause()
             self.wdgt_manip.icon_change("pause")
             if self.playlist_table.currentRow() >= 0:
@@ -459,12 +479,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         track = self.tracking.next()
         if track:
             self.player.audio_object.stop() 
-            self.player.audio_object.clearQueue() 
+            self.player.audio_object.clear() 
             self.player.audio_object.load(track)
-            if self.play_bttn.isChecked():
-                self.player.audio_object.play()
-            else:
-                self.playlist_table.tracknow_colourise(self.playlist_table.current_row())
+#            if self.play_bttn.isChecked():
+            self.player.audio_object.play()
+#            else:
+#                self.playlist_table.tracknow_colourise(self.playlist_table.current_row())
         else:
             # TODO: some tidy up thing could go here
             return
