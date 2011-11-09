@@ -45,76 +45,27 @@ from about import About
 WATCHTIME = 30 
 
 
-class Track:
-    """
-    This is needed as the track's filename is held in the playlist
-    and the FileName column can be moved anywhere
-    """
-    
-    def __init__(self, parent):
-        self.ui_main = parent
-        
-    def __checks(self,track):
-        if path.exists(track) or track.startswith("cdda"):
-            return track
-        
-    def previous(self):
-        row = self.ui_main.playlist_table.currentRow()
-        if row is None:
-            return     
-        if (row - 1) >= 0:
-            trk = self.ui_main.playlist_table.tracks[row-1]["FileName"]
-            return self.__checks(trk)
-
-    
-    def next(self):
-        row = self.ui_main.playlist_table.currentRow()
-        if row < 0:
-            # nothing selected
-            return   
-        
-        if (row + 1) < self.ui_main.playlist_table.rowCount():
-            # There is a next track possible
-            trk = self.ui_main.playlist_table.tracks[row+1]["FileName"]
-            return self.__checks(trk)
-
-#        # Random playback mode selected
-#        if self.ui_main.play_type_bttn.isChecked():
-#            file_list = self.ui_main.playlisting.gen_track_list()
-#            track = [trk for trk in file_list
-#                     if trk not in self.ui_main.player.recently_played]
-#            if len(track) > 0:
-#                return self.__checks(choice(track))
-#                
-#        elif (row_now + 1) < self.ui_main.playlist_table.rowCount():
-#            track = self.ui_main.playlist_table.item(row_now + 1, column)
-#            return self.__checks(track.text())
-        
-    
-    def now(self, row):
-        column = self.ui_main.playlisting.header_search("FileName")
-        return self.__checks(self.ui_main.playlist_table.item(row, column).text())
-    
+  
             
-    def generate_info(self):
-        """
-        This retrieves data from the playlist table, not the database. 
-        This is because the playlist may contain tracks added locally.        
-        """
-        row = self.ui_main.playlist_table.currentRow()
-        track       = self.ui_main.playlist_table.current_track()
-        title       = track["Title"]
-        artist      = track["Artist"]
-        album       = track["Album"]
-        minu, sec   = track["Length"].split(":")
-        
-        self.play_time = 1000 * ((int(minu) * 60) + int(sec))
-        
-        self.msg_status = "Playing: %s by %s on %s" % (title, artist, album)
-        self.ui_main.stat_lbl.setText(self.msg_status)
-        self.ui_main.art_alb["nowart"]  = artist
-        self.ui_main.art_alb["nowalb"]  = album
-        self.ui_main.art_alb["title"]   = title
+#    def generate_info(self):
+#        """
+#        This retrieves data from the playlist table, not the database. 
+#        This is because the playlist may contain tracks added locally.        
+#        """
+#        row = self.ui_main.playlist_table.currentRow()
+#        track       = self.ui_main.playlist_table.current_track()
+#        title       = track["Title"]
+#        artist      = track["Artist"]
+#        album       = track["Album"]
+#        minu, sec   = track["Length"].split(":")
+#        
+#        self.play_time = 1000 * ((int(minu) * 60) + int(sec))
+#        
+#        self.msg_status = "Playing: %s by %s on %s" % (title, artist, album)
+#        self.ui_main.stat_lbl.setText(self.msg_status)
+#        self.ui_main.art_alb["nowart"]  = artist
+#        self.ui_main.art_alb["nowalb"]  = album
+#        self.ui_main.art_alb["title"]   = title
         
 
 class MainWindow(Ui_MainWindow, QMainWindow): 
@@ -169,7 +120,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         self.xtrawdgt = SetupExtraWidgets(self)
         self.player = Backend.AudioBackend(self)
-        self.tracking = Track(self)
         self.wdgt_manip = WidgetManips(self)
         self.finishes = Finishers(self)
 #        self.play_hist = PlaylistHistory()
@@ -197,6 +147,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.infopage_thread.html.connect(self.__set_infopage)
         self.actionQuit.triggered.connect(self.shutdown)
         self.playlist_table.play_this.connect(self.__load_and_play)
+        self.playlist_table.populated.connect(self.__ready_to_go)
         
         # Makes the collection search line-edit have the keyboard focus
         self.search_collect_edit.setFocus()
@@ -205,8 +156,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.play_cd_actn.setVisible(CDS_OK)
         self.icons = MyIcons()
         
+        
+    def __ready_to_go(self):
+        self.clear_trktbl_bttn.setEnabled(True)
+    
     def __load_and_play(self, track, type):
-        print track
         self.player.audio_object.stop()
         self.player.audio_object.clear()
         self.player.audio_object.load(track, type)
@@ -378,7 +332,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Skip to previous track in viewable playlist
         if possible
         """
-        track = self.tracking.previous()
+        track = self.playlist_table.previous()
         # See if there is a track previous
         if not track:
             return
@@ -418,7 +372,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     selected = self.playlist_table.currentRow()                    
                     if selected >= 0:
                         # A row is selected
-                        selected = self.tracking.now(selected)
+                        selected = self.playlist_table.now(selected)
                         self.player.audio_object.load(selected)                    
                     else:
                         # Nothing to play
@@ -429,7 +383,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     # Just unpausing
                     # Makes sure the statusbar text changes from
                     # paused back to the artist/album/track string
-                    self.stat_lbl.setText(self.tracking.msg_status)                    
+                    self.stat_lbl.setText(self.playlist_table.msg_status)                    
                 self.player.audio_object.play()
                 self.stop_bttn.setEnabled(True)
                 self.wdgt_manip.icon_change("play")
@@ -476,7 +430,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
         Go to next item in playlist(down)
         """
-        track = self.tracking.next()
+        track = self.playlist_table.next()
         if track:
             self.player.audio_object.stop() 
             self.player.audio_object.clear() 
@@ -571,8 +525,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Clear current playlist and if no music playing
         clear self.player.audio_object
         """
-        tracks = self.playlist_table.gen_file_list()
-        self.play_hist.update(tracks)
+#        tracks = self.playlist_table.gen_file_list()
+#        self.play_hist.update(tracks)
         self.playlist_table.clear()
         self.prev_trktbl_bttn.setEnabled(True)
         self.actionUndo.setEnabled(True)
@@ -763,7 +717,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     return
             else:
                 return
-        print(cd_tracks)
         self.playlist_table.add_list_to_playlist(cd_tracks)                
         self.clear_trktbl_bttn.setEnabled(True)
                 
@@ -976,10 +929,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Linked to the current time of
         track being played
         """
-        self.progress_sldr.setPageStep(self.tracking.play_time/10)
-        self.progress_sldr.setSingleStep(self.tracking.play_time/25)
-        self.t_length = QTime(0, (self.tracking.play_time / 60000) % 60, 
-                              (self.tracking.play_time / 1000) % 60)
+        minu,sec = self.playlist_table.current_track()["Length"].split(":")
+        
+        play_time = 1000 * ((int(minu) * 60) + int(sec))
+#        self.progress_sldr.setPageStep(play_time/10)
+#        self.progress_sldr.setSingleStep(play_time/25)
+        self.t_length = QTime(0, (play_time / 60000) % 60, (play_time / 1000) % 60)
             
     def minimise_to_tray(self, state):
         """
@@ -1079,16 +1034,25 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if self.tray_icon.isVisible():
             self.hide()
             event.ignore()
+            
+    def generate_info(self):
+        trk = self.playlist_table.current_track()        
+        self.playlist_table.tracknow_colourise()
+        
+        self.msg_status = "Playing: %s by %s on %s" % (trk['Title'], trk['Artist'], trk['Album'])
+        self.stat_lbl.setText(self.msg_status)
+        
+        self.art_alb["nowart"]  = trk['Artist']
+        self.art_alb["nowalb"]  = trk['Album']
+        self.art_alb["title"]   = trk['Title']
 
    
     @pyqtSignature("int")  
     def collection_sort(self, p0):
-#        mode = self.__collection_mode()
         if self.collect_tree.mode == 0:
             self.collect_tree.set_mode(1)
             self.collect_tree.headerItem().setText(0, "Album/Artist")            
         else:
             self.collect_tree.set_mode(0)
             self.collect_tree.headerItem().setText(0, "Artist/Album")
-
         self.collect_tree.populate()

@@ -147,6 +147,7 @@ class SetupExtraWidgets:
         """
         # remove the selected track from the playlist
         delete = QShortcut(QKeySequence("Del"), self.ui)
+        #TODO: think of cleaner way to do this i.e. use the @property for tracks
         delete.activated.connect(self.ui.playlist_table.del_tracks)
 
         

@@ -24,33 +24,13 @@ from PhononBE import PhononBE
 class AudioBackend:
     recently_played = []
     
-    def __init__(self, parent, mode=0):
-        """
-        Mode: 0 = phonon; 1 = gstreamer
-        """
+    def __init__(self, parent):
         self.ui = parent
         self.just_finished = False
-        self.mode = mode
-        if mode == 0:
-            self.__phonon_init()
-        elif mode == 1:
-            self.__gstreamer_init()
-        else:
-            raise Exception("No such audio mode")
+        self.__phonon_init()
         
         self.ui.stop_bttn.pressed.connect(self.__finished_playing) 
             
-    def __gstreamer_init(self):
-        """
-        Sets up the environment/signals on
-        backend initialisation
-        """
-        self.audio_object = Gstbe()        
-        # signal/slots
-        self.audio_object.tick.connect(self.__prog_tick)
-        self.audio_object.track_changed.connect(self.__track_changed)
-        self.audio_object.finished.connect(self.__finished_playing)              
-        self.audio_object.pipe_line.connect("about-to-finish", self.__about_to_finish)
         
     def __phonon_init(self):
         self.audio_object = PhononBE()
@@ -68,7 +48,7 @@ class AudioBackend:
         """
         self.recently_played.append(self.audio_object.current_source())
         self.just_finished = True
-        track = self.ui.tracking.next()
+        track = self.ui.playlist_table.next()
         # Not at end of playlist
         if track:
             self.audio_object.load(track)
@@ -90,7 +70,7 @@ class AudioBackend:
             self.just_finished = False
             self.__inc_playcount()
         
-        self.ui.tracking.generate_info()
+        self.ui.generate_info()
         self.ui.set_info()
         self.ui.set_prog_sldr()
         self.ui.tray_tooltip()
@@ -117,7 +97,7 @@ class AudioBackend:
         Doesn't actually change count. Adds notification
         of full-play into the historyDB table
         """
-        track = self.ui.tracking.previous()
+        track = self.ui.playlist_table.previous()
         timestamp = time.time()
         self.ui.media_db.inc_count(timestamp, track)
         

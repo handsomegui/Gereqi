@@ -1,5 +1,6 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import Qt, QSize, pyqtSignal
+from os import path
 import operator
 
 #import audio.MediaTypes 
@@ -57,7 +58,6 @@ class PlaylistTable(QTableWidget):
         self.sort_mode = unicode(self.horizontalHeaderItem(pos).text())
         self.update()
         self.horizontalHeader().setSortIndicator(pos, Qt.AscendingOrder)        
-        
         
     def __context_menu(self,pos):
         # do nothing if table is empty
@@ -156,12 +156,14 @@ class PlaylistTable(QTableWidget):
         item_now = self.item(row,col).text()
         self.play_this.emit(item_now, 0)
         
+    def __checks(self,track):
+        if path.exists(track) or track.startswith("cdda"):
+            return track
         
     def clear_rows(self):
         self.clearContents()
         for i in range(self.rowCount(),0,-1):
             self.removeRow(i-1)
-            
         
     def header_search(self, val):
         headers_now = [self.horizontalHeaderItem(col).text() 
@@ -182,18 +184,65 @@ class PlaylistTable(QTableWidget):
                 column = self.header_search(key)
                 self.setItem(row, column, tbl_wdgt)
             self.resizeColumnsToContents()
-            # Enable the button that clears playlist widget
-#            self.ui_main.clear_trktbl_bttn.setEnabled(True)
+        self.populated.emit()
 
-    def current_track(self):
-        return self.tracks[self.currentRow()]
+    def current_track(self,info=False):
+        if info:
+            pass
+        else:
+            return self.tracks[self.currentRow()]
     
+    def next(self):
+        row = self.currentRow()
+        if row < 0:
+            # nothing selected
+            return   
+        if (row + 1) < self.rowCount():
+            # There is a next track possible
+            trk = self.tracks[row+1]["FileName"]
+            print row,trk
+            return self.__checks(trk)
+        
+    def previous(self):
+        row = self.currentRow()
+        if row is None:
+            return     
+        if (row - 1) >= 0:
+            trk = self.tracks[row-1]["FileName"]
+            return self.__checks(trk)
+
+
+    def tracknow_colourise(self):
+        """
+        Instead of using QTableWidget's selectRow function, 
+        set the background colour of each item in a row
+        until track changes.
+        """
+        columns = self.columnCount()
+        rows = self.rowCount()
+        palette = self.palette()
+        now = self.currentRow()
+        # cannot set an entire row's colour. Must do each cell
+        for row in range(rows):
+            for col in range(columns):
+                item = self.item(row, col)
+                if row != now:
+                    if row % 2:
+                        # Odd-row
+                        item.setBackground(palette.alternateBase().color())
+                    else:
+                        # even row
+                        item.setBackground(palette.base().color())
+                else:
+                    # Highlight the current track(row)
+                    highlight = palette.highlight().color()
+                    highlight.setAlpha(128)
+                    item.setBackground(highlight)
+                    self.selectRow(now)
+               
     def del_tracks(self):
-        pass
-    
-    def track_sorting(self):
-        pass
-    
+        tracks = []     
+                    
     @property
     def tracks(self):
         #TODO: sort them by what is shown
@@ -206,8 +255,3 @@ class PlaylistTable(QTableWidget):
     @tracks.deleter
     def tracks(self):
         del self._x
-    
-    
-class PlaylistTableItem:
-    def __init__(self):
-        pass
