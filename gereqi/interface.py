@@ -123,7 +123,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.wdgt_manip = WidgetManips(self)
         self.finishes = Finishers(self)
 #        self.play_hist = PlaylistHistory()
-        self.__playlist_remembered()
+#        self.__playlist_remembered()
         self.__tray_menu_appearance()
         self.wiki_thread = WikiPage()
         self.infopage_thread = InfoPage()
@@ -135,11 +135,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.prev_track_actn.triggered.connect(self.prev_bttn.click)
         self.stop_actn.triggered.connect(self.prev_bttn.click)
         self.stat_bttn.pressed.connect(self.quit_build)
-#        self.playlist_table.horizontalHeader()\
-#            .sectionClicked.connect(self.playlist_table.track_sorting)
         self.collect_tree.header().sectionClicked.connect(self.collection_sort)
-        self.collect_tree.items_for_playlist\
-            .connect(self.__items_for_playlist)
+        self.collect_tree.items_for_playlist.connect(self.__items_for_playlist)
         
         self.build_db_thread.progress.connect(self.stat_prog.setValue)
         self.del_thread.deleted.connect(self.collect_tree.populate)        
@@ -342,8 +339,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # Checks to see if the playbutton is in play state
         if self.play_bttn.isChecked():
             self.player.audio_object.play()
-        else:
-            self.playlist_table.tracknow_colourise(self.playlist_table.current_row())
+#        else:
+#            self.playlist_table.tracknow_colourise(self.playlist_table.current_row())
 
     @pyqtSignature("bool")
     def on_play_bttn_toggled(self, checked):
@@ -354,36 +351,32 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         paused = self.player.audio_object.is_paused()
         playing = self.player.audio_object.is_playing()
         
-        
         if checked:
             # The button is set
             queued = self.player.audio_object.current_source()
             trk = self.playlist_table.current_track()            
             
             if trk:      
-                # Something in the playlist is selected
-                
+                # Something in the playlist is selected                
                 if (queued['source'] != trk["FileName"]) and paused: 
                     # The track in backend is not the same as selected and paused
                     self.player.audio_object.load(trk["FileName"])
-                
                 elif queued['type'] == MediaTypes.EMPTY:
-                    # Nothing already loaded into playbin
-                    selected = self.playlist_table.currentRow()                    
-                    if selected >= 0:
+                    # Nothing already loaded
+                    cur_trk = self.playlist_table.current_track()
+                    if cur_trk:
                         # A row is selected
-                        selected = self.playlist_table.now(selected)
-                        self.player.audio_object.load(selected)                    
+                        self.player.audio_object.load(cur_trk)                    
                     else:
-                        # Nothing to play
-                        # Just reset the play button and stop here
+                        # Nothing to play. Just reset the play button and stop here
                         self.play_bttn.setChecked(False)                        
                 
                 elif paused:
                     # Just unpausing
                     # Makes sure the statusbar text changes from
                     # paused back to the artist/album/track string
-                    self.stat_lbl.setText(self.playlist_table.msg_status)                    
+#                    self.stat_lbl.setText(self.playlist_table.msg_status)                    
+                    self.stat_lbl.setText("BARP")                    
                 self.player.audio_object.play()
                 self.stop_bttn.setEnabled(True)
                 self.wdgt_manip.icon_change("play")
@@ -399,8 +392,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             # The button is unset
             if playing:
                 # pause playback
-                print "PAUSING"
                 self.player.audio_object.pause()
+                
             self.wdgt_manip.icon_change("pause")
             if self.playlist_table.currentRow() >= 0:
                 self.stat_lbl.setText("Paused")
@@ -527,7 +520,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """
 #        tracks = self.playlist_table.gen_file_list()
 #        self.play_hist.update(tracks)
-        self.playlist_table.clear()
+        self.playlist_table.clear_rows()
         self.prev_trktbl_bttn.setEnabled(True)
         self.actionUndo.setEnabled(True)
         self.clear_trktbl_bttn.setEnabled(False)
@@ -622,8 +615,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                         item.setBackground(palette.alternateBase().color())
                     else:
                         item.setBackground(palette.base().color())
-        else:
-            self.playlist_table.tracknow_colourise()
+#        else:
+#            self.playlist_table.tracknow_colourise()
                 
     @pyqtSignature("bool")
     def on_mute_bttn_toggled(self, checked):
@@ -1036,8 +1029,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             event.ignore()
             
     def generate_info(self):
-        trk = self.playlist_table.current_track()        
-        self.playlist_table.tracknow_colourise()
+        f_now = self.player.audio_object.current_source()['source']
+        if not f_now:
+            # Not yet playing
+            f_now = self.playlist_table.currentRow()
+        self.playlist_table.colourise(f_now)
+        trk = self.playlist_table.current_track() 
         
         self.msg_status = "Playing: %s by %s on %s" % (trk['Title'], trk['Artist'], trk['Album'])
         self.stat_lbl.setText(self.msg_status)

@@ -29,13 +29,13 @@ class PhononBE(Phonon.MediaObject):
             self.enqueue(source)
         
     def is_paused(self):
-        return self.state == Phonon.PausedState
+        return self.state() == Phonon.PausedState
      
     def is_playing(self):
-        return self.state == Phonon.PlayingState
+        return self.state() == Phonon.PlayingState
     
     def is_stopped(self):
-        return self.state == Phonon.StoppedState
+        return self.state() == Phonon.StoppedState
     
     def current_source(self):
         source = self.currentSource()

@@ -156,12 +156,19 @@ class PlaylistTable(QTableWidget):
         item_now = self.item(row,col).text()
         self.play_this.emit(item_now, 0)
         
+    def __row_of_filename(self, file_name):
+        for row, trk in enumerate(self.tracks):
+            if trk['FileName'] == file_name:
+                # found the file_name's row in the table
+                return row
+        err_msg = "Trying to find %s in the Playlist Table" % file_name
+        raise Exception(err_msg)
+        
     def __checks(self,track):
         if path.exists(track) or track.startswith("cdda"):
             return track
         
     def clear_rows(self):
-        self.clearContents()
         for i in range(self.rowCount(),0,-1):
             self.removeRow(i-1)
         
@@ -200,7 +207,6 @@ class PlaylistTable(QTableWidget):
         if (row + 1) < self.rowCount():
             # There is a next track possible
             trk = self.tracks[row+1]["FileName"]
-            print row,trk
             return self.__checks(trk)
         
     def previous(self):
@@ -211,6 +217,39 @@ class PlaylistTable(QTableWidget):
             trk = self.tracks[row-1]["FileName"]
             return self.__checks(trk)
 
+    def colourise(self, row_now):
+        """
+        Reset the colours and highlight a row
+        """
+        
+        # TODO:allow row_now to be an integer or string
+        # if a string(filename), find the integer
+        if isinstance(row_now, int):
+            # given a row
+            pass
+        else:
+            # assume a str/unicode i.e. filename
+            row_now = self.__row_of_filename(row_now)
+        
+        
+        # cannot set an entire row's colour. Must do each cell
+        for row in range(self.rowCount()):
+            for col in range(self.columnCount()):
+                item = self.item(row, col)
+                if row != row_now:
+                    if row % 2:
+                        # Odd-row
+                        item.setBackground(self.palette().alternateBase().color())
+                    else:
+                        # even row
+                        item.setBackground(self.palette().base().color())
+                else:
+                    # Highlight the current track(row)
+                    highlight = self.palette().highlight().color()
+                    highlight.setAlpha(128)
+                    item.setBackground(highlight)
+                    self.selectRow(row_now)  
+
 
     def tracknow_colourise(self):
         """
@@ -218,27 +257,7 @@ class PlaylistTable(QTableWidget):
         set the background colour of each item in a row
         until track changes.
         """
-        columns = self.columnCount()
-        rows = self.rowCount()
-        palette = self.palette()
-        now = self.currentRow()
-        # cannot set an entire row's colour. Must do each cell
-        for row in range(rows):
-            for col in range(columns):
-                item = self.item(row, col)
-                if row != now:
-                    if row % 2:
-                        # Odd-row
-                        item.setBackground(palette.alternateBase().color())
-                    else:
-                        # even row
-                        item.setBackground(palette.base().color())
-                else:
-                    # Highlight the current track(row)
-                    highlight = palette.highlight().color()
-                    highlight.setAlpha(128)
-                    item.setBackground(highlight)
-                    self.selectRow(now)
+        self.colourise(self.currentRow())
                
     def del_tracks(self):
         tracks = []     
