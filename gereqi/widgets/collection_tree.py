@@ -1,6 +1,5 @@
 from ..media import Artist,Album,Track
 from ..storage.Collection import CollectionDb
-from ..widgets.collection_tree import Artist
 from .. import extraneous 
 from ..icons import icons_resource
 from PyQt4.QtGui import *
@@ -51,36 +50,35 @@ class CollectionTree(QTreeWidget):
         return albums
     
     def pop_albs(self):
-        albums = connection.get_albums_all(self.time_filter,self.text_filter)
+        albums = connection.get_albums_all(self.time_filter, self.text_filter)
         last_alb = None
         for alb in albums:
-            alb_obj = Album(Artist(alb['artist']),alb['album'])
+            alb_obj = Album(Artist(alb['artist']), alb['album'])
             try:
                 next_alb = albums[albums.index(alb) + 1]['album']
             except IndexError:
                 next_alb = None 
             if alb['album'] == next_alb:
-                name = "%s - %s" % (alb['album'],alb['artist'])
+                name = "%s - %s" % (alb['album'], alb['artist'])
             else:
                 name = alb['album']
-            now = CollectionTreeItem(name,alb_obj,self.mode)
+            now = CollectionTreeItem(name, alb_obj, self.mode)
             self.addTopLevelItem(now)
 
     def populate(self):
         self.clear()
         if self.mode == 1:
                 self.pop_albs()
-                return
+                return          
             
-            
-        items = connection.get_artists(self.time_filter,self.text_filter)
+        items = connection.get_artists(self.time_filter, self.text_filter)
 #        if self.mode == 1:
 #            items = self.__artists_to_albums(items)
         # Empty the tree
         
         for item in items:
             # Adding an artist is relatively trivial
-            now = CollectionTreeItem(item,None,self.mode)
+            now = CollectionTreeItem(item, None, self.mode)
             self.addTopLevelItem(now)
 
 #            else:
@@ -127,12 +125,12 @@ class CollectionTreeItem(QTreeWidgetItem):
             
     def __set_icon(self):
         cover = extraneous.get_cover_source(self.__info.artist.name,
-                                                  self.name,True, False)
+                                                  self.name, True, False)
         if cover:
             cover = cover.replace("file://", '')
         else:
             cover = ":icons/nocover.png"      
-        self.setIcon(0,QIcon(cover))
+        self.setIcon(0, QIcon(cover))
             
     def populate(self):
         """
@@ -148,11 +146,11 @@ class CollectionTreeItem(QTreeWidgetItem):
         # Adding an album
         elif self.__mode == 0:
             for alb in self.__info.albums():
-                self.addChild(CollectionTreeItem(alb.name,alb,1))
+                self.addChild(CollectionTreeItem(alb.name, alb, 1))
         # Adding a track
         elif self.__mode == 1:
             for trk in self.__info.tracks():
-                self.addChild(CollectionTreeItem(trk.name,trk,2))
+                self.addChild(CollectionTreeItem(trk.name, trk, 2))
                 
         self.populated = True
             
@@ -181,16 +179,35 @@ class CollectionTreeItem(QTreeWidgetItem):
         """
         Take the dat from a media-object and put into a way playlist needs
         """
-        return {'Track':    int(i.track), 
-                "Title":    i.name, 
-                "Artist":   i.artist.name, 
-                "Album":    i.album.name, 
-                "Year":     i.year, 
-                "Genre":    i.genre,
-                "Length":   i.length, 
-                "Bitrate":  i.bitrate, 
-                "FileName": i.file_name}
+        info = TrackInfo()
+        info.track      = int(i.track)
+        info.title      = i.name
+        info.artist     = i.artist.name
+        info.album      = i.album.name
+        info.year       = i.year
+        info.genre      = i.genre
+        info.length     = i.length
+        info.bitrate    = i.bitrate
+        info.filename   = i.file_name
+        return info
+       
+
+class TrackInfo:
+    track       = 0
+    title       = None
+    artist      = None
+    album       = None
+    year        = 0
+    genre       = None
+    length      = None
+    bitrate     = 0
+    filename    = None 
+    
+    def __init__(self):
+        pass
         
+    def __repr__(self):
+        return "TrackInfo(%s)" % self.filename
         
 class MyDelegate(QItemDelegate):
     mode = 0

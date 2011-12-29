@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of Gereqi.
 #
 # Gereqi is free software: you can redistribute it and/or modify
@@ -106,8 +107,8 @@ class AudioBackend:
         Convert the tracks play-length into a format
         suitable for label widget and set
         """
+        track = self.ui.playlist_table.current_track()
         t_now = QTime(0, (val / 60000) % 60, (val / 1000) % 60)
         now = t_now.toString('mm:ss')
-#        max_time = self.ui.t_length.toString('mm:ss')
-        self.ui.progress_lbl.setText("%s | %s" % (now, "")) 
+        self.ui.progress_lbl.setText("%s | %s" % (now, track.length)) 
         

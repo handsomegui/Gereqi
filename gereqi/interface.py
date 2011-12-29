@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of Gereqi.
 #
 # Gereqi is free software: you can redistribute it and/or modify
@@ -285,7 +286,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def tray_tooltip(self):
         if self.play_bttn.isChecked():
             info = self.playlist_table.current_track()
-            msg = "%s by %s" % (info["Title"], info["Artist"])
+            msg = "%s by %s" % (info.title, info.artist)
             
         # Puts the current track info in tray tooltip
         else:
@@ -348,19 +349,18 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         The play button either resumes or starts playback.
         Not possible to play a highlighted row.
         """
-        paused = self.player.audio_object.is_paused()
+        paused  = self.player.audio_object.is_paused()
         playing = self.player.audio_object.is_playing()
         
         if checked:
             # The button is set
-            queued = self.player.audio_object.current_source()
-            trk = self.playlist_table.current_track()            
-            
+            queued  = self.player.audio_object.current_source()
+            trk     = self.playlist_table.current_track()
             if trk:      
                 # Something in the playlist is selected                
-                if (queued['source'] != trk["FileName"]) and paused: 
+                if (queued['source'] != trk.filename) and paused: 
                     # The track in backend is not the same as selected and paused
-                    self.player.audio_object.load(trk["FileName"])
+                    self.player.audio_object.load(trk.filename)
                 elif queued['type'] == MediaTypes.EMPTY:
                     # Nothing already loaded
                     cur_trk = self.playlist_table.current_track()
@@ -369,8 +369,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                         self.player.audio_object.load(cur_trk)                    
                     else:
                         # Nothing to play. Just reset the play button and stop here
-                        self.play_bttn.setChecked(False)                        
-                
+                        self.play_bttn.setChecked(False)
+                        return
                 elif paused:
                     # Just unpausing
                     # Makes sure the statusbar text changes from
@@ -380,14 +380,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 self.player.audio_object.play()
                 self.stop_bttn.setEnabled(True)
                 self.wdgt_manip.icon_change("play")
-        
-            
             else:
                 # Nothing to play
                 self.play_bttn.setChecked(False)
                 return
-                
-        
         else:
             # The button is unset
             if playing:
@@ -521,6 +517,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
 #        tracks = self.playlist_table.gen_file_list()
 #        self.play_hist.update(tracks)
         self.playlist_table.clear_rows()
+        self.playlist_table.tracks = []
         self.prev_trktbl_bttn.setEnabled(True)
         self.actionUndo.setEnabled(True)
         self.clear_trktbl_bttn.setEnabled(False)
@@ -922,7 +919,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Linked to the current time of
         track being played
         """
-        minu,sec = self.playlist_table.current_track()["Length"].split(":")
+        minu,sec = self.playlist_table.current_track().length.split(":")
         
         play_time = 1000 * ((int(minu) * 60) + int(sec))
 #        self.progress_sldr.setPageStep(play_time/10)
@@ -1036,12 +1033,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.playlist_table.colourise(f_now)
         trk = self.playlist_table.current_track() 
         
-        self.msg_status = "Playing: %s by %s on %s" % (trk['Title'], trk['Artist'], trk['Album'])
+        self.msg_status = "Playing: %s by %s on %s" % (trk.title, trk.artist, trk.album)
         self.stat_lbl.setText(self.msg_status)
         
-        self.art_alb["nowart"]  = trk['Artist']
-        self.art_alb["nowalb"]  = trk['Album']
-        self.art_alb["title"]   = trk['Title']
+        self.art_alb["nowart"]  = trk.artist
+        self.art_alb["nowalb"]  = trk.album
+        self.art_alb["title"]   = trk.title
 
    
     @pyqtSignature("int")  

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from PyQt4.QtGui import *
 from PyQt4.QtCore import Qt, QSize, pyqtSignal
 from os import path
@@ -158,7 +159,7 @@ class PlaylistTable(QTableWidget):
         
     def __row_of_filename(self, file_name):
         for row, trk in enumerate(self.tracks):
-            if trk['FileName'] == file_name:
+            if trk.filename == file_name:
                 # found the file_name's row in the table
                 return row
         err_msg = "Trying to find %s in the Playlist Table" % file_name
@@ -175,21 +176,66 @@ class PlaylistTable(QTableWidget):
     def header_search(self, val):
         headers_now = [self.horizontalHeaderItem(col).text() 
                    for col in range(self.columnCount())]
-        return headers_now.index(val)   
+        return headers_now.index(val)
+
+    def __sort_tracks(self):
+        if  self.sort_mode  == "FileName":
+            self.tracks.sort(key=lambda x: x.filename)
+        elif self.sort_mode == "Track":
+            self.tracks.sort(key=lambda x: x.track)
+        elif self.sort_mode == "Title":
+            self.tracks.sort(key=lambda x: x.title)
+        elif self.sort_mode == "Artist":
+            self.tracks.sort(key=lambda x: x.artist)
+        elif self.sort_mode == "Album":
+            self.tracks.sort(key=lambda x: x.album)
+        elif self.sort_mode == "Year":
+            self.tracks.sort(key=lambda x: x.year)
+        elif self.sort_mode == "Genre":
+            self.tracks.sort(key=lambda x: x.genre)
+        elif self.sort_mode == "Length":
+            self.tracks.sort(key=lambda x: x.length) 
+        elif self.sort_mode == "Bitrate":
+            self.tracks.sort(key=lambda x: x.bitrate)         
     
     def update(self):
-        self.tracks.sort(key=operator.itemgetter(self.sort_mode))
+        #TODO: sort out how to sort on column header
+        self.__sort_tracks()
         self.clear_rows()
         for trk in self._tracks:
             # Ensure track number is zero-padded
-            trk['Track'] = "%02u" % int(trk['Track'])
+            trk.track = "%02u" % int(trk.track)
             row = self.rowCount()
             self.insertRow(row)
             # Creates each cell for a track based on info
-            for key in trk:
-                tbl_wdgt = QTableWidgetItem(trk[key])
-                column = self.header_search(key)
-                self.setItem(row, column, tbl_wdgt)
+            wdgt = QTableWidgetItem(trk.track)
+            col = self.header_search("Track")
+            self.setItem(row, col, wdgt)
+            wdgt = QTableWidgetItem(trk.title)
+            col = self.header_search("Title")
+            self.setItem(row, col, wdgt)
+            wdgt = QTableWidgetItem(trk.artist)
+            col = self.header_search("Artist")
+            self.setItem(row, col, wdgt)
+            wdgt = QTableWidgetItem(trk.album)
+            col = self.header_search("Album")
+            self.setItem(row, col, wdgt)
+            wdgt = QTableWidgetItem(trk.year)
+            col = self.header_search("Year")
+            self.setItem(row, col, wdgt)            
+            wdgt = QTableWidgetItem(trk.genre)
+            col = self.header_search("Genre")
+            self.setItem(row, col, wdgt)
+            wdgt = QTableWidgetItem(trk.length)
+            col = self.header_search("Length")
+            self.setItem(row, col, wdgt)  
+            wdgt = QTableWidgetItem(trk.bitrate)
+            col = self.header_search("Bitrate")
+            self.setItem(row, col, wdgt)              
+            wdgt = QTableWidgetItem(trk.filename)
+            col = self.header_search("FileName")
+            self.setItem(row, col, wdgt)
+            
             self.resizeColumnsToContents()
         self.populated.emit()
 
@@ -206,7 +252,7 @@ class PlaylistTable(QTableWidget):
             return   
         if (row + 1) < self.rowCount():
             # There is a next track possible
-            trk = self.tracks[row+1]["FileName"]
+            trk = self.tracks[row+1].filename
             return self.__checks(trk)
         
     def previous(self):
@@ -214,7 +260,7 @@ class PlaylistTable(QTableWidget):
         if row is None:
             return     
         if (row - 1) >= 0:
-            trk = self.tracks[row-1]["FileName"]
+            trk = self.tracks[row-1].filename
             return self.__checks(trk)
 
     def colourise(self, row_now):
@@ -230,7 +276,6 @@ class PlaylistTable(QTableWidget):
         else:
             # assume a str/unicode i.e. filename
             row_now = self.__row_of_filename(row_now)
-        
         
         # cannot set an entire row's colour. Must do each cell
         for row in range(self.rowCount()):
@@ -269,8 +314,8 @@ class PlaylistTable(QTableWidget):
     
     @tracks.setter
     def tracks(self, items):
-        self._x = items
+        self._tracks = items
         
     @tracks.deleter
     def tracks(self):
-        del self._x
+        del self._tracks

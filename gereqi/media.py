@@ -36,18 +36,19 @@ class Track:
         self.artist = artist
         self.name = name
         info = connection.get_info_from_info(artist.name, album.name, name)
-        self.file_name = info['file_name']
-        self.year = info['year']
-        self.genre = info['genre']
-        self.track = info['track']
-        self.length = info['length']
-        self.bitrate = info['bitrate']
-        self.added = info['added']
-        self.rating = info['rating']
+        self.file_name  = info['file_name']
+        self.year       = info['year']
+        self.genre      = info['genre']
+        self.track      = info['track']
+        self.length     = info['length']
+        self.bitrate    = info['bitrate']
+        self.added      = info['added']
+        self.rating     = info['rating']
         
     def __repr__(self):
-        return "Track('%s' from '%s' by '%s' at %s)" % (self.name,self.album.name,
-                                           self.artist.name,self.file_name)
+        return "Track('%s' from '%s' by '%s' at %s)" % (self.name, self.album.name,
+                                           self.artist.name, self.file_name)
+                                           
     def set_rating(self,val):
         """
         
