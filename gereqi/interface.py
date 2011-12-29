@@ -39,35 +39,10 @@ from configuration import Configuration
 import extraneous
 from extrawidgets import SetupExtraWidgets, WidgetManips
 from about import About
-#from playlist.playlist import Playlist, PlaylistHistory
-
 
 # The folder watcher poll-time in seconds
 WATCHTIME = 30 
 
-
-  
-            
-#    def generate_info(self):
-#        """
-#        This retrieves data from the playlist table, not the database. 
-#        This is because the playlist may contain tracks added locally.        
-#        """
-#        row = self.ui_main.playlist_table.currentRow()
-#        track       = self.ui_main.playlist_table.current_track()
-#        title       = track["Title"]
-#        artist      = track["Artist"]
-#        album       = track["Album"]
-#        minu, sec   = track["Length"].split(":")
-#        
-#        self.play_time = 1000 * ((int(minu) * 60) + int(sec))
-#        
-#        self.msg_status = "Playing: %s by %s on %s" % (title, artist, album)
-#        self.ui_main.stat_lbl.setText(self.msg_status)
-#        self.ui_main.art_alb["nowart"]  = artist
-#        self.ui_main.art_alb["nowalb"]  = album
-#        self.ui_main.art_alb["title"]   = title
-        
 
 class MainWindow(Ui_MainWindow, QMainWindow): 
     """
@@ -85,17 +60,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.__settings_init()
         
         self.build_lock = self.delete_lock = False
-        self.art_alb = {"oldart":None, "oldalb":None, 
-                        "nowart":None, "nowalb":None, 
-                        "title":None, "oldtit":None} 
+        self.art_alb = {"oldart":   None, "oldalb": None, 
+                        "nowart":   None, "nowalb": None, 
+                        "title":    None, "oldtit": None} 
         self.old_pos = 0
         
         # The file formats that can be encoded
         self.audio_formats = Formats.Formats().available()
         self.format_filter = ["*.%s" % fmat for fmat in self.audio_formats]
-        
-
-        
         
         # TODO: change ui settings based on saved states/options. QSession
         self.setupUi(self)
@@ -114,7 +86,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.collect_tree = CollectionTree(self.collectionTab)
         self.verticalLayout_2.addWidget(self.collect_tree)
         self.collect_tree.populate()
-
             
         self.del_thread = DeleteFiles(self)
         self.meta = Tagging(self.audio_formats)
@@ -123,8 +94,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.player = Backend.AudioBackend(self)
         self.wdgt_manip = WidgetManips(self)
         self.finishes = Finishers(self)
-#        self.play_hist = PlaylistHistory()
-#        self.__playlist_remembered()
         self.__tray_menu_appearance()
         self.wiki_thread = WikiPage()
         self.infopage_thread = InfoPage()
@@ -138,7 +107,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.stat_bttn.pressed.connect(self.quit_build)
         self.collect_tree.header().sectionClicked.connect(self.collection_sort)
         self.collect_tree.items_for_playlist.connect(self.__items_for_playlist)
-        
         self.build_db_thread.progress.connect(self.stat_prog.setValue)
         self.del_thread.deleted.connect(self.collect_tree.populate)        
         self.wiki_thread.html.connect(self.setWiki)
@@ -209,8 +177,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             return self.icons.icon("mute")
    
     def __setup_watcher(self):
-        watch = self.sets_db.get_collection_setting("watch")  == "True"
-        recur = self.sets_db.get_collection_setting("recursive")  == "True"
+        watch = (self.sets_db.get_collection_setting("watch")  == "True")
+        recur = (self.sets_db.get_collection_setting("recursive")  == "True")
         
         if (self.media_dir is None) or (watch is False):
             return
@@ -221,7 +189,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         except AttributeError:
             pass
             
-        print("WATCHING: ", self.media_dir[0])
         self.watch_thread = Watcher(self)
         self.watch_thread.set_values(self.media_dir, WATCHTIME, recur)
         self.watch_thread.start()
@@ -285,8 +252,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 
     def tray_tooltip(self):
         if self.play_bttn.isChecked():
-            info = self.playlist_table.current_track()
-            msg = "%s by %s" % (info.title, info.artist)
+            info    = self.playlist_table.current_track()
+            msg     = "%s by %s" % (info.title, info.artist)
             
         # Puts the current track info in tray tooltip
         else:
@@ -340,8 +307,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # Checks to see if the playbutton is in play state
         if self.play_bttn.isChecked():
             self.player.audio_object.play()
-#        else:
-#            self.playlist_table.tracknow_colourise(self.playlist_table.current_row())
 
     @pyqtSignature("bool")
     def on_play_bttn_toggled(self, checked):
@@ -375,7 +340,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     # Just unpausing
                     # Makes sure the statusbar text changes from
                     # paused back to the artist/album/track string
-#                    self.stat_lbl.setText(self.playlist_table.msg_status)                    
+                    #TODO: update message bar
                     self.stat_lbl.setText("BARP")                    
                 self.player.audio_object.play()
                 self.stop_bttn.setEnabled(True)
@@ -424,10 +389,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.player.audio_object.stop() 
             self.player.audio_object.clear() 
             self.player.audio_object.load(track)
-#            if self.play_bttn.isChecked():
             self.player.audio_object.play()
-#            else:
-#                self.playlist_table.tracknow_colourise(self.playlist_table.current_row())
         else:
             # TODO: some tidy up thing could go here
             return
@@ -514,8 +476,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Clear current playlist and if no music playing
         clear self.player.audio_object
         """
-#        tracks = self.playlist_table.gen_file_list()
-#        self.play_hist.update(tracks)
         self.playlist_table.clear_rows()
         self.playlist_table.tracks = []
         self.prev_trktbl_bttn.setEnabled(True)
@@ -586,6 +546,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.playlist_table.highlighted_track()
         
         # Checks if the search edit isn't empty
+        #TODO: QString strip+length
         if len(str(srch_str).strip()) > 0:
             rows = []
             palette = self.playlist_table.palette()
@@ -612,8 +573,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                         item.setBackground(palette.alternateBase().color())
                     else:
                         item.setBackground(palette.base().color())
-#        else:
-#            self.playlist_table.tracknow_colourise()
                 
     @pyqtSignature("bool")
     def on_mute_bttn_toggled(self, checked):

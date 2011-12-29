@@ -97,7 +97,7 @@ class PlaylistTable(QTableWidget):
             icon = QIcon().fromTheme("edit-copy", QIcon(":/icon/edit-copy.png"))
             # Can't change these aspects of the file
             copy_tags_action = menu.addAction(icon, "Copy Tags to Clipboard")
-            if tag_name not in ["FileName","Length", "Bitrate"]:
+            if tag_name not in ["FileName", "Length", "Bitrate"]:
                 edit_tag = menu.addAction("Edit Tag '%s'" % tag_name)
             
             action = menu.exec_(self.mapToGlobal(pos))
