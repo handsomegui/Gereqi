@@ -11,7 +11,7 @@ setup(name='gereqi',
         url='http://github.com/regomodo/Gereqi', 
         license='GPLv3', 
         packages=['gereqi','gereqi.devices', 'gereqi.icons','gereqi.audio',
-                  'gereqi.information','gereqi.storage','gereqi.playlist'], 
+                  'gereqi.information','gereqi.storage','gereqi.playlist','gereqi.widgets'], 
         package_data={
                       'gereqi': ['gereqi/*.py'],
                       'gereqi.devices': ['gereqi/devices/*.py'],
@@ -19,7 +19,8 @@ setup(name='gereqi',
                       'gereqi.audio': ['gereqi/audio/*.py'],
                       'gereqi.storage': ['gereqi/storage/*.py'],
                       'gereqi.information': ['gereqi/information/*.py'],
-                      'gereqi.playlist': ['gereqi/playlist/*.py']
+                      'gereqi.playlist': ['gereqi/playlist/*.py'],
+		      'gereqi.widgets': ['gereqi/widgets/*.py']
                       }, 
         
         data_files=[('/usr/share/applications',['gereqi/data/gereqi.desktop']),
