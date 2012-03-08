@@ -17,11 +17,11 @@ class Formats:
         # codecs have to be present        
         fmats = {"ogg": ["libgstvorbis.so"],
                  "flac": ["libgstflac.so"],
-                 "mp3": ["libgstlame.so","libgstflump3dec.so"],
+                 "mp3": ["libgstlame.so","libgstflump3dec.so","libmp3lame.so"],
                  "m4a": ["libfaad.so"]}
         
         # Search for the codecs using find()
-        cmd = "find /usr/lib/ -name %s"
+        cmd = "find /usr/lib/ -name %s*"
         # Allow cuefiles by default
         avail = ["cue"]
         for key in fmats.iterkeys():
