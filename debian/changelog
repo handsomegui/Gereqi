@@ -1,6 +1,5 @@
 gereqi (0.5.0-1) unstable; urgency=low
 
-  * Initial correct .deb release 
+  * Updated dependencies.
 
- -- Jonathan Noble <jonathan@jonathan-XFX-Nforce-680i-LT>  Thu, 08 Sep 2011 21:23:04 +0100
-
+ -- Jonathan Noble <jon@jon-kubuntu>  Sat, 14 Apr 2012 13:31:28 +0100
