@@ -340,8 +340,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     # Just unpausing
                     # Makes sure the statusbar text changes from
                     # paused back to the artist/album/track string
-                    #TODO: update message bar
-                    self.stat_lbl.setText("BARP")                    
+                    self.generate_info()
+                                        
                 self.player.audio_object.play()
                 self.stop_bttn.setEnabled(True)
                 self.wdgt_manip.icon_change("play")
