@@ -46,15 +46,18 @@ def get_cover_source(artist, album, check=True,download=True):
         # Place to save the covers doesn't exist
         if path.exists(cover_dir) is False:
             mkdir(cover_dir, 0700)
-        if path.exists(cover):
-            return "file://%s" % cover
-        elif download == True:                        
-            web_info = Webinfo()
-            img = web_info.get_cover(artist, album)
-            if img is not None:
-                now = open(cover, "wb")
-                now.write(img)
-                now.close()
+        try:
+            if path.exists(cover):
                 return "file://%s" % cover
+            elif download == True:                        
+                web_info = Webinfo()
+                img = web_info.get_cover(artist, album)
+                if img is not None:
+                    now = open(cover, "wb")
+                    now.write(img)
+                    now.close()
+                    return "file://%s" % cover
+        except UnicodeEncodeError, err:
+            print("ERROR: %s" % err)
     else:
         return "file://%s" % cover
