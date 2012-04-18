@@ -1,4 +1,4 @@
-from ..media import Artist,Album,Track
+from ..media import Artist,Album,Track,TrackInfo
 from ..storage.Collection import CollectionDb
 from .. import extraneous 
 from ..icons import icons_resource
@@ -191,23 +191,6 @@ class CollectionTreeItem(QTreeWidgetItem):
         info.filename   = i.file_name
         return info
        
-
-class TrackInfo:
-    track       = 0
-    title       = None
-    artist      = None
-    album       = None
-    year        = 0
-    genre       = None
-    length      = None
-    bitrate     = 0
-    filename    = None 
-    
-    def __init__(self):
-        pass
-        
-    def __repr__(self):
-        return "TrackInfo(%s)" % self.filename
         
 class MyDelegate(QItemDelegate):
     mode = 0

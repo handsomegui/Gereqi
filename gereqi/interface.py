@@ -23,7 +23,8 @@ from storage.Collection import CollectionDb
 from information.tagging import Tagging
 from information.cue_sheet import CueSheet
 from icons.configuration import MyIcons
-from widgets.collection_tree import CollectionTree,CollectionTreeItem
+from widgets.collection_tree import CollectionTree, CollectionTreeItem
+from media import Track, TrackInfo
 try:
     from audio import Cdrom
     CDS_OK = True
@@ -830,9 +831,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         This takes the filesystem_tree item and deduces whether
         it's a file or directory and populates playlist if possible
         """
+        
+        fname = self.dir_model.filePath(index)
         #TODO: check to see if it's avail in db 1st otherwise if it isn't exceptions occur
         if self.dir_model.isDir(index):
-            fname = self.dir_model.filePath(index)
             searcher = QDir(fname)
             searcher.setFilter(QDir.Files)
             searcher.setNameFilters(self.format_filter)
@@ -840,8 +842,20 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.playlist_table.add_list_to_playlist(tracks)
             self.clear_trktbl_bttn.setEnabled(True)
         else:
-            fname = self.dir_model.filePath(index)
-            self.playlist_table.add_to_playlist(fname)
+            "(title, artist, album, year, genre, track, length, bitrate)"
+            info = self.meta.extract(unicode(fname))
+            print info
+            trk = TrackInfo()
+            trk.track      = info[5]
+            trk.title      = info[0]
+            trk.artist     = info[1]
+            trk.album      = info[2]
+            trk.year       = info[3]
+            trk.genre      = info[4]
+            trk.length     = info[6]
+            trk.bitrate    = info[7]
+            trk.filename   = fname
+            self.__items_for_playlist([trk])
             self.clear_trktbl_bttn.setEnabled(True)
             
     @pyqtSignature("QModelIndex")

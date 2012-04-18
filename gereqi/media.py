@@ -55,6 +55,26 @@ class Track:
         """
         pass
         
+        
+class TrackInfo:
+    """
+    Basic object
+    """
+    track       = 0
+    title       = None
+    artist      = None
+    album       = None
+    year        = 0
+    genre       = None
+    length      = None
+    bitrate     = 0
+    filename    = None 
+    
+    def __init__(self):
+        pass
+        
+    def __repr__(self):
+        return "TrackInfo(%s)" % self.filename
 
         
 def test():
