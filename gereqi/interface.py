@@ -167,11 +167,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
     def __volume_icon(self,value=None):
         value = value if value else self.volume_sldr.value()
-        if value > 66:
+        if (value > 66):
             return self.icons.icon("volume-max")
-        elif value > 33:
+        elif (value > 33):
             return self.icons.icon("volume-mid")
-        elif value> 0:
+        elif (value > 0):
             return self.icons.icon("volume-low")
         else:
             return self.icons.icon("mute")
