@@ -214,10 +214,14 @@ class Tagging:
         tags.append(bitrate)
         return tags
         
+    # FIXME: this really out to be an object so conversions all over the place is un-needed
     def extract(self, fname):
         """
         Based on the file-format extract info
+        
+        (title, artist, album, year, genre, track, length, bitrate)
         """
+        #TODO: work on mimetypes instead of extensions
         ext = fname.split(".")[-1].lower()
         if ext in self.a_formats:
             if ext == "flac":

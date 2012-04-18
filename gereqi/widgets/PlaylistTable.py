@@ -239,7 +239,7 @@ class PlaylistTable(QTableWidget):
             self.resizeColumnsToContents()
         self.populated.emit()
 
-    def current_track(self,info=False):
+    def current_track(self, info=False):
         if info:
             pass
         else:
@@ -247,7 +247,7 @@ class PlaylistTable(QTableWidget):
     
     def next(self):
         row = self.currentRow()
-        if row < 0:
+        if (row < 0):
             # nothing selected
             return   
         if (row + 1) < self.rowCount():
@@ -259,7 +259,7 @@ class PlaylistTable(QTableWidget):
         row = self.currentRow()
         if row is None:
             return     
-        if (row - 1) >= 0:
+        if ((row - 1) >= 0):
             trk = self.tracks[row-1].filename
             return self.__checks(trk)
 
