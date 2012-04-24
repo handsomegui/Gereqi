@@ -721,7 +721,37 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         elif par == "Auto":
             if item.text(0) == "Top 10":
                 tracks = self.media_db.top_tracks()
-                self.playlist_table.add_list_to_playlist(tracks)
+                trks = []
+                for t in tracks:                  
+                    trk             = TrackInfo()
+                    trk.track       = t['track']
+                    trk.title       = t['title']
+                    trk.artist      = t['artist']
+                    trk.album       = t['album']
+                    trk.year        = t['year']
+                    trk.genre       = t['genre']
+                    trk.length      = t['length']
+                    trk.bitrate     = t['bitrate']
+                    trk.filename    = t['file_name']
+                    trks.append(trk)
+                self.__items_for_playlist(trks)
+                self.clear_trktbl_bttn.setEnabled(True)
+            elif item.text(0) == "Unplayed":
+                tracks = self.media_db.unplayed()
+                trks = []
+                for t in tracks:                  
+                    trk             = TrackInfo()
+                    trk.track       = t['track']
+                    trk.title       = t['title']
+                    trk.artist      = t['artist']
+                    trk.album       = t['album']
+                    trk.year        = t['year']
+                    trk.genre       = t['genre']
+                    trk.length      = t['length']
+                    trk.bitrate     = t['bitrate']
+                    trk.filename    = t['file_name']
+                    trks.append(trk)
+                self.__items_for_playlist(trks)
                 self.clear_trktbl_bttn.setEnabled(True)
         else:
             new_par = item.parent().parent()            
