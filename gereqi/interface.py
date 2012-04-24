@@ -831,20 +831,30 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         This takes the filesystem_tree item and deduces whether
         it's a file or directory and populates playlist if possible
         """
-        
         fname = self.dir_model.filePath(index)
-        #TODO: check to see if it's avail in db 1st otherwise if it isn't exceptions occur
         if self.dir_model.isDir(index):
             searcher = QDir(fname)
             searcher.setFilter(QDir.Files)
             searcher.setNameFilters(self.format_filter)
-            tracks = [item.absoluteFilePath() for item in searcher.entryInfoList()]
-            self.playlist_table.add_list_to_playlist(tracks)
+            trks = []
+            for t in searcher.entryInfoList():
+                info = self.meta.extract(unicode(t.absoluteFilePath()))
+                trk = TrackInfo()
+                trk.track      = info[5]
+                trk.title      = info[0]
+                trk.artist     = info[1]
+                trk.album      = info[2]
+                trk.year       = info[3]
+                trk.genre      = info[4]
+                trk.length     = info[6]
+                trk.bitrate    = info[7]
+                trk.filename   = t.absoluteFilePath()
+                trks.append(trk)
+            self.__items_for_playlist(trks)
             self.clear_trktbl_bttn.setEnabled(True)
         else:
             "(title, artist, album, year, genre, track, length, bitrate)"
             info = self.meta.extract(unicode(fname))
-            print info
             trk = TrackInfo()
             trk.track      = info[5]
             trk.title      = info[0]
