@@ -700,17 +700,20 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             if path.splitext(tracks[0])[-1].lower() == ".cue":
                 # sort out the cuesheet
                 cue_now = CueSheet(tracks[0])
-                for track in cue_now.tracks:
-                    info =  {"Track":   track.number,  
-                            "Title":    track.title,
-                            "Artist":   track.performer, 
-                            "Album":    cue_now.title,
-                            "Year":     cue_now.year, 
-                            "Genre":    cue_now.genre,
-                            "Length":   "0", 
-                            "Bitrate":  "0", 
-                            "FileName": cue_now.path + track.file_name}
-                    self.playlist_table.add_to_playlist(track.file_name, info)
+                trks = []
+                for track in cue_now.tracks:                  
+                    trk             = TrackInfo()
+                    trk.track       = track.number
+                    trk.title       = track.title
+                    trk.artist      = track.performer
+                    trk.album       = cue_now.title
+                    trk.year        = cue_now.year
+                    trk.genre       = cue_now.genre
+                    trk.length      = "0"
+                    trk.bitrate     = "0"
+                    trk.filename    = cue_now.path + track.file_name
+                    trks.append(trk)
+                self.__items_for_playlist(trks)
             else:
                 self.playlist_table.add_list_to_playlist(tracks)
             self.clear_trktbl_bttn.setEnabled(True)
