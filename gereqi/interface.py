@@ -406,8 +406,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.player.audio_object.set_volume(value)
 
     
-    #TODO: not sure if the DB changes are made
-    # i.e going from sqlite to mysql or v'-v'
     @pyqtSignature("")
     def on_actionConfigure_triggered(self):
         """

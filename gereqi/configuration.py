@@ -144,16 +144,6 @@ class Configuration(QDialog, Ui_settings_dialog):
     def on_buttonBox_rejected(self):
         QDialog.reject(self)
         
-    @pyqtSignature("QString")
-    def on_database_type_currentIndexChanged(self, val):
-        """
-        Prevent mysql info entry if sqlite dbtype is selected
-        """
-        if val == "SQLITE":
-            self.mysql_config.setEnabled(False)
-        elif val == "MYSQL":
-            self.mysql_config.setEnabled(True)
-            
     @pyqtSignature("bool")
     def on_scan_recursively_toggled(self, check):
         """
