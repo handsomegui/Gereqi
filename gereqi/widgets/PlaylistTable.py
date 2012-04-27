@@ -121,25 +121,29 @@ class PlaylistTable(QTableWidget):
                 clip.setText(tag)
                 
             elif action == remove_action:
+                raise NotImplementedError
                 self.ui.playlisting.del_track(row)
                 
             elif action == manage_organise:
                 print "ORGANISE?"
+                raise NotImplementedError
                 
             elif action == manage_delete:
                 print "YEAH, I'M NOT DELETING"
+                raise NotImplementedError
                 
             elif action == edit_tag:
+#                raise NotImplementedError
                 text = QInputDialog.getText(None, tag_name,
                                          "Change the tag to:",
                                          QLineEdit.Normal,
                                          item_now.text())
                 
                 if text[1]:
-                    col = self.ui.playlisting.header_search("FileName")
+                    col = self.header_search("FileName")
                     for row in rows:                        
                         fname = self.item(row,col).text()
-#                        self.ui.media_db.update_tag(fname,tag_name.lower(),text[0])
+                        self.ui.media_db.update_tag(fname,tag_name.toLower(),text[0])
                         self.item(row,col_now).setText(text[0])
     
     def __header_menu(self,pos): 
