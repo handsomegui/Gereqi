@@ -37,47 +37,24 @@ class CollectionDb:
         
     def __config_db(self):
         sets_db = Settings()
-        self.db_type = sets_db.get_database_setting("type")
-        if self.db_type == "MYSQL":                            
-            CollectionDb.media_db = QSqlDatabase.addDatabase("QMYSQL", self.name)
-            CollectionDb.media_db.setHostName(sets_db.get_database_setting("hostname"))
-            CollectionDb.media_db.setDatabaseName(sets_db.get_database_setting("dbname"))
-            CollectionDb.media_db.setUserName(sets_db.get_database_setting("username"))
-            CollectionDb.media_db.setPassword(sets_db.get_database_setting("password"))
-            # FIXME: this clearly does nothing
-            CollectionDb.media_db.setPort(int(sets_db.get_database_setting("port")))
-                            
-        else:        
-            self.db_type = "SQLITE"
-            app_dir = "%s/.gereqi/" % os.getenv("HOME")
-            db_loc = "%smedia.db" % app_dir
-            if QDir(app_dir).exists is False:
-                QDir().mkdir(app_dir)                
-            CollectionDb.media_db = QSqlDatabase.addDatabase("QSQLITE", self.name)
-            CollectionDb.media_db.setDatabaseName(db_loc)
-        
+        app_dir = "%s/.gereqi/" % os.getenv("HOME")
+        db_loc  = "%smedia.db" % app_dir
+        if QDir(app_dir).exists is False:
+            QDir().mkdir(app_dir)                
+        CollectionDb.media_db = QSqlDatabase.addDatabase("QSQLITE", self.name)
+        CollectionDb.media_db.setDatabaseName(db_loc)
         
         ok = CollectionDb.media_db.open()
         if ok is True:
-            print "DATABASE OK: %s - %s" % (self.db_type,self.name)
             self.query = QSqlQuery(CollectionDb.media_db)
-            if self.db_type == "SQLITE":
-                self.__pragma()
+            self.__pragma()
             self.__setup_tables()
         else:
             err = self.media_db.lastError().text()
             raise StandardError(err)
         
     def __setup_tables(self):
-        if self.db_type == "SQLITE":
-            tables = Tables.Sqlite().tables
-                  
-        elif self.db_type == "MYSQL":
-            # Mysql requires slightly different tables
-            tables = Tables.Mysql.tables
-
-            
-        for table in tables:
+        for table in Tables.Sqlite().tables:
             self.__query_execute(table)
             
             
@@ -145,24 +122,8 @@ class CollectionDb:
         """
         Here we add data into the media database
         """
-        if self.db_type == "SQLITE":
-            query = '''INSERT OR IGNORE INTO media 
-                            VALUES (?,?,?,?,?,?,?,?,?,?,?)'''
-        elif self.db_type == "MYSQL":
-            # To overcome the lack of an IGNORE
-            query = '''
-                    INSERT INTO media(  file_name, title,
-                                        artist, album,
-                                        year, genre,
-                                        track, length,
-                                        bitrate, added) 
-                    SELECT ?,?,?,?,?,?,?,?,?,? FROM dual
-                    WHERE NOT EXISTS (
-                    SELECT * FROM media
-                    WHERE file_name=?)
-                    
-                    '''
-            meta[10] = meta[0]           
+        query = '''INSERT OR IGNORE INTO media 
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?)'''          
         self.__execute_write(query, meta)
         
     def inc_count(self, timestamp, fname):
@@ -347,14 +308,7 @@ class CollectionDb:
             return result[0]
         
     def playlist_add(self, *params):
-        if self.db_type == "SQLITE":
-            query = '''INSERT OR REPLACE INTO playlist 
-                        VALUES (?,?)'''
-
-        elif self.db_type == "MYSQL":
-            query = '''INSERT INTO playlist 
-                        (name,file_name)
-                        VALUES (?,?)'''
+        query = '''INSERT OR REPLACE INTO playlist (?,?)'''
         self.__execute_write(query, params)
         
     def playlist_list(self):

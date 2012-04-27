@@ -37,22 +37,9 @@ class Configuration(QDialog, Ui_settings_dialog):
         QDialog.__init__(self, parent)
         
         self.setupUi(self)
-        self.__mysql_avail()
         self.sets_db = Settings()
         self.__fileview_setup()         
         self.__interface_setup()
-        
-    def __mysql_avail(self):
-        """
-        If mysql support was built into QSql then allow
-        the backend to be used
-        """
-        from PyQt4.QtSql import QSqlDatabase
-        avails = QSqlDatabase.drivers()
-        if "QMYSQL" in avails:
-            self.database_type.addItem("MYSQL")
-        else:
-            print("Mysql option not available")
         
     def __refreshing(self, index):
         if self.collection_view.isExpanded(index):
@@ -88,17 +75,6 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.collection_view.setColumnHidden(2, True)
         self.collection_view.setColumnHidden(3, True)
         self.collection_view.expandToDepth(0)
-        
-    def __database_setup(self):
-        db_type = self.sets_db.get_database_setting("type")
-        if db_type == "MYSQL":
-            index = self.database_type.findText("MYSQL")
-            self.database_type.setCurrentIndex(index)
-            self.mysql_host.setText(self.sets_db.get_database_setting("hostname"))
-            self.mysql_user.setText(self.sets_db.get_database_setting("username"))
-            self.mysql_password.setText(self.sets_db.get_database_setting("password"))
-            self.mysql_dbname.setText(self.sets_db.get_database_setting("dbname"))
-            self.mysql_port.setValue(int(self.sets_db.get_database_setting("port")))
             
     def __interface_setup(self):
         # General
@@ -114,7 +90,6 @@ class Configuration(QDialog, Ui_settings_dialog):
         func = lambda x : self.sets_db.get_collection_setting(x) == "True"
         self.scan_recursively.setChecked(func("recursive"))
         self.watch_folders.setChecked(func("watch"))
-        self.__database_setup()
         
         
     def __save_settings(self):
@@ -142,23 +117,11 @@ class Configuration(QDialog, Ui_settings_dialog):
         self.sets_db.add_collection_setting("include",incl)
         self.sets_db.add_collection_setting("exclude",excl)
             
-    def __set_database(self):
-        db_type = unicode(self.database_type.currentText())
-        self.sets_db.add_database_setting("type", db_type) 
-        
-        if db_type == "MYSQL":
-            self.sets_db.add_database_setting("hostname", self.mysql_host.text() ) 
-            self.sets_db.add_database_setting("username", self.mysql_user.text()) 
-            self.sets_db.add_database_setting("password", self.mysql_password.text()) 
-            self.sets_db.add_database_setting("dbname", self.mysql_dbname.text()) 
-            self.sets_db.add_database_setting("port", self.mysql_port.value()) 
-            
     def __apply_settings(self):
         """
         Apply all the settings to the db
         """      
         self.__set_collections()
-        self.__set_database()
         self.__save_settings()
             
     @pyqtSignature("QAbstractButton")
