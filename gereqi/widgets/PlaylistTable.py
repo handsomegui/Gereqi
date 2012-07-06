@@ -133,7 +133,6 @@ class PlaylistTable(QTableWidget):
                 raise NotImplementedError
                 
             elif action == edit_tag:
-#                raise NotImplementedError
                 text = QInputDialog.getText(None, tag_name,
                                          "Change the tag to:",
                                          QLineEdit.Normal,
