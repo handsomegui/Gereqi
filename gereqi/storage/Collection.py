@@ -343,11 +343,12 @@ class CollectionDb:
    
    #TODO: replace name to reflect new operation
     def drop_media(self):
-        query = '''DELETE FROM media; 
-                    DELETE FROM playcount; 
-                    DELETE FROM last_playlist; 
-                    DELETE FROM playlist'''
-        self.__execute_write(query)
+        queries = [ "DELETE FROM media;", 
+                    "DELETE FROM playcount;", 
+                    "DELETE FROM last_playlist;", 
+                    "DELETE FROM playlist;"]
+        for q in queries:
+            self.__execute_write(q)
         
     def restart_db(self,name=None):
         """
