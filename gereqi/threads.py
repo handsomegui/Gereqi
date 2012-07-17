@@ -82,16 +82,16 @@ class Builddb(QThread):
     def stop(self):
         self.exiting = True
         
-    def set_values(self, dirs, formats, mode, tracks=None):
+    def set_values(self, dirs, formats, rescan, tracks=None):
         """
         Required to put parameters into
         this thread from the outside
         """
-        self.media_dir = dirs
-        self.file_list = tracks
-        self.mode = mode
-        self.meta = Tagging(formats)  
-        self.a_formats = formats
+        self.media_dir  = dirs
+        self.file_list  = tracks
+        self.rescan     = rescan
+        self.meta       = Tagging(formats)  
+        self.a_formats  = formats
      
     def __track_list(self, dir, excl):
         """
@@ -133,7 +133,6 @@ class Builddb(QThread):
         """
         Cue sheets need to be handled differently to normal audio files
         """
-        print("CUEFILE: %s" % file_name)
         cue_now = CueSheet(file_name)
         cue_name = "%s - %s" % (cue_now.title, cue_now.performer)
         self.db.playlist_add(cue_name,file_name)
@@ -148,10 +147,10 @@ class Builddb(QThread):
             
         old_prog = 0
         
-        if self.mode == "redo":
+        if self.rescan:
             self.db.drop_media()
             print("FROM SCRATCH")
-        elif self.mode == "update":
+        else:
             print("UPDATE")
         
         if self.file_list is None:

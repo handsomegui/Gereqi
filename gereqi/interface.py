@@ -433,7 +433,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Really needs to be done in a separate thread as scan could
         take a while.
         """
-        print("Deleting media DB and rebuilding") 
         self.collect_tree.clear()
         self.create_collection(fresh=True)
 
@@ -957,12 +956,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Either generates a new DB or adds new files to it
         Not finished
         """
-        mode = "redo" if fresh else "update"
         # If the dialog is cancelled in last if statement the below is ignored
         if self.media_dir:
             self.stat_bttn.setEnabled(True)
             self.build_db_thread.set_values(self.media_dir, self.audio_formats,
-                                            mode)
+                                            fresh)
             self.stat_lbl.setText("Scanning Media")
             self.stat_prog.setValue(0)
             self.build_db_thread.start()
