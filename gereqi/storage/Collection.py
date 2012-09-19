@@ -16,7 +16,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtSql import *
 
-from gereqi.storage.Settings import Settings
+from . Settings import Settings
 import Tables
 
 import os
@@ -33,6 +33,7 @@ class CollectionDb:
         To ensure the db-connection is closed
         Seems to calm down the QSqlDatabasePrivate::removeDatabase warnings
         """
+        CollectionDb.media_db = None
         self.close_connection()
         
     def __config_db(self):

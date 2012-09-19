@@ -16,7 +16,7 @@
 
 import styles
 import socket
-from gereqi import networking
+from .. import networking
 
 
 class Webinfo:

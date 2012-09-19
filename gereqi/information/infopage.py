@@ -14,8 +14,8 @@
 # along with Gereqi.  If not, see <http://www.gnu.org/licenses/>.
 
 from .. import extraneous
-from gereqi.storage.Settings import Settings
-from gereqi.storage.Collection import CollectionDb
+from ..storage.Settings import Settings
+from ..storage.Collection import CollectionDb
 
 import styles
 

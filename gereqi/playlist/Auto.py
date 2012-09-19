@@ -1,6 +1,6 @@
 from PyQt4.QtGui import QTreeWidgetItem,QIcon,QFont
-from gereqi.storage.Collection import CollectionDb
-from gereqi.icons.configuration import MyIcons
+from ..storage.Collection import CollectionDb
+from ..icons.configuration import MyIcons
 
 
 db = CollectionDb("auto-playlist")
