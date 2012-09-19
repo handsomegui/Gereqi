@@ -39,15 +39,15 @@ class Udev:
             Return the first device that matches the path
             i.e. /dev/sdj1
         """
-        path = path.encode("ascii")
-        udev = self.__udev
-        enumerate_scan_devices = udev.udev_enumerate_scan_devices
-        device_new_from_syspath = udev.udev_device_new_from_syspath
-        list_entry_get_name = udev.udev_list_entry_get_name
-        enumerate_get_list_entry = udev.udev_enumerate_get_list_entry
-        device_unref = udev.udev_device_unref
-        enumerate_new = udev.udev_enumerate_new
-        enumerate_unref = udev.udev_enumerate_unref
+        path                        = path.encode("ascii")
+        udev                        = self.__udev
+        enumerate_scan_devices      = udev.udev_enumerate_scan_devices
+        device_new_from_syspath     = udev.udev_device_new_from_syspath
+        list_entry_get_name         = udev.udev_list_entry_get_name
+        enumerate_get_list_entry    = udev.udev_enumerate_get_list_entry
+        device_unref                = udev.udev_device_unref
+        enumerate_new               = udev.udev_enumerate_new
+        enumerate_unref             = udev.udev_enumerate_unref
         enumerate_add_match_property = udev.udev_enumerate_add_match_property
 
         enum = enumerate_new(self.__struct)
