@@ -37,10 +37,11 @@ class AudioBackend:
         Convert the tracks play-length into a format
         suitable for label widget and set
         """
-        track   = self.ui.playlist_table.current_track()
-        t_now   = QTime(0, (val / 60000) % 60, (val / 1000) % 60)
-        now     = t_now.toString('mm:ss')
-        self.ui.progress_lbl.setText("%s | %s" % (now, track.length)) 
+        trk_time    = self.audio_object.totalTime() # FIXME: this is wrong n the transistion period
+        trk_time    = QTime(0, (trk_time  / 60000) % 60, (trk_time / 1000) % 60)
+        t_now       = QTime(0, (val / 60000) % 60, (val / 1000) % 60)
+        self.ui.progress_lbl.setText("%s | %s" % (t_now.toString('mm:ss'), 
+                                                  trk_time.toString("mm:ss"))) 
         
     def __phonon_init(self):
         self.audio_object = PhononBE()
