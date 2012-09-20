@@ -402,6 +402,10 @@ class WikiPage(QThread):
             # Probable because networking.read() returned nothing
             self.html.emit("")
             return
-        html_out = networking.read(urls[1] % urllib.quote(jo[1][0]))
+        if len(jo[1]) < 1:
+            # Probably wikipedia found nothing
+            html_out = ""
+        else:
+            html_out = networking.read(urls[1] % urllib.quote(jo[1][0]))
         self.html.emit(html_out)
         
