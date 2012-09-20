@@ -16,22 +16,31 @@
 
 from PyQt4.QtGui import QPixmap
 from PyQt4.QtCore import QObject, QTime
+from PhononBE import PhononBE
+from ..storage.Collection import CollectionDb
 
 import time
 
-from Gstreamer import Gstbe
-from PhononBE import PhononBE
 
 class AudioBackend:
     recently_played = []
     
     def __init__(self, parent):
-        self.ui = parent
-        self.just_finished = False
-        self.__phonon_init()
+        self.ui             = parent        
+        self.db             = CollectionDb("backend")
+        self.just_finished  = False
+        self.__phonon_init()      
+
         
-        self.ui.stop_bttn.pressed.connect(self.__finished_playing) 
-            
+    def timeval_to_label(self, val):
+        """
+        Convert the tracks play-length into a format
+        suitable for label widget and set
+        """
+        track   = self.ui.playlist_table.current_track()
+        t_now   = QTime(0, (val / 60000) % 60, (val / 1000) % 60)
+        now     = t_now.toString('mm:ss')
+        self.ui.progress_lbl.setText("%s | %s" % (now, track.length)) 
         
     def __phonon_init(self):
         self.audio_object = PhononBE()
@@ -40,7 +49,8 @@ class AudioBackend:
         self.audio_object.tick.connect(self.__prog_tick)
         self.audio_object.currentSourceChanged.connect(self.__track_changed)
         self.audio_object.finished.connect(self.__finished_playing)
-        self.ui.progress_sldr.setMediaObject(self.audio_object)
+        self.ui.progress_sldr.setMediaObject(self.audio_object)                
+        self.ui.stop_bttn.pressed.connect(self.__finished_playing)  
         
     def __about_to_finish(self, pipeline=None):
         """
@@ -48,8 +58,8 @@ class AudioBackend:
         before playback stops
         """
         self.recently_played.append(self.audio_object.current_source())
-        self.just_finished = True
-        track = self.ui.playlist_table.next()
+        self.just_finished  = True
+        track               = self.ui.playlist_table.next()
         # Not at end of playlist
         if track:
             self.audio_object.load(track)
@@ -98,17 +108,8 @@ class AudioBackend:
         Doesn't actually change count. Adds notification
         of full-play into the historyDB table
         """
-        track = self.ui.playlist_table.previous()
-        timestamp = time.time()
-        self.ui.media_db.inc_count(timestamp, track)
-        
-    def timeval_to_label(self, val):
-        """
-        Convert the tracks play-length into a format
-        suitable for label widget and set
-        """
-        track = self.ui.playlist_table.current_track()
-        t_now = QTime(0, (val / 60000) % 60, (val / 1000) % 60)
-        now = t_now.toString('mm:ss')
-        self.ui.progress_lbl.setText("%s | %s" % (now, track.length)) 
-        
+        track       = self.ui.playlist_table.previous()
+        timestamp   = time.time()
+        #FIXME: get rid of these calls to the parent's objects. This class
+        #        knows too much
+        self.db.inc_count(timestamp, track)
