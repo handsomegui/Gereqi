@@ -89,12 +89,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.collect_tree.populate()
             
         self.del_thread = DeleteFiles(self)
-        self.meta = Tagging(self.audio_formats)
+        self.meta       = Tagging(self.audio_formats)
         
-        self.xtrawdgt = SetupExtraWidgets(self)
-        self.player = Backend.AudioBackend(self)
+        self.xtrawdgt   = SetupExtraWidgets(self)
+        self.player     = Backend.AudioBackend(self)
         self.wdgt_manip = WidgetManips(self)
-        self.finishes = Finishers(self)
+        self.finishes   = Finishers(self)
         self.__tray_menu_appearance()
         self.wiki_thread = WikiPage()
         self.infopage_thread = InfoPage()
@@ -121,135 +121,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.wdgt_manip.pop_playlist_view()
         
         self.play_cd_actn.setVisible(CDS_OK)
-        self.icons = MyIcons()
-        
-        
-    def __ready_to_go(self):
-        self.clear_trktbl_bttn.setEnabled(True)
-    
-    def __load_and_play(self, track, type):
-        self.player.audio_object.stop()
-        self.player.audio_object.clear()
-        self.player.audio_object.load(track, type)
-        self.player.audio_object.play()
-        self.stop_bttn.setEnabled(True)
-        self.play_bttn.setChecked(True)
-        self.wdgt_manip.icon_change("play")
+        self.icons = MyIcons()        
 
-    def __items_for_playlist(self, items):
-        self.playlist_table.tracks += items
-        self.playlist_table.update()
-
-    def __set_infopage(self, html):
-        self.info_view.setHtml(html)        
-        
-
-    def __reset_db_default(self,err):
-        err = "Database Error: %s. Setting Database to default" % str(err)
-        err_msg = QErrorMessage()
-        err_msg.showMessage(str(err))
-        if err_msg.exec_():                
-            self.sets_db.add_database_setting("type", "SQLITE")
-            self.media_db.media_db.removeDatabase("main")
-            self.media_db = CollectionDb("main")
-        
-    def __tray_menu_appearance(self):
-        if self.sets_db.get_interface_setting("trayicon") == "True":
-            self.tray_icon.show()
-        else:
-            self.tray_icon.hide()
-        
-    def __collection_mode(self):
-        text_now = self.collect_tree.headerItem().text(0)
-        if text_now == "Artist/Album":            
-            return "artist"
-        else:            
-            return "album"
-        
-    def __volume_icon(self,value=None):
-        value = value if value else self.volume_sldr.value()
-        if (value > 66):
-            return self.icons.icon("volume-max")
-        elif (value > 33):
-            return self.icons.icon("volume-mid")
-        elif (value > 0):
-            return self.icons.icon("volume-low")
-        else:
-            return self.icons.icon("mute")
-   
-    def __setup_watcher(self):
-        watch = (self.sets_db.get_collection_setting("watch")  == "True")
-        recur = (self.sets_db.get_collection_setting("recursive")  == "True")
-        
-        if (self.media_dir is None) or (watch is False):
-            return
-        
-        try:
-            # To stop the possibly already running thread
-            self.watch_thread.exit()
-        except AttributeError:
-            pass
-            
-        self.watch_thread = Watcher(self)
-        self.watch_thread.set_values(self.media_dir, WATCHTIME, recur)
-        self.watch_thread.start()
-        self.watch_thread.creations.connect(self.__files_created)
-        self.watch_thread.deletions.connect(self.__files_deleted)
-        
-    def __files_deleted(self, deletions):
-        """
-        When something is deleted in the collection dir
-        the filename is put into a list. This list checked every 60secs
-        and fed into the DB
-        """
-        self.del_thread.set_values(deletions)
-        self.del_thread.start()
-            
-    def __files_created(self, creations):
-        """
-        Via the watcher, newly created/changed files are sent
-        to the db to be added or updated
-        """
-        self.build_db_thread.set_values(None, self.audio_formats, "create", 
-                                        creations)
-        self.stat_lbl.setText("Auto-Scanning")
-        self.stat_prog.setValue(0)
-        self.build_db_thread.start()
-        
-    def __dirs_setup(self):
-        """
-        Load the collection directories into self
-        """
-        include = []
-        exclude = []
-        inc = self.sets_db.get_collection_setting("include")
-        exc = self.sets_db.get_collection_setting("exclude")        
-        if inc:
-            include = inc.split(",")
-        if exc:
-            exclude = exc.split(",")
-        self.media_dir = (include, exclude)
-        
-    def __settings_init(self):
-        """
-        Things to perform on startup
-        """
-        self.sets_db = Settings()
-        self.__dirs_setup()
-        self.__setup_watcher()
-  
-        
-        
-    def __playlist_remembered(self):
-        """
-        Load the playlist auto-saved(optional)
-        on last shutdown
-        """
-        if self.sets_db.get_interface_setting("remember") == "False":
-            return
-        tracks = self.media_db.last_playlist()
-        if len(tracks) > 0:
-            self.playlist_table.add_list_to_playlist(tracks)
                 
     def tray_tooltip(self):
         if self.play_bttn.isChecked():
@@ -259,8 +132,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # Puts the current track info in tray tooltip
         else:
             msg = "Paused"
-        self.tray_icon.setToolTip(msg) 
-        
+        self.tray_icon.setToolTip(msg)         
         
         
     @pyqtSignature("QString")
@@ -1062,3 +934,128 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.collect_tree.set_mode(0)
             self.collect_tree.headerItem().setText(0, "Artist/Album")
         self.collect_tree.populate()
+        
+    def __ready_to_go(self):
+        self.clear_trktbl_bttn.setEnabled(True)
+    
+    def __load_and_play(self, track, type):
+        self.player.audio_object.stop()
+        self.player.audio_object.clear()
+        self.player.audio_object.load(track, type)
+        self.player.audio_object.play()
+        self.stop_bttn.setEnabled(True)
+        self.play_bttn.setChecked(True)
+        self.wdgt_manip.icon_change("play")
+
+    def __items_for_playlist(self, items):
+        self.playlist_table.tracks += items
+        self.playlist_table.update()
+
+    def __set_infopage(self, html):
+        self.info_view.setHtml(html)        
+        
+
+    def __reset_db_default(self,err):
+        err     = "Database Error: %s. Setting Database to default" % str(err)
+        err_msg = QErrorMessage()
+        err_msg.showMessage(str(err))
+        if err_msg.exec_():                
+            self.sets_db.add_database_setting("type", "SQLITE")
+            self.media_db.media_db.removeDatabase("main")
+            self.media_db = CollectionDb("main")
+        
+    def __tray_menu_appearance(self):
+        if self.sets_db.get_interface_setting("trayicon") == "True":
+            self.tray_icon.show()
+        else:
+            self.tray_icon.hide()
+        
+    def __collection_mode(self):
+        text_now = self.collect_tree.headerItem().text(0)
+        if text_now == "Artist/Album":            
+            return "artist"
+        else:            
+            return "album"
+        
+    def __volume_icon(self, value=None):
+        value = value if value else self.volume_sldr.value()
+        if (value > 66):
+            return self.icons.icon("volume-max")
+        elif (value > 33):
+            return self.icons.icon("volume-mid")
+        elif (value > 0):
+            return self.icons.icon("volume-low")
+        else:
+            return self.icons.icon("mute")
+   
+    def __setup_watcher(self):
+        watch = (self.sets_db.get_collection_setting("watch")  == "True")
+        recur = (self.sets_db.get_collection_setting("recursive")  == "True")
+        
+        if (self.media_dir is None) or (watch is False):
+            return
+        
+        try:
+            # To stop the possibly already running thread
+            self.watch_thread.exit()
+        except AttributeError:
+            pass
+            
+        self.watch_thread = Watcher(self)
+        self.watch_thread.set_values(self.media_dir, WATCHTIME, recur)
+        self.watch_thread.start()
+        self.watch_thread.creations.connect(self.__files_created)
+        self.watch_thread.deletions.connect(self.__files_deleted)
+        
+    def __files_deleted(self, deletions):
+        """
+        When something is deleted in the collection dir
+        the filename is put into a list. This list checked every 60secs
+        and fed into the DB
+        """
+        self.del_thread.set_values(deletions)
+        self.del_thread.start()
+            
+    def __files_created(self, creations):
+        """
+        Via the watcher, newly created/changed files are sent
+        to the db to be added or updated
+        """
+        self.build_db_thread.set_values(None, self.audio_formats, "create", 
+                                        creations)
+        self.stat_lbl.setText("Auto-Scanning")
+        self.stat_prog.setValue(0)
+        self.build_db_thread.start()
+        
+    def __dirs_setup(self):
+        """
+        Load the collection directories into self
+        """
+        include = []
+        exclude = []
+        inc     = self.sets_db.get_collection_setting("include")
+        exc     = self.sets_db.get_collection_setting("exclude")        
+        if inc:
+            include = inc.split(",")
+        if exc:
+            exclude = exc.split(",")
+        self.media_dir = (include, exclude)
+        
+    def __settings_init(self):
+        """
+        Things to perform on startup
+        """
+        self.sets_db = Settings()
+        self.__dirs_setup()
+        self.__setup_watcher()        
+        
+    def __playlist_remembered(self):
+        """
+        Load the playlist auto-saved(optional)
+        on last shutdown
+        """
+        if self.sets_db.get_interface_setting("remember") == "False":
+            return
+        tracks = self.media_db.last_playlist()
+        if len(tracks) > 0:
+            self.playlist_table.add_list_to_playlist(tracks)
