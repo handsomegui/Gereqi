@@ -110,6 +110,4 @@ class AudioBackend:
         """
         track       = self.ui.playlist_table.previous()
         timestamp   = time.time()
-        #FIXME: get rid of these calls to the parent's objects. This class
-        #        knows too much
         self.db.inc_count(timestamp, track)
