@@ -40,18 +40,20 @@ import extraneous
 build_lock = delete_lock = False
 
 class GetCovers(QThread):
-    cover_found = pyqtSignal(str,str)
+    cover_found = pyqtSignal(str, str)
     def __init__(self):
-        super(GetCovers,self).__init__()
+        super(GetCovers, self).__init__()
+        print("DEBUG: Setting up GetCovers thread")
         
     def run(self):
+        print("DEBUG: starting GetCovers thread")
         db = CollectionDb("cover_crawl")
         artists = db.get_artists()
         for artist in artists:
             albums = db.get_albums(artist)
             for album in albums:
-                if extraneous.get_cover_source(artist,album):
-                    self.cover_found.emit(artist,album)
+                if extraneous.get_cover_source(artist=artist, album=album, check=True, download=True):
+                    self.cover_found.emit(artist, album)
         self.exec_()
 
 
@@ -67,6 +69,7 @@ class Builddb(QThread):
         QThread.__init__(self, parent)
         self.ui = parent
         self.db = CollectionDb("builder")
+        print("DEBUG: Setting up Builddb thread")
         
     def __file_compat(self, dirpath, fname):
         """
@@ -139,19 +142,20 @@ class Builddb(QThread):
         
         
     def run(self):
+        print("DEBUG: starting Builddb thread")
         
         self.ui.build_lock = True
-        while self.ui.delete_lock == True:
-            print("WAITING: creation")
+        while self.ui.delete_lock:
+            print("DEBUG: WAITING: Creation")
             sleep(1)
             
         old_prog = 0
         
         if self.rescan:
             self.db.drop_media()
-            print("FROM SCRATCH")
+            print("DEBUG: Building DB from scratch")
         else:
-            print("UPDATE")
+            print("DEBUG: Updating DB")
         
         if self.file_list is None:
             tracks = []
@@ -163,7 +167,7 @@ class Builddb(QThread):
                 tracks.append(unicode(trk))
             
         tracks_total = len(tracks)
-        print("%06d tracks to scan" % tracks_total)
+        print("DEBUG: %d tracks to scan" % tracks_total)
         self.exiting = False
         
         strt = time()
@@ -193,13 +197,13 @@ class Builddb(QThread):
                     self.db.add_media(info)
                     cnt += 1
             else:
-                print("User terminated scan.")
+                print("DEBUG: User terminated DB update/build.")
                 self.finished.emit("cancelled")
                 self.ui.build_lock = False
                 self.exit()
                 return
             
-        print("%u of %u tracks scanned in: %0.1f seconds" % \
+        print("DEBUG: %u of %u tracks scanned in: %0.1f seconds" % \
               (cnt, tracks_total, (time() - strt)))
         self.finished.emit("complete")
         self.ui.build_lock = False
@@ -233,14 +237,14 @@ class Watcher(QThread, pyinotify.ProcessEvent):
                 self.deletions.emit(self.deleted)
                 self.deleted.clear()
             else:
-                print("WAITING: deletion list")
+                print("DEBUG: WAITING: deletion list")
                 
         if self.created.count() > 0:
             if self.ui.build_lock == False:
                 self.creations.emit(self.created)
                 self.created.clear()
             else:
-                print("WAITING: creation list")
+                print("DEBUG: WAITING: creation list")
             
         self.start_time = time()
         
@@ -328,7 +332,7 @@ class DeleteFiles(QThread):
     def run(self):        
         self.ui.delete_lock = True
         while self.ui.build_lock == True:
-            print("WAITING: deletion")
+            print("DEBUG: WAITING: Deletion")
             sleep(1)
         for trk in self.file_list:
             self.db.delete_track(trk)         

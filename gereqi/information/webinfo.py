@@ -37,7 +37,7 @@ class Webinfo:
             url = base_url % (site, pre_url)
             return url
         elif site == "albumart.org":
-            base_url = "http://www.albumart.org/index.php?srchkey=%s&itempage=1&newsearch=1&searchindex=Music"
+            base_url = "http://www.albumart.org/index.php?skey=%s&itempage=1&newsearch=1&searchindex=Music"
             url = base_url % "+".join(things)
             return url
         
@@ -91,6 +91,7 @@ class Webinfo:
         site = "albumart.org"
         url = self.__create_url(site, artist, alb)
         pre_html = networking.fetch(url)
+        
         # Failed to load
         if not pre_html:
             return        
